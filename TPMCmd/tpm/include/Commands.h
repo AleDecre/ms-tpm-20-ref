@@ -457,5 +457,8 @@
 #if CC_Vendor_TCG_Test
 #  include "Vendor_TCG_Test_fp.h"
 #endif
+#if CC_VIRT_CreateSeed
+#  include "VIRT_CreateSeed_fp.h"
+#endif
 
 #endif

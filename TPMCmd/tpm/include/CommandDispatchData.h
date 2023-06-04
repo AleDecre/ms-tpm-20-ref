@@ -4693,6 +4693,55 @@ Vendor_TCG_Test_COMMAND_DESCRIPTOR_t _Vendor_TCG_TestData = {
 #    define _Vendor_TCG_TestDataAddress 0
 #  endif  // CC_Vendor_TCG_Test
 
+#  if CC_VIRT_CreateSeed
+
+#    include "VIRT_CreateSeed_fp.h"
+
+typedef TPM_RC(VIRT_CreateSeed_Entry)(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out);
+
+typedef const struct
+{
+    VIRT_CreateSeed_Entry* entry;
+    UINT16        inSize;
+    UINT16        outSize;
+    UINT16        offsetOfTypes;
+    UINT16        paramOffsets[8];
+    BYTE          types[12];
+} VIRT_CreateSeed_COMMAND_DESCRIPTOR_t;
+
+VIRT_CreateSeed_COMMAND_DESCRIPTOR_t _VIRT_CreateSeedData = {
+    /* entry         */ &TPM2_VIRT_CreateSeed,
+    /* inSize        */ (UINT16)(sizeof(VIRTCreateSeed_In)),
+    /* outSize       */ (UINT16)(sizeof(VIRTCreateSeed_Out)),
+    /* offsetOfTypes */ offsetof(VIRT_CreateSeed_COMMAND_DESCRIPTOR_t, types),
+    /* offsets       */
+    {(UINT16)(offsetof(VIRTCreateSeed_In, inSensitive)),
+     (UINT16)(offsetof(VIRTCreateSeed_In, inPublic)),
+     (UINT16)(offsetof(VIRTCreateSeed_In, outsideInfo)),
+     (UINT16)(offsetof(VIRTCreateSeed_In, creationPCR)),
+     (UINT16)(offsetof(VIRTCreateSeed_Out, outPublic)),
+     (UINT16)(offsetof(VIRTCreateSeed_Out, creationData)),
+     (UINT16)(offsetof(VIRTCreateSeed_Out, creationHash)),
+     (UINT16)(offsetof(VIRTCreateSeed_Out, creationTicket))},
+    /* types         */
+    {TPMI_DH_OBJECT_H_UNMARSHAL,
+     TPM2B_SENSITIVE_CREATE_P_UNMARSHAL,
+     TPM2B_PUBLIC_P_UNMARSHAL,
+     TPM2B_DATA_P_UNMARSHAL,
+     TPML_PCR_SELECTION_P_UNMARSHAL,
+     END_OF_LIST,
+     TPM2B_PRIVATE_P_MARSHAL,
+     TPM2B_PUBLIC_P_MARSHAL,
+     TPM2B_CREATION_DATA_P_MARSHAL,
+     TPM2B_DIGEST_P_MARSHAL,
+     TPMT_TK_CREATION_P_MARSHAL,
+     END_OF_LIST}};
+
+#    define _VIRT_CreateSeedDataAddress (&_VIRT_CreateSeedData)
+#  else
+#    define _VIRT_CreateSeedDataAddress 0
+#  endif  // CC_VIRT_CreateSeed
+
 COMMAND_DESCRIPTOR_t* s_CommandDataArray[] = {
 #  if(PAD_LIST || CC_NV_UndefineSpaceSpecial)
     (COMMAND_DESCRIPTOR_t*)_NV_UndefineSpaceSpecialDataAddress,
@@ -5085,6 +5134,9 @@ COMMAND_DESCRIPTOR_t* s_CommandDataArray[] = {
 #  if(PAD_LIST || CC_Vendor_TCG_Test)
     (COMMAND_DESCRIPTOR_t*)_Vendor_TCG_TestDataAddress,
 #  endif  // CC_Vendor_TCG_Test
+#  if(PAD_LIST || CC_VIRT_CreateSeed)
+    (COMMAND_DESCRIPTOR_t*)_VIRT_CreateSeedDataAddress,
+#  endif  // CC_VIRT_CreateSeed
     0};
 
 #endif  // _COMMAND_TABLE_DISPATCH_

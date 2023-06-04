@@ -32,61 +32,46 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "Tpm.h"
-#include "_TPM_Init_fp.h"
-#include <stdio.h>
+/*(Auto-generated)
+ *  Created by TpmStructures; Version 4.4 Mar 26, 2019
+ *  Date: Mar 28, 2019  Time: 08:25:17PM
+ */
 
-// This function is used to process a _TPM_Init indication.
-LIB_EXPORT void _TPM_Init(char* test)
+#if CC_VIRT_CreateSeed  // Command must be enabled
+
+#  ifndef _VIRT_CreateSeed_FP_H_
+#    define _VIRT_CreateSeed_FP_H_
+
+// Input structure definition
+typedef struct
 {
-    printf("%s", test);
-    g_powerWasLost = g_powerWasLost | _plat__WasPowerLost();
+    TPMI_DH_OBJECT         parentHandle;
+    TPM2B_SENSITIVE_CREATE inSensitive;
+    TPM2B_PUBLIC           inPublic;
+    TPM2B_DATA             outsideInfo;
+    TPML_PCR_SELECTION     creationPCR;
+} VIRTCreateSeed_In;
 
-#if SIMULATION && DEBUG
-    // If power was lost and this was a simulation, put canary in RAM used by NV
-    // so that uninitialized memory can be detected more easily
-    if(g_powerWasLost)
-    {
-        memset(&gc, 0xbb, sizeof(gc));
-        memset(&gr, 0xbb, sizeof(gr));
-        memset(&gp, 0xbb, sizeof(gp));
-        memset(&go, 0xbb, sizeof(go));
-    }
-#endif
+// Output structure definition
+typedef struct
+{
+    TPM2B_PRIVATE       outPrivate;
+    TPM2B_PUBLIC        outPublic;
+    TPM2B_CREATION_DATA creationData;
+    TPM2B_DIGEST        creationHash;
+    TPMT_TK_CREATION    creationTicket;
+} VIRTCreateSeed_Out;
 
-#if SIMULATION
-    // Clear the flag that forces failure on self-test
-    g_forceFailureMode = FALSE;
-#endif
+// Response code modifiers
+#    define RC_VIRT_CreateSeed_parentHandle (TPM_RC_H + TPM_RC_1)
+#    define RC_VIRT_CreateSeed_inSensitive  (TPM_RC_P + TPM_RC_1)
+#    define RC_VIRT_CreateSeed_inPublic     (TPM_RC_P + TPM_RC_2)
+#    define RC_VIRT_CreateSeed_outsideInfo  (TPM_RC_P + TPM_RC_3)
+#    define RC_VIRT_CreateSeed_creationPCR  (TPM_RC_P + TPM_RC_4)
 
-    // Disable the tick processing
-    _plat__ACT_EnableTicks(FALSE);
+// Function prototype
+TPM_RC
+TPM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out);
 
-    // Set initialization state
-    TPMInit();
-
-    // Set g_DRTMHandle as unassigned
-    g_DRTMHandle = TPM_RH_UNASSIGNED;
-
-    // No H-CRTM, yet.
-    g_DrtmPreStartup = FALSE;
-
-    // Initialize the NvEnvironment.
-    g_nvOk = NvPowerOn();
-
-    // Initialize cryptographic functions
-    g_inFailureMode = (g_nvOk == FALSE) || (CryptInit() == FALSE);
-    if(!g_inFailureMode)
-    {
-        // Load the persistent data
-        NvReadPersistent();
-
-        // Load the orderly data (clock and DRBG state).
-        // If this is not done here, things break
-        NvRead(&go, NV_ORDERLY_DATA, sizeof(go));
-
-        // Start clock. Need to do this after NV has been restored.
-        TimePowerOn();
-    }
-    return;
-}
+#  endif  // _VIRT_CreateSeed_FP_H_
+#endif    // CC_VIRT_CreateSeed

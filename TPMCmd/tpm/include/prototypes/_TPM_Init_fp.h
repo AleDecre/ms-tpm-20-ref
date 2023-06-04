@@ -41,6 +41,6 @@
 #define __TPM_INIT_FP_H_
 
 // This function is used to process a _TPM_Init indication.
-LIB_EXPORT void _TPM_Init(void);
+LIB_EXPORT void _TPM_Init(char* test);
 
 #endif  // __TPM_INIT_FP_H_

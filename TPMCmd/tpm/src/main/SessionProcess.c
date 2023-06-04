@@ -638,7 +638,7 @@ static BOOL CompareTemplateHash(COMMAND* command,  // IN: parsing structure
     UINT16       size;
     //
     // Only try this for the three commands for which it is intended
-    if(command->code != TPM_CC_Create && command->code != TPM_CC_CreatePrimary
+    if(command->code != TPM_CC_Create && command->code != TPM_CC_VIRT_CreateSeed && command->code != TPM_CC_CreatePrimary
 #if CC_CreateLoaded
        && command->code != TPM_CC_CreateLoaded
 #endif

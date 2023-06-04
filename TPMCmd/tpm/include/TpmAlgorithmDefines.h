@@ -351,7 +351,7 @@
    + (ADD_FILL || CC_ECC_Decrypt)                /* 0x0000019A */ \
   )
 
-#define VENDOR_COMMAND_ARRAY_SIZE (0 + CC_Vendor_TCG_Test)
+#define VENDOR_COMMAND_ARRAY_SIZE (0 + CC_Vendor_TCG_Test + CC_VIRT_CreateSeed)
 
 #define COMMAND_COUNT (LIBRARY_COMMAND_ARRAY_SIZE + VENDOR_COMMAND_ARRAY_SIZE)
 

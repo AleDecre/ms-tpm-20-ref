@@ -2638,3 +2638,37 @@ case TPM_CC_Vendor_TCG_Test:
     break;
 }
 #endif  // CC_Vendor_TCG_Test
+#if CC_VIRT_CreateSeed
+case TPM_CC_VIRT_CreateSeed:
+{
+    VIRTCreateSeed_In*  in   = (VIRTCreateSeed_In*)MemoryGetInBuffer(sizeof(VIRTCreateSeed_In));
+    VIRTCreateSeed_Out* out  = (VIRTCreateSeed_Out*)MemoryGetOutBuffer(sizeof(VIRTCreateSeed_Out));
+    in->parentHandle = handles[0];
+    result           = TPM2B_SENSITIVE_CREATE_Unmarshal(
+        &in->inSensitive, paramBuffer, paramBufferSize);
+    EXIT_IF_ERROR_PLUS(RC_VIRT_CreateSeed_inSensitive);
+    result =
+        TPM2B_PUBLIC_Unmarshal(&in->inPublic, paramBuffer, paramBufferSize, FALSE);
+    EXIT_IF_ERROR_PLUS(RC_VIRT_CreateSeed_inPublic);
+    result = TPM2B_DATA_Unmarshal(&in->outsideInfo, paramBuffer, paramBufferSize);
+    EXIT_IF_ERROR_PLUS(RC_VIRT_CreateSeed_outsideInfo);
+    result =
+        TPML_PCR_SELECTION_Unmarshal(&in->creationPCR, paramBuffer, paramBufferSize);
+    EXIT_IF_ERROR_PLUS(RC_VIRT_CreateSeed_creationPCR);
+    if(*paramBufferSize != 0)
+    {
+        result = TPM_RC_SIZE;
+        goto Exit;
+    }
+    result = TPM2_VIRT_CreateSeed(in, out);
+    rSize  = sizeof(VIRTCreateSeed_Out);
+    *respParmSize += TPM2B_PRIVATE_Marshal(&out->outPrivate, responseBuffer, &rSize);
+    *respParmSize += TPM2B_PUBLIC_Marshal(&out->outPublic, responseBuffer, &rSize);
+    *respParmSize +=
+        TPM2B_CREATION_DATA_Marshal(&out->creationData, responseBuffer, &rSize);
+    *respParmSize += TPM2B_DIGEST_Marshal(&out->creationHash, responseBuffer, &rSize);
+    *respParmSize +=
+        TPMT_TK_CREATION_Marshal(&out->creationTicket, responseBuffer, &rSize);
+    break;
+}
+#endif  // CC_VIRT_CreateSeed

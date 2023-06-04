@@ -1166,3 +1166,12 @@ case TPM_CC_ACT_SetTimeout:
 case TPM_CC_Vendor_TCG_Test:
     break;
 #endif  // CC_Vendor_TCG_Test
+#if CC_VIRT_CreateSeed
+case TPM_CC_VIRT_CreateSeed:
+    *handleCount = 1;
+    result       = TPMI_DH_OBJECT_Unmarshal(
+        &handles[0], handleBufferStart, bufferRemainingSize, FALSE);
+    if(TPM_RC_SUCCESS != result)
+        return result + TPM_RC_H + TPM_RC_1;
+    break;
+#endif  // CC_VIRT_CreateSeed

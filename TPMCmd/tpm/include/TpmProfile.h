@@ -774,6 +774,9 @@
 #ifndef CC_Vendor_TCG_Test
 #  define CC_Vendor_TCG_Test CC_YES
 #endif
+#ifndef CC_VIRT_CreateSeed
+#  define CC_VIRT_CreateSeed CC_YES
+#endif
 #ifndef CC_VerifySignature
 #  define CC_VerifySignature CC_YES
 #endif

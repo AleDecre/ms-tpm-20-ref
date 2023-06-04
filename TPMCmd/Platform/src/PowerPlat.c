@@ -81,7 +81,7 @@ LIB_EXPORT int _plat__Signal_Reset(void)
     // Command cancel
     s_isCanceled = FALSE;
 
-    _TPM_Init();
+    _TPM_Init("Init on powerOn/reset...\n");
 
     // if we are doing reset but did not have a power failure, then we should
     // not need to reload NV ...

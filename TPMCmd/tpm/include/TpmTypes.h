@@ -270,6 +270,7 @@ typedef UINT32 TPM_CC;
 #define TPM_CC_ECC_Decrypt                (TPM_CC)(0x0000019A)
 #define CC_VEND                           0x20000000
 #define TPM_CC_Vendor_TCG_Test            (TPM_CC)(0x20000000)
+#define TPM_CC_VIRT_CreateSeed            (TPM_CC)(0x20000001)
 
 // Table 2:5 - Definition of Types for Documentation Clarity
 typedef UINT32 TPM_ALGORITHM_ID;

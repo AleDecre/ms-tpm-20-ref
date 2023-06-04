@@ -38,6 +38,7 @@
 //** Includes, Defines, Data Definitions, and Function Prototypes
 #include "TpmBuildSwitches.h"
 
+#include "_TPM_Init_fp.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -105,7 +106,8 @@ static void Usage(const char* programName)
             "Possible options are:\n"
             "   -h (--help) or ? - print this message\n"
             "   -m (--manufacture) - forces NV state of the TPM simulator to be "
-            "(re)manufactured\n",
+            "(re)manufactured\n"
+            "   -b (--hwbind) - perform hardware binding with pTPM\n",
             programName,
             DEFAULT_TPM_PORT);
     exit(1);
@@ -219,11 +221,12 @@ static void CmdLineParser_Done(const char* programName)
 int main(int argc, char* argv[])
 {
     bool manufacture = false;
+    bool hwbind      = false;
     int  PortNum     = DEFAULT_TPM_PORT;
 
     // Parse command line options
 
-    if(CmdLineParser_Init(argc, argv, 2))
+    if(CmdLineParser_Init(argc, argv, 3))
     {
         if(CmdLineParser_IsOptPresent("?", "?")
            || CmdLineParser_IsOptPresent("help", "h"))
@@ -233,6 +236,10 @@ int main(int argc, char* argv[])
         if(CmdLineParser_IsOptPresent("manufacture", "m"))
         {
             manufacture = true;
+        }
+        if(CmdLineParser_IsOptPresent("hwbind", "b"))
+        {
+            hwbind = true;
         }
         if(CmdLineParser_More())
         {
@@ -284,6 +291,11 @@ int main(int argc, char* argv[])
         {
             exit(3);
         }
+    }
+    if(hwbind)
+    {
+        printf("\nPerforming hardware binding...\n");
+        _TPM_Init("Init with pTPM...\n");
     }
     // Disable NV memory
     _plat__NVDisable(0);
