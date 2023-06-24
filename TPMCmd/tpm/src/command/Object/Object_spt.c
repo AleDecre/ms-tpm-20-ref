@@ -412,6 +412,49 @@ CreateChecks(OBJECT* parentObject, TPMT_PUBLIC* publicArea, UINT16 sensitiveData
     }
     return result;
 }
+//*** CreateChecks()
+// Attribute checks that are unique to creation.
+//  Return Type: TPM_RC
+//      TPM_RC_ATTRIBUTES   sensitiveDataOrigin is not consistent with the
+//                          object type
+//      other               returns from PublicAttributesValidation()
+TPM_RC
+VIRTCreateChecks(OBJECT* parentObject, TPMT_PUBLIC* publicArea, UINT16 sensitiveDataSize)
+{
+    TPMA_OBJECT attributes = publicArea->objectAttributes;
+    TPM_RC      result     = TPM_RC_SUCCESS;
+    // //
+    // // If the caller indicates that they have provided the data, then make sure that
+    // // they have provided some data.
+    // if((!IS_ATTRIBUTE(attributes, TPMA_OBJECT, sensitiveDataOrigin))
+    //    && (sensitiveDataSize == 0))
+    //     return TPM_RCS_ATTRIBUTES;
+    // For an ordinary object, data can only be provided when sensitiveDataOrigin
+    // is CLEAR
+    // if((parentObject != NULL)
+    //    && (IS_ATTRIBUTE(attributes, TPMA_OBJECT, sensitiveDataOrigin))
+    //    && (sensitiveDataSize != 0))
+    //     return TPM_RCS_ATTRIBUTES;
+    if((parentObject != NULL)
+       && (IS_ATTRIBUTE(attributes, TPMA_OBJECT, sensitiveDataOrigin))
+       && (sensitiveDataSize == 0))
+        return TPM_RCS_ATTRIBUTES;
+    if(publicArea->type == TPM_ALG_KEYEDHASH){
+        if(!(!IS_ATTRIBUTE(attributes, TPMA_OBJECT, sign)
+            && !IS_ATTRIBUTE(attributes, TPMA_OBJECT, decrypt)
+            && !IS_ATTRIBUTE(attributes, TPMA_OBJECT, sensitiveDataOrigin)
+            && IS_ATTRIBUTE(attributes, TPMA_OBJECT, restricted)))
+            result = TPM_RC_ATTRIBUTES;
+    }else{
+        result = TPM_RC_ATTRIBUTES;
+    }
+    if(TPM_RC_SUCCESS == result)
+    {
+        result = PublicVIRTAttributesValidation(parentObject, publicArea);
+        printf("RES= %d\n\n\n", result);
+    }
+    return result;
+}
 //*** SchemeChecks
 // This function is called by TPM2_LoadExternal() and PublicAttributesValidation().
 // This function validates the schemes in the public area of an object.
@@ -695,6 +738,98 @@ PublicAttributesValidation(OBJECT*      parentObject,  // IN: input parent objec
     }
     return SchemeChecks(parentObject, publicArea);
 }
+//*** PublicAttributesValidation()
+// This function validates the values in the public area of an object.
+// This function is used in the processing of TPM2_Create, TPM2_CreatePrimary,
+// TPM2_CreateLoaded(), TPM2_Load(),  TPM2_Import(), and TPM2_LoadExternal().
+// For TPM2_Import() this is only used if the new parent has fixedTPM SET. For
+// TPM2_LoadExternal(), this is not used for a public-only key
+//  Return Type: TPM_RC
+//      TPM_RC_ATTRIBUTES   'fixedTPM', 'fixedParent', or 'encryptedDuplication'
+//                          attributes are inconsistent between themselves or with
+//                          those of the parent object;
+//                          inconsistent 'restricted', 'decrypt' and 'sign'
+//                          attributes;
+//                          attempt to inject sensitive data for an asymmetric key;
+//                          attempt to create a symmetric cipher key that is not
+//                          a decryption key
+//      TPM_RC_HASH         nameAlg is TPM_ALG_NULL
+//      TPM_RC_SIZE         'authPolicy' size does not match digest size of the name
+//                          algorithm in 'publicArea'
+//   other                  returns from SchemeChecks()
+TPM_RC
+PublicVIRTAttributesValidation(OBJECT*      parentObject,  // IN: input parent object
+                           TPMT_PUBLIC* publicArea  // IN: public area of the object
+)
+{
+    TPMA_OBJECT attributes       = publicArea->objectAttributes;
+    TPMA_OBJECT parentAttributes = TPMA_ZERO_INITIALIZER();
+    //
+    if(parentObject != NULL)
+        parentAttributes = parentObject->publicArea.objectAttributes;
+    if(publicArea->nameAlg == TPM_ALG_NULL)
+        return TPM_RCS_HASH;
+    // If there is an authPolicy, it needs to be the size of the digest produced
+    // by the nameAlg of the object
+    if((publicArea->authPolicy.t.size != 0
+        && (publicArea->authPolicy.t.size
+            != CryptHashGetDigestSize(publicArea->nameAlg))))
+        return TPM_RCS_SIZE;
+    // If the parent is fixedTPM (including a Primary Object) the object must have
+    // the same value for fixedTPM and fixedParent
+    if(parentObject == NULL || IS_ATTRIBUTE(parentAttributes, TPMA_OBJECT, fixedTPM))
+    {
+        if(IS_ATTRIBUTE(attributes, TPMA_OBJECT, fixedParent)
+           != IS_ATTRIBUTE(attributes, TPMA_OBJECT, fixedTPM))
+            return TPM_RCS_ATTRIBUTES;
+    }
+    else
+    {
+        // The parent is not fixedTPM so the object can't be fixedTPM
+        if(IS_ATTRIBUTE(attributes, TPMA_OBJECT, fixedTPM))
+            return TPM_RCS_ATTRIBUTES;
+    }
+    // See if sign and decrypt are the same
+    // if(IS_ATTRIBUTE(attributes, TPMA_OBJECT, sign)
+    //    == IS_ATTRIBUTE(attributes, TPMA_OBJECT, decrypt))
+    // {
+    //     // a restricted key cannot have both SET or both CLEAR
+    //     if(IS_ATTRIBUTE(attributes, TPMA_OBJECT, restricted))
+    //         return TPM_RC_ATTRIBUTES;
+    //     // only a data object may have both sign and decrypt CLEAR
+    //     // BTW, since we know that decrypt==sign, no need to check both
+    //     if(publicArea->type != TPM_ALG_KEYEDHASH
+    //        && !IS_ATTRIBUTE(attributes, TPMA_OBJECT, sign))
+    //         return TPM_RC_ATTRIBUTES;
+    // }
+    // If the object can't be duplicated (directly or indirectly) then there
+    // is no justification for having encryptedDuplication SET
+    if(IS_ATTRIBUTE(attributes, TPMA_OBJECT, fixedTPM)
+       && IS_ATTRIBUTE(attributes, TPMA_OBJECT, encryptedDuplication))
+        return TPM_RCS_ATTRIBUTES;
+    // If a parent object has fixedTPM CLEAR, the child must have the
+    // same encryptedDuplication value as its parent.
+    // Primary objects are considered to have a fixedTPM parent (the seeds).
+    if(parentObject != NULL && !IS_ATTRIBUTE(parentAttributes, TPMA_OBJECT, fixedTPM))
+    {
+        if(IS_ATTRIBUTE(attributes, TPMA_OBJECT, encryptedDuplication)
+           != IS_ATTRIBUTE(parentAttributes, TPMA_OBJECT, encryptedDuplication))
+            return TPM_RCS_ATTRIBUTES;
+    }
+    // Special checks for derived objects
+    if((parentObject != NULL) && (parentObject->attributes.derivation == SET))
+    {
+        // A derived object has the same settings for fixedTPM as its parent
+        if(IS_ATTRIBUTE(attributes, TPMA_OBJECT, fixedTPM)
+           != IS_ATTRIBUTE(parentAttributes, TPMA_OBJECT, fixedTPM))
+            return TPM_RCS_ATTRIBUTES;
+        // A derived object is required to be fixedParent
+        if(!IS_ATTRIBUTE(attributes, TPMA_OBJECT, fixedParent))
+            return TPM_RCS_ATTRIBUTES;
+    }
+    return SchemeChecks(parentObject, publicArea);
+}
+
 
 //*** FillInCreationData()
 // Fill in creation data for an object.

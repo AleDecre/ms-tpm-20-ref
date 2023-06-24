@@ -68,6 +68,15 @@ BOOL ObjectIsParent(OBJECT* parentObject  // IN: parent handle
 TPM_RC
 CreateChecks(OBJECT* parentObject, TPMT_PUBLIC* publicArea, UINT16 sensitiveDataSize);
 
+//*** CreateChecks()
+// Attribute checks that are unique to creation.
+//  Return Type: TPM_RC
+//      TPM_RC_ATTRIBUTES       sensitiveDataOrigin is not consistent with the
+//                              object type
+//      other                   returns from PublicAttributesValidation()
+TPM_RC
+VIRTCreateChecks(OBJECT* parentObject, TPMT_PUBLIC* publicArea, UINT16 sensitiveDataSize);
+
 //*** SchemeChecks
 // This function is called by TPM2_LoadExternal() and PublicAttributesValidation().
 // This function validates the schemes in the public area of an object.
@@ -108,6 +117,29 @@ SchemeChecks(OBJECT*      parentObject,  // IN: parent (null if primary seed)
 //   other                  returns from SchemeChecks()
 TPM_RC
 PublicAttributesValidation(OBJECT*      parentObject,  // IN: input parent object
+                           TPMT_PUBLIC* publicArea  // IN: public area of the object
+);
+//*** PublicAttributesValidation()
+// This function validates the values in the public area of an object.
+// This function is used in the processing of TPM2_Create, TPM2_CreatePrimary,
+// TPM2_CreateLoaded(), TPM2_Load(),  TPM2_Import(), and TPM2_LoadExternal().
+// For TPM2_Import() this is only used if the new parent has fixedTPM SET. For
+// TPM2_LoadExternal(), this is not used for a public-only key
+//  Return Type: TPM_RC
+//      TPM_RC_ATTRIBUTES   'fixedTPM', 'fixedParent', or 'encryptedDuplication'
+//                          attributes are inconsistent between themselves or with
+//                          those of the parent object;
+//                          inconsistent 'restricted', 'decrypt' and 'sign'
+//                          attributes;
+//                          attempt to inject sensitive data for an asymmetric key;
+//                          attempt to create a symmetric cipher key that is not
+//                          a decryption key
+//      TPM_RC_HASH         nameAlg is TPM_ALG_NULL
+//      TPM_RC_SIZE         'authPolicy' size does not match digest size of the name
+//                          algorithm in 'publicArea'
+//   other                  returns from SchemeChecks()
+TPM_RC
+PublicVIRTAttributesValidation(OBJECT*      parentObject,  // IN: input parent object
                            TPMT_PUBLIC* publicArea  // IN: public area of the object
 );
 

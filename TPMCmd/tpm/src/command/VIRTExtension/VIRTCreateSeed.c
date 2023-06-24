@@ -34,6 +34,7 @@
  */
 #include "Tpm.h"
 #include "VIRT_CreateSeed_fp.h"
+#include "stdio.h"
 
 #if CC_VIRT_CreateSeed  // Conditional expansion of this file
 
@@ -94,10 +95,12 @@ TPM_RC TPM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out)
     parentObject = HandleToObject(in->parentHandle);
     pAssert(parentObject != NULL);
 
+    printf("TEST1\n\n\n");
     // Does parent have the proper attributes?
     if(!ObjectIsParent(parentObject))
         return TPM_RCS_TYPE + RC_VIRT_CreateSeed_parentHandle;
 
+    printf("TEST2\n\n\n");
     // Get a slot for the creation
     newObject = FindEmptyObjectSlot(NULL);
     if(newObject == NULL)
@@ -115,12 +118,27 @@ TPM_RC TPM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out)
     // are unique to creation and then validates the attributes and values that are
     // common to create and load.
     result =
-        CreateChecks(parentObject, publicArea, in->inSensitive.sensitive.data.t.size);
-    if(result != TPM_RC_SUCCESS)
-        return RcSafeAddToResult(result, RC_VIRT_CreateSeed_inPublic);
+        VIRTCreateChecks(parentObject, publicArea, in->inSensitive.sensitive.data.t.size);  //TODO: UPDATE WITH A NEW CreateVIRTChecks
+    if(result != TPM_RC_SUCCESS){
+        printf("TEST3\n\n\n");
+        return RcSafeAddToResult(result, RC_VIRT_CreateSeed_inPublic);}
     // Clean up the authValue if necessary
     if(!AdjustAuthSize(&in->inSensitive.sensitive.userAuth, publicArea->nameAlg))
         return TPM_RCS_SIZE + RC_VIRT_CreateSeed_inSensitive;
+
+    // if the requested bytes exceed the output buffer size, generates the
+    // maximum bytes that the output buffer allows
+
+    CryptRandomGenerate(in->inSensitive.sensitive.data.t.size, in->inSensitive.sensitive.data.t.buffer);
+
+    printf("buffer size: %d\n", in->inSensitive.sensitive.data.t.size);
+    printf("buffer contents: ");
+
+    for(int i = 0; i < in->inSensitive.sensitive.data.t.size; i++) {
+        printf("%d ", in->inSensitive.sensitive.data.t.buffer[i]);
+    }
+    printf("\n");
+
 
     // Command Output
     // Create the object using the default TPM random-number generator

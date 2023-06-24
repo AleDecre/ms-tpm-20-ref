@@ -42,6 +42,7 @@
 #include "Tpm.h"
 #include "Marshal.h"
 #include "ExecCommand_fp.h"
+#include "stdio.h"
 
 // Uncomment this next #include if doing static command/response buffer sizing
 // #include "CommandResponseSizes_fp.h"
@@ -184,6 +185,9 @@ LIB_EXPORT void ExecuteCommand(
         goto Cleanup;
     // Check to see if the command is implemented.
     command.index = CommandCodeToCommandIndex(command.code);
+    if(command.code == TPM_CC_VIRT_CreateSeed){
+        printf("Eseguo TPM_CC_VIRT_CreateSeed: %d\n", TPM_CC_VIRT_CreateSeed);
+    }
     if(UNIMPLEMENTED_COMMAND_INDEX == command.index)
     {
         result = TPM_RC_COMMAND_CODE;
@@ -234,6 +238,14 @@ LIB_EXPORT void ExecuteCommand(
         // the command, then it is an error. NOTE: This check could pass but the
         // session size could still be wrong. That will be determined after the
         // sessions are unmarshaled.
+        if(command.code == TPM_CC_Create){
+            printf("command.parameterSize: %d \n", command.parameterSize);
+            printf("command.authSize: %d \n", command.authSize);
+        }
+        if(command.code == TPM_CC_VIRT_CreateSeed){
+            printf("command.parameterSize: %d \n", command.parameterSize);
+            printf("command.authSize: %d \n", command.authSize);
+        }
         if(command.authSize < 9 || command.authSize > command.parameterSize)
         {
             result = TPM_RC_SIZE;
