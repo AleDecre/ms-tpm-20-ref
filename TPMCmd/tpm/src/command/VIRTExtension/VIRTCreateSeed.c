@@ -35,6 +35,7 @@
 #include "Tpm.h"
 #include "VIRT_CreateSeed_fp.h"
 #include "stdio.h"
+#include "tpm_tcti_mssim.h"
 
 #if CC_VIRT_CreateSeed  // Conditional expansion of this file
 
@@ -91,6 +92,26 @@ TPM_RC TPM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out)
     OBJECT*      newObject;
     TPMT_PUBLIC* publicArea;
 
+
+// TEST TCTI CONNECTION
+
+
+
+    TSS2_RC rc;
+    size_t context_size;
+    rc = Tss2_Tcti_Mssim_Init(0, &context_size, NULL);
+    
+    TSS2_TCTI_CONTEXT *tcti_context = (TSS2_TCTI_CONTEXT *) calloc(1,context_size);
+
+    rc = Tss2_Tcti_Mssim_Init(tcti_context,&context_size, NULL);
+
+    if(rc == TPM_RC_SUCCESS)
+        fprintf(stdout,"Initialization of the TCTI context successfull \n");
+
+
+
+// END TEST TCTI CONNECTION
+
     // Input Validation
     parentObject = HandleToObject(in->parentHandle);
     pAssert(parentObject != NULL);
@@ -118,9 +139,8 @@ TPM_RC TPM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out)
     // are unique to creation and then validates the attributes and values that are
     // common to create and load.
     result =
-        VIRTCreateChecks(parentObject, publicArea, in->inSensitive.sensitive.data.t.size);  //TODO: UPDATE WITH A NEW CreateVIRTChecks
+        VIRTCreateChecks(parentObject, publicArea, in->inSensitive.sensitive.data.t.size);
     if(result != TPM_RC_SUCCESS){
-        printf("TEST3\n\n\n");
         return RcSafeAddToResult(result, RC_VIRT_CreateSeed_inPublic);}
     // Clean up the authValue if necessary
     if(!AdjustAuthSize(&in->inSensitive.sensitive.userAuth, publicArea->nameAlg))

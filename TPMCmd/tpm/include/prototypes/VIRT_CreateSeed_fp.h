@@ -46,6 +46,7 @@
 typedef struct
 {
     TPMI_DH_OBJECT         parentHandle;
+    UINT16                 bytesRequested;
     TPM2B_SENSITIVE_CREATE inSensitive;
     TPM2B_PUBLIC           inPublic;
     TPM2B_DATA             outsideInfo;
@@ -63,11 +64,12 @@ typedef struct
 } VIRTCreateSeed_Out;
 
 // Response code modifiers
-#    define RC_VIRT_CreateSeed_parentHandle (TPM_RC_H + TPM_RC_1)
-#    define RC_VIRT_CreateSeed_inSensitive  (TPM_RC_P + TPM_RC_1)
-#    define RC_VIRT_CreateSeed_inPublic     (TPM_RC_P + TPM_RC_2)
-#    define RC_VIRT_CreateSeed_outsideInfo  (TPM_RC_P + TPM_RC_3)
-#    define RC_VIRT_CreateSeed_creationPCR  (TPM_RC_P + TPM_RC_4)
+#    define RC_VIRT_CreateSeed_parentHandle     (TPM_RC_H + TPM_RC_1)
+#    define RC_VIRT_CreateSeed_inSensitive      (TPM_RC_P + TPM_RC_1)
+#    define RC_VIRT_CreateSeed_inPublic         (TPM_RC_P + TPM_RC_2)
+#    define RC_VIRT_CreateSeed_outsideInfo      (TPM_RC_P + TPM_RC_3)
+#    define RC_VIRT_CreateSeed_creationPCR      (TPM_RC_P + TPM_RC_4)
+#    define RC_VIRT_CreateSeed_bytesRequested   (TPM_RC_P + TPM_RC_5)
 
 // Function prototype
 TPM_RC

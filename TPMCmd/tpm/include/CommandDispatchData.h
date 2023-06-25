@@ -4705,8 +4705,8 @@ typedef const struct
     UINT16        inSize;
     UINT16        outSize;
     UINT16        offsetOfTypes;
-    UINT16        paramOffsets[8];
-    BYTE          types[12];
+    UINT16        paramOffsets[9];
+    BYTE          types[13];
 } VIRT_CreateSeed_COMMAND_DESCRIPTOR_t;
 
 VIRT_CreateSeed_COMMAND_DESCRIPTOR_t _VIRT_CreateSeedData = {
@@ -4717,6 +4717,7 @@ VIRT_CreateSeed_COMMAND_DESCRIPTOR_t _VIRT_CreateSeedData = {
     /* offsets       */
     {(UINT16)(offsetof(VIRTCreateSeed_In, inSensitive)),
      (UINT16)(offsetof(VIRTCreateSeed_In, inPublic)),
+     (UINT16)(offsetof(VIRTCreateSeed_In, bytesRequested)),
      (UINT16)(offsetof(VIRTCreateSeed_In, outsideInfo)),
      (UINT16)(offsetof(VIRTCreateSeed_In, creationPCR)),
      (UINT16)(offsetof(VIRTCreateSeed_Out, outPublic)),
@@ -4727,6 +4728,7 @@ VIRT_CreateSeed_COMMAND_DESCRIPTOR_t _VIRT_CreateSeedData = {
     {TPMI_DH_OBJECT_H_UNMARSHAL,
      TPM2B_SENSITIVE_CREATE_P_UNMARSHAL,
      TPM2B_PUBLIC_P_UNMARSHAL,
+     UINT16_P_UNMARSHAL,
      TPM2B_DATA_P_UNMARSHAL,
      TPML_PCR_SELECTION_P_UNMARSHAL,
      END_OF_LIST,

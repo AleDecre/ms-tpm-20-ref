@@ -186,7 +186,7 @@ LIB_EXPORT void ExecuteCommand(
     // Check to see if the command is implemented.
     command.index = CommandCodeToCommandIndex(command.code);
     if(command.code == TPM_CC_VIRT_CreateSeed){
-        printf("Eseguo TPM_CC_VIRT_CreateSeed: %d\n", TPM_CC_VIRT_CreateSeed);
+        printf("\nEseguo TPM_CC_VIRT_CreateSeed: %d\n", TPM_CC_VIRT_CreateSeed);
     }
     if(UNIMPLEMENTED_COMMAND_INDEX == command.index)
     {

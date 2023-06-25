@@ -2644,14 +2644,14 @@ case TPM_CC_VIRT_CreateSeed:
     VIRTCreateSeed_In*  in   = (VIRTCreateSeed_In*)MemoryGetInBuffer(sizeof(VIRTCreateSeed_In));
     VIRTCreateSeed_Out* out  = (VIRTCreateSeed_Out*)MemoryGetOutBuffer(sizeof(VIRTCreateSeed_Out));
     in->parentHandle = handles[0];
-    result = UINT16_Unmarshal(&in->bytesRequested, paramBuffer, paramBufferSize);
-    EXIT_IF_ERROR_PLUS(RC_VIRT_CreateSeed_bytesRequested);
     result           = TPM2B_SENSITIVE_CREATE_Unmarshal(
         &in->inSensitive, paramBuffer, paramBufferSize);
     EXIT_IF_ERROR_PLUS(RC_VIRT_CreateSeed_inSensitive);
     result =
         TPM2B_PUBLIC_Unmarshal(&in->inPublic, paramBuffer, paramBufferSize, FALSE);
     EXIT_IF_ERROR_PLUS(RC_VIRT_CreateSeed_inPublic);
+        result = UINT16_Unmarshal(&in->bytesRequested, paramBuffer, paramBufferSize);
+    EXIT_IF_ERROR_PLUS(RC_VIRT_CreateSeed_bytesRequested);
     result = TPM2B_DATA_Unmarshal(&in->outsideInfo, paramBuffer, paramBufferSize);
     EXIT_IF_ERROR_PLUS(RC_VIRT_CreateSeed_outsideInfo);
     result =

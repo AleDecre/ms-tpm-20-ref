@@ -40,6 +40,9 @@
 #ifndef _TPM_TYPES_H_
 #define _TPM_TYPES_H_
 
+/* Definition of Types for Handles */
+typedef UINT32 TPM2_HANDLE;
+
 // Table 1:2 - Definition of TPM_ALG_ID Constants
 typedef UINT16 TPM_ALG_ID;
 #define TYPE_OF_TPM_ALG_ID       UINT16
