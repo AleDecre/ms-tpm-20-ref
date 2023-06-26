@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -36,7 +36,7 @@
 //** Introduction
 // This file contains the structure definitions used for ECC in the LibTomCrypt
 // version of the code. These definitions would change, based on the library.
-// The ECC-related structures that cross the TPM interface are defined
+// The ECC-related structures that cross the MSSIM interface are defined
 // in TpmTypes.h
 //
 

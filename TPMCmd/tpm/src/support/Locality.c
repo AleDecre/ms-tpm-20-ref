@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -37,33 +37,33 @@
 
 //** LocalityGetAttributes()
 // This function will convert a locality expressed as an integer into
-// TPMA_LOCALITY form.
+// MSSIMA_LOCALITY form.
 //
 // The function returns the locality attribute.
-TPMA_LOCALITY
+MSSIMA_LOCALITY
 LocalityGetAttributes(UINT8 locality  // IN: locality value
 )
 {
-    TPMA_LOCALITY locality_attributes;
+    MSSIMA_LOCALITY locality_attributes;
     BYTE*         localityAsByte = (BYTE*)&locality_attributes;
 
-    MemorySet(&locality_attributes, 0, sizeof(TPMA_LOCALITY));
+    MemorySet(&locality_attributes, 0, sizeof(MSSIMA_LOCALITY));
     switch(locality)
     {
         case 0:
-            SET_ATTRIBUTE(locality_attributes, TPMA_LOCALITY, TPM_LOC_ZERO);
+            SET_ATTRIBUTE(locality_attributes, MSSIMA_LOCALITY, MSSIM_LOC_ZERO);
             break;
         case 1:
-            SET_ATTRIBUTE(locality_attributes, TPMA_LOCALITY, TPM_LOC_ONE);
+            SET_ATTRIBUTE(locality_attributes, MSSIMA_LOCALITY, MSSIM_LOC_ONE);
             break;
         case 2:
-            SET_ATTRIBUTE(locality_attributes, TPMA_LOCALITY, TPM_LOC_TWO);
+            SET_ATTRIBUTE(locality_attributes, MSSIMA_LOCALITY, MSSIM_LOC_TWO);
             break;
         case 3:
-            SET_ATTRIBUTE(locality_attributes, TPMA_LOCALITY, TPM_LOC_THREE);
+            SET_ATTRIBUTE(locality_attributes, MSSIMA_LOCALITY, MSSIM_LOC_THREE);
             break;
         case 4:
-            SET_ATTRIBUTE(locality_attributes, TPMA_LOCALITY, TPM_LOC_FOUR);
+            SET_ATTRIBUTE(locality_attributes, MSSIMA_LOCALITY, MSSIM_LOC_FOUR);
             break;
         default:
             pAssert(locality > 31);

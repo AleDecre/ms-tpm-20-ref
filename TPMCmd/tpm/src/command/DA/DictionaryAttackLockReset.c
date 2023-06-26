@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -38,12 +38,12 @@
 #if CC_DictionaryAttackLockReset  // Conditional expansion of this file
 
 /*(See part 3 specification)
-// This command cancels the effect of a TPM lockout due to a number of
+// This command cancels the effect of a MSSIM lockout due to a number of
 // successive authorization failures.  If this command is properly authorized,
 // the lockout counter is set to 0.
 */
-TPM_RC
-TPM2_DictionaryAttackLockReset(
+MSSIM_RC
+MSSIM2_DictionaryAttackLockReset(
     DictionaryAttackLockReset_In* in  // IN: input parameter list
 )
 {
@@ -61,7 +61,7 @@ TPM2_DictionaryAttackLockReset(
     // Record the changes to NV
     NV_SYNC_PERSISTENT(failedTries);
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_DictionaryAttackLockReset

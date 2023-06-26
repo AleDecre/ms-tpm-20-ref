@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -33,7 +33,7 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 //** Introduction
-// This file contains the functions that manage the object store of the TPM.
+// This file contains the functions that manage the object store of the MSSIM.
 
 //** Includes and Data Definitions
 #define OBJECT_C
@@ -61,7 +61,7 @@ void ObjectSetInUse(OBJECT* object)
 }
 
 //*** ObjectStartup()
-// This function is called at TPM2_Startup() to initialize the object subsystem.
+// This function is called at MSSIM2_Startup() to initialize the object subsystem.
 BOOL ObjectStartup(void)
 {
     UINT32 i;
@@ -106,7 +106,7 @@ void ObjectCleanupEvict(void)
 //      TRUE(1)         handle references a loaded object
 //      FALSE(0)        handle is not an object handle, or it does not
 //                      reference to a loaded object
-BOOL IsObjectPresent(TPMI_DH_OBJECT handle  // IN: handle to be checked
+BOOL IsObjectPresent(MSSIMI_DH_OBJECT handle  // IN: handle to be checked
 )
 {
     UINT32 slotIndex = handle - TRANSIENT_FIRST;
@@ -139,14 +139,14 @@ BOOL ObjectIsSequence(OBJECT* object  // IN: handle to be checked
 //
 // This function requires that 'handle' references a loaded object or a permanent
 // handle.
-OBJECT* HandleToObject(TPMI_DH_OBJECT handle  // IN: handle of the object
+OBJECT* HandleToObject(MSSIMI_DH_OBJECT handle  // IN: handle of the object
 )
 {
     UINT32 index;
     //
     // Return NULL if the handle references a permanent handle because there is no
     // associated OBJECT.
-    if(HandleGetType(handle) == TPM_HT_PERMANENT)
+    if(HandleGetType(handle) == MSSIM_HT_PERMANENT)
         return NULL;
     // In this implementation, the handle is determined by the slot occupied by the
     // object.
@@ -164,21 +164,21 @@ OBJECT* HandleToObject(TPMI_DH_OBJECT handle  // IN: handle of the object
 // amount of space so it is not recommended that the alternate be used.
 //
 // This function requires that 'handle' references a loaded object.
-void GetQualifiedName(TPMI_DH_OBJECT handle,     // IN: handle of the object
-                      TPM2B_NAME* qualifiedName  // OUT: qualified name of the object
+void GetQualifiedName(MSSIMI_DH_OBJECT handle,     // IN: handle of the object
+                      MSSIM2B_NAME* qualifiedName  // OUT: qualified name of the object
 )
 {
     OBJECT* object;
     //
     switch(HandleGetType(handle))
     {
-        case TPM_HT_PERMANENT:
-            qualifiedName->t.size = sizeof(TPM_HANDLE);
+        case MSSIM_HT_PERMANENT:
+            qualifiedName->t.size = sizeof(MSSIM_HANDLE);
             UINT32_TO_BYTE_ARRAY(handle, qualifiedName->t.name);
             break;
-        case TPM_HT_TRANSIENT:
+        case MSSIM_HT_TRANSIENT:
             object = HandleToObject(handle);
-            if(object == NULL || object->publicArea.nameAlg == TPM_ALG_NULL)
+            if(object == NULL || object->publicArea.nameAlg == MSSIM_ALG_NULL)
                 qualifiedName->t.size = 0;
             else
                 // Copy the name
@@ -192,25 +192,25 @@ void GetQualifiedName(TPMI_DH_OBJECT handle,     // IN: handle of the object
 
 //*** ObjectGetHierarchy()
 // This function returns the handle for the hierarchy of an object.
-TPMI_RH_HIERARCHY
+MSSIMI_RH_HIERARCHY
 ObjectGetHierarchy(OBJECT* object  // IN :object
 )
 {
     if(object->attributes.spsHierarchy)
     {
-        return TPM_RH_OWNER;
+        return MSSIM_RH_OWNER;
     }
     else if(object->attributes.epsHierarchy)
     {
-        return TPM_RH_ENDORSEMENT;
+        return MSSIM_RH_ENDORSEMENT;
     }
     else if(object->attributes.ppsHierarchy)
     {
-        return TPM_RH_PLATFORM;
+        return MSSIM_RH_PLATFORM;
     }
     else
     {
-        return TPM_RH_NULL;
+        return MSSIM_RH_NULL;
     }
 }
 
@@ -220,8 +220,8 @@ ObjectGetHierarchy(OBJECT* object  // IN :object
 // a handle but ObjectGetHierarchy() takes an pointer to an object.
 //
 // This function requires that 'handle' references a loaded object.
-TPMI_RH_HIERARCHY
-GetHierarchy(TPMI_DH_OBJECT handle  // IN :object handle
+MSSIMI_RH_HIERARCHY
+GetHierarchy(MSSIMI_DH_OBJECT handle  // IN :object handle
 )
 {
     OBJECT* object = HandleToObject(handle);
@@ -236,7 +236,7 @@ GetHierarchy(TPMI_DH_OBJECT handle  // IN :object handle
 //  Return Type: OBJECT *
 //      NULL        no open slot found
 //      != NULL     pointer to available slot
-OBJECT* FindEmptyObjectSlot(TPMI_DH_OBJECT* handle  // OUT: (optional)
+OBJECT* FindEmptyObjectSlot(MSSIMI_DH_OBJECT* handle  // OUT: (optional)
 )
 {
     UINT32  i;
@@ -259,7 +259,7 @@ OBJECT* FindEmptyObjectSlot(TPMI_DH_OBJECT* handle  // OUT: (optional)
 
 //*** ObjectAllocateSlot()
 // This function is used to allocate a slot in internal object array.
-OBJECT* ObjectAllocateSlot(TPMI_DH_OBJECT* handle  // OUT: handle of allocated object
+OBJECT* ObjectAllocateSlot(MSSIMI_DH_OBJECT* handle  // OUT: handle of allocated object
 )
 {
     OBJECT* object = FindEmptyObjectSlot(handle);
@@ -274,31 +274,31 @@ OBJECT* ObjectAllocateSlot(TPMI_DH_OBJECT* handle  // OUT: handle of allocated o
 
 //*** ObjectSetLoadedAttributes()
 // This function sets the internal attributes for a loaded object. It is called to
-// finalize the OBJECT attributes (not the TPMA_OBJECT attributes) for a loaded
+// finalize the OBJECT attributes (not the MSSIMA_OBJECT attributes) for a loaded
 // object.
 void ObjectSetLoadedAttributes(OBJECT* object,  // IN: object attributes to finalize
-                               TPM_HANDLE parentHandle  // IN: the parent handle
+                               MSSIM_HANDLE parentHandle  // IN: the parent handle
 )
 {
     OBJECT*     parent           = HandleToObject(parentHandle);
-    TPMA_OBJECT objectAttributes = object->publicArea.objectAttributes;
+    MSSIMA_OBJECT objectAttributes = object->publicArea.objectAttributes;
     //
     // Copy the stClear attribute from the public area. This could be overwritten
     // if the parent has stClear SET
-    object->attributes.stClear = IS_ATTRIBUTE(objectAttributes, TPMA_OBJECT, stClear);
+    object->attributes.stClear = IS_ATTRIBUTE(objectAttributes, MSSIMA_OBJECT, stClear);
     // If parent handle is a permanent handle, it is a primary (unless it is NULL
     if(parent == NULL)
     {
         object->attributes.primary = SET;
         switch(parentHandle)
         {
-            case TPM_RH_ENDORSEMENT:
+            case MSSIM_RH_ENDORSEMENT:
                 object->attributes.epsHierarchy = SET;
                 break;
-            case TPM_RH_OWNER:
+            case MSSIM_RH_OWNER:
                 object->attributes.spsHierarchy = SET;
                 break;
-            case TPM_RH_PLATFORM:
+            case MSSIM_RH_PLATFORM:
                 object->attributes.ppsHierarchy = SET;
                 break;
             default:
@@ -312,7 +312,7 @@ void ObjectSetLoadedAttributes(OBJECT* object,  // IN: object attributes to fina
     {
         // is this a stClear object
         object->attributes.stClear =
-            (IS_ATTRIBUTE(objectAttributes, TPMA_OBJECT, stClear)
+            (IS_ATTRIBUTE(objectAttributes, MSSIMA_OBJECT, stClear)
              || (parent->attributes.stClear == SET));
         object->attributes.epsHierarchy = parent->attributes.epsHierarchy;
         object->attributes.spsHierarchy = parent->attributes.spsHierarchy;
@@ -329,14 +329,14 @@ void ObjectSetLoadedAttributes(OBJECT* object,  // IN: object attributes to fina
     else
     {
         // check attributes for different types of parents
-        if(IS_ATTRIBUTE(objectAttributes, TPMA_OBJECT, restricted)
+        if(IS_ATTRIBUTE(objectAttributes, MSSIMA_OBJECT, restricted)
            && !object->attributes.publicOnly
-           && IS_ATTRIBUTE(objectAttributes, TPMA_OBJECT, decrypt)
-           && object->publicArea.nameAlg != TPM_ALG_NULL)
+           && IS_ATTRIBUTE(objectAttributes, MSSIMA_OBJECT, decrypt)
+           && object->publicArea.nameAlg != MSSIM_ALG_NULL)
         {
             // This is a parent. If it is not a KEYEDHASH, it is an ordinary parent.
             // Otherwise, it is a derivation parent.
-            if(object->publicArea.type == TPM_ALG_KEYEDHASH)
+            if(object->publicArea.type == MSSIM_ALG_KEYEDHASH)
                 object->attributes.derivation = SET;
             else
                 object->attributes.isParent = SET;
@@ -353,31 +353,31 @@ void ObjectSetLoadedAttributes(OBJECT* object,  // IN: object attributes to fina
 
 //*** ObjectLoad()
 // Common function to load an object. A loaded object has its public area validated
-// (unless its 'nameAlg' is TPM_ALG_NULL). If a sensitive part is loaded, it is
+// (unless its 'nameAlg' is MSSIM_ALG_NULL). If a sensitive part is loaded, it is
 // verified to be correct and if both public and sensitive parts are loaded, then
 // the cryptographic binding between the objects is validated. This function does
 // not cause the allocated slot to be marked as in use.
-TPM_RC
+MSSIM_RC
 ObjectLoad(OBJECT* object,           // IN: pointer to object slot
                                      //     object
            OBJECT*      parent,      // IN: (optional) the parent object
-           TPMT_PUBLIC* publicArea,  // IN: public area to be installed in the object
-           TPMT_SENSITIVE* sensitive,  // IN: (optional) sensitive area to be
+           MSSIMT_PUBLIC* publicArea,  // IN: public area to be installed in the object
+           MSSIMT_SENSITIVE* sensitive,  // IN: (optional) sensitive area to be
                                        //      installed in the object
-           TPM_RC blamePublic,         // IN: parameter number to associate with the
+           MSSIM_RC blamePublic,         // IN: parameter number to associate with the
                                        //     publicArea errors
-           TPM_RC blameSensitive,      // IN: parameter number to associate with the
+           MSSIM_RC blameSensitive,      // IN: parameter number to associate with the
                                        //     sensitive area errors
-           TPM2B_NAME* name            // IN: (optional)
+           MSSIM2B_NAME* name            // IN: (optional)
 )
 {
-    TPM_RC result = TPM_RC_SUCCESS;
+    MSSIM_RC result = MSSIM_RC_SUCCESS;
     //
     // Do validations of public area object descriptions
     pAssert(publicArea != NULL);
 
     // Is this public only or a no-name object?
-    if(sensitive == NULL || publicArea->nameAlg == TPM_ALG_NULL)
+    if(sensitive == NULL || publicArea->nameAlg == MSSIM_ALG_NULL)
     {
         // Need to have schemes checked so that we do the right thing with the
         // public key.
@@ -388,42 +388,42 @@ ObjectLoad(OBJECT* object,           // IN: pointer to object slot
         // For any sensitive area, make sure that the seedSize is no larger than the
         // digest size of nameAlg
         if(sensitive->seedValue.t.size > CryptHashGetDigestSize(publicArea->nameAlg))
-            return TPM_RCS_KEY_SIZE + blameSensitive;
+            return MSSIM_RCS_KEY_SIZE + blameSensitive;
         // Check attributes and schemes for consistency
         result = PublicAttributesValidation(parent, publicArea);
     }
-    if(result != TPM_RC_SUCCESS)
+    if(result != MSSIM_RC_SUCCESS)
         return RcSafeAddToResult(result, blamePublic);
 
     // Sensitive area and binding checks
 
-    // On load, check nothing if the parent is fixedTPM. For all other cases, validate
+    // On load, check nothing if the parent is fixedMSSIM. For all other cases, validate
     // the keys.
     if((parent == NULL)
        || ((parent != NULL)
            && !IS_ATTRIBUTE(
-               parent->publicArea.objectAttributes, TPMA_OBJECT, fixedTPM)))
+               parent->publicArea.objectAttributes, MSSIMA_OBJECT, fixedMSSIM)))
     {
         // Do the cryptographic key validation
         result =
             CryptValidateKeys(publicArea, sensitive, blamePublic, blameSensitive);
-        if(result != TPM_RC_SUCCESS)
+        if(result != MSSIM_RC_SUCCESS)
             return result;
     }
 #if ALG_RSA
     // If this is an RSA key, then expand the private exponent.
-    // Note: ObjectLoad() is only called by TPM2_Import() if the parent is fixedTPM.
-    // For any key that does not have a fixedTPM parent, the exponent is computed
+    // Note: ObjectLoad() is only called by MSSIM2_Import() if the parent is fixedMSSIM.
+    // For any key that does not have a fixedMSSIM parent, the exponent is computed
     // whenever it is loaded
-    if((publicArea->type == TPM_ALG_RSA) && (sensitive != NULL))
+    if((publicArea->type == MSSIM_ALG_RSA) && (sensitive != NULL))
     {
         result = CryptRsaLoadPrivateExponent(publicArea, sensitive);
-        if(result != TPM_RC_SUCCESS)
+        if(result != MSSIM_RC_SUCCESS)
             return result;
     }
 #endif  // ALG_RSA
     // See if there is an object to populate
-    if((result == TPM_RC_SUCCESS) && (object != NULL))
+    if((result == MSSIM_RC_SUCCESS) && (object != NULL))
     {
         // Initialize public
         object->publicArea = *publicArea;
@@ -447,8 +447,8 @@ ObjectLoad(OBJECT* object,           // IN: pointer to object slot
 // used for an operation that is not appropriate for a sequence.
 //
 static HASH_OBJECT* AllocateSequenceSlot(
-    TPM_HANDLE* newHandle,  // OUT: receives the allocated handle
-    TPM2B_AUTH* auth        // IN: the authValue for the slot
+    MSSIM_HANDLE* newHandle,  // OUT: receives the allocated handle
+    MSSIM2B_AUTH* auth        // IN: the authValue for the slot
 )
 {
     HASH_OBJECT* object = (HASH_OBJECT*)ObjectAllocateSlot(newHandle);
@@ -463,20 +463,20 @@ static HASH_OBJECT* AllocateSequenceSlot(
 
         // Set the common values that a sequence object shares with an ordinary object
         // First, clear all attributes
-        MemorySet(&object->objectAttributes, 0, sizeof(TPMA_OBJECT));
+        MemorySet(&object->objectAttributes, 0, sizeof(MSSIMA_OBJECT));
 
-        // The type is TPM_ALG_NULL
-        object->type = TPM_ALG_NULL;
+        // The type is MSSIM_ALG_NULL
+        object->type = MSSIM_ALG_NULL;
 
         // This has no name algorithm and the name is the Empty Buffer
-        object->nameAlg = TPM_ALG_NULL;
+        object->nameAlg = MSSIM_ALG_NULL;
 
         // A sequence object is considered to be in the NULL hierarchy so it should
         // be marked as temporary so that it can't be persisted
         object->attributes.temporary = SET;
 
         // A sequence object is DA exempt.
-        SET_ATTRIBUTE(object->objectAttributes, TPMA_OBJECT, noDA);
+        SET_ATTRIBUTE(object->objectAttributes, MSSIMA_OBJECT, noDA);
 
         // Copy the authorization value
         if(auth != NULL)
@@ -490,14 +490,14 @@ static HASH_OBJECT* AllocateSequenceSlot(
 #if CC_HMAC_Start || CC_MAC_Start
 //*** ObjectCreateHMACSequence()
 // This function creates an internal HMAC sequence object.
-//  Return Type: TPM_RC
-//      TPM_RC_OBJECT_MEMORY        if there is no free slot for an object
-TPM_RC
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_OBJECT_MEMORY        if there is no free slot for an object
+MSSIM_RC
 ObjectCreateHMACSequence(
-    TPMI_ALG_HASH   hashAlg,    // IN: hash algorithm
+    MSSIMI_ALG_HASH   hashAlg,    // IN: hash algorithm
     OBJECT*         keyObject,  // IN: the object containing the HMAC key
-    TPM2B_AUTH*     auth,       // IN: authValue
-    TPMI_DH_OBJECT* newHandle   // OUT: HMAC sequence object handle
+    MSSIM2B_AUTH*     auth,       // IN: authValue
+    MSSIMI_DH_OBJECT* newHandle   // OUT: HMAC sequence object handle
 )
 {
     HASH_OBJECT* hmacObject;
@@ -506,7 +506,7 @@ ObjectCreateHMACSequence(
     hmacObject = AllocateSequenceSlot(newHandle, auth);
 
     if(hmacObject == NULL)
-        return TPM_RC_OBJECT_MEMORY;
+        return MSSIM_RC_OBJECT_MEMORY;
     // Set HMAC sequence bit
     hmacObject->attributes.hmacSeq = SET;
 
@@ -523,58 +523,58 @@ ObjectCreateHMACSequence(
                      &keyObject->sensitive.sensitive.any.b)
        == 0)
 #  endif  // SMAC_IMPLEMENTED
-        return TPM_RC_FAILURE;
-    return TPM_RC_SUCCESS;
+        return MSSIM_RC_FAILURE;
+    return MSSIM_RC_SUCCESS;
 }
 #endif
 
 //*** ObjectCreateHashSequence()
 // This function creates a hash sequence object.
-//  Return Type: TPM_RC
-//      TPM_RC_OBJECT_MEMORY        if there is no free slot for an object
-TPM_RC
-ObjectCreateHashSequence(TPMI_ALG_HASH   hashAlg,   // IN: hash algorithm
-                         TPM2B_AUTH*     auth,      // IN: authValue
-                         TPMI_DH_OBJECT* newHandle  // OUT: sequence object handle
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_OBJECT_MEMORY        if there is no free slot for an object
+MSSIM_RC
+ObjectCreateHashSequence(MSSIMI_ALG_HASH   hashAlg,   // IN: hash algorithm
+                         MSSIM2B_AUTH*     auth,      // IN: authValue
+                         MSSIMI_DH_OBJECT* newHandle  // OUT: sequence object handle
 )
 {
     HASH_OBJECT* hashObject = AllocateSequenceSlot(newHandle, auth);
     //
     // See if slot allocated
     if(hashObject == NULL)
-        return TPM_RC_OBJECT_MEMORY;
+        return MSSIM_RC_OBJECT_MEMORY;
     // Set hash sequence bit
     hashObject->attributes.hashSeq = SET;
 
     // Start hash for hash sequence
     CryptHashStart(&hashObject->state.hashState[0], hashAlg);
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 //*** ObjectCreateEventSequence()
 // This function creates an event sequence object.
-//  Return Type: TPM_RC
-//      TPM_RC_OBJECT_MEMORY        if there is no free slot for an object
-TPM_RC
-ObjectCreateEventSequence(TPM2B_AUTH*     auth,      // IN: authValue
-                          TPMI_DH_OBJECT* newHandle  // OUT: sequence object handle
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_OBJECT_MEMORY        if there is no free slot for an object
+MSSIM_RC
+ObjectCreateEventSequence(MSSIM2B_AUTH*     auth,      // IN: authValue
+                          MSSIMI_DH_OBJECT* newHandle  // OUT: sequence object handle
 )
 {
     HASH_OBJECT* hashObject = AllocateSequenceSlot(newHandle, auth);
     UINT32       count;
-    TPM_ALG_ID   hash;
+    MSSIM_ALG_ID   hash;
     //
     // See if slot allocated
     if(hashObject == NULL)
-        return TPM_RC_OBJECT_MEMORY;
+        return MSSIM_RC_OBJECT_MEMORY;
     // Set the event sequence attribute
     hashObject->attributes.eventSeq = SET;
 
     // Initialize hash states for each implemented PCR algorithms
-    for(count = 0; (hash = CryptHashGetAlgByIndex(count)) != TPM_ALG_NULL; count++)
+    for(count = 0; (hash = CryptHashGetAlgByIndex(count)) != MSSIM_ALG_NULL; count++)
         CryptHashStart(&hashObject->state.hashState[count], hash);
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 //*** ObjectTerminateEvent()
@@ -595,14 +595,14 @@ void ObjectTerminateEvent(void)
         // the cryptographic implementation has some context values that need to be
         // cleaned up (hygiene).
         //
-        for(count = 0; CryptHashGetAlgByIndex(count) != TPM_ALG_NULL; count++)
+        for(count = 0; CryptHashGetAlgByIndex(count) != MSSIM_ALG_NULL; count++)
         {
             CryptHashEnd(&hashObject->state.hashState[count], 0, buffer);
         }
         // Flush sequence object
         FlushObject(g_DRTMHandle);
     }
-    g_DRTMHandle = TPM_RH_UNASSIGNED;
+    g_DRTMHandle = MSSIM_RH_UNASSIGNED;
 }
 
 //*** ObjectContextLoad()
@@ -613,7 +613,7 @@ void ObjectTerminateEvent(void)
 OBJECT* ObjectContextLoad(
     ANY_OBJECT_BUFFER* object,  // IN: pointer to object structure in saved
                                 //     context
-    TPMI_DH_OBJECT* handle      // OUT: object handle
+    MSSIMI_DH_OBJECT* handle      // OUT: object handle
 )
 {
     OBJECT* newObject = ObjectAllocateSlot(handle);
@@ -642,7 +642,7 @@ OBJECT* ObjectContextLoad(
 // This function frees an object slot.
 //
 // This function requires that the object is loaded.
-void FlushObject(TPMI_DH_OBJECT handle  // IN: handle to be freed
+void FlushObject(MSSIMI_DH_OBJECT handle  // IN: handle to be freed
 )
 {
     UINT32 index = handle - TRANSIENT_FIRST;
@@ -656,7 +656,7 @@ void FlushObject(TPMI_DH_OBJECT handle  // IN: handle to be freed
 //*** ObjectFlushHierarchy()
 // This function is called to flush all the loaded transient objects associated
 // with a hierarchy when the hierarchy is disabled.
-void ObjectFlushHierarchy(TPMI_RH_HIERARCHY hierarchy  // IN: hierarchy to be flush
+void ObjectFlushHierarchy(MSSIMI_RH_HIERARCHY hierarchy  // IN: hierarchy to be flush
 )
 {
     UINT16 i;
@@ -668,15 +668,15 @@ void ObjectFlushHierarchy(TPMI_RH_HIERARCHY hierarchy  // IN: hierarchy to be fl
         {
             switch(hierarchy)
             {
-                case TPM_RH_PLATFORM:
+                case MSSIM_RH_PLATFORM:
                     if(s_objects[i].attributes.ppsHierarchy == SET)
                         s_objects[i].attributes.occupied = FALSE;
                     break;
-                case TPM_RH_OWNER:
+                case MSSIM_RH_OWNER:
                     if(s_objects[i].attributes.spsHierarchy == SET)
                         s_objects[i].attributes.occupied = FALSE;
                     break;
-                case TPM_RH_ENDORSEMENT:
+                case MSSIM_RH_ENDORSEMENT:
                     if(s_objects[i].attributes.epsHierarchy == SET)
                         s_objects[i].attributes.occupied = FALSE;
                     break;
@@ -694,62 +694,62 @@ void ObjectFlushHierarchy(TPMI_RH_HIERARCHY hierarchy  // IN: hierarchy to be fl
 // This function loads a persistent object into a transient object slot.
 //
 // This function requires that 'handle' is associated with a persistent object.
-//  Return Type: TPM_RC
-//      TPM_RC_HANDLE               the persistent object does not exist
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_HANDLE               the persistent object does not exist
 //                                  or the associated hierarchy is disabled.
-//      TPM_RC_OBJECT_MEMORY        no object slot
-TPM_RC
-ObjectLoadEvict(TPM_HANDLE* handle,  // IN:OUT: evict object handle.  If success, it
+//      MSSIM_RC_OBJECT_MEMORY        no object slot
+MSSIM_RC
+ObjectLoadEvict(MSSIM_HANDLE* handle,  // IN:OUT: evict object handle.  If success, it
                                      // will be replace by the loaded object handle
                 COMMAND_INDEX commandIndex  // IN: the command being processed
 )
 {
-    TPM_RC     result;
-    TPM_HANDLE evictHandle = *handle;  // Save the evict handle
+    MSSIM_RC     result;
+    MSSIM_HANDLE evictHandle = *handle;  // Save the evict handle
     OBJECT*    object;
     //
     // If this is an index that references a persistent object created by
-    // the platform, then return TPM_RH_HANDLE if the phEnable is FALSE
+    // the platform, then return MSSIM_RH_HANDLE if the phEnable is FALSE
     if(*handle >= PLATFORM_PERSISTENT)
     {
         // belongs to platform
         if(g_phEnable == CLEAR)
-            return TPM_RC_HANDLE;
+            return MSSIM_RC_HANDLE;
     }
     // belongs to owner
     else if(gc.shEnable == CLEAR)
-        return TPM_RC_HANDLE;
+        return MSSIM_RC_HANDLE;
     // Try to allocate a slot for an object
     object = ObjectAllocateSlot(handle);
     if(object == NULL)
-        return TPM_RC_OBJECT_MEMORY;
-    // Copy persistent object to transient object slot.  A TPM_RC_HANDLE
+        return MSSIM_RC_OBJECT_MEMORY;
+    // Copy persistent object to transient object slot.  A MSSIM_RC_HANDLE
     // may be returned at this point. This will mark the slot as containing
     // a transient object so that it will be flushed at the end of the
     // command
     result = NvGetEvictObject(evictHandle, object);
 
     // Bail out if this failed
-    if(result != TPM_RC_SUCCESS)
+    if(result != MSSIM_RC_SUCCESS)
         return result;
     // check the object to see if it is in the endorsement hierarchy
-    // if it is and this is not a TPM2_EvictControl() command, indicate
+    // if it is and this is not a MSSIM2_EvictControl() command, indicate
     // that the hierarchy is disabled.
     // If the associated hierarchy is disabled, make it look like the
     // handle is not defined
-    if(ObjectGetHierarchy(object) == TPM_RH_ENDORSEMENT && gc.ehEnable == CLEAR
-       && GetCommandCode(commandIndex) != TPM_CC_EvictControl)
-        return TPM_RC_HANDLE;
+    if(ObjectGetHierarchy(object) == MSSIM_RH_ENDORSEMENT && gc.ehEnable == CLEAR
+       && GetCommandCode(commandIndex) != MSSIM_CC_EvictControl)
+        return MSSIM_RC_HANDLE;
 
     return result;
 }
 
 //*** ObjectComputeName()
 // This does the name computation from a public area (can be marshaled or not).
-TPM2B_NAME* ObjectComputeName(UINT32     size,  // IN: the size of the area to digest
+MSSIM2B_NAME* ObjectComputeName(UINT32     size,  // IN: the size of the area to digest
                               BYTE*      publicArea,  // IN: the public area to digest
-                              TPM_ALG_ID nameAlg,     // IN: the hash algorithm to use
-                              TPM2B_NAME* name        // OUT: Computed name
+                              MSSIM_ALG_ID nameAlg,     // IN: the hash algorithm to use
+                              MSSIM2B_NAME* name        // OUT: Computed name
 )
 {
     // Hash the publicArea into the name buffer leaving room for the nameAlg
@@ -763,24 +763,24 @@ TPM2B_NAME* ObjectComputeName(UINT32     size,  // IN: the size of the area to d
 
 //*** PublicMarshalAndComputeName()
 // This function computes the Name of an object from its public area.
-TPM2B_NAME* PublicMarshalAndComputeName(
-    TPMT_PUBLIC* publicArea,  // IN: public area of an object
-    TPM2B_NAME*  name         // OUT: name of the object
+MSSIM2B_NAME* PublicMarshalAndComputeName(
+    MSSIMT_PUBLIC* publicArea,  // IN: public area of an object
+    MSSIM2B_NAME*  name         // OUT: name of the object
 )
 {
     // Will marshal a public area into a template. This is because the internal
-    // format for a TPM2B_PUBLIC is a structure and not a simple BYTE buffer.
-    TPM2B_TEMPLATE marshaled;  // this is big enough to hold a
-                               //  marshaled TPMT_PUBLIC
+    // format for a MSSIM2B_PUBLIC is a structure and not a simple BYTE buffer.
+    MSSIM2B_TEMPLATE marshaled;  // this is big enough to hold a
+                               //  marshaled MSSIMT_PUBLIC
     BYTE* buffer = (BYTE*)&marshaled.t.buffer;
     //
     // if the nameAlg is NULL then there is no name.
-    if(publicArea->nameAlg == TPM_ALG_NULL)
+    if(publicArea->nameAlg == MSSIM_ALG_NULL)
         name->t.size = 0;
     else
     {
         // Marshal the public area into its canonical form
-        marshaled.t.size = TPMT_PUBLIC_Marshal(publicArea, &buffer, NULL);
+        marshaled.t.size = MSSIMT_PUBLIC_Marshal(publicArea, &buffer, NULL);
         // and compute the name
         ObjectComputeName(
             marshaled.t.size, marshaled.t.buffer, publicArea->nameAlg, name);
@@ -791,16 +791,16 @@ TPM2B_NAME* PublicMarshalAndComputeName(
 //*** ComputeQualifiedName()
 // This function computes the qualified name of an object.
 void ComputeQualifiedName(
-    TPM_HANDLE  parentHandle,  // IN: parent's handle
-    TPM_ALG_ID  nameAlg,       // IN: name hash
-    TPM2B_NAME* name,          // IN: name of the object
-    TPM2B_NAME* qualifiedName  // OUT: qualified name of the object
+    MSSIM_HANDLE  parentHandle,  // IN: parent's handle
+    MSSIM_ALG_ID  nameAlg,       // IN: name hash
+    MSSIM2B_NAME* name,          // IN: name of the object
+    MSSIM2B_NAME* qualifiedName  // OUT: qualified name of the object
 )
 {
     HASH_STATE hashState;  // hash state
-    TPM2B_NAME parentName;
+    MSSIM2B_NAME parentName;
     //
-    if(parentHandle == TPM_RH_UNASSIGNED)
+    if(parentHandle == MSSIM_RH_UNASSIGNED)
     {
         MemoryCopy2B(&qualifiedName->b, &name->b, sizeof(qualifiedName->t.name));
         *qualifiedName = *name;
@@ -835,37 +835,37 @@ void ComputeQualifiedName(
 //  Return Type: BOOL
 //      TRUE(1)         object is a storage key
 //      FALSE(0)        object is not a storage key
-BOOL ObjectIsStorage(TPMI_DH_OBJECT handle  // IN: object handle
+BOOL ObjectIsStorage(MSSIMI_DH_OBJECT handle  // IN: object handle
 )
 {
     OBJECT*      object     = HandleToObject(handle);
-    TPMT_PUBLIC* publicArea = ((object != NULL) ? &object->publicArea : NULL);
+    MSSIMT_PUBLIC* publicArea = ((object != NULL) ? &object->publicArea : NULL);
     //
     return (publicArea != NULL
-            && IS_ATTRIBUTE(publicArea->objectAttributes, TPMA_OBJECT, restricted)
-            && IS_ATTRIBUTE(publicArea->objectAttributes, TPMA_OBJECT, decrypt)
-            && !IS_ATTRIBUTE(publicArea->objectAttributes, TPMA_OBJECT, sign)
-            && (object->publicArea.type == TPM_ALG_RSA
-                || object->publicArea.type == TPM_ALG_ECC));
+            && IS_ATTRIBUTE(publicArea->objectAttributes, MSSIMA_OBJECT, restricted)
+            && IS_ATTRIBUTE(publicArea->objectAttributes, MSSIMA_OBJECT, decrypt)
+            && !IS_ATTRIBUTE(publicArea->objectAttributes, MSSIMA_OBJECT, sign)
+            && (object->publicArea.type == MSSIM_ALG_RSA
+                || object->publicArea.type == MSSIM_ALG_ECC));
 }
 
 //*** ObjectCapGetLoaded()
 // This function returns a a list of handles of loaded object, starting from
 // 'handle'. 'Handle' must be in the range of valid transient object handles,
 // but does not have to be the handle of a loaded transient object.
-//  Return Type: TPMI_YES_NO
+//  Return Type: MSSIMI_YES_NO
 //      YES         if there are more handles available
 //      NO          all the available handles has been returned
-TPMI_YES_NO
-ObjectCapGetLoaded(TPMI_DH_OBJECT handle,     // IN: start handle
+MSSIMI_YES_NO
+ObjectCapGetLoaded(MSSIMI_DH_OBJECT handle,     // IN: start handle
                    UINT32         count,      // IN: count of returned handles
-                   TPML_HANDLE*   handleList  // OUT: list of handle
+                   MSSIML_HANDLE*   handleList  // OUT: list of handle
 )
 {
-    TPMI_YES_NO more = NO;
+    MSSIMI_YES_NO more = NO;
     UINT32      i;
     //
-    pAssert(HandleGetType(handle) == TPM_HT_TRANSIENT);
+    pAssert(HandleGetType(handle) == MSSIM_HT_TRANSIENT);
 
     // Initialize output handle list
     handleList->count = 0;
@@ -904,7 +904,7 @@ ObjectCapGetLoaded(TPMI_DH_OBJECT handle,     // IN: start handle
 
 //*** ObjectCapGetTransientAvail()
 // This function returns an estimate of the number of additional transient
-// objects that could be loaded into the TPM.
+// objects that could be loaded into the MSSIM.
 UINT32
 ObjectCapGetTransientAvail(void)
 {
@@ -923,14 +923,14 @@ ObjectCapGetTransientAvail(void)
 
 //*** ObjectGetPublicAttributes()
 // Returns the attributes associated with an object handles.
-TPMA_OBJECT
-ObjectGetPublicAttributes(TPM_HANDLE handle)
+MSSIMA_OBJECT
+ObjectGetPublicAttributes(MSSIM_HANDLE handle)
 {
     return HandleToObject(handle)->publicArea.objectAttributes;
 }
 
 OBJECT_ATTRIBUTES
-ObjectGetProperties(TPM_HANDLE handle)
+ObjectGetProperties(MSSIM_HANDLE handle)
 {
     return HandleToObject(handle)->attributes;
 }

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -41,14 +41,14 @@
 // adjusts the rate of advance of Clock and Timer to provide a better
 // approximation to real time.
 */
-TPM_RC
-TPM2_ClockRateAdjust(ClockRateAdjust_In* in  // IN: input parameter list
+MSSIM_RC
+MSSIM2_ClockRateAdjust(ClockRateAdjust_In* in  // IN: input parameter list
 )
 {
     // Internal Data Update
     TimeSetAdjustRate(in->rateAdjust);
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_ClockRateAdjust

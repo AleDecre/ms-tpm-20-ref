@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -62,13 +62,13 @@ UINT32
 X509GetExtensionBits(ASN1UnmarshalContext* ctx, UINT32* value);
 
 //***X509ProcessExtensions()
-// This function is used to process the TPMA_OBJECT and KeyUsage extensions. It is not
+// This function is used to process the MSSIMA_OBJECT and KeyUsage extensions. It is not
 // in the CertifyX509.c code because it makes the code harder to follow.
-// Return Type: TPM_RC
-//      TPM_RCS_ATTRIBUTES      the attributes of object are not consistent with
+// Return Type: MSSIM_RC
+//      MSSIM_RCS_ATTRIBUTES      the attributes of object are not consistent with
 //                              the extension setting
-//      TPM_RC_VALUE            problem parsing the extensions
-TPM_RC
+//      MSSIM_RC_VALUE            problem parsing the extensions
+MSSIM_RC
 X509ProcessExtensions(
     OBJECT* object,       // IN: The object with the attributes to
                           //      check
@@ -82,11 +82,11 @@ X509ProcessExtensions(
 // <= 0                 failure
 INT16
 X509AddSigningAlgorithm(
-    ASN1MarshalContext* ctx, OBJECT* signKey, TPMT_SIG_SCHEME* scheme);
+    ASN1MarshalContext* ctx, OBJECT* signKey, MSSIMT_SIG_SCHEME* scheme);
 
 //*** X509AddPublicKey()
 // This function will add the publicKey description to the DER data. If fillPtr is
-// NULL, then no data is transferred and this function will indicate if the TPM
+// NULL, then no data is transferred and this function will indicate if the MSSIM
 // has the values for DER-encoding of the public key.
 //  Return Type: INT16
 //      > 0         number of octets added

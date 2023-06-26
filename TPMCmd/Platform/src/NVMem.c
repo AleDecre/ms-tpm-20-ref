@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -145,14 +145,14 @@ LIB_EXPORT void _plat__NvErrors(int recoverable, int unrecoverable)
 //***_plat__NVEnable()
 // Enable NV memory.
 //
-// This version just pulls in data from a file. In a real TPM, with NV on chip,
+// This version just pulls in data from a file. In a real MSSIM, with NV on chip,
 // this function would verify the integrity of the saved context. If the NV
 // memory was not on chip but was in something like RPMB, the NV state would be
 // read in, decrypted and integrity checked.
 //
 // The recovery from an integrity failure depends on where the error occurred. It
-// it was in the state that is discarded by TPM Reset, then the error is
-// recoverable if the TPM is reset. Otherwise, the TPM must go into failure mode.
+// it was in the state that is discarded by MSSIM Reset, then the error is
+// recoverable if the MSSIM is reset. Otherwise, the MSSIM must go into failure mode.
 //  Return Type: int
 //      0           if success
 //      > 0         if receive recoverable error
@@ -216,7 +216,7 @@ LIB_EXPORT void _plat__NVDisable(int delete  // IN: If TRUE, delete the NV conte
     {
         fclose(s_NvFile);  // Close NV file
         // Alternative to deleting the file is to set its size to 0. This will not
-        // match the NV size so the TPM will need to be remanufactured.
+        // match the NV size so the MSSIM will need to be remanufactured.
         if(delete)
         {
             // Open for writing at the start. Sets the size to zero.
@@ -241,7 +241,7 @@ LIB_EXPORT void _plat__NVDisable(int delete  // IN: If TRUE, delete the NV conte
 LIB_EXPORT int _plat__IsNvAvailable(void)
 {
     int retVal = 0;
-    // NV is not available if the TPM is in failure mode
+    // NV is not available if the MSSIM is in failure mode
     if(!s_NvIsAvailable)
         retVal = 1;
 #if FILE_BACKED_NV
@@ -360,7 +360,7 @@ LIB_EXPORT void _plat__ClearNvAvail(void)
 }
 
 //*** _plat__NVNeedsManufacture()
-// This function is used by the simulator to determine when the TPM's NV state
+// This function is used by the simulator to determine when the MSSIM's NV state
 // needs to be manufactured.
 LIB_EXPORT int _plat__NVNeedsManufacture(void)
 {

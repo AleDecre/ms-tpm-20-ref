@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,15 +45,15 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_CONTEXT flushHandle;
+    MSSIMI_DH_CONTEXT flushHandle;
 } FlushContext_In;
 
 // Response code modifiers
-#    define RC_FlushContext_flushHandle (TPM_RC_P + TPM_RC_1)
+#    define RC_FlushContext_flushHandle (MSSIM_RC_P + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_FlushContext(FlushContext_In* in);
+MSSIM_RC
+MSSIM2_FlushContext(FlushContext_In* in);
 
 #  endif  // _Flush_Context_FP_H_
 #endif    // CC_FlushContext

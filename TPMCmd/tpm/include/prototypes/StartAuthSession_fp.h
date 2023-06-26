@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,34 +45,34 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT         tpmKey;
-    TPMI_DH_ENTITY         bind;
-    TPM2B_NONCE            nonceCaller;
-    TPM2B_ENCRYPTED_SECRET encryptedSalt;
-    TPM_SE                 sessionType;
-    TPMT_SYM_DEF           symmetric;
-    TPMI_ALG_HASH          authHash;
+    MSSIMI_DH_OBJECT         tpmKey;
+    MSSIMI_DH_ENTITY         bind;
+    MSSIM2B_NONCE            nonceCaller;
+    MSSIM2B_ENCRYPTED_SECRET encryptedSalt;
+    MSSIM_SE                 sessionType;
+    MSSIMT_SYM_DEF           symmetric;
+    MSSIMI_ALG_HASH          authHash;
 } StartAuthSession_In;
 
 // Output structure definition
 typedef struct
 {
-    TPMI_SH_AUTH_SESSION sessionHandle;
-    TPM2B_NONCE          nonceTPM;
+    MSSIMI_SH_AUTH_SESSION sessionHandle;
+    MSSIM2B_NONCE          nonceMSSIM;
 } StartAuthSession_Out;
 
 // Response code modifiers
-#    define RC_StartAuthSession_tpmKey        (TPM_RC_H + TPM_RC_1)
-#    define RC_StartAuthSession_bind          (TPM_RC_H + TPM_RC_2)
-#    define RC_StartAuthSession_nonceCaller   (TPM_RC_P + TPM_RC_1)
-#    define RC_StartAuthSession_encryptedSalt (TPM_RC_P + TPM_RC_2)
-#    define RC_StartAuthSession_sessionType   (TPM_RC_P + TPM_RC_3)
-#    define RC_StartAuthSession_symmetric     (TPM_RC_P + TPM_RC_4)
-#    define RC_StartAuthSession_authHash      (TPM_RC_P + TPM_RC_5)
+#    define RC_StartAuthSession_tpmKey        (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_StartAuthSession_bind          (MSSIM_RC_H + MSSIM_RC_2)
+#    define RC_StartAuthSession_nonceCaller   (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_StartAuthSession_encryptedSalt (MSSIM_RC_P + MSSIM_RC_2)
+#    define RC_StartAuthSession_sessionType   (MSSIM_RC_P + MSSIM_RC_3)
+#    define RC_StartAuthSession_symmetric     (MSSIM_RC_P + MSSIM_RC_4)
+#    define RC_StartAuthSession_authHash      (MSSIM_RC_P + MSSIM_RC_5)
 
 // Function prototype
-TPM_RC
-TPM2_StartAuthSession(StartAuthSession_In* in, StartAuthSession_Out* out);
+MSSIM_RC
+MSSIM2_StartAuthSession(StartAuthSession_In* in, StartAuthSession_Out* out);
 
 #  endif  // _Start_Auth_Session_FP_H_
 #endif    // CC_StartAuthSession

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -43,24 +43,24 @@
 /*(See part 3 specification)
  Save context
 */
-//  Return Type: TPM_RC
-//      TPM_RC_CONTEXT_GAP          a contextID could not be assigned for a session
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_CONTEXT_GAP          a contextID could not be assigned for a session
 //                                  context save
-//      TPM_RC_TOO_MANY_CONTEXTS    no more contexts can be saved as the counter has
+//      MSSIM_RC_TOO_MANY_CONTEXTS    no more contexts can be saved as the counter has
 //                                  maxed out
-TPM_RC
-TPM2_ContextSave(ContextSave_In*  in,  // IN: input parameter list
+MSSIM_RC
+MSSIM2_ContextSave(ContextSave_In*  in,  // IN: input parameter list
                  ContextSave_Out* out  // OUT: output parameter list
 )
 {
-    TPM_RC result = TPM_RC_SUCCESS;
+    MSSIM_RC result = MSSIM_RC_SUCCESS;
     UINT16 fingerprintSize;  // The size of fingerprint in context
     // blob.
     UINT64        contextID = 0;  // session context ID
-    TPM2B_SYM_KEY symKey;
-    TPM2B_IV      iv;
+    MSSIM2B_SYM_KEY symKey;
+    MSSIM2B_IV      iv;
 
-    TPM2B_DIGEST  integrity;
+    MSSIM2B_DIGEST  integrity;
     UINT16        integritySize;
     BYTE*         buffer;
 
@@ -73,12 +73,12 @@ TPM2_ContextSave(ContextSave_In*  in,  // IN: input parameter list
 
     // This implementation does not do things in quite the same way as described in
     // Part 2 of the specification. In Part 2, it indicates that the
-    // TPMS_CONTEXT_DATA contains two TPM2B values. That is not how this is
-    // implemented. Rather, the size field of the TPM2B_CONTEXT_DATA is used to
+    // MSSIMS_CONTEXT_DATA contains two MSSIM2B values. That is not how this is
+    // implemented. Rather, the size field of the MSSIM2B_CONTEXT_DATA is used to
     // determine the amount of data in the encrypted data. That part is not
     // independently sized. This makes the actual size 2 bytes smaller than
     // calculated using Part 2. Since this is opaque to the caller, it is not
-    // necessary to fix. The actual size is returned by TPM2_GetCapabilties().
+    // necessary to fix. The actual size is returned by MSSIM2_GetCapabilties().
 
     // Initialize output handle.  At the end of command action, the output
     // handle of an object will be replaced, while the output handle
@@ -86,7 +86,7 @@ TPM2_ContextSave(ContextSave_In*  in,  // IN: input parameter list
     out->context.savedHandle = in->saveHandle;
 
     // Get the size of fingerprint in context blob.  The sequence value in
-    // TPMS_CONTEXT structure is used as the fingerprint
+    // MSSIMS_CONTEXT structure is used as the fingerprint
     fingerprintSize = sizeof(out->context.sequence);
 
     // Compute the integrity size at the beginning of context blob
@@ -96,7 +96,7 @@ TPM2_ContextSave(ContextSave_In*  in,  // IN: input parameter list
     // Perform object or session specific context save
     switch(HandleGetType(in->saveHandle))
     {
-        case TPM_HT_TRANSIENT:
+        case MSSIM_HT_TRANSIENT:
         {
             OBJECT*            object = HandleToObject(in->saveHandle);
             ANY_OBJECT_BUFFER* outObject;
@@ -114,7 +114,7 @@ TPM2_ContextSave(ContextSave_In*  in,  // IN: input parameter list
 #  if ALG_RSA
             // For an RSA key, make sure that the key has had the private exponent
             // computed before saving.
-            if(object->publicArea.type == TPM_ALG_RSA
+            if(object->publicArea.type == MSSIM_ALG_RSA
                && !(object->attributes.publicOnly))
                 CryptRsaLoadPrivateExponent(&object->publicArea, &object->sensitive);
 #  endif
@@ -126,7 +126,7 @@ TPM2_ContextSave(ContextSave_In*  in,  // IN: input parameter list
 
             // Increment object context ID
             gr.objectContextID++;
-            // If object context ID overflows, TPM should be put in failure mode
+            // If object context ID overflows, MSSIM should be put in failure mode
             if(gr.objectContextID == 0)
                 FAIL(FATAL_ERROR_INTERNAL);
 
@@ -149,8 +149,8 @@ TPM2_ContextSave(ContextSave_In*  in,  // IN: input parameter list
 
             break;
         }
-        case TPM_HT_HMAC_SESSION:
-        case TPM_HT_POLICY_SESSION:
+        case MSSIM_HT_HMAC_SESSION:
+        case MSSIM_HT_POLICY_SESSION:
         {
             SESSION* session = SessionGet(in->saveHandle);
 
@@ -177,17 +177,17 @@ TPM2_ContextSave(ContextSave_In*  in,  // IN: input parameter list
                 sizeof(*session));
             // Fill in the other return parameters for a session
             // Get a context ID and set the session tracking values appropriately
-            // TPM_RC_CONTEXT_GAP is a possible error.
+            // MSSIM_RC_CONTEXT_GAP is a possible error.
             // SessionContextSave() will flush the in-memory context
             // so no additional errors may occur after this call.
             result = SessionContextSave(out->context.savedHandle, &contextID);
-            if(result != TPM_RC_SUCCESS)
+            if(result != MSSIM_RC_SUCCESS)
                 return result;
             // sequence number is the current session contextID
             out->context.sequence = contextID;
 
-            // use TPM_RH_NULL as hierarchy for session context
-            out->context.hierarchy = TPM_RH_NULL;
+            // use MSSIM_RH_NULL as hierarchy for session context
+            out->context.hierarchy = MSSIM_RH_NULL;
 
             break;
         }
@@ -215,7 +215,7 @@ TPM2_ContextSave(ContextSave_In*  in,  // IN: input parameter list
                           CONTEXT_ENCRYPT_KEY_BITS,
                           symKey.t.buffer,
                           &iv,
-                          TPM_ALG_CFB,
+                          MSSIM_ALG_CFB,
                           out->context.contextBlob.t.size - integritySize,
                           out->context.contextBlob.t.buffer + integritySize);
 
@@ -226,7 +226,7 @@ TPM2_ContextSave(ContextSave_In*  in,  // IN: input parameter list
 
     // add integrity at the beginning of context blob
     buffer = out->context.contextBlob.t.buffer;
-    TPM2B_DIGEST_Marshal(&integrity, &buffer, NULL);
+    MSSIM2B_DIGEST_Marshal(&integrity, &buffer, NULL);
 
     // orderly state should be cleared because of the update of state reset and
     // state clear data

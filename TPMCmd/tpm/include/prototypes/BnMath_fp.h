@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -144,7 +144,7 @@ LIB_EXPORT BOOL BnShiftRight(bigNum result, bigConst toShift, uint32_t shiftAmou
 
 //*** BnGetRandomBits()
 // This function gets random bits for use in various places. To make sure that the
-// number is generated in a portable format, it is created as a TPM2B and then
+// number is generated in a portable format, it is created as a MSSIM2B and then
 // converted to the internal format.
 //
 // One consequence of the generation scheme is that, if the number of bits requested

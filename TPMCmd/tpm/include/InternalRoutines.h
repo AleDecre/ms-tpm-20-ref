@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -35,7 +35,7 @@
 #ifndef INTERNAL_ROUTINES_H
 #define INTERNAL_ROUTINES_H
 
-#if !defined _LIB_SUPPORT_H_ && !defined _TPM_H_
+#if !defined _LIB_SUPPORT_H_ && !defined _MSSIM_H_
 #  error "Should not be called"
 #endif
 

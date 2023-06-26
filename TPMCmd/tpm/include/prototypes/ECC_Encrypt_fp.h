@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,27 +45,27 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT   keyHandle;
-    TPM2B_MAX_BUFFER plainText;
-    TPMT_KDF_SCHEME  inScheme;
+    MSSIMI_DH_OBJECT   keyHandle;
+    MSSIM2B_MAX_BUFFER plainText;
+    MSSIMT_KDF_SCHEME  inScheme;
 } ECC_Encrypt_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_ECC_POINT  C1;
-    TPM2B_MAX_BUFFER C2;
-    TPM2B_DIGEST     C3;
+    MSSIM2B_ECC_POINT  C1;
+    MSSIM2B_MAX_BUFFER C2;
+    MSSIM2B_DIGEST     C3;
 } ECC_Encrypt_Out;
 
 // Response code modifiers
-#    define RC_ECC_Encrypt_keyHandle (TPM_RC_H + TPM_RC_1)
-#    define RC_ECC_Encrypt_plainText (TPM_RC_P + TPM_RC_1)
-#    define RC_ECC_Encrypt_inScheme  (TPM_RC_P + TPM_RC_2)
+#    define RC_ECC_Encrypt_keyHandle (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_ECC_Encrypt_plainText (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_ECC_Encrypt_inScheme  (MSSIM_RC_P + MSSIM_RC_2)
 
 // Function prototype
-TPM_RC
-TPM2_ECC_Encrypt(ECC_Encrypt_In* in, ECC_Encrypt_Out* out);
+MSSIM_RC
+MSSIM2_ECC_Encrypt(ECC_Encrypt_In* in, ECC_Encrypt_Out* out);
 
 #  endif  // _ECC_ENCRYPT_FP_H_
 #endif    // CC_ECC_Encrypt

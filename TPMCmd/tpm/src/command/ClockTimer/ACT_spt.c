@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -35,7 +35,7 @@
 //** Introduction
 // This code implements the ACT update code. It does not use a mutex. This code uses
 // a platform service (_plat__ACT_UpdateCounter()) that returns 'false' if the update
-// is not accepted. If this occurs, then TPM_RC_RETRY should be sent to the caller so
+// is not accepted. If this occurs, then MSSIM_RC_RETRY should be sent to the caller so
 // that they can retry the operation later. The implementation of this is platform
 // dependent but the reference uses a simple flag to indicate that an update is
 // pending and the only process that can clear that flag is the process that does the
@@ -64,7 +64,7 @@ static void _ActResume(UINT32     act,     //IN: the act number
 }
 
 //*** ActStartup()
-// This function is called by TPM2_Startup() to initialize the ACT counter values.
+// This function is called by MSSIM2_Startup() to initialize the ACT counter values.
 BOOL ActStartup(STARTUP_TYPE type)
 {
     // Reset all the ACT hardware
@@ -77,13 +77,13 @@ BOOL ActStartup(STARTUP_TYPE type)
     else
         go.preservedSignaled |= go.signaledACT;
 
-    // For TPM_RESET or TPM_RESTART, the ACTs will all be disabled and the output
+    // For MSSIM_RESET or MSSIM_RESTART, the ACTs will all be disabled and the output
     // de-asserted.
     if(type != SU_RESUME)
     {
         go.signaledACT = 0;
 #define CLEAR_ACT_POLICY(N)                    \
-  go.ACT_##N.hashAlg           = TPM_ALG_NULL; \
+  go.ACT_##N.hashAlg           = MSSIM_ALG_NULL; \
   go.ACT_##N.authPolicy.b.size = 0;
         FOR_EACH_ACT(CLEAR_ACT_POLICY)
     }
@@ -121,24 +121,24 @@ static void _ActSaveState(UINT32 act, P_ACT_STATE actData)
 
 //*** ActGetSignaled()
 // This function returns the state of the signaled flag associated with an ACT.
-BOOL ActGetSignaled(TPM_RH actHandle)
+BOOL ActGetSignaled(MSSIM_RH actHandle)
 {
-    UINT32 act = actHandle - TPM_RH_ACT_0;
+    UINT32 act = actHandle - MSSIM_RH_ACT_0;
     //
     return _plat__ACT_GetSignaled(act);
 }
 
 //***ActShutdown()
 // This function saves the current state of the counters
-BOOL ActShutdown(TPM_SU state  //IN: the type of the shutdown.
+BOOL ActShutdown(MSSIM_SU state  //IN: the type of the shutdown.
 )
 {
-    // if this is not shutdown state, then the only type of startup is TPM_RESTART
+    // if this is not shutdown state, then the only type of startup is MSSIM_RESTART
     // so the timer values will be cleared. If this is shutdown state, get the current
     // countdown and signaled values. Plus, if the counter has not been updated
     // since the last restart, divide the time by 2 so that there is no attack on the
-    // countdown by saving the countdown state early and then not using the TPM.
-    if(state == TPM_SU_STATE)
+    // countdown by saving the countdown state early and then not using the MSSIM.
+    if(state == MSSIM_SU_STATE)
     {
         // This will be populated as each of the ACT is queried
         go.signaledACT = 0;
@@ -151,16 +151,16 @@ BOOL ActShutdown(TPM_SU state  //IN: the type of the shutdown.
 }
 
 //*** ActIsImplemented()
-// This function determines if an ACT is implemented in both the TPM and the platform
+// This function determines if an ACT is implemented in both the MSSIM and the platform
 // code.
 BOOL ActIsImplemented(UINT32 act)
 {
-    // This switch accounts for the TPM implemented values.
+    // This switch accounts for the MSSIM implemented values.
     switch(act)
     {
         FOR_EACH_ACT(CASE_ACT_NUMBER)
         // This ensures that the platform implements the values implemented by
-        // the TPM
+        // the MSSIM
         return _plat__ACT_GetImplemented(act);
         default:
             break;
@@ -170,19 +170,19 @@ BOOL ActIsImplemented(UINT32 act)
 
 //***ActCounterUpdate()
 // This function updates the ACT counter. If the counter already has a pending update,
-// it returns TPM_RC_RETRY so that the update can be tried again later.
-TPM_RC
-ActCounterUpdate(TPM_RH handle,   //IN: the handle of the act
+// it returns MSSIM_RC_RETRY so that the update can be tried again later.
+MSSIM_RC
+ActCounterUpdate(MSSIM_RH handle,   //IN: the handle of the act
                  UINT32 newValue  //IN: the value to set in the ACT
 )
 {
     UINT32 act;
-    TPM_RC result;
+    MSSIM_RC result;
     //
-    act = handle - TPM_RH_ACT_0;
+    act = handle - MSSIM_RH_ACT_0;
     // This should never fail, but...
     if(!_plat__ACT_GetImplemented(act))
-        result = TPM_RC_VALUE;
+        result = MSSIM_RC_VALUE;
     else
     {
         // Will need to clear orderly so fail if we are orderly and NV is
@@ -192,10 +192,10 @@ ActCounterUpdate(TPM_RH handle,   //IN: the handle of the act
         // if the attempt to update the counter fails, it means that there is an
         // update pending so wait until it has occurred and then do an update.
         if(!_plat__ACT_UpdateCounter(act, newValue))
-            result = TPM_RC_RETRY;
+            result = MSSIM_RC_RETRY;
         else
         {
-            // Indicate that the ACT has been updated since last TPM2_Startup().
+            // Indicate that the ACT has been updated since last MSSIM2_Startup().
             s_ActUpdated |= (UINT16)(1 << act);
 
             // Clear the preservedSignaled attribute.
@@ -204,7 +204,7 @@ ActCounterUpdate(TPM_RH handle,   //IN: the handle of the act
             // Need to clear the orderly flag
             g_clearOrderly = TRUE;
 
-            result         = TPM_RC_SUCCESS;
+            result         = MSSIM_RC_SUCCESS;
         }
     }
     return result;
@@ -212,43 +212,43 @@ ActCounterUpdate(TPM_RH handle,   //IN: the handle of the act
 
 //*** ActGetCapabilityData()
 // This function returns the list of ACT data
-//  Return Type: TPMI_YES_NO
+//  Return Type: MSSIMI_YES_NO
 //      YES             if more ACT data is available
 //      NO              if no more ACT data to
-TPMI_YES_NO
-ActGetCapabilityData(TPM_HANDLE     actHandle,  // IN: the handle for the starting ACT
+MSSIMI_YES_NO
+ActGetCapabilityData(MSSIM_HANDLE     actHandle,  // IN: the handle for the starting ACT
                      UINT32         maxCount,   // IN: maximum allowed return values
-                     TPML_ACT_DATA* actList     // OUT: ACT data list
+                     MSSIML_ACT_DATA* actList     // OUT: ACT data list
 )
 {
     // Initialize output property list
     actList->count = 0;
 
     // Make sure that the starting handle value is in range (again)
-    if((actHandle < TPM_RH_ACT_0) || (actHandle > TPM_RH_ACT_F))
+    if((actHandle < MSSIM_RH_ACT_0) || (actHandle > MSSIM_RH_ACT_F))
         return FALSE;
     // The maximum count of curves we may return is MAX_ECC_CURVES
     if(maxCount > MAX_ACT_DATA)
         maxCount = MAX_ACT_DATA;
     // Scan the ACT data from the starting ACT
-    for(; actHandle <= TPM_RH_ACT_F; actHandle++)
+    for(; actHandle <= MSSIM_RH_ACT_F; actHandle++)
     {
-        UINT32 act = actHandle - TPM_RH_ACT_0;
+        UINT32 act = actHandle - MSSIM_RH_ACT_0;
         if(actList->count < maxCount)
         {
             if(ActIsImplemented(act))
             {
-                TPMS_ACT_DATA* actData = &actList->actData[actList->count];
+                MSSIMS_ACT_DATA* actData = &actList->actData[actList->count];
                 //
                 memset(&actData->attributes, 0, sizeof(actData->attributes));
                 actData->handle  = actHandle;
                 actData->timeout = _plat__ACT_GetRemaining(act);
                 if(_plat__ACT_GetSignaled(act))
-                    SET_ATTRIBUTE(actData->attributes, TPMA_ACT, signaled);
+                    SET_ATTRIBUTE(actData->attributes, MSSIMA_ACT, signaled);
                 else
-                    CLEAR_ATTRIBUTE(actData->attributes, TPMA_ACT, signaled);
+                    CLEAR_ATTRIBUTE(actData->attributes, MSSIMA_ACT, signaled);
                 if(go.preservedSignaled & (1 << act))
-                    SET_ATTRIBUTE(actData->attributes, TPMA_ACT, preserveSignaled);
+                    SET_ATTRIBUTE(actData->attributes, MSSIMA_ACT, preserveSignaled);
                 actList->count++;
             }
         }

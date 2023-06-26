@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -34,28 +34,28 @@
  */
 #include "Tpm.h"
 
-// This function is called to process a _TPM_Hash_Start indication.
-LIB_EXPORT void _TPM_Hash_Start(void)
+// This function is called to process a _MSSIM_Hash_Start indication.
+LIB_EXPORT void _MSSIM_Hash_Start(void)
 {
-    TPM_RC         result;
-    TPMI_DH_OBJECT handle;
+    MSSIM_RC         result;
+    MSSIMI_DH_OBJECT handle;
 
     // If a DRTM sequence object exists, free it up
-    if(g_DRTMHandle != TPM_RH_UNASSIGNED)
+    if(g_DRTMHandle != MSSIM_RH_UNASSIGNED)
     {
         FlushObject(g_DRTMHandle);
-        g_DRTMHandle = TPM_RH_UNASSIGNED;
+        g_DRTMHandle = MSSIM_RH_UNASSIGNED;
     }
 
     // Create an event sequence object and store the handle in global
-    // g_DRTMHandle. A TPM_RC_OBJECT_MEMORY error may be returned at this point
+    // g_DRTMHandle. A MSSIM_RC_OBJECT_MEMORY error may be returned at this point
     // The NULL value for the first parameter will cause the sequence structure to
     // be allocated without being set as present. This keeps the sequence from
     // being left behind if the sequence is terminated early.
     result = ObjectCreateEventSequence(NULL, &g_DRTMHandle);
 
     // If a free slot was not available, then free up a slot.
-    if(result != TPM_RC_SUCCESS)
+    if(result != MSSIM_RC_SUCCESS)
     {
         // An implementation does not need to have a fixed relationship between
         // slot numbers and handle numbers. To handle the general case, scan for
@@ -81,7 +81,7 @@ LIB_EXPORT void _TPM_Hash_Start(void)
         // Try to create an event sequence object again.  This time, we must
         // succeed.
         result = ObjectCreateEventSequence(NULL, &g_DRTMHandle);
-        if(result != TPM_RC_SUCCESS)
+        if(result != MSSIM_RC_SUCCESS)
             FAIL(FATAL_ERROR_INTERNAL);
     }
 

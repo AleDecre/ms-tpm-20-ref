@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -34,20 +34,20 @@
  */
 #include "Tpm.h"
 
-// This function is called to process a _TPM_Hash_Data indication.
-LIB_EXPORT void _TPM_Hash_Data(uint32_t dataSize,   // IN: size of data to be extend
+// This function is called to process a _MSSIM_Hash_Data indication.
+LIB_EXPORT void _MSSIM_Hash_Data(uint32_t dataSize,   // IN: size of data to be extend
                                unsigned char* data  // IN: data buffer
 )
 {
     UINT32       i;
     HASH_OBJECT* hashObject;
-    TPMI_DH_PCR  pcrHandle = TPMIsStarted() ? PCR_FIRST + DRTM_PCR
+    MSSIMI_DH_PCR  pcrHandle = MSSIMIsStarted() ? PCR_FIRST + DRTM_PCR
                                             : PCR_FIRST + HCRTM_PCR;
 
-    // If there is no DRTM sequence object, then _TPM_Hash_Start
+    // If there is no DRTM sequence object, then _MSSIM_Hash_Start
     // was not called so this function returns without doing
     // anything.
-    if(g_DRTMHandle == TPM_RH_UNASSIGNED)
+    if(g_DRTMHandle == MSSIM_RH_UNASSIGNED)
         return;
 
     hashObject = (HASH_OBJECT*)HandleToObject(g_DRTMHandle);

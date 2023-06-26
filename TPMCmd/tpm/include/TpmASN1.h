@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -36,8 +36,8 @@
 // This file contains the macro and structure definitions for the X509 commands and
 // functions.
 
-#ifndef _TPMASN1_H_
-#define _TPMASN1_H_
+#ifndef _MSSIMASN1_H_
+#define _MSSIMASN1_H_
 
 //** Includes
 
@@ -123,4 +123,4 @@ typedef struct ASN1MarshalContext
     INT16 ends[MAX_DEPTH];
 } ASN1MarshalContext;
 
-#endif  // _TPMASN1_H_
+#endif  // _MSSIMASN1_H_

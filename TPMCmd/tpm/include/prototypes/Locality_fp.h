@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -42,10 +42,10 @@
 
 //** LocalityGetAttributes()
 // This function will convert a locality expressed as an integer into
-// TPMA_LOCALITY form.
+// MSSIMA_LOCALITY form.
 //
 // The function returns the locality attribute.
-TPMA_LOCALITY
+MSSIMA_LOCALITY
 LocalityGetAttributes(UINT8 locality  // IN: locality value
 );
 

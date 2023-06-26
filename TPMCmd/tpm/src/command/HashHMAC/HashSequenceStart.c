@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,21 +40,21 @@
 /*(See part 3 specification)
 // Start a hash or an event sequence
 */
-//  Return Type: TPM_RC
-//      TPM_RC_OBJECT_MEMORY        no space to create an internal object
-TPM_RC
-TPM2_HashSequenceStart(HashSequenceStart_In*  in,  // IN: input parameter list
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_OBJECT_MEMORY        no space to create an internal object
+MSSIM_RC
+MSSIM2_HashSequenceStart(HashSequenceStart_In*  in,  // IN: input parameter list
                        HashSequenceStart_Out* out  // OUT: output parameter list
 )
 {
     // Internal Data Update
 
-    if(in->hashAlg == TPM_ALG_NULL)
-        // Start a event sequence.  A TPM_RC_OBJECT_MEMORY error may be
+    if(in->hashAlg == MSSIM_ALG_NULL)
+        // Start a event sequence.  A MSSIM_RC_OBJECT_MEMORY error may be
         // returned at this point
         return ObjectCreateEventSequence(&in->auth, &out->sequenceHandle);
 
-    // Start a hash sequence.  A TPM_RC_OBJECT_MEMORY error may be
+    // Start a hash sequence.  A MSSIM_RC_OBJECT_MEMORY error may be
     // returned at this point
     return ObjectCreateHashSequence(in->hashAlg, &in->auth, &out->sequenceHandle);
 }

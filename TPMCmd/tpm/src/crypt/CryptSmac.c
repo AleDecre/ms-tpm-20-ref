@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -48,9 +48,9 @@
 // Function to start an SMAC.
 UINT16
 CryptSmacStart(HASH_STATE*        state,
-               TPMU_PUBLIC_PARMS* keyParameters,
-               TPM_ALG_ID         macAlg,  // IN: the type of MAC
-               TPM2B*             key)
+               MSSIMU_PUBLIC_PARMS* keyParameters,
+               MSSIM_ALG_ID         macAlg,  // IN: the type of MAC
+               MSSIM2B*             key)
 {
     UINT16 retVal = 0;
     //
@@ -61,7 +61,7 @@ CryptSmacStart(HASH_STATE*        state,
         switch(macAlg)
         {
 #  if ALG_CMAC
-            case TPM_ALG_CMAC:
+            case MSSIM_ALG_CMAC:
                 retVal =
                     CryptCmacStart(&state->state.smac, keyParameters, macAlg, key);
                 break;
@@ -79,9 +79,9 @@ CryptSmacStart(HASH_STATE*        state,
 // function because of the difference in number of parameters.
 UINT16
 CryptMacStart(HMAC_STATE*        state,
-              TPMU_PUBLIC_PARMS* keyParameters,
-              TPM_ALG_ID         macAlg,  // IN: the type of MAC
-              TPM2B*             key)
+              MSSIMU_PUBLIC_PARMS* keyParameters,
+              MSSIM_ALG_ID         macAlg,  // IN: the type of MAC
+              MSSIM2B*             key)
 {
     MemorySet(state, 0, sizeof(HMAC_STATE));
     if(CryptHashIsValidAlg(macAlg, FALSE))
@@ -114,7 +114,7 @@ CryptMacEnd(HMAC_STATE* state, UINT32 size, BYTE* buffer)
 //*** CryptMacEnd2B()
 // Dispatch to the MAC end function using a 2B.
 UINT16
-CryptMacEnd2B(HMAC_STATE* state, TPM2B* data)
+CryptMacEnd2B(HMAC_STATE* state, MSSIM2B* data)
 {
     return CryptMacEnd(state, data->size, data->buffer);
 }

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -42,33 +42,33 @@
 
 //*** AcToCapabilities()
 // This function returns a pointer to a list of AC capabilities.
-TPML_AC_CAPABILITIES* AcToCapabilities(TPMI_RH_AC component  // IN: component
+MSSIML_AC_CAPABILITIES* AcToCapabilities(MSSIMI_RH_AC component  // IN: component
 );
 
 //*** AcIsAccessible()
 // Function to determine if an AC handle references an actual AC
 //  Return Type: BOOL
-BOOL AcIsAccessible(TPM_HANDLE acHandle);
+BOOL AcIsAccessible(MSSIM_HANDLE acHandle);
 
 //*** AcCapabilitiesGet()
 // This function returns a list of capabilities associated with an AC
-//  Return Type: TPMI_YES_NO
+//  Return Type: MSSIMI_YES_NO
 //      YES         if there are more handles available
 //      NO          all the available handles has been returned
-TPMI_YES_NO
-AcCapabilitiesGet(TPMI_RH_AC            component,      // IN: the component
-                  TPM_AT                type,           // IN: start capability type
+MSSIMI_YES_NO
+AcCapabilitiesGet(MSSIMI_RH_AC            component,      // IN: the component
+                  MSSIM_AT                type,           // IN: start capability type
                   UINT32                count,          // IN: requested number
-                  TPML_AC_CAPABILITIES* capabilityList  // OUT: list of handle
+                  MSSIML_AC_CAPABILITIES* capabilityList  // OUT: list of handle
 );
 
 //*** AcSendObject()
 // Stub to handle sending of an AC object
-//  Return Type: TPM_RC
-TPM_RC
-AcSendObject(TPM_HANDLE      acHandle,  // IN: Handle of AC receiving object
+//  Return Type: MSSIM_RC
+MSSIM_RC
+AcSendObject(MSSIM_HANDLE      acHandle,  // IN: Handle of AC receiving object
              OBJECT*         object,    // IN: object structure to send
-             TPMS_AC_OUTPUT* acDataOut  // OUT: results of operation
+             MSSIMS_AC_OUTPUT* acDataOut  // OUT: results of operation
 );
 
 #endif  // _AC_SPT_FP_H_

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -39,12 +39,12 @@
 /*(See part 3 specification)
 // FieldUpgradeStart
 */
-TPM_RC
-TPM2_FieldUpgradeStart(FieldUpgradeStart_In* in  // IN: input parameter list
+MSSIM_RC
+MSSIM2_FieldUpgradeStart(FieldUpgradeStart_In* in  // IN: input parameter list
 )
 {
     // Not implemented
     UNUSED_PARAMETER(in);
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 #endif

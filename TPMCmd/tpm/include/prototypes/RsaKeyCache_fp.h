@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -50,8 +50,8 @@ LIB_EXPORT void RsaKeyCacheControl(int state);
 //  Return Type: BOOL
 //      TRUE(1)         key loaded
 //      FALSE(0)        key not loaded
-BOOL GetCachedRsaKey(TPMT_PUBLIC*    publicArea,
-                     TPMT_SENSITIVE* sensitive,
+BOOL GetCachedRsaKey(MSSIMT_PUBLIC*    publicArea,
+                     MSSIMT_SENSITIVE* sensitive,
                      RAND_STATE*     rand  // IN: if not NULL, the deterministic
                                            //     RNG state
 );

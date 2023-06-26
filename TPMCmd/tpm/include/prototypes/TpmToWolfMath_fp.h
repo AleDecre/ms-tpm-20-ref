@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -37,19 +37,19 @@
  *  Date: Aug 30, 2019  Time: 02:11:54PM
  */
 
-#ifndef _TPM_TO_WOLF_MATH_FP_H_
-#define _TPM_TO_WOLF_MATH_FP_H_
+#ifndef _MSSIM_TO_WOLF_MATH_FP_H_
+#define _MSSIM_TO_WOLF_MATH_FP_H_
 
 #ifdef MATH_LIB_WOLF
 
 //*** BnFromWolf()
-// This function converts a wolfcrypt mp_int to a TPM bignum. In this implementation
+// This function converts a wolfcrypt mp_int to a MSSIM bignum. In this implementation
 // it is assumed that wolfcrypt used the same format for a big number as does the
-// TPM -- an array of native-endian words in little-endian order.
+// MSSIM -- an array of native-endian words in little-endian order.
 void BnFromWolf(bigNum bn, mp_int* wolfBn);
 
 //*** BnToWolf()
-// This function converts a TPM bignum to a wolfcrypt mp_init, and has the same
+// This function converts a MSSIM bignum to a wolfcrypt mp_init, and has the same
 // assumptions as made by BnFromWolf()
 void BnToWolf(mp_int* toInit, bigConst initializer);
 
@@ -60,7 +60,7 @@ mp_int* MpInitialize(mp_int* toInit);
 #  if LIBRARY_COMPATIBILITY_CHECK
 //** MathLibraryCompatibililtyCheck()
 // This function is only used during development to make sure that the library
-// that is being referenced is using the same size of data structures as the TPM.
+// that is being referenced is using the same size of data structures as the MSSIM.
 BOOL MathLibraryCompatibilityCheck(void);
 #  endif
 
@@ -99,7 +99,7 @@ LIB_EXPORT BOOL BnModExp(bigNum   result,    // OUT: the result
 //*** BnModInverse()
 // Modular multiplicative inverse
 LIB_EXPORT BOOL BnModInverse(bigNum result, bigConst number, bigConst modulus);
-#  endif  // TPM_ALG_RSA
+#  endif  // MSSIM_ALG_RSA
 #  if ALG_ECC
 
 //*** PointFromWolf()
@@ -144,7 +144,7 @@ LIB_EXPORT BOOL BnEccAdd(bigPoint   R,  // OUT: computed point
                          pointConst Q,  // IN: second point
                          bigCurve   E   // IN: curve
 );
-#  endif  // TPM_ALG_ECC
+#  endif  // MSSIM_ALG_ECC
 #endif    // MATH_LIB_WOLF
 
-#endif  // _TPM_TO_WOLF_MATH_FP_H_
+#endif  // _MSSIM_TO_WOLF_MATH_FP_H_

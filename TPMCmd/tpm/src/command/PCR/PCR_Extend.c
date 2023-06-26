@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,11 +40,11 @@
 /*(See part 3 specification)
 // Update PCR
 */
-//  Return Type: TPM_RC
-//      TPM_RC_LOCALITY             current command locality is not allowed to
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_LOCALITY             current command locality is not allowed to
 //                                  extend the PCR referenced by 'pcrHandle'
-TPM_RC
-TPM2_PCR_Extend(PCR_Extend_In* in  // IN: input parameter list
+MSSIM_RC
+MSSIM2_PCR_Extend(PCR_Extend_In* in  // IN: input parameter list
 )
 {
     UINT32 i;
@@ -60,12 +60,12 @@ TPM2_PCR_Extend(PCR_Extend_In* in  // IN: input parameter list
     // function will not be called.
 
     // For NULL handle, do nothing and return success
-    if(in->pcrHandle == TPM_RH_NULL)
-        return TPM_RC_SUCCESS;
+    if(in->pcrHandle == MSSIM_RH_NULL)
+        return MSSIM_RC_SUCCESS;
 
     // Check if the extend operation is allowed by the current command locality
     if(!PCRIsExtendAllowed(in->pcrHandle))
-        return TPM_RC_LOCALITY;
+        return MSSIM_RC_LOCALITY;
 
     // If PCR is state saved and we need to update orderlyState, check NV
     // availability
@@ -83,7 +83,7 @@ TPM2_PCR_Extend(PCR_Extend_In* in  // IN: input parameter list
                   (BYTE*)&in->digests.digests[i].digest);
     }
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_PCR_Extend

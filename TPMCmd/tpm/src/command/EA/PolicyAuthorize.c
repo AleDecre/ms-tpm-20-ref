@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -42,21 +42,21 @@
 /*(See part 3 specification)
 // Change policy by a signature from authority
 */
-//  Return Type: TPM_RC
-//      TPM_RC_HASH         hash algorithm in 'keyName' is not supported
-//      TPM_RC_SIZE         'keyName' is not the correct size for its hash algorithm
-//      TPM_RC_VALUE        the current policyDigest of 'policySession' does not
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_HASH         hash algorithm in 'keyName' is not supported
+//      MSSIM_RC_SIZE         'keyName' is not the correct size for its hash algorithm
+//      MSSIM_RC_VALUE        the current policyDigest of 'policySession' does not
 //                          match 'approvedPolicy'; or 'checkTicket' doesn't match
 //                          the provided values
-TPM_RC
-TPM2_PolicyAuthorize(PolicyAuthorize_In* in  // IN: input parameter list
+MSSIM_RC
+MSSIM2_PolicyAuthorize(PolicyAuthorize_In* in  // IN: input parameter list
 )
 {
     SESSION*         session;
-    TPM2B_DIGEST     authHash;
+    MSSIM2B_DIGEST     authHash;
     HASH_STATE       hashState;
-    TPMT_TK_VERIFIED ticket;
-    TPM_ALG_ID       hashAlg;
+    MSSIMT_TK_VERIFIED ticket;
+    MSSIM_ALG_ID       hashAlg;
     UINT16           digestSize;
 
     // Input Validation
@@ -66,7 +66,7 @@ TPM2_PolicyAuthorize(PolicyAuthorize_In* in  // IN: input parameter list
 
     if(in->keySign.t.size < 2)
     {
-        return TPM_RCS_SIZE + RC_PolicyAuthorize_keySign;
+        return MSSIM_RCS_SIZE + RC_PolicyAuthorize_keySign;
     }
 
     // Extract from the Name of the key, the algorithm used to compute its Name
@@ -75,11 +75,11 @@ TPM2_PolicyAuthorize(PolicyAuthorize_In* in  // IN: input parameter list
     // 'keySign' parameter needs to use a supported hash algorithm, otherwise
     // can't tell how large the digest should be
     if(!CryptHashIsValidAlg(hashAlg, FALSE))
-        return TPM_RCS_HASH + RC_PolicyAuthorize_keySign;
+        return MSSIM_RCS_HASH + RC_PolicyAuthorize_keySign;
 
     digestSize = CryptHashGetDigestSize(hashAlg);
     if(digestSize != (in->keySign.t.size - 2))
-        return TPM_RCS_SIZE + RC_PolicyAuthorize_keySign;
+        return MSSIM_RCS_SIZE + RC_PolicyAuthorize_keySign;
 
     //If this is a trial policy, skip all validations
     if(session->attributes.isTrialPolicy == CLEAR)
@@ -87,9 +87,9 @@ TPM2_PolicyAuthorize(PolicyAuthorize_In* in  // IN: input parameter list
         // Check that "approvedPolicy" matches the current value of the
         // policyDigest in policy session
         if(!MemoryEqual2B(&session->u2.policyDigest.b, &in->approvedPolicy.b))
-            return TPM_RCS_VALUE + RC_PolicyAuthorize_approvedPolicy;
+            return MSSIM_RCS_VALUE + RC_PolicyAuthorize_approvedPolicy;
 
-        // Validate ticket TPMT_TK_VERIFIED
+        // Validate ticket MSSIMT_TK_VERIFIED
         // Compute aHash.  The authorizing object sign a digest
         //  aHash := hash(approvedPolicy || policyRef).
         // Start hash
@@ -104,13 +104,13 @@ TPM2_PolicyAuthorize(PolicyAuthorize_In* in  // IN: input parameter list
         // complete hash
         CryptHashEnd2B(&hashState, &authHash.b);
 
-        // re-compute TPMT_TK_VERIFIED
+        // re-compute MSSIMT_TK_VERIFIED
         TicketComputeVerified(
             in->checkTicket.hierarchy, &authHash, &in->keySign, &ticket);
 
         // Compare ticket digest.  If not match, return error
         if(!MemoryEqual2B(&in->checkTicket.digest.b, &ticket.digest.b))
-            return TPM_RCS_VALUE + RC_PolicyAuthorize_checkTicket;
+            return MSSIM_RCS_VALUE + RC_PolicyAuthorize_checkTicket;
     }
 
     // Internal Data Update
@@ -120,9 +120,9 @@ TPM2_PolicyAuthorize(PolicyAuthorize_In* in  // IN: input parameter list
 
     // Update policyDigest
     PolicyContextUpdate(
-        TPM_CC_PolicyAuthorize, &in->keySign, &in->policyRef, NULL, 0, session);
+        MSSIM_CC_PolicyAuthorize, &in->keySign, &in->policyRef, NULL, 0, session);
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_PolicyAuthorize

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -150,54 +150,54 @@
 #  define IF_ACT_F_IMPLEMENTED(op) op(F)
 #endif
 
-#ifndef TPM_RH_ACT_0
-#  error Need numeric definition for TPM_RH_ACT_0
+#ifndef MSSIM_RH_ACT_0
+#  error Need numeric definition for MSSIM_RH_ACT_0
 #endif
 
-#ifndef TPM_RH_ACT_1
-#  define TPM_RH_ACT_1 (TPM_RH_ACT_0 + 1)
+#ifndef MSSIM_RH_ACT_1
+#  define MSSIM_RH_ACT_1 (MSSIM_RH_ACT_0 + 1)
 #endif
-#ifndef TPM_RH_ACT_2
-#  define TPM_RH_ACT_2 (TPM_RH_ACT_0 + 2)
+#ifndef MSSIM_RH_ACT_2
+#  define MSSIM_RH_ACT_2 (MSSIM_RH_ACT_0 + 2)
 #endif
-#ifndef TPM_RH_ACT_3
-#  define TPM_RH_ACT_3 (TPM_RH_ACT_0 + 3)
+#ifndef MSSIM_RH_ACT_3
+#  define MSSIM_RH_ACT_3 (MSSIM_RH_ACT_0 + 3)
 #endif
-#ifndef TPM_RH_ACT_4
-#  define TPM_RH_ACT_4 (TPM_RH_ACT_0 + 4)
+#ifndef MSSIM_RH_ACT_4
+#  define MSSIM_RH_ACT_4 (MSSIM_RH_ACT_0 + 4)
 #endif
-#ifndef TPM_RH_ACT_5
-#  define TPM_RH_ACT_5 (TPM_RH_ACT_0 + 5)
+#ifndef MSSIM_RH_ACT_5
+#  define MSSIM_RH_ACT_5 (MSSIM_RH_ACT_0 + 5)
 #endif
-#ifndef TPM_RH_ACT_6
-#  define TPM_RH_ACT_6 (TPM_RH_ACT_0 + 6)
+#ifndef MSSIM_RH_ACT_6
+#  define MSSIM_RH_ACT_6 (MSSIM_RH_ACT_0 + 6)
 #endif
-#ifndef TPM_RH_ACT_7
-#  define TPM_RH_ACT_7 (TPM_RH_ACT_0 + 7)
+#ifndef MSSIM_RH_ACT_7
+#  define MSSIM_RH_ACT_7 (MSSIM_RH_ACT_0 + 7)
 #endif
-#ifndef TPM_RH_ACT_8
-#  define TPM_RH_ACT_8 (TPM_RH_ACT_0 + 8)
+#ifndef MSSIM_RH_ACT_8
+#  define MSSIM_RH_ACT_8 (MSSIM_RH_ACT_0 + 8)
 #endif
-#ifndef TPM_RH_ACT_9
-#  define TPM_RH_ACT_9 (TPM_RH_ACT_0 + 9)
+#ifndef MSSIM_RH_ACT_9
+#  define MSSIM_RH_ACT_9 (MSSIM_RH_ACT_0 + 9)
 #endif
-#ifndef TPM_RH_ACT_A
-#  define TPM_RH_ACT_A (TPM_RH_ACT_0 + 0xA)
+#ifndef MSSIM_RH_ACT_A
+#  define MSSIM_RH_ACT_A (MSSIM_RH_ACT_0 + 0xA)
 #endif
-#ifndef TPM_RH_ACT_B
-#  define TPM_RH_ACT_B (TPM_RH_ACT_0 + 0xB)
+#ifndef MSSIM_RH_ACT_B
+#  define MSSIM_RH_ACT_B (MSSIM_RH_ACT_0 + 0xB)
 #endif
-#ifndef TPM_RH_ACT_C
-#  define TPM_RH_ACT_C (TPM_RH_ACT_0 + 0xC)
+#ifndef MSSIM_RH_ACT_C
+#  define MSSIM_RH_ACT_C (MSSIM_RH_ACT_0 + 0xC)
 #endif
-#ifndef TPM_RH_ACT_D
-#  define TPM_RH_ACT_D (TPM_RH_ACT_0 + 0xD)
+#ifndef MSSIM_RH_ACT_D
+#  define MSSIM_RH_ACT_D (MSSIM_RH_ACT_0 + 0xD)
 #endif
-#ifndef TPM_RH_ACT_E
-#  define TPM_RH_ACT_E (TPM_RH_ACT_0 + 0xE)
+#ifndef MSSIM_RH_ACT_E
+#  define MSSIM_RH_ACT_E (MSSIM_RH_ACT_0 + 0xE)
 #endif
-#ifndef TPM_RH_ACT_F
-#  define TPM_RH_ACT_F (TPM_RH_ACT_0 + 0xF)
+#ifndef MSSIM_RH_ACT_F
+#  define MSSIM_RH_ACT_F (MSSIM_RH_ACT_0 + 0xF)
 #endif
 
 #define FOR_EACH_ACT(op)   \
@@ -222,14 +222,14 @@
 //#define ACT_MASK(N)     | (1 << 0x##N)
 //#define ACT_IMPLEMENTED_MASK    (0 FOR_EACH_ACT(ACT_MASK))
 
-#define CASE_ACT_HANDLE(N) case TPM_RH_ACT_##N:
+#define CASE_ACT_HANDLE(N) case MSSIM_RH_ACT_##N:
 #define CASE_ACT_NUMBER(N) case 0x##N:
 
 typedef struct ACT_STATE
 {
     UINT32       remaining;
-    TPM_ALG_ID   hashAlg;
-    TPM2B_DIGEST authPolicy;
+    MSSIM_ALG_ID   hashAlg;
+    MSSIM2B_DIGEST authPolicy;
 } ACT_STATE, *P_ACT_STATE;
 
 #endif  // _ACT_H_

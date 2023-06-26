@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,17 +45,17 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_PCR  pcrHandle;
-    TPM2B_DIGEST auth;
+    MSSIMI_DH_PCR  pcrHandle;
+    MSSIM2B_DIGEST auth;
 } PCR_SetAuthValue_In;
 
 // Response code modifiers
-#    define RC_PCR_SetAuthValue_pcrHandle (TPM_RC_H + TPM_RC_1)
-#    define RC_PCR_SetAuthValue_auth      (TPM_RC_P + TPM_RC_1)
+#    define RC_PCR_SetAuthValue_pcrHandle (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_PCR_SetAuthValue_auth      (MSSIM_RC_P + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_PCR_SetAuthValue(PCR_SetAuthValue_In* in);
+MSSIM_RC
+MSSIM2_PCR_SetAuthValue(PCR_SetAuthValue_In* in);
 
 #  endif  // _PCR_Set_Auth_Value_FP_H_
 #endif    // CC_PCR_SetAuthValue

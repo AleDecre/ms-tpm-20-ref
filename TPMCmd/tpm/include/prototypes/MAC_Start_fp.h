@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,25 +45,25 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT      handle;
-    TPM2B_AUTH          auth;
-    TPMI_ALG_MAC_SCHEME inScheme;
+    MSSIMI_DH_OBJECT      handle;
+    MSSIM2B_AUTH          auth;
+    MSSIMI_ALG_MAC_SCHEME inScheme;
 } MAC_Start_In;
 
 // Output structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT sequenceHandle;
+    MSSIMI_DH_OBJECT sequenceHandle;
 } MAC_Start_Out;
 
 // Response code modifiers
-#    define RC_MAC_Start_handle   (TPM_RC_H + TPM_RC_1)
-#    define RC_MAC_Start_auth     (TPM_RC_P + TPM_RC_1)
-#    define RC_MAC_Start_inScheme (TPM_RC_P + TPM_RC_2)
+#    define RC_MAC_Start_handle   (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_MAC_Start_auth     (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_MAC_Start_inScheme (MSSIM_RC_P + MSSIM_RC_2)
 
 // Function prototype
-TPM_RC
-TPM2_MAC_Start(MAC_Start_In* in, MAC_Start_Out* out);
+MSSIM_RC
+MSSIM2_MAC_Start(MAC_Start_In* in, MAC_Start_Out* out);
 
 #  endif  // _MAC_Start_FP_H_
 #endif    // CC_MAC_Start

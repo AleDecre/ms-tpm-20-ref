@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -38,19 +38,19 @@
 #if CC_Startup  // Conditional expansion of this file
 
 /*(See part 3 specification)
-// Initialize TPM because a system-wide reset
+// Initialize MSSIM because a system-wide reset
 */
-//  Return Type: TPM_RC
-//      TPM_RC_LOCALITY             a Startup(STATE) does not have the same H-CRTM
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_LOCALITY             a Startup(STATE) does not have the same H-CRTM
 //                                  state as the previous Startup() or the locality
 //                                  of the startup is not 0 or 3
-//      TPM_RC_NV_UNINITIALIZED     the saved state cannot be recovered and a
+//      MSSIM_RC_NV_UNINITIALIZED     the saved state cannot be recovered and a
 //                                  Startup(CLEAR) is required.
-//      TPM_RC_VALUE                'startup' type is not compatible with previous
+//      MSSIM_RC_VALUE                'startup' type is not compatible with previous
 //                                  shutdown sequence
 
-TPM_RC
-TPM2_Startup(Startup_In* in  // IN: input parameter list
+MSSIM_RC
+MSSIM2_Startup(Startup_In* in  // IN: input parameter list
 )
 {
     STARTUP_TYPE startup;
@@ -70,7 +70,7 @@ TPM2_Startup(Startup_In* in  // IN: input parameter list
     // Input Validation
     // Check that the locality is a supported value
     if(locality != 0 && locality != 3)
-        return TPM_RC_LOCALITY;
+        return MSSIM_RC_LOCALITY;
     // If there was a H-CRTM, then treat the locality as being 3
     // regardless of what the Startup() was. This is done to preserve the
     // H-CRTM PCR so that they don't get overwritten with the normal
@@ -96,34 +96,34 @@ TPM2_Startup(Startup_In* in  // IN: input parameter list
     if(IS_ORDERLY(g_prevOrderlyState))
         g_prevOrderlyState &= ~(PRE_STARTUP_FLAG | STARTUP_LOCALITY_3);
     // If this is a Resume,
-    if(in->startupType == TPM_SU_STATE)
+    if(in->startupType == MSSIM_SU_STATE)
     {
-        // then there must have been a prior TPM2_ShutdownState(STATE)
-        if(g_prevOrderlyState != TPM_SU_STATE)
-            return TPM_RCS_VALUE + RC_Startup_startupType;
+        // then there must have been a prior MSSIM2_ShutdownState(STATE)
+        if(g_prevOrderlyState != MSSIM_SU_STATE)
+            return MSSIM_RCS_VALUE + RC_Startup_startupType;
         // and the part of NV used for state save must have been recovered
         // correctly.
         // NOTE: if this fails, then the caller will need to do Startup(CLEAR). The
         // code for Startup(Clear) cannot fail if the NV can't be read correctly
-        // because that would prevent the TPM from ever getting unstuck.
+        // because that would prevent the MSSIM from ever getting unstuck.
         if(g_nvOk == FALSE)
-            return TPM_RC_NV_UNINITIALIZED;
+            return MSSIM_RC_NV_UNINITIALIZED;
         // For Resume, the H-CRTM has to be the same as the previous boot
         if(g_DrtmPreStartup != ((gp.orderlyState & PRE_STARTUP_FLAG) != 0))
-            return TPM_RCS_VALUE + RC_Startup_startupType;
+            return MSSIM_RCS_VALUE + RC_Startup_startupType;
         if(g_StartupLocality3 != ((gp.orderlyState & STARTUP_LOCALITY_3) != 0))
-            return TPM_RC_LOCALITY;
+            return MSSIM_RC_LOCALITY;
     }
     // Clean up the gp state
     gp.orderlyState = g_prevOrderlyState;
 
     // Internal Date Update
-    if((gp.orderlyState == TPM_SU_STATE) && (g_nvOk == TRUE))
+    if((gp.orderlyState == MSSIM_SU_STATE) && (g_nvOk == TRUE))
     {
         // Always read the data that is only cleared on a Reset because this is not
         // a reset
         NvRead(&gr, NV_STATE_RESET_DATA, sizeof(gr));
-        if(in->startupType == TPM_SU_STATE)
+        if(in->startupType == MSSIM_SU_STATE)
         {
             // If this is a startup STATE (a Resume) need to read the data
             // that is cleared on a startup CLEAR because this is not a Reset
@@ -135,16 +135,16 @@ TPM2_Startup(Startup_In* in  // IN: input parameter list
             startup = SU_RESTART;
     }
     else
-        // Will do a TPM reset if Shutdown(CLEAR) and Startup(CLEAR) or no shutdown
+        // Will do a MSSIM reset if Shutdown(CLEAR) and Startup(CLEAR) or no shutdown
         // or there was a failure reading the NV data.
         startup = SU_RESET;
     // Startup for cryptographic library. Don't do this until after the orderly
     // state has been read in from NV.
     OK = OK && CryptStartup(startup);
 
-    // When the cryptographic library has been started, indicate that a TPM2_Startup
+    // When the cryptographic library has been started, indicate that a MSSIM2_Startup
     // command has been received.
-    OK = OK && TPMRegisterStartup();
+    OK = OK && MSSIMRegisterStartup();
 
     // Read the platform unique value that is used as VENDOR_PERMANENT
     // authorization value
@@ -202,11 +202,11 @@ TPM2_Startup(Startup_In* in  // IN: input parameter list
 
                 gp.totalResetCount++;
                 // We do not expect the total reset counter overflow during the life
-                // time of TPM.  if it ever happens, TPM will be put to failure mode
+                // time of MSSIM.  if it ever happens, MSSIM will be put to failure mode
                 // and there is no way to recover it.
                 // The reason that there is no recovery is that we don't increment
                 // the NV totalResetCount when incrementing would make it 0. When the
-                // TPM starts up again, the old value of totalResetCount will be read
+                // MSSIM starts up again, the old value of totalResetCount will be read
                 // and we will get right back to here with the increment failing.
                 if(gp.totalResetCount == 0)
                     FAIL(FATAL_ERROR_INTERNAL);
@@ -235,12 +235,12 @@ TPM2_Startup(Startup_In* in  // IN: input parameter list
 
     OK              = OK && NV_SYNC_PERSISTENT(orderlyState);
 
-    // This can be reset after the first completion of a TPM2_Startup() after
+    // This can be reset after the first completion of a MSSIM2_Startup() after
     // a power loss. It can probably be reset earlier but this is an OK place.
     if(OK)
         g_powerWasLost = FALSE;
 
-    return (OK) ? TPM_RC_SUCCESS : TPM_RC_FAILURE;
+    return (OK) ? MSSIM_RC_SUCCESS : MSSIM_RC_FAILURE;
 }
 
 #endif  // CC_Startup

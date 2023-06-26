@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,19 +45,19 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_RH_PROVISION authHandle;
-    TPM2B_AUTH        auth;
-    TPM2B_NV_PUBLIC   publicInfo;
+    MSSIMI_RH_PROVISION authHandle;
+    MSSIM2B_AUTH        auth;
+    MSSIM2B_NV_PUBLIC   publicInfo;
 } NV_DefineSpace_In;
 
 // Response code modifiers
-#    define RC_NV_DefineSpace_authHandle (TPM_RC_H + TPM_RC_1)
-#    define RC_NV_DefineSpace_auth       (TPM_RC_P + TPM_RC_1)
-#    define RC_NV_DefineSpace_publicInfo (TPM_RC_P + TPM_RC_2)
+#    define RC_NV_DefineSpace_authHandle (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_NV_DefineSpace_auth       (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_NV_DefineSpace_publicInfo (MSSIM_RC_P + MSSIM_RC_2)
 
 // Function prototype
-TPM_RC
-TPM2_NV_DefineSpace(NV_DefineSpace_In* in);
+MSSIM_RC
+MSSIM2_NV_DefineSpace(NV_DefineSpace_In* in);
 
 #  endif  // _NV_Define_Space_FP_H_
 #endif    // CC_NV_DefineSpace

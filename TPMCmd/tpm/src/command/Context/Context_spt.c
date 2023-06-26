@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -41,7 +41,7 @@
 
 //*** ComputeContextProtectionKey()
 // This function retrieves the symmetric protection key for context encryption
-// It is used by TPM2_ConextSave and TPM2_ContextLoad to create the symmetric
+// It is used by MSSIM2_ConextSave and MSSIM2_ContextLoad to create the symmetric
 // encryption key and iv
 /*(See part 1 specification)
     KDFa is used to generate the symmetric encryption key and IV. The parameters
@@ -50,28 +50,28 @@
     where
     hashAlg         a vendor-defined hash algorithm
     hProof          the hierarchy proof as selected by the hierarchy parameter
-                    of the TPMS_CONTEXT
+                    of the MSSIMS_CONTEXT
     vendorString    a value used to differentiate the uses of the KDF
-    sequence        the sequence parameter of the TPMS_CONTEXT
-    handle          the handle parameter of the TPMS_CONTEXT
+    sequence        the sequence parameter of the MSSIMS_CONTEXT
+    handle          the handle parameter of the MSSIMS_CONTEXT
     bits            the number of bits needed for a symmetric key and IV for
                     the context encryption
 */
 //  Return Type: void
-void ComputeContextProtectionKey(TPMS_CONTEXT*  contextBlob,  // IN: context blob
-                                 TPM2B_SYM_KEY* symKey,  // OUT: the symmetric key
-                                 TPM2B_IV*      iv       // OUT: the IV.
+void ComputeContextProtectionKey(MSSIMS_CONTEXT*  contextBlob,  // IN: context blob
+                                 MSSIM2B_SYM_KEY* symKey,  // OUT: the symmetric key
+                                 MSSIM2B_IV*      iv       // OUT: the IV.
 )
 {
     UINT16 symKeyBits;          // number of bits in the parent's
                                 //   symmetric key
-    TPM2B_PROOF* proof = NULL;  // the proof value to use. Is null for
+    MSSIM2B_PROOF* proof = NULL;  // the proof value to use. Is null for
                                 //   everything but a primary object in
                                 //   the Endorsement Hierarchy
 
-    BYTE       kdfResult[sizeof(TPMU_HA) * 2];  // Value produced by the KDF
+    BYTE       kdfResult[sizeof(MSSIMU_HA) * 2];  // Value produced by the KDF
 
-    TPM2B_DATA sequence2B, handle2B;
+    MSSIM2B_DATA sequence2B, handle2B;
 
     // Get proof value
     proof = HierarchyGetProof(contextBlob->hierarchy);
@@ -116,8 +116,8 @@ void ComputeContextProtectionKey(TPMS_CONTEXT*  contextBlob,  // IN: context blo
 
 //*** ComputeContextIntegrity()
 // Generate the integrity hash for a context
-//       It is used by TPM2_ContextSave to create an integrity hash
-//       and by TPM2_ContextLoad to compare an integrity hash
+//       It is used by MSSIM2_ContextSave to create an integrity hash
+//       and by MSSIM2_ContextLoad to compare an integrity hash
 /*(See part 1 specification)
     The HMAC integrity computation for a saved context is:
     HMACvendorAlg(hProof, resetValue {|| clearCount} || sequence || handle ||
@@ -125,25 +125,25 @@ void ComputeContextProtectionKey(TPMS_CONTEXT*  contextBlob,  // IN: context blo
     where
     HMACvendorAlg       HMAC using a vendor-defined hash algorithm
     hProof              the hierarchy proof as selected by the hierarchy
-                        parameter of the TPMS_CONTEXT
-    resetValue          either a counter value that increments on each TPM Reset
-                        and is not reset over the lifetime of the TPM or a random
-                        value that changes on each TPM Reset and has the size of
+                        parameter of the MSSIMS_CONTEXT
+    resetValue          either a counter value that increments on each MSSIM Reset
+                        and is not reset over the lifetime of the MSSIM or a random
+                        value that changes on each MSSIM Reset and has the size of
                         the digest produced by vendorAlg
-    clearCount          a counter value that is incremented on each TPM Reset
-                        or TPM Restart. This value is only included if the handle
+    clearCount          a counter value that is incremented on each MSSIM Reset
+                        or MSSIM Restart. This value is only included if the handle
                         value is 0x80000002.
-    sequence            the sequence parameter of the TPMS_CONTEXT
-    handle              the handle parameter of the TPMS_CONTEXT
+    sequence            the sequence parameter of the MSSIMS_CONTEXT
+    handle              the handle parameter of the MSSIMS_CONTEXT
     encContext          the encrypted context blob
 */
 //  Return Type: void
-void ComputeContextIntegrity(TPMS_CONTEXT* contextBlob,  // IN: context blob
-                             TPM2B_DIGEST* integrity     // OUT: integrity
+void ComputeContextIntegrity(MSSIMS_CONTEXT* contextBlob,  // IN: context blob
+                             MSSIM2B_DIGEST* integrity     // OUT: integrity
 )
 {
     HMAC_STATE   hmacState;
-    TPM2B_PROOF* proof;
+    MSSIM2B_PROOF* proof;
     UINT16       integritySize;
 
     // Get proof value
@@ -157,12 +157,12 @@ void ComputeContextIntegrity(TPMS_CONTEXT* contextBlob,  // IN: context blob
     integritySize = sizeof(integrity->t.size) + integrity->t.size;
 
     // Adding total reset counter so that the context cannot be
-    // used after a TPM Reset
+    // used after a MSSIM Reset
     CryptDigestUpdateInt(
         &hmacState.hashState, sizeof(gp.totalResetCount), gp.totalResetCount);
 
     // If this is a ST_CLEAR object, add the clear count
-    // so that this contest cannot be loaded after a TPM Restart
+    // so that this contest cannot be loaded after a MSSIM Restart
     if(contextBlob->savedHandle == 0x80000002)
         CryptDigestUpdateInt(
             &hmacState.hashState, sizeof(gr.clearCount), gr.clearCount);

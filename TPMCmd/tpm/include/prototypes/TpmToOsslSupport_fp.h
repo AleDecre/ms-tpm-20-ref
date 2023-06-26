@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -37,8 +37,8 @@
  *  Date: Mar 28, 2019  Time: 08:25:19PM
  */
 
-#ifndef _TPM_TO_OSSL_SUPPORT_FP_H_
-#define _TPM_TO_OSSL_SUPPORT_FP_H_
+#ifndef _MSSIM_TO_OSSL_SUPPORT_FP_H_
+#define _MSSIM_TO_OSSL_SUPPORT_FP_H_
 
 #if defined(HASH_LIB_OSSL) || defined(MATH_LIB_OSSL) || defined(SYM_LIB_OSSL)
 
@@ -66,4 +66,4 @@ BN_CTX* OsslPushContext(BN_CTX* CTX);
 void OsslPopContext(BN_CTX* CTX);
 #endif  // HASH_LIB_OSSL || MATH_LIB_OSSL || SYM_LIB_OSSL
 
-#endif  // _TPM_TO_OSSL_SUPPORT_FP_H_
+#endif  // _MSSIM_TO_OSSL_SUPPORT_FP_H_

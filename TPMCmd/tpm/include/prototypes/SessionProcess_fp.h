@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,13 +45,13 @@
 // A handle is exempted if it is:
 //  a) a primary seed handle;
 //  b) an object with noDA bit SET;
-//  c) an NV Index with TPMA_NV_NO_DA bit SET; or
+//  c) an NV Index with MSSIMA_NV_NO_DA bit SET; or
 //  d) a PCR handle.
 //
 //  Return Type: BOOL
 //      TRUE(1)         handle is exempted from DA logic
 //      FALSE(0)        handle is not exempted from DA logic
-BOOL IsDAExempted(TPM_HANDLE handle  // IN: entity handle
+BOOL IsDAExempted(MSSIM_HANDLE handle  // IN: entity handle
 );
 
 //*** ClearCpRpHashes()
@@ -70,10 +70,10 @@ BOOL CompareNameHash(COMMAND* command,  // IN: main parsing structure
 // has been properly provided. It also processes audit session and passes the
 // information of encryption sessions to parameter encryption module.
 //
-//  Return Type: TPM_RC
+//  Return Type: MSSIM_RC
 //        various           parsing failure or authorization failure
 //
-TPM_RC
+MSSIM_RC
 ParseSessionBuffer(COMMAND* command  // IN: the structure that contains
 );
 
@@ -81,10 +81,10 @@ ParseSessionBuffer(COMMAND* command  // IN: the structure that contains
 // Function to process a command with no session associated.
 // The function makes sure all the handles in the command require no authorization.
 //
-//  Return Type: TPM_RC
-//      TPM_RC_AUTH_MISSING         failure - one or more handles require
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_AUTH_MISSING         failure - one or more handles require
 //                                  authorization
-TPM_RC
+MSSIM_RC
 CheckAuthNoSession(COMMAND* command  // IN: command parsing structure
 );
 
@@ -96,7 +96,7 @@ CheckAuthNoSession(COMMAND* command  // IN: command parsing structure
 // in the response buffer to be filled. This is where the authorization sessions
 // will go, if any. command->parameterSize is the number of bytes that have been
 // marshaled as parameters in the output buffer.
-TPM_RC
+MSSIM_RC
 BuildResponseSession(COMMAND* command  // IN: structure that has relevant command
                                        //     information
 );
@@ -105,6 +105,6 @@ BuildResponseSession(COMMAND* command  // IN: structure that has relevant comman
 // This function deals with the case where an entity associated with an authorization
 // is deleted during command processing. The primary use of this is to support
 // UndefineSpaceSpecial().
-void SessionRemoveAssociationToHandle(TPM_HANDLE handle);
+void SessionRemoveAssociationToHandle(MSSIM_HANDLE handle);
 
 #endif  // _SESSION_PROCESS_FP_H_

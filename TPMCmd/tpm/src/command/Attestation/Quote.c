@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -41,44 +41,44 @@
 /*(See part 3 specification)
 // quote PCR values
 */
-//  Return Type: TPM_RC
-//      TPM_RC_KEY              'signHandle' does not reference a signing key;
-//      TPM_RC_SCHEME           the scheme is not compatible with sign key type,
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_KEY              'signHandle' does not reference a signing key;
+//      MSSIM_RC_SCHEME           the scheme is not compatible with sign key type,
 //                              or input scheme is not compatible with default
 //                              scheme, or the chosen scheme is not a valid
 //                              sign scheme
-TPM_RC
-TPM2_Quote(Quote_In*  in,  // IN: input parameter list
+MSSIM_RC
+MSSIM2_Quote(Quote_In*  in,  // IN: input parameter list
            Quote_Out* out  // OUT: output parameter list
 )
 {
-    TPMI_ALG_HASH hashAlg;
-    TPMS_ATTEST   quoted;
+    MSSIMI_ALG_HASH hashAlg;
+    MSSIMS_ATTEST   quoted;
     OBJECT*       signObject = HandleToObject(in->signHandle);
     // Input Validation
     if(!IsSigningObject(signObject))
-        return TPM_RCS_KEY + RC_Quote_signHandle;
+        return MSSIM_RCS_KEY + RC_Quote_signHandle;
     if(!CryptSelectSignScheme(signObject, &in->inScheme))
-        return TPM_RCS_SCHEME + RC_Quote_inScheme;
+        return MSSIM_RCS_SCHEME + RC_Quote_inScheme;
 
     // Command Output
 
     // Filling in attest information
     // Common fields
-    // FillInAttestInfo may return TPM_RC_SCHEME or TPM_RC_KEY
+    // FillInAttestInfo may return MSSIM_RC_SCHEME or MSSIM_RC_KEY
     FillInAttestInfo(in->signHandle, &in->inScheme, &in->qualifyingData, &quoted);
 
     // Quote specific fields
     // Attestation type
-    quoted.type = TPM_ST_ATTEST_QUOTE;
+    quoted.type = MSSIM_ST_ATTEST_QUOTE;
 
     // Get hash algorithm in sign scheme.  This hash algorithm is used to
     // compute PCR digest. If there is no algorithm, then the PCR cannot
-    // be digested and this command returns TPM_RC_SCHEME
+    // be digested and this command returns MSSIM_RC_SCHEME
     hashAlg = in->inScheme.details.any.hashAlg;
 
-    if(hashAlg == TPM_ALG_NULL)
-        return TPM_RCS_SCHEME + RC_Quote_inScheme;
+    if(hashAlg == MSSIM_ALG_NULL)
+        return MSSIM_RCS_SCHEME + RC_Quote_inScheme;
 
     // Compute PCR digest
     PCRComputeCurrentDigest(

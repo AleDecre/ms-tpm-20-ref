@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,28 +45,28 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_RH_ENDORSEMENT privacyAdminHandle;
-    TPMI_DH_OBJECT      signHandle;
-    TPM2B_DATA          qualifyingData;
-    TPMT_SIG_SCHEME     inScheme;
+    MSSIMI_RH_ENDORSEMENT privacyAdminHandle;
+    MSSIMI_DH_OBJECT      signHandle;
+    MSSIM2B_DATA          qualifyingData;
+    MSSIMT_SIG_SCHEME     inScheme;
 } GetTime_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_ATTEST   timeInfo;
-    TPMT_SIGNATURE signature;
+    MSSIM2B_ATTEST   timeInfo;
+    MSSIMT_SIGNATURE signature;
 } GetTime_Out;
 
 // Response code modifiers
-#    define RC_GetTime_privacyAdminHandle (TPM_RC_H + TPM_RC_1)
-#    define RC_GetTime_signHandle         (TPM_RC_H + TPM_RC_2)
-#    define RC_GetTime_qualifyingData     (TPM_RC_P + TPM_RC_1)
-#    define RC_GetTime_inScheme           (TPM_RC_P + TPM_RC_2)
+#    define RC_GetTime_privacyAdminHandle (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_GetTime_signHandle         (MSSIM_RC_H + MSSIM_RC_2)
+#    define RC_GetTime_qualifyingData     (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_GetTime_inScheme           (MSSIM_RC_P + MSSIM_RC_2)
 
 // Function prototype
-TPM_RC
-TPM2_GetTime(GetTime_In* in, GetTime_Out* out);
+MSSIM_RC
+MSSIM2_GetTime(GetTime_In* in, GetTime_Out* out);
 
 #  endif  // _Get_Time_FP_H_
 #endif    // CC_GetTime

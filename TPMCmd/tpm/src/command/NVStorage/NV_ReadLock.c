@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,46 +40,46 @@
 /*(See part 3 specification)
 // Set read lock on a NV index
 */
-//  Return Type: TPM_RC
-//      TPM_RC_ATTRIBUTES               TPMA_NV_READ_STCLEAR is not SET so
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_ATTRIBUTES               MSSIMA_NV_READ_STCLEAR is not SET so
 //                                      Index referenced by 'nvIndex' may not be
 //                                      write locked
-//      TPM_RC_NV_AUTHORIZATION         the authorization was valid but the
+//      MSSIM_RC_NV_AUTHORIZATION         the authorization was valid but the
 //                                      authorizing entity ('authHandle')
 //                                      is not allowed to read from the Index
 //                                      referenced by 'nvIndex'
-TPM_RC
-TPM2_NV_ReadLock(NV_ReadLock_In* in  // IN: input parameter list
+MSSIM_RC
+MSSIM2_NV_ReadLock(NV_ReadLock_In* in  // IN: input parameter list
 )
 {
-    TPM_RC result;
+    MSSIM_RC result;
     NV_REF locator;
     // The referenced index has been checked multiple times before this is called
     // so it must be present and will be loaded into cache
     NV_INDEX* nvIndex      = NvGetIndexInfo(in->nvIndex, &locator);
-    TPMA_NV   nvAttributes = nvIndex->publicArea.attributes;
+    MSSIMA_NV   nvAttributes = nvIndex->publicArea.attributes;
 
     // Input Validation
     // Common read access checks. NvReadAccessChecks() may return
-    // TPM_RC_NV_AUTHORIZATION, TPM_RC_NV_LOCKED, or TPM_RC_NV_UNINITIALIZED
+    // MSSIM_RC_NV_AUTHORIZATION, MSSIM_RC_NV_LOCKED, or MSSIM_RC_NV_UNINITIALIZED
     result = NvReadAccessChecks(in->authHandle, in->nvIndex, nvAttributes);
-    if(result == TPM_RC_NV_AUTHORIZATION)
-        return TPM_RC_NV_AUTHORIZATION;
+    if(result == MSSIM_RC_NV_AUTHORIZATION)
+        return MSSIM_RC_NV_AUTHORIZATION;
     // Index is already locked for write
-    else if(result == TPM_RC_NV_LOCKED)
-        return TPM_RC_SUCCESS;
+    else if(result == MSSIM_RC_NV_LOCKED)
+        return MSSIM_RC_SUCCESS;
 
-    // If NvReadAccessChecks return TPM_RC_NV_UNINITALIZED, then continue.
+    // If NvReadAccessChecks return MSSIM_RC_NV_UNINITALIZED, then continue.
     // It is not an error to read lock an uninitialized Index.
 
-    // if TPMA_NV_READ_STCLEAR is not set, the index can not be read-locked
-    if(!IS_ATTRIBUTE(nvAttributes, TPMA_NV, READ_STCLEAR))
-        return TPM_RCS_ATTRIBUTES + RC_NV_ReadLock_nvIndex;
+    // if MSSIMA_NV_READ_STCLEAR is not set, the index can not be read-locked
+    if(!IS_ATTRIBUTE(nvAttributes, MSSIMA_NV, READ_STCLEAR))
+        return MSSIM_RCS_ATTRIBUTES + RC_NV_ReadLock_nvIndex;
 
     // Internal Data Update
 
     // Set the READLOCK attribute
-    SET_ATTRIBUTE(nvAttributes, TPMA_NV, READLOCKED);
+    SET_ATTRIBUTE(nvAttributes, MSSIMA_NV, READLOCKED);
 
     // Write NV info back
     return NvWriteIndexAttributes(nvIndex->publicArea.nvIndex, locator, nvAttributes);

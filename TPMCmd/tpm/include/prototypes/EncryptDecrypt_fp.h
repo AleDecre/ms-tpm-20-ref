@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,30 +45,30 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT       keyHandle;
-    TPMI_YES_NO          decrypt;
-    TPMI_ALG_CIPHER_MODE mode;
-    TPM2B_IV             ivIn;
-    TPM2B_MAX_BUFFER     inData;
+    MSSIMI_DH_OBJECT       keyHandle;
+    MSSIMI_YES_NO          decrypt;
+    MSSIMI_ALG_CIPHER_MODE mode;
+    MSSIM2B_IV             ivIn;
+    MSSIM2B_MAX_BUFFER     inData;
 } EncryptDecrypt_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_MAX_BUFFER outData;
-    TPM2B_IV         ivOut;
+    MSSIM2B_MAX_BUFFER outData;
+    MSSIM2B_IV         ivOut;
 } EncryptDecrypt_Out;
 
 // Response code modifiers
-#    define RC_EncryptDecrypt_keyHandle (TPM_RC_H + TPM_RC_1)
-#    define RC_EncryptDecrypt_decrypt   (TPM_RC_P + TPM_RC_1)
-#    define RC_EncryptDecrypt_mode      (TPM_RC_P + TPM_RC_2)
-#    define RC_EncryptDecrypt_ivIn      (TPM_RC_P + TPM_RC_3)
-#    define RC_EncryptDecrypt_inData    (TPM_RC_P + TPM_RC_4)
+#    define RC_EncryptDecrypt_keyHandle (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_EncryptDecrypt_decrypt   (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_EncryptDecrypt_mode      (MSSIM_RC_P + MSSIM_RC_2)
+#    define RC_EncryptDecrypt_ivIn      (MSSIM_RC_P + MSSIM_RC_3)
+#    define RC_EncryptDecrypt_inData    (MSSIM_RC_P + MSSIM_RC_4)
 
 // Function prototype
-TPM_RC
-TPM2_EncryptDecrypt(EncryptDecrypt_In* in, EncryptDecrypt_Out* out);
+MSSIM_RC
+MSSIM2_EncryptDecrypt(EncryptDecrypt_In* in, EncryptDecrypt_Out* out);
 
 #  endif  // _Encrypt_Decrypt_FP_H_
 #endif    // CC_EncryptDecrypt

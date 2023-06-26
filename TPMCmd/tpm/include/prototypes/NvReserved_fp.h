@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -54,11 +54,11 @@ void NvCheckState(void);
 BOOL NvCommit(void);
 
 //*** NvPowerOn()
-//  This function is called at _TPM_Init to initialize the NV environment.
+//  This function is called at _MSSIM_Init to initialize the NV environment.
 //  Return Type: BOOL
 //      TRUE(1)         all NV was initialized
 //      FALSE(0)        the NV containing saved state had an error and
-//                      TPM2_Startup(CLEAR) is required
+//                      MSSIM2_Startup(CLEAR) is required
 BOOL NvPowerOn(void);
 
 //*** NvManufacture()
@@ -79,7 +79,7 @@ void NvRead(void*  outBuffer,  // OUT: buffer to receive data
 
 //*** NvWrite()
 // This function is used to post reserved data for writing to NV memory. Before
-// the TPM completes the operation, the value will be written.
+// the MSSIM completes the operation, the value will be written.
 BOOL NvWrite(UINT32 nvOffset,  // IN: location in NV to receive data
              UINT32 size,      // IN: size of the data to move
              void*  inBuffer   // IN: location containing data to write

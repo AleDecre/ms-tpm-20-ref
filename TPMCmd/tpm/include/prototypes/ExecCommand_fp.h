@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -73,7 +73,7 @@
 //  'request' and 'response' may point to the same buffer
 //
 // Note: As of February, 2016, the failure processing has been moved to the
-// platform-specific code. When the TPM code encounters an unrecoverable failure, it
+// platform-specific code. When the MSSIM code encounters an unrecoverable failure, it
 // will SET g_inFailureMode and call _plat__Fail(). That function should not return
 // but may call ExecuteCommand().
 //

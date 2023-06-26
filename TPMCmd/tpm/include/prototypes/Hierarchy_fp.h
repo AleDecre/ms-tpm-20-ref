@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -42,13 +42,13 @@
 
 //*** HierarchyPreInstall()
 // This function performs the initialization functions for the hierarchy
-// when the TPM is simulated. This function should not be called if the
-// TPM is not in a manufacturing mode at the manufacturer, or in a simulated
+// when the MSSIM is simulated. This function should not be called if the
+// MSSIM is not in a manufacturing mode at the manufacturer, or in a simulated
 // environment.
 void HierarchyPreInstall_Init(void);
 
 //*** HierarchyStartup()
-// This function is called at TPM2_Startup() to initialize the hierarchy
+// This function is called at MSSIM2_Startup() to initialize the hierarchy
 // related values.
 BOOL HierarchyStartup(STARTUP_TYPE type  // IN: start up type
 );
@@ -56,21 +56,21 @@ BOOL HierarchyStartup(STARTUP_TYPE type  // IN: start up type
 //*** HierarchyGetProof()
 // This function finds the proof value associated with a hierarchy.It returns a
 // pointer to the proof value.
-TPM2B_PROOF* HierarchyGetProof(TPMI_RH_HIERARCHY hierarchy  // IN: hierarchy constant
+MSSIM2B_PROOF* HierarchyGetProof(MSSIMI_RH_HIERARCHY hierarchy  // IN: hierarchy constant
 );
 
 //*** HierarchyGetPrimarySeed()
 // This function returns the primary seed of a hierarchy.
-TPM2B_SEED* HierarchyGetPrimarySeed(TPMI_RH_HIERARCHY hierarchy  // IN: hierarchy
+MSSIM2B_SEED* HierarchyGetPrimarySeed(MSSIMI_RH_HIERARCHY hierarchy  // IN: hierarchy
 );
 
 //*** HierarchyIsEnabled()
 // This function checks to see if a hierarchy is enabled.
-// NOTE: The TPM_RH_NULL hierarchy is always enabled.
+// NOTE: The MSSIM_RH_NULL hierarchy is always enabled.
 //  Return Type: BOOL
 //      TRUE(1)         hierarchy is enabled
 //      FALSE(0)        hierarchy is disabled
-BOOL HierarchyIsEnabled(TPMI_RH_HIERARCHY hierarchy  // IN: hierarchy
+BOOL HierarchyIsEnabled(MSSIMI_RH_HIERARCHY hierarchy  // IN: hierarchy
 );
 
 #endif  // _HIERARCHY_FP_H_

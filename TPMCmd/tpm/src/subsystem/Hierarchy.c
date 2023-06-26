@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -44,8 +44,8 @@
 
 //*** HierarchyPreInstall()
 // This function performs the initialization functions for the hierarchy
-// when the TPM is simulated. This function should not be called if the
-// TPM is not in a manufacturing mode at the manufacturer, or in a simulated
+// when the MSSIM is simulated. This function should not be called if the
+// MSSIM is not in a manufacturing mode at the manufacturer, or in a simulated
 // environment.
 void HierarchyPreInstall_Init(void)
 {
@@ -70,11 +70,11 @@ void HierarchyPreInstall_Init(void)
     gp.lockoutAuth.t.size     = 0;
 
     // Initialize owner, endorsement, and lockout policy
-    gp.ownerAlg                 = TPM_ALG_NULL;
+    gp.ownerAlg                 = MSSIM_ALG_NULL;
     gp.ownerPolicy.t.size       = 0;
-    gp.endorsementAlg           = TPM_ALG_NULL;
+    gp.endorsementAlg           = MSSIM_ALG_NULL;
     gp.endorsementPolicy.t.size = 0;
-    gp.lockoutAlg               = TPM_ALG_NULL;
+    gp.lockoutAlg               = MSSIM_ALG_NULL;
     gp.lockoutPolicy.t.size     = 0;
 
     // Initialize ehProof, shProof and phProof
@@ -107,7 +107,7 @@ void HierarchyPreInstall_Init(void)
 }
 
 //*** HierarchyStartup()
-// This function is called at TPM2_Startup() to initialize the hierarchy
+// This function is called at MSSIM2_Startup() to initialize the hierarchy
 // related values.
 BOOL HierarchyStartup(STARTUP_TYPE type  // IN: start up type
 )
@@ -115,19 +115,19 @@ BOOL HierarchyStartup(STARTUP_TYPE type  // IN: start up type
     // phEnable is SET on any startup
     g_phEnable = TRUE;
 
-    // Reset platformAuth, platformPolicy; enable SH and EH at TPM_RESET and
-    // TPM_RESTART
+    // Reset platformAuth, platformPolicy; enable SH and EH at MSSIM_RESET and
+    // MSSIM_RESTART
     if(type != SU_RESUME)
     {
         gc.platformAuth.t.size   = 0;
         gc.platformPolicy.t.size = 0;
-        gc.platformAlg           = TPM_ALG_NULL;
+        gc.platformAlg           = MSSIM_ALG_NULL;
 
         // enable the storage and endorsement hierarchies and the platformNV
         gc.shEnable = gc.ehEnable = gc.phEnableNV = TRUE;
     }
 
-    // nullProof and nullSeed are updated at every TPM_RESET
+    // nullProof and nullSeed are updated at every MSSIM_RESET
     if((type != SU_RESTART) && (type != SU_RESUME))
     {
         gr.nullProof.t.size = sizeof(gr.nullProof.t.buffer);
@@ -142,27 +142,27 @@ BOOL HierarchyStartup(STARTUP_TYPE type  // IN: start up type
 //*** HierarchyGetProof()
 // This function finds the proof value associated with a hierarchy.It returns a
 // pointer to the proof value.
-TPM2B_PROOF* HierarchyGetProof(TPMI_RH_HIERARCHY hierarchy  // IN: hierarchy constant
+MSSIM2B_PROOF* HierarchyGetProof(MSSIMI_RH_HIERARCHY hierarchy  // IN: hierarchy constant
 )
 {
-    TPM2B_PROOF* proof = NULL;
+    MSSIM2B_PROOF* proof = NULL;
 
     switch(hierarchy)
     {
-        case TPM_RH_PLATFORM:
-            // phProof for TPM_RH_PLATFORM
+        case MSSIM_RH_PLATFORM:
+            // phProof for MSSIM_RH_PLATFORM
             proof = &gp.phProof;
             break;
-        case TPM_RH_ENDORSEMENT:
-            // ehProof for TPM_RH_ENDORSEMENT
+        case MSSIM_RH_ENDORSEMENT:
+            // ehProof for MSSIM_RH_ENDORSEMENT
             proof = &gp.ehProof;
             break;
-        case TPM_RH_OWNER:
-            // shProof for TPM_RH_OWNER
+        case MSSIM_RH_OWNER:
+            // shProof for MSSIM_RH_OWNER
             proof = &gp.shProof;
             break;
         default:
-            // nullProof for TPM_RH_NULL or anything else
+            // nullProof for MSSIM_RH_NULL or anything else
             proof = &gr.nullProof;
             break;
     }
@@ -171,19 +171,19 @@ TPM2B_PROOF* HierarchyGetProof(TPMI_RH_HIERARCHY hierarchy  // IN: hierarchy con
 
 //*** HierarchyGetPrimarySeed()
 // This function returns the primary seed of a hierarchy.
-TPM2B_SEED* HierarchyGetPrimarySeed(TPMI_RH_HIERARCHY hierarchy  // IN: hierarchy
+MSSIM2B_SEED* HierarchyGetPrimarySeed(MSSIMI_RH_HIERARCHY hierarchy  // IN: hierarchy
 )
 {
-    TPM2B_SEED* seed = NULL;
+    MSSIM2B_SEED* seed = NULL;
     switch(hierarchy)
     {
-        case TPM_RH_PLATFORM:
+        case MSSIM_RH_PLATFORM:
             seed = &gp.PPSeed;
             break;
-        case TPM_RH_OWNER:
+        case MSSIM_RH_OWNER:
             seed = &gp.SPSeed;
             break;
-        case TPM_RH_ENDORSEMENT:
+        case MSSIM_RH_ENDORSEMENT:
             seed = &gp.EPSeed;
             break;
         default:
@@ -195,27 +195,27 @@ TPM2B_SEED* HierarchyGetPrimarySeed(TPMI_RH_HIERARCHY hierarchy  // IN: hierarch
 
 //*** HierarchyIsEnabled()
 // This function checks to see if a hierarchy is enabled.
-// NOTE: The TPM_RH_NULL hierarchy is always enabled.
+// NOTE: The MSSIM_RH_NULL hierarchy is always enabled.
 //  Return Type: BOOL
 //      TRUE(1)         hierarchy is enabled
 //      FALSE(0)        hierarchy is disabled
-BOOL HierarchyIsEnabled(TPMI_RH_HIERARCHY hierarchy  // IN: hierarchy
+BOOL HierarchyIsEnabled(MSSIMI_RH_HIERARCHY hierarchy  // IN: hierarchy
 )
 {
     BOOL enabled = FALSE;
 
     switch(hierarchy)
     {
-        case TPM_RH_PLATFORM:
+        case MSSIM_RH_PLATFORM:
             enabled = g_phEnable;
             break;
-        case TPM_RH_OWNER:
+        case MSSIM_RH_OWNER:
             enabled = gc.shEnable;
             break;
-        case TPM_RH_ENDORSEMENT:
+        case MSSIM_RH_ENDORSEMENT:
             enabled = gc.ehEnable;
             break;
-        case TPM_RH_NULL:
+        case MSSIM_RH_NULL:
             enabled = TRUE;
             break;
         default:

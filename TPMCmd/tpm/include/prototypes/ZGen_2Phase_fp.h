@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,30 +45,30 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT        keyA;
-    TPM2B_ECC_POINT       inQsB;
-    TPM2B_ECC_POINT       inQeB;
-    TPMI_ECC_KEY_EXCHANGE inScheme;
+    MSSIMI_DH_OBJECT        keyA;
+    MSSIM2B_ECC_POINT       inQsB;
+    MSSIM2B_ECC_POINT       inQeB;
+    MSSIMI_ECC_KEY_EXCHANGE inScheme;
     UINT16                counter;
 } ZGen_2Phase_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_ECC_POINT outZ1;
-    TPM2B_ECC_POINT outZ2;
+    MSSIM2B_ECC_POINT outZ1;
+    MSSIM2B_ECC_POINT outZ2;
 } ZGen_2Phase_Out;
 
 // Response code modifiers
-#    define RC_ZGen_2Phase_keyA     (TPM_RC_H + TPM_RC_1)
-#    define RC_ZGen_2Phase_inQsB    (TPM_RC_P + TPM_RC_1)
-#    define RC_ZGen_2Phase_inQeB    (TPM_RC_P + TPM_RC_2)
-#    define RC_ZGen_2Phase_inScheme (TPM_RC_P + TPM_RC_3)
-#    define RC_ZGen_2Phase_counter  (TPM_RC_P + TPM_RC_4)
+#    define RC_ZGen_2Phase_keyA     (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_ZGen_2Phase_inQsB    (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_ZGen_2Phase_inQeB    (MSSIM_RC_P + MSSIM_RC_2)
+#    define RC_ZGen_2Phase_inScheme (MSSIM_RC_P + MSSIM_RC_3)
+#    define RC_ZGen_2Phase_counter  (MSSIM_RC_P + MSSIM_RC_4)
 
 // Function prototype
-TPM_RC
-TPM2_ZGen_2Phase(ZGen_2Phase_In* in, ZGen_2Phase_Out* out);
+MSSIM_RC
+MSSIM2_ZGen_2Phase(ZGen_2Phase_In* in, ZGen_2Phase_Out* out);
 
 #  endif  // _ZGen_2Phase_FP_H_
 #endif    // CC_ZGen_2Phase

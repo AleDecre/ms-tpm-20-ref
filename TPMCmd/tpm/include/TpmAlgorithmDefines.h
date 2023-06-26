@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -37,16 +37,16 @@
  *  Date: Feb 28, 2020  Time: 03:04:46PM
  */
 
-#ifndef _TPM_ALGORITHM_DEFINES_H_
-#define _TPM_ALGORITHM_DEFINES_H_
+#ifndef _MSSIM_ALGORITHM_DEFINES_H_
+#define _MSSIM_ALGORITHM_DEFINES_H_
 
 // Table 2:3 - Definition of Base Types
 // Base Types are in BaseTypes.h
 
 #define ECC_CURVES                                                                \
   {                                                                               \
-    TPM_ECC_BN_P256, TPM_ECC_BN_P638, TPM_ECC_NIST_P192, TPM_ECC_NIST_P224,       \
-        TPM_ECC_NIST_P256, TPM_ECC_NIST_P384, TPM_ECC_NIST_P521, TPM_ECC_SM2_P256 \
+    MSSIM_ECC_BN_P256, MSSIM_ECC_BN_P638, MSSIM_ECC_NIST_P192, MSSIM_ECC_NIST_P224,       \
+        MSSIM_ECC_NIST_P256, MSSIM_ECC_NIST_P384, MSSIM_ECC_NIST_P521, MSSIM_ECC_SM2_P256 \
   }
 #define ECC_CURVE_COUNT                                                      \
   (ECC_BN_P256 + ECC_BN_P638 + ECC_NIST_P192 + ECC_NIST_P224 + ECC_NIST_P256 \
@@ -62,11 +62,11 @@
 #define MAX_ECC_KEY_BYTES BITS_TO_BYTES(MAX_ECC_KEY_BITS)
 
 // Table 0:6 - Defines for PLATFORM Values
-#define PLATFORM_FAMILY      TPM_SPEC_FAMILY
-#define PLATFORM_LEVEL       TPM_SPEC_LEVEL
-#define PLATFORM_VERSION     TPM_SPEC_VERSION
-#define PLATFORM_YEAR        TPM_SPEC_YEAR
-#define PLATFORM_DAY_OF_YEAR TPM_SPEC_DAY_OF_YEAR
+#define PLATFORM_FAMILY      MSSIM_SPEC_FAMILY
+#define PLATFORM_LEVEL       MSSIM_SPEC_LEVEL
+#define PLATFORM_VERSION     MSSIM_SPEC_VERSION
+#define PLATFORM_YEAR        MSSIM_SPEC_YEAR
+#define PLATFORM_DAY_OF_YEAR MSSIM_SPEC_DAY_OF_YEAR
 
 // Table 1:3 - Defines for RSA Asymmetric Cipher Algorithm Constants
 #define RSA_KEY_SIZES_BITS                                                    \
@@ -212,8 +212,8 @@
 #define MAX_TDES_BLOCK_SIZE_BYTES TDES_MAX_BLOCK_SIZE
 
 // Additional values for benefit of code
-#define TPM_CC_FIRST 0x0000011F
-#define TPM_CC_LAST  0x0000019A
+#define MSSIM_CC_FIRST 0x0000011F
+#define MSSIM_CC_LAST  0x0000019A
 
 #if COMPRESSED_LISTS
 #  define ADD_FILL 0
@@ -384,10 +384,10 @@
 #endif
 
 // Define the 2B structure that would hold any hash block
-TPM2B_TYPE(MAX_HASH_BLOCK, MAX_HASH_BLOCK_SIZE);
+MSSIM2B_TYPE(MAX_HASH_BLOCK, MAX_HASH_BLOCK_SIZE);
 
 // Following typedef is for some old code
-typedef TPM2B_MAX_HASH_BLOCK TPM2B_HASH_BLOCK;
+typedef MSSIM2B_MAX_HASH_BLOCK MSSIM2B_HASH_BLOCK;
 
 /* Additional symmetric constants */
 #define MAX_SYM_KEY_BITS               \
@@ -406,4 +406,4 @@ typedef TPM2B_MAX_HASH_BLOCK TPM2B_HASH_BLOCK;
 #  error Bad size for MAX_SYM_KEY_BITS or MAX_SYM_BLOCK
 #endif
 
-#endif  // _TPM_ALGORITHM_DEFINES_H_
+#endif  // _MSSIM_ALGORITHM_DEFINES_H_

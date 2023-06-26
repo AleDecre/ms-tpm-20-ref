@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,53 +40,53 @@
 #  include "Object_spt_fp.h"
 
 /*(See part 3 specification)
-// This command allows the TPM to serve in the role as an MA.
+// This command allows the MSSIM to serve in the role as an MA.
 */
-//  Return Type: TPM_RC
-//      TPM_RC_ATTRIBUTES       'newParent' is not a decryption key
-//      TPM_RC_HANDLE           'oldParent' is not consistent with inSymSeed
-//      TPM_RC_INTEGRITY        the integrity check of 'inDuplicate' failed
-//      TPM_RC_KEY              for an ECC key, the public key is not on the curve
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_ATTRIBUTES       'newParent' is not a decryption key
+//      MSSIM_RC_HANDLE           'oldParent' is not consistent with inSymSeed
+//      MSSIM_RC_INTEGRITY        the integrity check of 'inDuplicate' failed
+//      MSSIM_RC_KEY              for an ECC key, the public key is not on the curve
 //                              of the curve ID
-//      TPM_RC_KEY_SIZE         the decrypted input symmetric key size
+//      MSSIM_RC_KEY_SIZE         the decrypted input symmetric key size
 //                              does not match the symmetric algorithm
 //                              key size of 'oldParent'
-//      TPM_RC_TYPE             'oldParent' is not a storage key, or 'newParent'
+//      MSSIM_RC_TYPE             'oldParent' is not a storage key, or 'newParent'
 //                              is not a storage key
-//      TPM_RC_VALUE            for an 'oldParent'; RSA key, the data to be decrypted
+//      MSSIM_RC_VALUE            for an 'oldParent'; RSA key, the data to be decrypted
 //                              is greater than the public exponent
 //      Unmarshal errors        errors during unmarshaling the input
 //                              encrypted buffer to a ECC public key, or
 //                              unmarshal the private buffer to 'sensitive'
-TPM_RC
-TPM2_Rewrap(Rewrap_In*  in,  // IN: input parameter list
+MSSIM_RC
+MSSIM2_Rewrap(Rewrap_In*  in,  // IN: input parameter list
             Rewrap_Out* out  // OUT: output parameter list
 )
 {
-    TPM_RC        result = TPM_RC_SUCCESS;
-    TPM2B_DATA    data;  // symmetric key
+    MSSIM_RC        result = MSSIM_RC_SUCCESS;
+    MSSIM2B_DATA    data;  // symmetric key
     UINT16        hashSize = 0;
-    TPM2B_PRIVATE privateBlob;  // A temporary private blob
+    MSSIM2B_PRIVATE privateBlob;  // A temporary private blob
                                 // to transit between old
                                 // and new wrappers
                                 // Input Validation
-    if((in->inSymSeed.t.size == 0 && in->oldParent != TPM_RH_NULL)
-       || (in->inSymSeed.t.size != 0 && in->oldParent == TPM_RH_NULL))
-        return TPM_RCS_HANDLE + RC_Rewrap_oldParent;
-    if(in->oldParent != TPM_RH_NULL)
+    if((in->inSymSeed.t.size == 0 && in->oldParent != MSSIM_RH_NULL)
+       || (in->inSymSeed.t.size != 0 && in->oldParent == MSSIM_RH_NULL))
+        return MSSIM_RCS_HANDLE + RC_Rewrap_oldParent;
+    if(in->oldParent != MSSIM_RH_NULL)
     {
         OBJECT* oldParent = HandleToObject(in->oldParent);
 
         // old parent key must be a storage object
         if(!ObjectIsStorage(in->oldParent))
-            return TPM_RCS_TYPE + RC_Rewrap_oldParent;
+            return MSSIM_RCS_TYPE + RC_Rewrap_oldParent;
         // Decrypt input secret data via asymmetric decryption.  A
-        // TPM_RC_VALUE, TPM_RC_KEY or unmarshal errors may be returned at this
+        // MSSIM_RC_VALUE, MSSIM_RC_KEY or unmarshal errors may be returned at this
         // point
         result = CryptSecretDecrypt(
             oldParent, NULL, DUPLICATE_STRING, &in->inSymSeed, &data);
-        if(result != TPM_RC_SUCCESS)
-            return TPM_RCS_VALUE + RC_Rewrap_inSymSeed;
+        if(result != MSSIM_RC_SUCCESS)
+            return MSSIM_RCS_VALUE + RC_Rewrap_inSymSeed;
         // Unwrap Outer
         result = UnwrapOuter(oldParent,
                              &in->name.b,
@@ -95,7 +95,7 @@ TPM2_Rewrap(Rewrap_In*  in,  // IN: input parameter list
                              FALSE,
                              in->inDuplicate.t.size,
                              in->inDuplicate.t.buffer);
-        if(result != TPM_RC_SUCCESS)
+        if(result != MSSIM_RC_SUCCESS)
             return RcSafeAddToResult(result, RC_Rewrap_inDuplicate);
         // Copy unwrapped data to temporary variable, remove the integrity field
         hashSize =
@@ -111,31 +111,31 @@ TPM2_Rewrap(Rewrap_In*  in,  // IN: input parameter list
         // No outer wrap from input blob.  Direct copy.
         privateBlob = in->inDuplicate;
     }
-    if(in->newParent != TPM_RH_NULL)
+    if(in->newParent != MSSIM_RH_NULL)
     {
         OBJECT* newParent;
         newParent = HandleToObject(in->newParent);
 
         // New parent must be a storage object
         if(!ObjectIsStorage(in->newParent))
-            return TPM_RCS_TYPE + RC_Rewrap_newParent;
+            return MSSIM_RCS_TYPE + RC_Rewrap_newParent;
         // Make new encrypt key and its associated secret structure.  A
-        // TPM_RC_VALUE error may be returned at this point if RSA algorithm is
-        // enabled in TPM
+        // MSSIM_RC_VALUE error may be returned at this point if RSA algorithm is
+        // enabled in MSSIM
         out->outSymSeed.t.size = sizeof(out->outSymSeed.t.secret);
         result =
             CryptSecretEncrypt(newParent, DUPLICATE_STRING, &data, &out->outSymSeed);
-        if(result != TPM_RC_SUCCESS)
+        if(result != MSSIM_RC_SUCCESS)
             return result;
         // Copy temporary variable to output, reserve the space for integrity
         hashSize =
             sizeof(UINT16) + CryptHashGetDigestSize(newParent->publicArea.nameAlg);
         // Make sure that everything fits into the output buffer
         // Note: this is mostly only an issue if there was no outer wrapper on
-        // 'inDuplicate'. It could be as large as a TPM2B_PRIVATE buffer. If we add
+        // 'inDuplicate'. It could be as large as a MSSIM2B_PRIVATE buffer. If we add
         // a digest for an outer wrapper, it won't fit anymore.
         if((privateBlob.t.size + hashSize) > sizeof(out->outDuplicate.t.buffer))
-            return TPM_RCS_VALUE + RC_Rewrap_inDuplicate;
+            return MSSIM_RCS_VALUE + RC_Rewrap_inDuplicate;
         // Command output
         out->outDuplicate.t.size = privateBlob.t.size;
         pAssert(privateBlob.t.size <= sizeof(out->outDuplicate.t.buffer) - hashSize);
@@ -158,7 +158,7 @@ TPM2_Rewrap(Rewrap_In*  in,  // IN: input parameter list
         // Copy privateBlob directly
         out->outDuplicate = privateBlob;
     }
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_Rewrap

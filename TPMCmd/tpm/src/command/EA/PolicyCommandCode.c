@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,16 +40,16 @@
 /*(See part 3 specification)
 // Add a Command Code restriction to the policyDigest
 */
-//  Return Type: TPM_RC
-//      TPM_RC_VALUE        'commandCode' of 'policySession' previously set to
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_VALUE        'commandCode' of 'policySession' previously set to
 //                          a different value
 
-TPM_RC
-TPM2_PolicyCommandCode(PolicyCommandCode_In* in  // IN: input parameter list
+MSSIM_RC
+MSSIM2_PolicyCommandCode(PolicyCommandCode_In* in  // IN: input parameter list
 )
 {
     SESSION*   session;
-    TPM_CC     commandCode = TPM_CC_PolicyCommandCode;
+    MSSIM_CC     commandCode = MSSIM_CC_PolicyCommandCode;
     HASH_STATE hashState;
 
     // Input validation
@@ -58,13 +58,13 @@ TPM2_PolicyCommandCode(PolicyCommandCode_In* in  // IN: input parameter list
     session = SessionGet(in->policySession);
 
     if(session->commandCode != 0 && session->commandCode != in->code)
-        return TPM_RCS_VALUE + RC_PolicyCommandCode_code;
+        return MSSIM_RCS_VALUE + RC_PolicyCommandCode_code;
     if(CommandCodeToCommandIndex(in->code) == UNIMPLEMENTED_COMMAND_INDEX)
-        return TPM_RCS_POLICY_CC + RC_PolicyCommandCode_code;
+        return MSSIM_RCS_POLICY_CC + RC_PolicyCommandCode_code;
 
     // Internal Data Update
     // Update policy hash
-    // policyDigestnew = hash(policyDigestold || TPM_CC_PolicyCommandCode || code)
+    // policyDigestnew = hash(policyDigestold || MSSIM_CC_PolicyCommandCode || code)
     //  Start hash
     CryptHashStart(&hashState, session->authHashAlg);
 
@@ -72,10 +72,10 @@ TPM2_PolicyCommandCode(PolicyCommandCode_In* in  // IN: input parameter list
     CryptDigestUpdate2B(&hashState, &session->u2.policyDigest.b);
 
     //  add commandCode
-    CryptDigestUpdateInt(&hashState, sizeof(TPM_CC), commandCode);
+    CryptDigestUpdateInt(&hashState, sizeof(MSSIM_CC), commandCode);
 
     //  add input commandCode
-    CryptDigestUpdateInt(&hashState, sizeof(TPM_CC), in->code);
+    CryptDigestUpdateInt(&hashState, sizeof(MSSIM_CC), in->code);
 
     //  complete the hash and get the results
     CryptHashEnd2B(&hashState, &session->u2.policyDigest.b);
@@ -83,7 +83,7 @@ TPM2_PolicyCommandCode(PolicyCommandCode_In* in  // IN: input parameter list
     // update commandCode value in session context
     session->commandCode = in->code;
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_PolicyCommandCode

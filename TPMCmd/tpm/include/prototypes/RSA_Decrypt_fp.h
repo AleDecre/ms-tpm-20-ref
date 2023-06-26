@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,27 +45,27 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT       keyHandle;
-    TPM2B_PUBLIC_KEY_RSA cipherText;
-    TPMT_RSA_DECRYPT     inScheme;
-    TPM2B_DATA           label;
+    MSSIMI_DH_OBJECT       keyHandle;
+    MSSIM2B_PUBLIC_KEY_RSA cipherText;
+    MSSIMT_RSA_DECRYPT     inScheme;
+    MSSIM2B_DATA           label;
 } RSA_Decrypt_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_PUBLIC_KEY_RSA message;
+    MSSIM2B_PUBLIC_KEY_RSA message;
 } RSA_Decrypt_Out;
 
 // Response code modifiers
-#    define RC_RSA_Decrypt_keyHandle  (TPM_RC_H + TPM_RC_1)
-#    define RC_RSA_Decrypt_cipherText (TPM_RC_P + TPM_RC_1)
-#    define RC_RSA_Decrypt_inScheme   (TPM_RC_P + TPM_RC_2)
-#    define RC_RSA_Decrypt_label      (TPM_RC_P + TPM_RC_3)
+#    define RC_RSA_Decrypt_keyHandle  (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_RSA_Decrypt_cipherText (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_RSA_Decrypt_inScheme   (MSSIM_RC_P + MSSIM_RC_2)
+#    define RC_RSA_Decrypt_label      (MSSIM_RC_P + MSSIM_RC_3)
 
 // Function prototype
-TPM_RC
-TPM2_RSA_Decrypt(RSA_Decrypt_In* in, RSA_Decrypt_Out* out);
+MSSIM_RC
+MSSIM2_RSA_Decrypt(RSA_Decrypt_In* in, RSA_Decrypt_Out* out);
 
 #  endif  // _RSA_Decrypt_FP_H_
 #endif    // CC_RSA_Decrypt

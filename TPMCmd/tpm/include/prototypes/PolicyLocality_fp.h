@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,17 +45,17 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_SH_POLICY policySession;
-    TPMA_LOCALITY  locality;
+    MSSIMI_SH_POLICY policySession;
+    MSSIMA_LOCALITY  locality;
 } PolicyLocality_In;
 
 // Response code modifiers
-#    define RC_PolicyLocality_policySession (TPM_RC_H + TPM_RC_1)
-#    define RC_PolicyLocality_locality      (TPM_RC_P + TPM_RC_1)
+#    define RC_PolicyLocality_policySession (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_PolicyLocality_locality      (MSSIM_RC_P + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_PolicyLocality(PolicyLocality_In* in);
+MSSIM_RC
+MSSIM2_PolicyLocality(PolicyLocality_In* in);
 
 #  endif  // _Policy_Locality_FP_H_
 #endif    // CC_PolicyLocality

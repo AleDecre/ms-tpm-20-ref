@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -42,25 +42,25 @@
 /*(See part 3 specification)
 // Activate Credential with an object
 */
-//  Return Type: TPM_RC
-//      TPM_RC_ATTRIBUTES       'keyHandle' does not reference a decryption key
-//      TPM_RC_ECC_POINT        'secret' is invalid (when 'keyHandle' is an ECC key)
-//      TPM_RC_INSUFFICIENT     'secret' is invalid (when 'keyHandle' is an ECC key)
-//      TPM_RC_INTEGRITY        'credentialBlob' fails integrity test
-//      TPM_RC_NO_RESULT        'secret' is invalid (when 'keyHandle' is an ECC key)
-//      TPM_RC_SIZE             'secret' size is invalid or the 'credentialBlob'
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_ATTRIBUTES       'keyHandle' does not reference a decryption key
+//      MSSIM_RC_ECC_POINT        'secret' is invalid (when 'keyHandle' is an ECC key)
+//      MSSIM_RC_INSUFFICIENT     'secret' is invalid (when 'keyHandle' is an ECC key)
+//      MSSIM_RC_INTEGRITY        'credentialBlob' fails integrity test
+//      MSSIM_RC_NO_RESULT        'secret' is invalid (when 'keyHandle' is an ECC key)
+//      MSSIM_RC_SIZE             'secret' size is invalid or the 'credentialBlob'
 //                              does not unmarshal correctly
-//      TPM_RC_TYPE             'keyHandle' does not reference an asymmetric key.
-//      TPM_RC_VALUE            'secret' is invalid (when 'keyHandle' is an RSA key)
-TPM_RC
-TPM2_ActivateCredential(ActivateCredential_In*  in,  // IN: input parameter list
+//      MSSIM_RC_TYPE             'keyHandle' does not reference an asymmetric key.
+//      MSSIM_RC_VALUE            'secret' is invalid (when 'keyHandle' is an RSA key)
+MSSIM_RC
+MSSIM2_ActivateCredential(ActivateCredential_In*  in,  // IN: input parameter list
                         ActivateCredential_Out* out  // OUT: output parameter list
 )
 {
-    TPM_RC     result = TPM_RC_SUCCESS;
+    MSSIM_RC     result = MSSIM_RC_SUCCESS;
     OBJECT*    object;          // decrypt key
     OBJECT*    activateObject;  // key associated with credential
-    TPM2B_DATA data;            // credential data
+    MSSIM2B_DATA data;            // credential data
 
     // Input Validation
 
@@ -72,34 +72,34 @@ TPM2_ActivateCredential(ActivateCredential_In*  in,  // IN: input parameter list
 
     // input decrypt key must be an asymmetric, restricted decryption key
     if(!CryptIsAsymAlgorithm(object->publicArea.type)
-       || !IS_ATTRIBUTE(object->publicArea.objectAttributes, TPMA_OBJECT, decrypt)
-       || !IS_ATTRIBUTE(object->publicArea.objectAttributes, TPMA_OBJECT, restricted))
-        return TPM_RCS_TYPE + RC_ActivateCredential_keyHandle;
+       || !IS_ATTRIBUTE(object->publicArea.objectAttributes, MSSIMA_OBJECT, decrypt)
+       || !IS_ATTRIBUTE(object->publicArea.objectAttributes, MSSIMA_OBJECT, restricted))
+        return MSSIM_RCS_TYPE + RC_ActivateCredential_keyHandle;
 
     // Command output
 
     // Decrypt input credential data via asymmetric decryption.  A
-    // TPM_RC_VALUE, TPM_RC_KEY or unmarshal errors may be returned at this
+    // MSSIM_RC_VALUE, MSSIM_RC_KEY or unmarshal errors may be returned at this
     // point
     result = CryptSecretDecrypt(object, NULL, IDENTITY_STRING, &in->secret, &data);
-    if(result != TPM_RC_SUCCESS)
+    if(result != MSSIM_RC_SUCCESS)
     {
-        if(result == TPM_RC_KEY)
-            return TPM_RC_FAILURE;
+        if(result == MSSIM_RC_KEY)
+            return MSSIM_RC_FAILURE;
         return RcSafeAddToResult(result, RC_ActivateCredential_secret);
     }
 
-    // Retrieve secret data.  A TPM_RC_INTEGRITY error or unmarshal
+    // Retrieve secret data.  A MSSIM_RC_INTEGRITY error or unmarshal
     // errors may be returned at this point
     result = CredentialToSecret(&in->credentialBlob.b,
                                 &activateObject->name.b,
                                 &data.b,
                                 object,
                                 &out->certInfo);
-    if(result != TPM_RC_SUCCESS)
+    if(result != MSSIM_RC_SUCCESS)
         return RcSafeAddToResult(result, RC_ActivateCredential_credentialBlob);
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_ActivateCredential

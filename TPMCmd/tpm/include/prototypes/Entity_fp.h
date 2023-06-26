@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -43,13 +43,13 @@
 //** Functions
 //*** EntityGetLoadStatus()
 // This function will check that all the handles access loaded entities.
-//  Return Type: TPM_RC
-//      TPM_RC_HANDLE           handle type does not match
-//      TPM_RC_REFERENCE_Hx     entity is not present
-//      TPM_RC_HIERARCHY        entity belongs to a disabled hierarchy
-//      TPM_RC_OBJECT_MEMORY    handle is an evict object but there is no
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_HANDLE           handle type does not match
+//      MSSIM_RC_REFERENCE_Hx     entity is not present
+//      MSSIM_RC_HIERARCHY        entity belongs to a disabled hierarchy
+//      MSSIM_RC_OBJECT_MEMORY    handle is an evict object but there is no
 //                               space to load it to RAM
-TPM_RC
+MSSIM_RC
 EntityGetLoadStatus(COMMAND* command  // IN/OUT: command parsing structure
 );
 
@@ -64,8 +64,8 @@ EntityGetLoadStatus(COMMAND* command  // IN/OUT: command parsing structure
 // Return Type: UINT16
 //      count           number of bytes in the authValue with 0's stripped
 UINT16
-EntityGetAuthValue(TPMI_DH_ENTITY handle,  // IN: handle of entity
-                   TPM2B_AUTH*    auth     // OUT: authValue of the entity
+EntityGetAuthValue(MSSIMI_DH_ENTITY handle,  // IN: handle of entity
+                   MSSIM2B_AUTH*    auth     // OUT: authValue of the entity
 );
 
 //*** EntityGetAuthPolicy()
@@ -78,25 +78,25 @@ EntityGetAuthValue(TPMI_DH_ENTITY handle,  // IN: handle of entity
 // This function copies the authorization policy of the entity to 'authPolicy'.
 //
 //  The return value is the hash algorithm for the policy.
-TPMI_ALG_HASH
-EntityGetAuthPolicy(TPMI_DH_ENTITY handle,     // IN: handle of entity
-                    TPM2B_DIGEST*  authPolicy  // OUT: authPolicy of the entity
+MSSIMI_ALG_HASH
+EntityGetAuthPolicy(MSSIMI_DH_ENTITY handle,     // IN: handle of entity
+                    MSSIM2B_DIGEST*  authPolicy  // OUT: authPolicy of the entity
 );
 
 //*** EntityGetName()
 // This function returns the Name associated with a handle.
-TPM2B_NAME* EntityGetName(TPMI_DH_ENTITY handle,  // IN: handle of entity
-                          TPM2B_NAME*    name     // OUT: name of entity
+MSSIM2B_NAME* EntityGetName(MSSIMI_DH_ENTITY handle,  // IN: handle of entity
+                          MSSIM2B_NAME*    name     // OUT: name of entity
 );
 
 //*** EntityGetHierarchy()
 // This function returns the hierarchy handle associated with an entity.
 // a) A handle that is a hierarchy handle is associated with itself.
-// b) An NV index belongs to TPM_RH_PLATFORM if TPMA_NV_PLATFORMCREATE,
-//    is SET, otherwise it belongs to TPM_RH_OWNER
+// b) An NV index belongs to MSSIM_RH_PLATFORM if MSSIMA_NV_PLATFORMCREATE,
+//    is SET, otherwise it belongs to MSSIM_RH_OWNER
 // c) An object handle belongs to its hierarchy.
-TPMI_RH_HIERARCHY
-EntityGetHierarchy(TPMI_DH_ENTITY handle  // IN :handle of entity
+MSSIMI_RH_HIERARCHY
+EntityGetHierarchy(MSSIMI_DH_ENTITY handle  // IN :handle of entity
 );
 
 #endif  // _ENTITY_FP_H_

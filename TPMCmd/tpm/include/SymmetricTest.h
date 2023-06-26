@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -50,7 +50,7 @@
 
 const SYMMETRIC_TEST_VECTOR c_symTestValues[NUM_SYMS + 1] = {
 #  if ALG_AES && AES_128
-    {TPM_ALG_AES,
+    {MSSIM_ALG_AES,
      128,
      key_AES128,
      16,
@@ -63,7 +63,7 @@ const SYMMETRIC_TEST_VECTOR c_symTestValues[NUM_SYMS + 1] = {
       dataOut_AES128_ECB}},
 #  endif
 #  if ALG_AES && AES_192
-    {TPM_ALG_AES,
+    {MSSIM_ALG_AES,
      192,
      key_AES192,
      16,
@@ -76,7 +76,7 @@ const SYMMETRIC_TEST_VECTOR c_symTestValues[NUM_SYMS + 1] = {
       dataOut_AES192_ECB}},
 #  endif
 #  if ALG_AES && AES_256
-    {TPM_ALG_AES,
+    {MSSIM_ALG_AES,
      256,
      key_AES256,
      16,
@@ -90,7 +90,7 @@ const SYMMETRIC_TEST_VECTOR c_symTestValues[NUM_SYMS + 1] = {
 #  endif
 // There are no SM4 test values yet so...
 #  if ALG_SM4 && SM4_128 && 0
-    {TPM_ALG_SM4,
+    {MSSIM_ALG_SM4,
      128,
      key_SM4128,
      16,

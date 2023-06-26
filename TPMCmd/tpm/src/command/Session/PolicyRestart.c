@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,14 +40,14 @@
 /*(See part 3 specification)
 // Restore a policy session to its initial state
 */
-TPM_RC
-TPM2_PolicyRestart(PolicyRestart_In* in  // IN: input parameter list
+MSSIM_RC
+MSSIM2_PolicyRestart(PolicyRestart_In* in  // IN: input parameter list
 )
 {
     // Initialize policy session data
     SessionResetPolicyData(SessionGet(in->sessionHandle));
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_PolicyRestart

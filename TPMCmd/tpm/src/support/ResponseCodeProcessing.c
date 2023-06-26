@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -42,8 +42,8 @@
 //** RcSafeAddToResult()
 // Adds a modifier to a response code as long as the response code allows a modifier
 // and no modifier has already been added.
-TPM_RC
-RcSafeAddToResult(TPM_RC responseCode, TPM_RC modifier)
+MSSIM_RC
+RcSafeAddToResult(MSSIM_RC responseCode, MSSIM_RC modifier)
 {
     if((responseCode & RC_FMT1) && !(responseCode & 0xf40))
         return responseCode + modifier;

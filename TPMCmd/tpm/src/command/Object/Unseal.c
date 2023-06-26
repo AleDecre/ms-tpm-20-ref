@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,11 +40,11 @@
 /*(See part 3 specification)
 // return data in a sealed data blob
 */
-//  Return Type: TPM_RC
-//      TPM_RC_ATTRIBUTES         'itemHandle' has wrong attributes
-//      TPM_RC_TYPE               'itemHandle' is not a KEYEDHASH data object
-TPM_RC
-TPM2_Unseal(Unseal_In* in, Unseal_Out* out)
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_ATTRIBUTES         'itemHandle' has wrong attributes
+//      MSSIM_RC_TYPE               'itemHandle' is not a KEYEDHASH data object
+MSSIM_RC
+MSSIM2_Unseal(Unseal_In* in, Unseal_Out* out)
 {
     OBJECT* object;
     // Input Validation
@@ -52,16 +52,16 @@ TPM2_Unseal(Unseal_In* in, Unseal_Out* out)
     object = HandleToObject(in->itemHandle);
 
     // Input handle must be a data object
-    if(object->publicArea.type != TPM_ALG_KEYEDHASH)
-        return TPM_RCS_TYPE + RC_Unseal_itemHandle;
-    if(IS_ATTRIBUTE(object->publicArea.objectAttributes, TPMA_OBJECT, decrypt)
-       || IS_ATTRIBUTE(object->publicArea.objectAttributes, TPMA_OBJECT, sign)
-       || IS_ATTRIBUTE(object->publicArea.objectAttributes, TPMA_OBJECT, restricted))
-        return TPM_RCS_ATTRIBUTES + RC_Unseal_itemHandle;
+    if(object->publicArea.type != MSSIM_ALG_KEYEDHASH)
+        return MSSIM_RCS_TYPE + RC_Unseal_itemHandle;
+    if(IS_ATTRIBUTE(object->publicArea.objectAttributes, MSSIMA_OBJECT, decrypt)
+       || IS_ATTRIBUTE(object->publicArea.objectAttributes, MSSIMA_OBJECT, sign)
+       || IS_ATTRIBUTE(object->publicArea.objectAttributes, MSSIMA_OBJECT, restricted))
+        return MSSIM_RCS_ATTRIBUTES + RC_Unseal_itemHandle;
     // Command Output
     // Copy data
     out->outData = object->sensitive.sensitive.bits;
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_Unseal

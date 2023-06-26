@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,17 +45,17 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_RH_PROVISION auth;
+    MSSIMI_RH_PROVISION auth;
     UINT64            newTime;
 } ClockSet_In;
 
 // Response code modifiers
-#    define RC_ClockSet_auth    (TPM_RC_H + TPM_RC_1)
-#    define RC_ClockSet_newTime (TPM_RC_P + TPM_RC_1)
+#    define RC_ClockSet_auth    (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_ClockSet_newTime (MSSIM_RC_P + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_ClockSet(ClockSet_In* in);
+MSSIM_RC
+MSSIM2_ClockSet(ClockSet_In* in);
 
 #  endif  // _Clock_Set_FP_H_
 #endif    // CC_ClockSet

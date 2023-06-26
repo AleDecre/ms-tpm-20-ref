@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,17 +45,17 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_PCR        pcrHandle;
-    TPML_DIGEST_VALUES digests;
+    MSSIMI_DH_PCR        pcrHandle;
+    MSSIML_DIGEST_VALUES digests;
 } PCR_Extend_In;
 
 // Response code modifiers
-#    define RC_PCR_Extend_pcrHandle (TPM_RC_H + TPM_RC_1)
-#    define RC_PCR_Extend_digests   (TPM_RC_P + TPM_RC_1)
+#    define RC_PCR_Extend_pcrHandle (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_PCR_Extend_digests   (MSSIM_RC_P + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_PCR_Extend(PCR_Extend_In* in);
+MSSIM_RC
+MSSIM2_PCR_Extend(PCR_Extend_In* in);
 
 #  endif  // _PCR_Extend_FP_H_
 #endif    // CC_PCR_Extend

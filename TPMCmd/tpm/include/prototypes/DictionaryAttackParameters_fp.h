@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,21 +45,21 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_RH_LOCKOUT lockHandle;
+    MSSIMI_RH_LOCKOUT lockHandle;
     UINT32          newMaxTries;
     UINT32          newRecoveryTime;
     UINT32          lockoutRecovery;
 } DictionaryAttackParameters_In;
 
 // Response code modifiers
-#    define RC_DictionaryAttackParameters_lockHandle      (TPM_RC_H + TPM_RC_1)
-#    define RC_DictionaryAttackParameters_newMaxTries     (TPM_RC_P + TPM_RC_1)
-#    define RC_DictionaryAttackParameters_newRecoveryTime (TPM_RC_P + TPM_RC_2)
-#    define RC_DictionaryAttackParameters_lockoutRecovery (TPM_RC_P + TPM_RC_3)
+#    define RC_DictionaryAttackParameters_lockHandle      (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_DictionaryAttackParameters_newMaxTries     (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_DictionaryAttackParameters_newRecoveryTime (MSSIM_RC_P + MSSIM_RC_2)
+#    define RC_DictionaryAttackParameters_lockoutRecovery (MSSIM_RC_P + MSSIM_RC_3)
 
 // Function prototype
-TPM_RC
-TPM2_DictionaryAttackParameters(DictionaryAttackParameters_In* in);
+MSSIM_RC
+MSSIM2_DictionaryAttackParameters(DictionaryAttackParameters_In* in);
 
 #  endif  // _Dictionary_Attack_Parameters_FP_H_
 #endif    // CC_DictionaryAttackParameters

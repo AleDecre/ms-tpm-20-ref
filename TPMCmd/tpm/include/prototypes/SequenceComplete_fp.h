@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,26 +45,26 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT    sequenceHandle;
-    TPM2B_MAX_BUFFER  buffer;
-    TPMI_RH_HIERARCHY hierarchy;
+    MSSIMI_DH_OBJECT    sequenceHandle;
+    MSSIM2B_MAX_BUFFER  buffer;
+    MSSIMI_RH_HIERARCHY hierarchy;
 } SequenceComplete_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_DIGEST      result;
-    TPMT_TK_HASHCHECK validation;
+    MSSIM2B_DIGEST      result;
+    MSSIMT_TK_HASHCHECK validation;
 } SequenceComplete_Out;
 
 // Response code modifiers
-#    define RC_SequenceComplete_sequenceHandle (TPM_RC_H + TPM_RC_1)
-#    define RC_SequenceComplete_buffer         (TPM_RC_P + TPM_RC_1)
-#    define RC_SequenceComplete_hierarchy      (TPM_RC_P + TPM_RC_2)
+#    define RC_SequenceComplete_sequenceHandle (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_SequenceComplete_buffer         (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_SequenceComplete_hierarchy      (MSSIM_RC_P + MSSIM_RC_2)
 
 // Function prototype
-TPM_RC
-TPM2_SequenceComplete(SequenceComplete_In* in, SequenceComplete_Out* out);
+MSSIM_RC
+MSSIM2_SequenceComplete(SequenceComplete_In* in, SequenceComplete_Out* out);
 
 #  endif  // _Sequence_Complete_FP_H_
 #endif    // CC_SequenceComplete

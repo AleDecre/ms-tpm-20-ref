@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,18 +40,18 @@
 /*(See part 3 specification)
 // Add a cpHash restriction to the policyDigest
 */
-//  Return Type: TPM_RC
-//      TPM_RC_CPHASH           cpHash of 'policySession' has previously been set
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_CPHASH           cpHash of 'policySession' has previously been set
 //                              to a different value
-//      TPM_RC_SIZE             'templateHash' is not the size of a digest produced
+//      MSSIM_RC_SIZE             'templateHash' is not the size of a digest produced
 //                              by the hash algorithm associated with
 //                              'policySession'
-TPM_RC
-TPM2_PolicyTemplate(PolicyTemplate_In* in  // IN: input parameter list
+MSSIM_RC
+MSSIM2_PolicyTemplate(PolicyTemplate_In* in  // IN: input parameter list
 )
 {
     SESSION*   session;
-    TPM_CC     commandCode = TPM_CC_PolicyTemplate;
+    MSSIM_CC     commandCode = MSSIM_CC_PolicyTemplate;
     HASH_STATE hashState;
 
     // Input Validation
@@ -63,19 +63,19 @@ TPM2_PolicyTemplate(PolicyTemplate_In* in  // IN: input parameter list
     if(session->attributes.isTemplateSet)
     {
         if(!MemoryEqual2B(&in->templateHash.b, &session->u1.cpHash.b))
-            return TPM_RCS_VALUE + RC_PolicyTemplate_templateHash;
+            return MSSIM_RCS_VALUE + RC_PolicyTemplate_templateHash;
     }
     // error if cpHash contains something that is not a template
     else if(session->u1.templateHash.t.size != 0)
-        return TPM_RC_CPHASH;
+        return MSSIM_RC_CPHASH;
 
     // A valid templateHash must have the same size as session hash digest
     if(in->templateHash.t.size != CryptHashGetDigestSize(session->authHashAlg))
-        return TPM_RCS_SIZE + RC_PolicyTemplate_templateHash;
+        return MSSIM_RCS_SIZE + RC_PolicyTemplate_templateHash;
 
     // Internal Data Update
     // Update policy hash
-    // policyDigestnew = hash(policyDigestold || TPM_CC_PolicyCpHash
+    // policyDigestnew = hash(policyDigestold || MSSIM_CC_PolicyCpHash
     //  || cpHashA.buffer)
     //  Start hash
     CryptHashStart(&hashState, session->authHashAlg);
@@ -84,7 +84,7 @@ TPM2_PolicyTemplate(PolicyTemplate_In* in  // IN: input parameter list
     CryptDigestUpdate2B(&hashState, &session->u2.policyDigest.b);
 
     //  add commandCode
-    CryptDigestUpdateInt(&hashState, sizeof(TPM_CC), commandCode);
+    CryptDigestUpdateInt(&hashState, sizeof(MSSIM_CC), commandCode);
 
     //  add cpHashA
     CryptDigestUpdate2B(&hashState, &in->templateHash.b);
@@ -96,7 +96,7 @@ TPM2_PolicyTemplate(PolicyTemplate_In* in  // IN: input parameter list
     session->u1.templateHash          = in->templateHash;
     session->attributes.isTemplateSet = SET;
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_PolicyTemplateHash

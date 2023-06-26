@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -93,13 +93,13 @@ BOOL TpmSizeChecks(void)
         NOT_REFERENCED(primarySeedSize);
 
         {
-            TPMT_SENSITIVE* p;
+            MSSIMT_SENSITIVE* p;
             // This assignment keeps compiler from complaining about a conditional
             // comparison being between two constants
             UINT16 max_rsa_key_bytes = MAX_RSA_KEY_BYTES;
             if((max_rsa_key_bytes / 2) != (sizeof(p->sensitive.rsa.t.buffer) / 5))
             {
-                printf("Sensitive part of TPMT_SENSITIVE is undersized. May be caused"
+                printf("Sensitive part of MSSIMT_SENSITIVE is undersized. May be caused"
                        " by use of wrong version of Part 2.\n");
                 PASS = FALSE;
             }
@@ -109,29 +109,29 @@ BOOL TpmSizeChecks(void)
 #    endif
 
         printf("Size of OBJECT = %zu\n", sizeof(OBJECT));
-        printf("Size of components in TPMT_SENSITIVE = %zu\n",
-               sizeof(TPMT_SENSITIVE));
-        printf("    TPMI_ALG_PUBLIC                 %zu\n", sizeof(TPMI_ALG_PUBLIC));
-        printf("    TPM2B_AUTH                      %zu\n", sizeof(TPM2B_AUTH));
-        printf("    TPM2B_DIGEST                    %zu\n", sizeof(TPM2B_DIGEST));
-        printf("    TPMU_SENSITIVE_COMPOSITE        %zu\n",
-               sizeof(TPMU_SENSITIVE_COMPOSITE));
+        printf("Size of components in MSSIMT_SENSITIVE = %zu\n",
+               sizeof(MSSIMT_SENSITIVE));
+        printf("    MSSIMI_ALG_PUBLIC                 %zu\n", sizeof(MSSIMI_ALG_PUBLIC));
+        printf("    MSSIM2B_AUTH                      %zu\n", sizeof(MSSIM2B_AUTH));
+        printf("    MSSIM2B_DIGEST                    %zu\n", sizeof(MSSIM2B_DIGEST));
+        printf("    MSSIMU_SENSITIVE_COMPOSITE        %zu\n",
+               sizeof(MSSIMU_SENSITIVE_COMPOSITE));
     }
     // Make sure that the size of the context blob is large enough for the largest
     // context
-    // TPMS_CONTEXT_DATA contains two TPM2B values. That is not how this is
-    // implemented. Rather, the size field of the TPM2B_CONTEXT_DATA is used to
+    // MSSIMS_CONTEXT_DATA contains two MSSIM2B values. That is not how this is
+    // implemented. Rather, the size field of the MSSIM2B_CONTEXT_DATA is used to
     // determine the amount of data in the encrypted data. That part is not
     // independently sized. This makes the actual size 2 bytes smaller than
     // calculated using Part 2. Since this is opaque to the caller, it is not
-    // necessary to fix. The actual size is returned by TPM2_GetCapabilties().
+    // necessary to fix. The actual size is returned by MSSIM2_GetCapabilties().
 
     // Initialize output handle.  At the end of command action, the output
     // handle of an object will be replaced, while the output handle
     // for a session will be the same as input
 
     // Get the size of fingerprint in context blob.  The sequence value in
-    // TPMS_CONTEXT structure is used as the fingerprint
+    // MSSIMS_CONTEXT structure is used as the fingerprint
     {
         UINT32 fingerprintSize = sizeof(UINT64);
         UINT32 integritySize =
@@ -160,7 +160,7 @@ BOOL TpmSizeChecks(void)
     {
         union u
         {
-            TPMA_OBJECT attributes;
+            MSSIMA_OBJECT attributes;
             UINT32      uint32Value;
         } u;
         // these are defined so that compiler doesn't complain about conditional
@@ -168,19 +168,19 @@ BOOL TpmSizeChecks(void)
         int aSize     = sizeof(u.attributes);
         int uSize     = sizeof(u.uint32Value);
         u.uint32Value = 0;
-        SET_ATTRIBUTE(u.attributes, TPMA_OBJECT, fixedTPM);
+        SET_ATTRIBUTE(u.attributes, MSSIMA_OBJECT, fixedMSSIM);
         if(u.uint32Value != 2)
         {
-            printf("The bit allocation in a TPMA_OBJECT is not as expected");
+            printf("The bit allocation in a MSSIMA_OBJECT is not as expected");
             PASS = FALSE;
         }
         if(aSize != uSize)  // comparison of two sizeof() values annoys compiler
         {
-            printf("A TPMA_OBJECT is not the expected size.");
+            printf("A MSSIMA_OBJECT is not the expected size.");
             PASS = FALSE;
         }
     }
-    // Check that the platorm implementes each of the ACT that the TPM thinks are
+    // Check that the platorm implementes each of the ACT that the MSSIM thinks are
     // present
     {
         uint32_t act;
@@ -191,7 +191,7 @@ BOOL TpmSizeChecks(void)
                 FOR_EACH_ACT(CASE_ACT_NUMBER)
                 if(!_plat__ACT_GetImplemented(act))
                 {
-                    printf("TPM_RH_ACT_%1X is not implemented by platform\n", act);
+                    printf("MSSIM_RH_ACT_%1X is not implemented by platform\n", act);
                     PASS = FALSE;
                 }
                 default:

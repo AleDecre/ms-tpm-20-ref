@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,32 +45,32 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT   signHandle;
-    TPMI_DH_OBJECT   objectHandle;
-    TPM2B_DATA       qualifyingData;
-    TPM2B_DIGEST     creationHash;
-    TPMT_SIG_SCHEME  inScheme;
-    TPMT_TK_CREATION creationTicket;
+    MSSIMI_DH_OBJECT   signHandle;
+    MSSIMI_DH_OBJECT   objectHandle;
+    MSSIM2B_DATA       qualifyingData;
+    MSSIM2B_DIGEST     creationHash;
+    MSSIMT_SIG_SCHEME  inScheme;
+    MSSIMT_TK_CREATION creationTicket;
 } CertifyCreation_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_ATTEST   certifyInfo;
-    TPMT_SIGNATURE signature;
+    MSSIM2B_ATTEST   certifyInfo;
+    MSSIMT_SIGNATURE signature;
 } CertifyCreation_Out;
 
 // Response code modifiers
-#    define RC_CertifyCreation_signHandle     (TPM_RC_H + TPM_RC_1)
-#    define RC_CertifyCreation_objectHandle   (TPM_RC_H + TPM_RC_2)
-#    define RC_CertifyCreation_qualifyingData (TPM_RC_P + TPM_RC_1)
-#    define RC_CertifyCreation_creationHash   (TPM_RC_P + TPM_RC_2)
-#    define RC_CertifyCreation_inScheme       (TPM_RC_P + TPM_RC_3)
-#    define RC_CertifyCreation_creationTicket (TPM_RC_P + TPM_RC_4)
+#    define RC_CertifyCreation_signHandle     (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_CertifyCreation_objectHandle   (MSSIM_RC_H + MSSIM_RC_2)
+#    define RC_CertifyCreation_qualifyingData (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_CertifyCreation_creationHash   (MSSIM_RC_P + MSSIM_RC_2)
+#    define RC_CertifyCreation_inScheme       (MSSIM_RC_P + MSSIM_RC_3)
+#    define RC_CertifyCreation_creationTicket (MSSIM_RC_P + MSSIM_RC_4)
 
 // Function prototype
-TPM_RC
-TPM2_CertifyCreation(CertifyCreation_In* in, CertifyCreation_Out* out);
+MSSIM_RC
+MSSIM2_CertifyCreation(CertifyCreation_In* in, CertifyCreation_Out* out);
 
 #  endif  // _Certify_Creation_FP_H_
 #endif    // CC_CertifyCreation

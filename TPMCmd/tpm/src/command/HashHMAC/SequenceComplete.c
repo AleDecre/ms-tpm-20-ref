@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,11 +40,11 @@
 /*(See part 3 specification)
 // Complete a sequence and flush the object.
 */
-//  Return Type: TPM_RC
-//      TPM_RC_MODE             'sequenceHandle' does not reference a hash or HMAC
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_MODE             'sequenceHandle' does not reference a hash or HMAC
 //                              sequence object
-TPM_RC
-TPM2_SequenceComplete(SequenceComplete_In*  in,  // IN: input parameter list
+MSSIM_RC
+MSSIM2_SequenceComplete(SequenceComplete_In*  in,  // IN: input parameter list
                       SequenceComplete_Out* out  // OUT: output parameter list
 )
 {
@@ -56,12 +56,12 @@ TPM2_SequenceComplete(SequenceComplete_In*  in,  // IN: input parameter list
     // input handle must be a hash or HMAC sequence object.
     if(hashObject->attributes.hashSeq == CLEAR
        && hashObject->attributes.hmacSeq == CLEAR)
-        return TPM_RCS_MODE + RC_SequenceComplete_sequenceHandle;
+        return MSSIM_RCS_MODE + RC_SequenceComplete_sequenceHandle;
     // Command Output
     if(hashObject->attributes.hashSeq == SET)  // sequence object for hash
     {
         // Get the hash algorithm before the algorithm is lost in CryptHashEnd
-        TPM_ALG_ID hashAlg = hashObject->state.hashState[0].hashAlg;
+        MSSIM_ALG_ID hashAlg = hashObject->state.hashState[0].hashAlg;
 
         // Update last piece of the data
         CryptDigestUpdate2B(&hashObject->state.hashState[0], &in->buffer.b);
@@ -79,10 +79,10 @@ TPM2_SequenceComplete(SequenceComplete_In*  in,  // IN: input parameter list
                 hashObject->attributes.ticketSafe = SET;
         }
         // Output ticket
-        out->validation.tag       = TPM_ST_HASHCHECK;
+        out->validation.tag       = MSSIM_ST_HASHCHECK;
         out->validation.hierarchy = in->hierarchy;
 
-        if(in->hierarchy == TPM_RH_NULL)
+        if(in->hierarchy == MSSIM_RH_NULL)
         {
             // Ticket is not required
             out->validation.digest.t.size = 0;
@@ -90,7 +90,7 @@ TPM2_SequenceComplete(SequenceComplete_In*  in,  // IN: input parameter list
         else if(hashObject->attributes.ticketSafe == CLEAR)
         {
             // Ticket is not safe to generate
-            out->validation.hierarchy     = TPM_RH_NULL;
+            out->validation.hierarchy     = MSSIM_RH_NULL;
             out->validation.digest.t.size = 0;
         }
         else
@@ -116,15 +116,15 @@ TPM2_SequenceComplete(SequenceComplete_In*  in,  // IN: input parameter list
                                          out->result.t.buffer);
 #  endif
         // No ticket is generated for HMAC sequence
-        out->validation.tag           = TPM_ST_HASHCHECK;
-        out->validation.hierarchy     = TPM_RH_NULL;
+        out->validation.tag           = MSSIM_ST_HASHCHECK;
+        out->validation.hierarchy     = MSSIM_RH_NULL;
         out->validation.digest.t.size = 0;
     }
     // Internal Data Update
     // mark sequence object as evict so it will be flushed on the way out
     hashObject->attributes.evict = SET;
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_SequenceComplete

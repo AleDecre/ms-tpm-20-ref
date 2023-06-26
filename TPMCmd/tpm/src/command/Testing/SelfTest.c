@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -38,14 +38,14 @@
 #if CC_SelfTest  // Conditional expansion of this file
 
 /*(See part 3 specification)
-// perform a test of TPM capabilities
+// perform a test of MSSIM capabilities
 */
-//  Return Type: TPM_RC
-//      TPM_RC_CANCELED             the command was canceled (some incremental
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_CANCELED             the command was canceled (some incremental
 //                                  process may have been made)
-//      TPM_RC_TESTING              self test in process
-TPM_RC
-TPM2_SelfTest(SelfTest_In* in  // IN: input parameter list
+//      MSSIM_RC_TESTING              self test in process
+MSSIM_RC
+MSSIM2_SelfTest(SelfTest_In* in  // IN: input parameter list
 )
 {
     // Command Output

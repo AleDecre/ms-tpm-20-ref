@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,24 +40,24 @@
 /*(See part 3 specification)
 // perform a test of selected algorithms
 */
-//  Return Type: TPM_RC
-//      TPM_RC_CANCELED         the command was canceled (some tests may have
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_CANCELED         the command was canceled (some tests may have
 //                              completed)
-//      TPM_RC_VALUE            an algorithm in the toTest list is not implemented
-TPM_RC
-TPM2_IncrementalSelfTest(IncrementalSelfTest_In*  in,  // IN: input parameter list
+//      MSSIM_RC_VALUE            an algorithm in the toTest list is not implemented
+MSSIM_RC
+MSSIM2_IncrementalSelfTest(IncrementalSelfTest_In*  in,  // IN: input parameter list
                          IncrementalSelfTest_Out* out  // OUT: output parameter list
 )
 {
-    TPM_RC result;
+    MSSIM_RC result;
     // Command Output
 
     // Call incremental self test function in crypt module. If this function
-    // returns TPM_RC_VALUE, it means that an algorithm on the 'toTest' list is
+    // returns MSSIM_RC_VALUE, it means that an algorithm on the 'toTest' list is
     // not implemented.
     result = CryptIncrementalSelfTest(&in->toTest, &out->toDoList);
-    if(result == TPM_RC_VALUE)
-        return TPM_RCS_VALUE + RC_IncrementalSelfTest_toTest;
+    if(result == MSSIM_RC_VALUE)
+        return MSSIM_RCS_VALUE + RC_IncrementalSelfTest_toTest;
     return result;
 }
 

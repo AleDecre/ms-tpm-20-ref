@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,8 +40,8 @@
 /*(See part 3 specification)
 // Hash a data buffer
 */
-TPM_RC
-TPM2_Hash(Hash_In*  in,  // IN: input parameter list
+MSSIM_RC
+MSSIM2_Hash(Hash_In*  in,  // IN: input parameter list
           Hash_Out* out  // OUT: output parameter list
 )
 {
@@ -58,20 +58,20 @@ TPM2_Hash(Hash_In*  in,  // IN: input parameter list
     CryptHashEnd2B(&hashState, &out->outHash.b);
 
     // Output ticket
-    out->validation.tag       = TPM_ST_HASHCHECK;
+    out->validation.tag       = MSSIM_ST_HASHCHECK;
     out->validation.hierarchy = in->hierarchy;
 
-    if(in->hierarchy == TPM_RH_NULL)
+    if(in->hierarchy == MSSIM_RH_NULL)
     {
         // Ticket is not required
-        out->validation.hierarchy     = TPM_RH_NULL;
+        out->validation.hierarchy     = MSSIM_RH_NULL;
         out->validation.digest.t.size = 0;
     }
     else if(
-        in->data.t.size >= sizeof(TPM_GENERATED_VALUE) && !TicketIsSafe(&in->data.b))
+        in->data.t.size >= sizeof(MSSIM_GENERATED_VALUE) && !TicketIsSafe(&in->data.b))
     {
         // Ticket is not safe
-        out->validation.hierarchy     = TPM_RH_NULL;
+        out->validation.hierarchy     = MSSIM_RH_NULL;
         out->validation.digest.t.size = 0;
     }
     else
@@ -81,7 +81,7 @@ TPM2_Hash(Hash_In*  in,  // IN: input parameter list
             in->hierarchy, in->hashAlg, &out->outHash, &out->validation);
     }
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_Hash

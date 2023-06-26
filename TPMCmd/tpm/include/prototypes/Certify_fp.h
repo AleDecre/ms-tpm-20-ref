@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,28 +45,28 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT  objectHandle;
-    TPMI_DH_OBJECT  signHandle;
-    TPM2B_DATA      qualifyingData;
-    TPMT_SIG_SCHEME inScheme;
+    MSSIMI_DH_OBJECT  objectHandle;
+    MSSIMI_DH_OBJECT  signHandle;
+    MSSIM2B_DATA      qualifyingData;
+    MSSIMT_SIG_SCHEME inScheme;
 } Certify_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_ATTEST   certifyInfo;
-    TPMT_SIGNATURE signature;
+    MSSIM2B_ATTEST   certifyInfo;
+    MSSIMT_SIGNATURE signature;
 } Certify_Out;
 
 // Response code modifiers
-#    define RC_Certify_objectHandle   (TPM_RC_H + TPM_RC_1)
-#    define RC_Certify_signHandle     (TPM_RC_H + TPM_RC_2)
-#    define RC_Certify_qualifyingData (TPM_RC_P + TPM_RC_1)
-#    define RC_Certify_inScheme       (TPM_RC_P + TPM_RC_2)
+#    define RC_Certify_objectHandle   (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_Certify_signHandle     (MSSIM_RC_H + MSSIM_RC_2)
+#    define RC_Certify_qualifyingData (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_Certify_inScheme       (MSSIM_RC_P + MSSIM_RC_2)
 
 // Function prototype
-TPM_RC
-TPM2_Certify(Certify_In* in, Certify_Out* out);
+MSSIM_RC
+MSSIM2_Certify(Certify_In* in, Certify_Out* out);
 
 #  endif  // _Certify_FP_H_
 #endif    // CC_Certify

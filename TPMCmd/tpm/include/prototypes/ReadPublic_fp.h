@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,23 +45,23 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT objectHandle;
+    MSSIMI_DH_OBJECT objectHandle;
 } ReadPublic_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_PUBLIC outPublic;
-    TPM2B_NAME   name;
-    TPM2B_NAME   qualifiedName;
+    MSSIM2B_PUBLIC outPublic;
+    MSSIM2B_NAME   name;
+    MSSIM2B_NAME   qualifiedName;
 } ReadPublic_Out;
 
 // Response code modifiers
-#    define RC_ReadPublic_objectHandle (TPM_RC_H + TPM_RC_1)
+#    define RC_ReadPublic_objectHandle (MSSIM_RC_H + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_ReadPublic(ReadPublic_In* in, ReadPublic_Out* out);
+MSSIM_RC
+MSSIM2_ReadPublic(ReadPublic_In* in, ReadPublic_Out* out);
 
 #  endif  // _Read_Public_FP_H_
 #endif    // CC_ReadPublic

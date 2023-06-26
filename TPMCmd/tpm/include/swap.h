@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -35,7 +35,7 @@
 #ifndef _SWAP_H
 #define _SWAP_H
 
-#if LITTLE_ENDIAN_TPM
+#if LITTLE_ENDIAN_MSSIM
 #  define TO_BIG_ENDIAN_UINT16(i)   REVERSE_ENDIAN_16(i)
 #  define FROM_BIG_ENDIAN_UINT16(i) REVERSE_ENDIAN_16(i)
 #  define TO_BIG_ENDIAN_UINT32(i)   REVERSE_ENDIAN_32(i)
@@ -69,7 +69,7 @@
 
 #else  // AUTO_ALIGN
 
-#  if BIG_ENDIAN_TPM
+#  if BIG_ENDIAN_MSSIM
 // the big-endian macros for machines that allow unaligned memory access
 // Aggregate a byte array into a UINT
 #    define BYTE_ARRAY_TO_UINT8(b)  *((uint8_t*)(b))
@@ -122,7 +122,7 @@
       {                                           \
         *((uint64_t*)(b)) = REVERSE_ENDIAN_64(i); \
       }
-#  endif  // BIG_ENDIAN_TPM
+#  endif  // BIG_ENDIAN_MSSIM
 
 #endif  // AUTO_ALIGN == NO
 

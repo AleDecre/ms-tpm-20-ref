@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -39,28 +39,28 @@
 #if CC_Certify  // Conditional expansion of this file
 
 /*(See part 3 specification)
-// prove an object with a specific Name is loaded in the TPM
+// prove an object with a specific Name is loaded in the MSSIM
 */
-//  Return Type: TPM_RC
-//      TPM_RC_KEY          key referenced by 'signHandle' is not a signing key
-//      TPM_RC_SCHEME       'inScheme' is not compatible with 'signHandle'
-//      TPM_RC_VALUE        digest generated for 'inScheme' is greater or has larger
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_KEY          key referenced by 'signHandle' is not a signing key
+//      MSSIM_RC_SCHEME       'inScheme' is not compatible with 'signHandle'
+//      MSSIM_RC_VALUE        digest generated for 'inScheme' is greater or has larger
 //                          size than the modulus of 'signHandle', or the buffer for
 //                          the result in 'signature' is too small (for an RSA key);
 //                          invalid commit status (for an ECC key with a split scheme)
-TPM_RC
-TPM2_Certify(Certify_In*  in,  // IN: input parameter list
+MSSIM_RC
+MSSIM2_Certify(Certify_In*  in,  // IN: input parameter list
              Certify_Out* out  // OUT: output parameter list
 )
 {
-    TPMS_ATTEST certifyInfo;
+    MSSIMS_ATTEST certifyInfo;
     OBJECT*     signObject      = HandleToObject(in->signHandle);
     OBJECT*     certifiedObject = HandleToObject(in->objectHandle);
     // Input validation
     if(!IsSigningObject(signObject))
-        return TPM_RCS_KEY + RC_Certify_signHandle;
+        return MSSIM_RCS_KEY + RC_Certify_signHandle;
     if(!CryptSelectSignScheme(signObject, &in->inScheme))
-        return TPM_RCS_SCHEME + RC_Certify_inScheme;
+        return MSSIM_RCS_SCHEME + RC_Certify_inScheme;
 
     // Command Output
     // Filling in attest information
@@ -69,8 +69,8 @@ TPM2_Certify(Certify_In*  in,  // IN: input parameter list
         in->signHandle, &in->inScheme, &in->qualifyingData, &certifyInfo);
 
     // Certify specific fields
-    certifyInfo.type = TPM_ST_ATTEST_CERTIFY;
-    // NOTE: the certified object is not allowed to be TPM_ALG_NULL so
+    certifyInfo.type = MSSIM_ST_ATTEST_CERTIFY;
+    // NOTE: the certified object is not allowed to be MSSIM_ALG_NULL so
     // 'certifiedObject' will never be NULL
     certifyInfo.attested.certify.name = certifiedObject->name;
 
@@ -82,8 +82,8 @@ TPM2_Certify(Certify_In*  in,  // IN: input parameter list
         certifyInfo.attested.certify.qualifiedName = certifiedObject->qualifiedName;
 
     // Sign attestation structure.  A NULL signature will be returned if
-    // signHandle is TPM_RH_NULL.  A TPM_RC_NV_UNAVAILABLE, TPM_RC_NV_RATE,
-    // TPM_RC_VALUE, TPM_RC_SCHEME or TPM_RC_ATTRIBUTES error may be returned
+    // signHandle is MSSIM_RH_NULL.  A MSSIM_RC_NV_UNAVAILABLE, MSSIM_RC_NV_RATE,
+    // MSSIM_RC_VALUE, MSSIM_RC_SCHEME or MSSIM_RC_ATTRIBUTES error may be returned
     // by SignAttestInfo()
     return SignAttestInfo(signObject,
                           &in->inScheme,

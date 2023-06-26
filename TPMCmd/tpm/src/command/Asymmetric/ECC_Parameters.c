@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -41,10 +41,10 @@
 // This command returns the parameters of an ECC curve identified by its TCG
 // assigned curveID
 */
-//  Return Type: TPM_RC
-//      TPM_RC_VALUE                    Unsupported ECC curve ID
-TPM_RC
-TPM2_ECC_Parameters(ECC_Parameters_In*  in,  // IN: input parameter list
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_VALUE                    Unsupported ECC curve ID
+MSSIM_RC
+MSSIM2_ECC_Parameters(ECC_Parameters_In*  in,  // IN: input parameter list
                     ECC_Parameters_Out* out  // OUT: output parameter list
 )
 {
@@ -52,9 +52,9 @@ TPM2_ECC_Parameters(ECC_Parameters_In*  in,  // IN: input parameter list
 
     // Get ECC curve parameters
     if(CryptEccGetParameters(in->curveID, &out->parameters))
-        return TPM_RC_SUCCESS;
+        return MSSIM_RC_SUCCESS;
     else
-        return TPM_RCS_VALUE + RC_ECC_Parameters_curveID;
+        return MSSIM_RCS_VALUE + RC_ECC_Parameters_curveID;
 }
 
 #endif  // CC_ECC_Parameters

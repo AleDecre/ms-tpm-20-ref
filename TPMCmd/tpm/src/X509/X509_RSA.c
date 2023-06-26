@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -52,9 +52,9 @@
 //     == 0         failure
 INT16
 X509AddSigningAlgorithmRSA(
-    OBJECT* signKey, TPMT_SIG_SCHEME* scheme, ASN1MarshalContext* ctx)
+    OBJECT* signKey, MSSIMT_SIG_SCHEME* scheme, ASN1MarshalContext* ctx)
 {
-    TPM_ALG_ID hashAlg = scheme->details.any.hashAlg;
+    MSSIM_ALG_ID hashAlg = scheme->details.any.hashAlg;
     PHASH_DEF  hashDef = CryptGetHashDef(hashAlg);
     //
     NOT_REFERENCED(signKey);
@@ -63,7 +63,7 @@ X509AddSigningAlgorithmRSA(
         return 0;
     switch(scheme->scheme)
     {
-        case TPM_ALG_RSASSA:
+        case MSSIM_ALG_RSASSA:
         {
             // if the hash is implemented but there is no PKCS1 OID defined
             // then this is not a valid signing combination.
@@ -73,14 +73,14 @@ X509AddSigningAlgorithmRSA(
                 return 1;
             return X509PushAlgorithmIdentifierSequence(ctx, hashDef->PKCS1);
         }
-        case TPM_ALG_RSAPSS:
+        case MSSIM_ALG_RSAPSS:
             // leave if this is just an implementation check
             if(ctx == NULL)
                 return 1;
             // In the case of SHA1, everything is default and RFC4055 says that
             // implementations that do signature generation MUST omit the parameter
             // when defaults are used. )-:
-            if(hashDef->hashAlg == TPM_ALG_SHA1)
+            if(hashDef->hashAlg == MSSIM_ALG_SHA1)
             {
                 return X509PushAlgorithmIdentifierSequence(ctx, OID_RSAPSS);
             }
@@ -175,7 +175,7 @@ X509AddSigningAlgorithmRSA(
 
 //*** X509AddPublicRSA()
 // This function will add the publicKey description to the DER data. If fillPtr is
-// NULL, then no data is transferred and this function will indicate if the TPM
+// NULL, then no data is transferred and this function will indicate if the MSSIM
 // has the values for DER-encoding of the public key.
 //  Return Type: INT16
 //      > 0         number of bytes added

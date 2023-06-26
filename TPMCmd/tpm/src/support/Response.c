@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -35,7 +35,7 @@
 //** Description
 // This file contains the common code for building a response header, including
 // setting the size of the structure. 'command' may be NULL if result is
-// not TPM_RC_SUCCESS.
+// not MSSIM_RC_SUCCESS.
 
 //** Includes and Defines
 #include "Tpm.h"
@@ -46,34 +46,34 @@
 // to indicate the total size of the response.
 void BuildResponseHeader(COMMAND* command,  // IN: main control structure
                          BYTE*    buffer,   // OUT: the output buffer
-                         TPM_RC   result    // IN: the response code
+                         MSSIM_RC   result    // IN: the response code
 )
 {
-    TPM_ST tag;
+    MSSIM_ST tag;
     UINT32 size;
 
-    if(result != TPM_RC_SUCCESS)
+    if(result != MSSIM_RC_SUCCESS)
     {
-        tag  = TPM_ST_NO_SESSIONS;
+        tag  = MSSIM_ST_NO_SESSIONS;
         size = 10;
     }
     else
     {
         tag = command->tag;
         // Compute the overall size of the response
-        size = STD_RESPONSE_HEADER + command->handleNum * sizeof(TPM_HANDLE);
+        size = STD_RESPONSE_HEADER + command->handleNum * sizeof(MSSIM_HANDLE);
         size += command->parameterSize;
-        size += (command->tag == TPM_ST_SESSIONS) ? command->authSize + sizeof(UINT32)
+        size += (command->tag == MSSIM_ST_SESSIONS) ? command->authSize + sizeof(UINT32)
                                                   : 0;
     }
-    TPM_ST_Marshal(&tag, &buffer, NULL);
+    MSSIM_ST_Marshal(&tag, &buffer, NULL);
     UINT32_Marshal(&size, &buffer, NULL);
-    TPM_RC_Marshal(&result, &buffer, NULL);
-    if(result == TPM_RC_SUCCESS)
+    MSSIM_RC_Marshal(&result, &buffer, NULL);
+    if(result == MSSIM_RC_SUCCESS)
     {
         if(command->handleNum > 0)
-            TPM_HANDLE_Marshal(&command->handles[0], &buffer, NULL);
-        if(tag == TPM_ST_SESSIONS)
+            MSSIM_HANDLE_Marshal(&command->handles[0], &buffer, NULL);
+        if(tag == MSSIM_ST_SESSIONS)
             UINT32_Marshal((UINT32*)&command->parameterSize, &buffer, NULL);
     }
     command->parameterSize = size;

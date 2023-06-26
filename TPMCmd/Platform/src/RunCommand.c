@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -34,16 +34,16 @@
  */
 //**Introduction
 // This module provides the platform specific entry and fail processing. The
-// _plat__RunCommand() function is used to call to ExecuteCommand() in the TPM code.
+// _plat__RunCommand() function is used to call to ExecuteCommand() in the MSSIM code.
 // This function does whatever processing is necessary to set up the platform
-// in anticipation of the call to the TPM including settup for error processing.
+// in anticipation of the call to the MSSIM including settup for error processing.
 //
-// The _plat__Fail() function is called when there is a failure in the TPM. The TPM
-// code will have set the flag to indicate that the TPM is in failure mode.
+// The _plat__Fail() function is called when there is a failure in the MSSIM. The MSSIM
+// code will have set the flag to indicate that the MSSIM is in failure mode.
 // This call will then recursively call ExecuteCommand in order to build the
 // failure mode response. When ExecuteCommand() returns to _plat__Fail(), the
 // platform will do some platform specif operation to return to the environment in
-// which the TPM is executing. For a simulator, setjmp/longjmp is used. For an OS,
+// which the MSSIM is executing. For a simulator, setjmp/longjmp is used. For an OS,
 // a system exit to the OS would be appropriate.
 
 //** Includes and locals
@@ -60,7 +60,7 @@ jmp_buf s_jumpBuffer;
 // the command executes without failing, it will return and RunCommand will return.
 // If there is a failure in the command, then _plat__Fail() is called and it will
 // longjump back to RunCommand which will call ExecuteCommand again. However, this
-// time, the TPM will be in failure mode so ExecuteCommand will simply build
+// time, the MSSIM will be in failure mode so ExecuteCommand will simply build
 // a failure response and return.
 LIB_EXPORT void _plat__RunCommand(
     uint32_t        requestSize,   // IN: command buffer size
@@ -74,7 +74,7 @@ LIB_EXPORT void _plat__RunCommand(
 }
 
 //***_plat__Fail()
-// This is the platform depended failure exit for the TPM.
+// This is the platform depended failure exit for the MSSIM.
 LIB_EXPORT NORETURN void _plat__Fail(void)
 {
     longjmp(&s_jumpBuffer[0], 1);

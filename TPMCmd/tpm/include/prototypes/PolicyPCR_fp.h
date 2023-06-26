@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,19 +45,19 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_SH_POLICY     policySession;
-    TPM2B_DIGEST       pcrDigest;
-    TPML_PCR_SELECTION pcrs;
+    MSSIMI_SH_POLICY     policySession;
+    MSSIM2B_DIGEST       pcrDigest;
+    MSSIML_PCR_SELECTION pcrs;
 } PolicyPCR_In;
 
 // Response code modifiers
-#    define RC_PolicyPCR_policySession (TPM_RC_H + TPM_RC_1)
-#    define RC_PolicyPCR_pcrDigest     (TPM_RC_P + TPM_RC_1)
-#    define RC_PolicyPCR_pcrs          (TPM_RC_P + TPM_RC_2)
+#    define RC_PolicyPCR_policySession (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_PolicyPCR_pcrDigest     (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_PolicyPCR_pcrs          (MSSIM_RC_P + MSSIM_RC_2)
 
 // Function prototype
-TPM_RC
-TPM2_PolicyPCR(PolicyPCR_In* in);
+MSSIM_RC
+MSSIM2_PolicyPCR(PolicyPCR_In* in);
 
 #  endif  // _Policy_PCR_FP_H_
 #endif    // CC_PolicyPCR

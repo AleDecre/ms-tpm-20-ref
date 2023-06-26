@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -36,11 +36,11 @@
 // This file implements a DRBG with a behavior according to SP800-90A using
 // a block cypher. This is also compliant to ISO/IEC 18031:2011(E) C.3.2.
 //
-// A state structure is created for use by TPM.lib and functions
+// A state structure is created for use by MSSIM.lib and functions
 // within the CryptoEngine my use their own state structures when they need to have
 // deterministic values.
 //
-// A debug mode is available that allows the random numbers generated for TPM.lib
+// A debug mode is available that allows the random numbers generated for MSSIM.lib
 // to be repeated during runs of the simulator. The switch for it is in
 // TpmBuildSwitches.h. It is USE_DEBUG_RNG.
 //
@@ -333,7 +333,7 @@ static BOOL EncryptDRBG(BYTE*              dOut,
 {
 #if FIPS_COMPLIANT
     // For FIPS compliance, the DRBG has to do a continuous self-test to make sure that
-    // no two consecutive values are the same. This overhead is not incurred if the TPM
+    // no two consecutive values are the same. This overhead is not incurred if the MSSIM
     // is not required to be FIPS compliant
     //
     UINT32 temp[DRBG_IV_SIZE_BYTES / sizeof(UINT32)];
@@ -550,15 +550,15 @@ BOOL DRBG_SelfTest(void)
 //** Public Interface
 //*** Description
 // The functions in this section are the interface to the RNG. These
-// are the functions that are used by TPM.lib.
+// are the functions that are used by MSSIM.lib.
 
 //*** CryptRandomStir()
 // This function is used to cause a reseed. A DRBG_SEED amount of entropy is
 // collected from the hardware and then additional data is added.
 //
-//  Return Type: TPM_RC
-//      TPM_RC_NO_RESULT        failure of the entropy generator
-LIB_EXPORT TPM_RC CryptRandomStir(UINT16 additionalDataSize, BYTE* additionalData)
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_NO_RESULT        failure of the entropy generator
+LIB_EXPORT MSSIM_RC CryptRandomStir(UINT16 additionalDataSize, BYTE* additionalData)
 {
 #if !USE_DEBUG_RNG
     DRBG_SEED tmpBuf;
@@ -566,14 +566,14 @@ LIB_EXPORT TPM_RC CryptRandomStir(UINT16 additionalDataSize, BYTE* additionalDat
     //
     // All reseed with outside data starts with a buffer full of entropy
     if(!DRBG_GetEntropy(sizeof(tmpBuf), (BYTE*)&tmpBuf))
-        return TPM_RC_NO_RESULT;
+        return MSSIM_RC_NO_RESULT;
 
     DRBG_Reseed(&drbgDefault,
                 &tmpBuf,
                 DfBuffer(&dfResult, additionalDataSize, additionalData));
     drbgDefault.reseedCounter = 1;
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 
 #else
     // If doing debug, use the input data as the initial setting for the RNG state
@@ -594,7 +594,7 @@ LIB_EXPORT TPM_RC CryptRandomStir(UINT16 additionalDataSize, BYTE* additionalDat
     }
     drbgDefault.reseedCounter = 1;
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 #endif
 }
 
@@ -610,11 +610,11 @@ LIB_EXPORT UINT16 CryptRandomGenerate(UINT16 randomSize, BYTE* buffer)
 // This function always returns TRUE.
 LIB_EXPORT BOOL DRBG_InstantiateSeededKdf(
     KDF_STATE*   state,    // OUT: buffer to hold the state
-    TPM_ALG_ID   hashAlg,  // IN: hash algorithm
-    TPM_ALG_ID   kdf,      // IN: the KDF to use
-    TPM2B*       seed,     // IN: the seed to use
-    const TPM2B* label,    // IN: a label for the generation process.
-    TPM2B*       context,  // IN: the context value
+    MSSIM_ALG_ID   hashAlg,  // IN: hash algorithm
+    MSSIM_ALG_ID   kdf,      // IN: the KDF to use
+    MSSIM2B*       seed,     // IN: the seed to use
+    const MSSIM2B* label,    // IN: a label for the generation process.
+    MSSIM2B*       context,  // IN: the context value
     UINT32       limit     // IN: Maximum number of bits from the KDF
 )
 {
@@ -636,7 +636,7 @@ LIB_EXPORT BOOL DRBG_InstantiateSeededKdf(
 // before computing the protection value of a primary key in the Endorsement
 // hierarchy.
 LIB_EXPORT void DRBG_AdditionalData(DRBG_STATE* drbgState,  // IN:OUT state to update
-                                    TPM2B* additionalData  // IN: value to incorporate
+                                    MSSIM2B* additionalData  // IN: value to incorporate
 )
 {
     DRBG_SEED dfResult;
@@ -652,14 +652,14 @@ LIB_EXPORT void DRBG_AdditionalData(DRBG_STATE* drbgState,  // IN:OUT state to u
 // The nominal use of this generator is to create sequences of pseudo-random
 // numbers from a seed value.
 //
-// Return Type: TPM_RC
-//  TPM_RC_FAILURE      DRBG self-test failure
-LIB_EXPORT TPM_RC DRBG_InstantiateSeeded(
+// Return Type: MSSIM_RC
+//  MSSIM_RC_FAILURE      DRBG self-test failure
+LIB_EXPORT MSSIM_RC DRBG_InstantiateSeeded(
     DRBG_STATE*  drbgState,  // IN/OUT: buffer to hold the state
-    const TPM2B* seed,       // IN: the seed to use
-    const TPM2B* purpose,    // IN: a label for the generation process.
-    const TPM2B* name,       // IN: name of the object
-    const TPM2B* additional  // IN: additional data
+    const MSSIM2B* seed,       // IN: the seed to use
+    const MSSIM2B* purpose,    // IN: a label for the generation process.
+    const MSSIM2B* name,       // IN: name of the object
+    const MSSIM2B* additional  // IN: additional data
 )
 {
     DF_STATE dfState;
@@ -668,7 +668,7 @@ LIB_EXPORT TPM_RC DRBG_InstantiateSeeded(
     if(!IsDrbgTested() && !DRBG_SelfTest())
     {
         LOG_FAILURE(FATAL_ERROR_SELF_TEST);
-        return TPM_RC_FAILURE;
+        return MSSIM_RC_FAILURE;
     }
     // Initialize the DRBG state
     memset(drbgState, 0, sizeof(DRBG_STATE));
@@ -697,11 +697,11 @@ LIB_EXPORT TPM_RC DRBG_InstantiateSeeded(
     // how it is described in SP800-90A but this is the equivalent function
     DRBG_Reseed(((DRBG_STATE*)drbgState), DfEnd(&dfState), NULL);
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 //*** CryptRandStartup()
-// This function is called when TPM_Startup is executed. This function always returns
+// This function is called when MSSIM_Startup is executed. This function always returns
 // TRUE.
 LIB_EXPORT BOOL CryptRandStartup(void)
 {
@@ -719,7 +719,7 @@ LIB_EXPORT BOOL CryptRandStartup(void)
 }
 
 //*** CryptRandInit()
-// This function is called when _TPM_Init is being processed.
+// This function is called when _MSSIM_Init is being processed.
 //
 //  Return Type: BOOL
 //      TRUE(1)         success
@@ -889,8 +889,8 @@ LIB_EXPORT UINT16 DRBG_Generate(
 
 //*** DRBG_Instantiate()
 // This is CTR_DRBG_Instantiate_algorithm() from [SP 800-90A 10.2.1.3.1].
-// This is called when a the TPM DRBG is to be instantiated. This is
-// called to instantiate a DRBG used by the TPM for normal
+// This is called when a the MSSIM DRBG is to be instantiated. This is
+// called to instantiate a DRBG used by the MSSIM for normal
 // operations.
 //
 //  Return Type: BOOL
@@ -930,14 +930,14 @@ LIB_EXPORT BOOL DRBG_Instantiate(
 //*** DRBG_Uninstantiate()
 // This is Uninstantiate_function() from [SP 800-90A 9.4].
 //
-//  Return Type: TPM_RC
-//      TPM_RC_VALUE        not a valid state
-LIB_EXPORT TPM_RC DRBG_Uninstantiate(
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_VALUE        not a valid state
+LIB_EXPORT MSSIM_RC DRBG_Uninstantiate(
     DRBG_STATE* drbgState  // IN/OUT: working state to erase
 )
 {
     if((drbgState == NULL) || (drbgState->magic != DRBG_MAGIC))
-        return TPM_RC_VALUE;
+        return MSSIM_RC_VALUE;
     memset(drbgState, 0, sizeof(DRBG_STATE));
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }

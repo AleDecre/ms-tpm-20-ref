@@ -1,5 +1,5 @@
 
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -51,8 +51,8 @@
 // not be a proper expression If you want to test various switches, either use the
 // command line or change the default.
 //
-#ifndef _TPM_BUILD_SWITCHES_H_
-#define _TPM_BUILD_SWITCHES_H_
+#ifndef _MSSIM_BUILD_SWITCHES_H_
+#define _MSSIM_BUILD_SWITCHES_H_
 
 #undef YES
 #define YES 1
@@ -90,8 +90,8 @@
 // can be enabled in a simulation include key caching, reproducible "random"
 // sequences, instrumentation of the RSA key generation process, and certain other
 // debug code. SIMULATION Needs to be defined as either YES or NO. This grouping of
-// macros will make sure that it is set correctly. A simulated TPM would include a
-// Virtual TPM. The interfaces for a Virtual TPM should be modified from the standard
+// macros will make sure that it is set correctly. A simulated MSSIM would include a
+// Virtual MSSIM. The interfaces for a Virtual MSSIM should be modified from the standard
 // ones in the Simulator project.
 //
 // If SIMULATION is in the compile parameters without modifiers,
@@ -102,7 +102,7 @@
 #endif
 
 // Define this to run the function that checks the compatibility between the
-// chosen big number math library and the TPM code. Not all ports use this.
+// chosen big number math library and the MSSIM code. Not all ports use this.
 #if !(defined LIBRARY_COMPATIBILITY_CHECK) \
     || ((LIBRARY_COMPATIBILITY_CHECK != NO) && (LIBRARY_COMPATIBILITY_CHECK != YES))
 #  undef LIBRARY_COMPATIBILITY_CHECK
@@ -115,7 +115,7 @@
 #endif
 
 // Definition to allow alternate behavior for non-orderly startup. If there is a
-// chance that the TPM could not update 'failedTries'
+// chance that the MSSIM could not update 'failedTries'
 #if !(defined USE_DA_USED) || ((USE_DA_USED != NO) && (USE_DA_USED != YES))
 #  undef USE_DA_USED
 #  define USE_DA_USED YES  // Default: Either YES or NO
@@ -204,7 +204,7 @@
 #    define USE_RSA_KEY_CACHE YES  // Default: Either YES or NO
 #  endif
 
-// Enables use of a file to store the key cache values so that the TPM will start
+// Enables use of a file to store the key cache values so that the MSSIM will start
 // faster during debug. Default for this is YES
 #  if USE_RSA_KEY_CACHE
 #    if !(defined USE_KEY_CACHE_FILE) \
@@ -340,4 +340,4 @@
 #define CC_YES  YES
 #define CC_NO   NO
 
-#endif  // _TPM_BUILD_SWITCHES_H_
+#endif  // _MSSIM_BUILD_SWITCHES_H_

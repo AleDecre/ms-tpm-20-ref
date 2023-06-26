@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,17 +45,17 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_RH_HIERARCHY_AUTH authHandle;
-    TPM2B_AUTH             newAuth;
+    MSSIMI_RH_HIERARCHY_AUTH authHandle;
+    MSSIM2B_AUTH             newAuth;
 } HierarchyChangeAuth_In;
 
 // Response code modifiers
-#    define RC_HierarchyChangeAuth_authHandle (TPM_RC_H + TPM_RC_1)
-#    define RC_HierarchyChangeAuth_newAuth    (TPM_RC_P + TPM_RC_1)
+#    define RC_HierarchyChangeAuth_authHandle (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_HierarchyChangeAuth_newAuth    (MSSIM_RC_P + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_HierarchyChangeAuth(HierarchyChangeAuth_In* in);
+MSSIM_RC
+MSSIM2_HierarchyChangeAuth(HierarchyChangeAuth_In* in);
 
 #  endif  // _Hierarchy_Change_Auth_FP_H_
 #endif    // CC_HierarchyChangeAuth

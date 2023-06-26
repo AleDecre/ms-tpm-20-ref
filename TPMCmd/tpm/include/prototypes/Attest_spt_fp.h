@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -41,34 +41,34 @@
 #define _ATTEST_SPT_FP_H_
 
 //***FillInAttestInfo()
-// Fill in common fields of TPMS_ATTEST structure.
+// Fill in common fields of MSSIMS_ATTEST structure.
 void FillInAttestInfo(
-    TPMI_DH_OBJECT   signHandle,  // IN: handle of signing object
-    TPMT_SIG_SCHEME* scheme,      // IN/OUT: scheme to be used for signing
-    TPM2B_DATA*      data,        // IN: qualifying data
-    TPMS_ATTEST*     attest       // OUT: attest structure
+    MSSIMI_DH_OBJECT   signHandle,  // IN: handle of signing object
+    MSSIMT_SIG_SCHEME* scheme,      // IN/OUT: scheme to be used for signing
+    MSSIM2B_DATA*      data,        // IN: qualifying data
+    MSSIMS_ATTEST*     attest       // OUT: attest structure
 );
 
 //***SignAttestInfo()
-// Sign a TPMS_ATTEST structure. If signHandle is TPM_RH_NULL, a null signature
+// Sign a MSSIMS_ATTEST structure. If signHandle is MSSIM_RH_NULL, a null signature
 // is returned.
 //
-//  Return Type: TPM_RC
-//      TPM_RC_ATTRIBUTES   'signHandle' references not a signing key
-//      TPM_RC_SCHEME       'scheme' is not compatible with 'signHandle' type
-//      TPM_RC_VALUE        digest generated for the given 'scheme' is greater than
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_ATTRIBUTES   'signHandle' references not a signing key
+//      MSSIM_RC_SCHEME       'scheme' is not compatible with 'signHandle' type
+//      MSSIM_RC_VALUE        digest generated for the given 'scheme' is greater than
 //                          the modulus of 'signHandle' (for an RSA key);
 //                          invalid commit status or failed to generate "r" value
 //                          (for an ECC key)
-TPM_RC
+MSSIM_RC
 SignAttestInfo(OBJECT*          signKey,         // IN: sign object
-               TPMT_SIG_SCHEME* scheme,          // IN: sign scheme
-               TPMS_ATTEST*     certifyInfo,     // IN: the data to be signed
-               TPM2B_DATA*      qualifyingData,  // IN: extra data for the signing
+               MSSIMT_SIG_SCHEME* scheme,          // IN: sign scheme
+               MSSIMS_ATTEST*     certifyInfo,     // IN: the data to be signed
+               MSSIM2B_DATA*      qualifyingData,  // IN: extra data for the signing
                                                  //     process
-               TPM2B_ATTEST* attest,             // OUT: marshaled attest blob to be
+               MSSIM2B_ATTEST* attest,             // OUT: marshaled attest blob to be
                                                  //     signed
-               TPMT_SIGNATURE* signature         // OUT: signature
+               MSSIMT_SIGNATURE* signature         // OUT: signature
 );
 
 //*** IsSigningObject()

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -64,10 +64,10 @@ typedef int SOCKET;
 #include "Simulator_fp.h"
 
 #define PURPOSE                    \
-  "TPM 2.0 Reference Simulator.\n" \
+  "MSSIM 2.0 Reference Simulator.\n" \
   "Copyright (c) Microsoft Corporation. All rights reserved."
 
-#define DEFAULT_TPM_PORT 2321
+#define DEFAULT_MSSIM_PORT 2321
 
 // Information about command line arguments (does not include program name)
 static uint32_t     s_ArgsMask = 0;  // Bit mask of unmatched command line args
@@ -99,17 +99,17 @@ static void Usage(const char* programName)
     fprintf(stderr, "%s\n\n", PURPOSE);
     fprintf(stderr,
             "Usage:  %s [PortNum] [opts]\n\n"
-            "Starts the TPM server listening on TCP port PortNum (by default %d).\n\n"
+            "Starts the MSSIM server listening on TCP port PortNum (by default %d).\n\n"
             "An option can be in the short form (one letter preceded with '-' or "
             "'/')\n"
             "or in the full form (preceded with '--' or no option marker at all).\n"
             "Possible options are:\n"
             "   -h (--help) or ? - print this message\n"
-            "   -m (--manufacture) - forces NV state of the TPM simulator to be "
+            "   -m (--manufacture) - forces NV state of the MSSIM simulator to be "
             "(re)manufactured\n"
-            "   -b (--hwbind) - perform hardware binding with pTPM\n",
+            "   -b (--hwbind) - perform hardware binding with pMSSIM\n",
             programName,
-            DEFAULT_TPM_PORT);
+            DEFAULT_MSSIM_PORT);
     exit(1);
 }
 
@@ -222,7 +222,7 @@ int main(int argc, char* argv[])
 {
     bool manufacture = false;
     bool hwbind      = false;
-    int  PortNum     = DEFAULT_TPM_PORT;
+    int  PortNum     = DEFAULT_MSSIM_PORT;
 
     // Parse command line options
 
@@ -272,7 +272,7 @@ int main(int argc, char* argv[])
     if(manufacture || _plat__NVNeedsManufacture())
     {
         printf("Manufacturing NV state...\n");
-        if(TPM_Manufacture(1) != 0)
+        if(MSSIM_Manufacture(1) != 0)
         {
             // if the manufacture didn't work, then make sure that the NV file doesn't
             // survive. This prevents manufacturing failures from being ignored the
@@ -281,13 +281,13 @@ int main(int argc, char* argv[])
             exit(1);
         }
         // Coverage test - repeated manufacturing attempt
-        if(TPM_Manufacture(0) != 1)
+        if(MSSIM_Manufacture(0) != 1)
         {
             exit(2);
         }
         // Coverage test - re-manufacturing
-        TPM_TearDown();
-        if(TPM_Manufacture(1) != 0)
+        MSSIM_TearDown();
+        if(MSSIM_Manufacture(1) != 0)
         {
             exit(3);
         }
@@ -295,7 +295,7 @@ int main(int argc, char* argv[])
     if(hwbind)
     {
         printf("\nPerforming hardware binding...\n");
-        _TPM_Init("Init with pTPM...\n");
+        _MSSIM_Init("Init with pMSSIM...\n");
     }
     // Disable NV memory
     _plat__NVDisable(0);

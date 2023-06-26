@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,31 +45,31 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT   objectHandle;
-    TPMI_DH_OBJECT   signHandle;
-    TPM2B_DATA       reserved;
-    TPMT_SIG_SCHEME  inScheme;
-    TPM2B_MAX_BUFFER partialCertificate;
+    MSSIMI_DH_OBJECT   objectHandle;
+    MSSIMI_DH_OBJECT   signHandle;
+    MSSIM2B_DATA       reserved;
+    MSSIMT_SIG_SCHEME  inScheme;
+    MSSIM2B_MAX_BUFFER partialCertificate;
 } CertifyX509_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_MAX_BUFFER addedToCertificate;
-    TPM2B_DIGEST     tbsDigest;
-    TPMT_SIGNATURE   signature;
+    MSSIM2B_MAX_BUFFER addedToCertificate;
+    MSSIM2B_DIGEST     tbsDigest;
+    MSSIMT_SIGNATURE   signature;
 } CertifyX509_Out;
 
 // Response code modifiers
-#    define RC_CertifyX509_objectHandle       (TPM_RC_H + TPM_RC_1)
-#    define RC_CertifyX509_signHandle         (TPM_RC_H + TPM_RC_2)
-#    define RC_CertifyX509_reserved           (TPM_RC_P + TPM_RC_1)
-#    define RC_CertifyX509_inScheme           (TPM_RC_P + TPM_RC_2)
-#    define RC_CertifyX509_partialCertificate (TPM_RC_P + TPM_RC_3)
+#    define RC_CertifyX509_objectHandle       (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_CertifyX509_signHandle         (MSSIM_RC_H + MSSIM_RC_2)
+#    define RC_CertifyX509_reserved           (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_CertifyX509_inScheme           (MSSIM_RC_P + MSSIM_RC_2)
+#    define RC_CertifyX509_partialCertificate (MSSIM_RC_P + MSSIM_RC_3)
 
 // Function prototype
-TPM_RC
-TPM2_CertifyX509(CertifyX509_In* in, CertifyX509_Out* out);
+MSSIM_RC
+MSSIM2_CertifyX509(CertifyX509_In* in, CertifyX509_Out* out);
 
 #  endif  // _CERTIFYX509_FP_H_
 #endif    // CC_CertifyX509

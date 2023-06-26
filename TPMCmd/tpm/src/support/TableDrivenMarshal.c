@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -53,7 +53,7 @@ typedef struct
 extern struct Exernal_Structure_t MarshalData;
 
 #  define IS_SUCCESS(UNMARSHAL_FUNCTION) \
-    (TPM_RC_SUCCESS == (result = (UNMARSHAL_FUNCTION)))
+    (MSSIM_RC_SUCCESS == (result = (UNMARSHAL_FUNCTION)))
 
 marshalIndex_t IntegerDispatch[] = {UINT8_MARSHAL_REF,
                                     UINT16_MARSHAL_REF,
@@ -109,7 +109,7 @@ static UINT32 GetSelector(void* structure, const UINT16* values, UINT16 descript
                                  ((UINT8*)structure) + entry[2]);
 }
 
-static TPM_RC UnmarshalBytes(
+static MSSIM_RC UnmarshalBytes(
     UINT8*  target,  // IN/OUT: place to put the bytes
     UINT8** buffer,  // IN/OUT: source of the input data
     INT32*  size,    // IN/OUT: remaining bytes in the input buffer
@@ -120,9 +120,9 @@ static TPM_RC UnmarshalBytes(
     {
         memcpy(target, *buffer, count);
         *buffer += count;
-        return TPM_RC_SUCCESS;
+        return MSSIM_RC_SUCCESS;
     }
-    return TPM_RC_INSUFFICIENT;
+    return MSSIM_RC_INSUFFICIENT;
 }
 
 //*** MarshalBytes()
@@ -141,7 +141,7 @@ static UINT16 MarshalBytes(UINT8* source, UINT8** buffer, INT32* size, int32_t c
 
 //*** ArrayUnmarshal()
 // Unmarshal an array. The 'index' is of the form: 'type'_ARRAY_MARSHAL_INDEX.
-static TPM_RC ArrayUnmarshal(UINT16  index,   // IN: the type of the array
+static MSSIM_RC ArrayUnmarshal(UINT16  index,   // IN: the type of the array
                              UINT8*  target,  // IN: target for the data
                              UINT8** buffer,  // IN/OUT: place to get the data
                              INT32*  size,    // IN/OUT: remaining unmarshal data
@@ -151,14 +151,14 @@ static TPM_RC ArrayUnmarshal(UINT16  index,   // IN: the type of the array
 {
     marshalIndex_t which  = ArrayLookupTable[index & NULL_MASK].type;
     UINT16         stride = ArrayLookupTable[index & NULL_MASK].stride;
-    TPM_RC         result;
+    MSSIM_RC         result;
     //
     if(stride == 1)  // A byte array
         result = UnmarshalBytes(target, buffer, size, count);
     else
     {
         which |= index & NULL_FLAG;
-        for(result = TPM_RC_SUCCESS; count > 0; target += stride, count--)
+        for(result = MSSIM_RC_SUCCESS; count > 0; target += stride, count--)
             if(!IS_SUCCESS(Unmarshal(which, target, buffer, size)))
                 break;
     }
@@ -187,7 +187,7 @@ static UINT16 ArrayMarshal(UINT16  index,   // IN: the type of the array
 }
 
 //***UnmarshalUnion()
-TPM_RC
+MSSIM_RC
 UnmarshalUnion(UINT16  typeIndex,  // IN: the thing to unmarshal
                void*   target,     // IN: were the data goes to
                UINT8** buffer,     // IN/OUT: the data source buffer
@@ -217,7 +217,7 @@ UnmarshalUnion(UINT16  typeIndex,  // IN: the thing to unmarshal
         }
     }
     // Didn't find the value.
-    return TPM_RC_SELECTOR;
+    return MSSIM_RC_SELECTOR;
 }
 
 //*** MarshalUnion()
@@ -251,7 +251,7 @@ MarshalUnion(UINT16  typeIndex,  // IN: the thing to marshal
     return 0;
 }
 
-TPM_RC
+MSSIM_RC
 UnmarshalInteger(int     iSize,   // IN: Number of bytes in the integer
                  void*   target,  // OUT: receives the integer
                  UINT8** buffer,  // IN/OUT: source of the data
@@ -308,18 +308,18 @@ UnmarshalInteger(int     iSize,   // IN: Number of bytes in the integer
             *((UINT64*)target) = BYTE_ARRAY_TO_UINT64(*buffer);
         }
         *buffer += bytes;
-        return TPM_RC_SUCCESS;
+        return MSSIM_RC_SUCCESS;
 #  undef _MB_
     }
-    return TPM_RC_INSUFFICIENT;
+    return MSSIM_RC_INSUFFICIENT;
 }
 
 //*** Unmarshal()
 // This is the function that performs unmarshaling of different numbered types. Each
-// TPM type has a number. The number is used to lookup the address of the data
+// MSSIM type has a number. The number is used to lookup the address of the data
 // structure that describes how to unmarshal that data type.
 //
-TPM_RC
+MSSIM_RC
 Unmarshal(UINT16  typeIndex,  // IN: the thing to marshal
           void*   target,     // IN: were the data goes from
           UINT8** buffer,     // IN/OUT: the data source buffer
@@ -327,7 +327,7 @@ Unmarshal(UINT16  typeIndex,  // IN: the thing to marshal
 )
 {
     const MarshalHeader_mst* sel;
-    TPM_RC                   result;
+    MSSIM_RC                   result;
     //
     sel = GetDescriptor(typeIndex);
     switch(sel->marshalType)
@@ -340,7 +340,7 @@ Unmarshal(UINT16  typeIndex,  // IN: the thing to marshal
         case VALUES_MTYPE:
         {
             // This is the general-purpose structure that can handle things like
-            // TPMI_DH_PARENT that has multiple ranges, multiple singles and a
+            // MSSIMI_DH_PARENT that has multiple ranges, multiple singles and a
             // 'null' value. When things cover a large range with holes in the range
             // they can be turned into multiple ranges. There is no option for a bit
             // field.
@@ -368,7 +368,7 @@ Unmarshal(UINT16  typeIndex,  // IN: the thing to marshal
                 if((vmt->modifiers & TAKES_NULL) && (val == *check++))
                 {
                     if((typeIndex & NULL_FLAG) == 0)
-                        result = (TPM_RC)(sel->errorCode);
+                        result = (MSSIM_RC)(sel->errorCode);
                 }
                 // No NULL value or input is not the NULL value
                 else
@@ -389,7 +389,7 @@ Unmarshal(UINT16  typeIndex,  // IN: the thing to marshal
                     }
                     // If input not in range and not in any single so return error
                     if(i < 0)
-                        result = (TPM_RC)(sel->errorCode);
+                        result = (MSSIM_RC)(sel->errorCode);
                 }
             }
             break;
@@ -402,7 +402,7 @@ Unmarshal(UINT16  typeIndex,  // IN: the thing to marshal
             // indicated value is implemented. For example, if there is a table of
             // allowed RSA key sizes and the 2nd entry matches, then the 2nd bit in
             // the bit field is checked to see if that allowed size is implemented
-            // in this TPM.
+            // in this MSSIM.
             //  typedef const struct TableMarshal_mst
             //  {
             //      UINT8           marshalType;        // TABLE_MTYPE
@@ -426,7 +426,7 @@ Unmarshal(UINT16  typeIndex,  // IN: the thing to marshal
                 if((tmt->modifiers & TAKES_NULL) && (val == *check++))
                 {
                     if((typeIndex & NULL_FLAG) == 0)
-                        result = (TPM_RC)(sel->errorCode);
+                        result = (MSSIM_RC)(sel->errorCode);
                 }
                 else
                 {
@@ -449,7 +449,7 @@ Unmarshal(UINT16  typeIndex,  // IN: the thing to marshal
                     }
                     // error if not found or bit not SET
                     if(i < 0)
-                        result = (TPM_RC)(sel->errorCode);
+                        result = (MSSIM_RC)(sel->errorCode);
                 }
             }
             break;
@@ -489,7 +489,7 @@ Unmarshal(UINT16  typeIndex,  // IN: the thing to marshal
                 if((mmt->modifiers & TAKES_NULL) && (val == *check++))
                 {
                     if((typeIndex & NULL_FLAG) == 0)
-                        result = (TPM_RC)(mmt->errorCode);
+                        result = (MSSIM_RC)(mmt->errorCode);
                 }
                 else
                 {
@@ -497,14 +497,14 @@ Unmarshal(UINT16  typeIndex,  // IN: the thing to marshal
                     if((val > check[1])
                        || ((mmt->modifiers & HAS_BITS)
                            && !IS_BIT_SET32(val, &check[2])))
-                        result = (TPM_RC)(mmt->errorCode);
+                        result = (MSSIM_RC)(mmt->errorCode);
                 }
             }
             break;
         }
         case ATTRIBUTES_MTYPE:
         {
-            //  This is used for TPMA values.
+            //  This is used for MSSIMA values.
             UINT32                 mask;
             AttributesMarshal_mst* amt = (AttributesMarshal_mst*)sel;
             //
@@ -512,7 +512,7 @@ Unmarshal(UINT16  typeIndex,  // IN: the thing to marshal
                    UnmarshalInteger(sel->modifiers, target, buffer, size, &mask)))
             {
                 if((mask & amt->attributeMask) != 0)
-                    result = TPM_RC_RESERVED_BITS;
+                    result = MSSIM_RC_RESERVED_BITS;
             }
             break;
         }
@@ -541,8 +541,8 @@ Unmarshal(UINT16  typeIndex,  // IN: the thing to marshal
             int                i;
             const UINT16*      value = mst->values;
             //
-            for(result = TPM_RC_SUCCESS, i = mst->elements;
-                (TPM_RC_SUCCESS == result) && (i > 0);
+            for(result = MSSIM_RC_SUCCESS, i = mst->elements;
+                (MSSIM_RC_SUCCESS == result) && (i > 0);
                 value = &value[3], i--)
             {
                 UINT16         descriptor = value[0];
@@ -579,27 +579,27 @@ Unmarshal(UINT16  typeIndex,  // IN: the thing to marshal
                         break;
                     }
                     default:
-                        result = TPM_RC_FAILURE;
+                        result = MSSIM_RC_FAILURE;
                         break;
                 }
             }
             break;
         }
-        case TPM2B_MTYPE:
+        case MSSIM2B_MTYPE:
         {
-            // A primitive TPM2B. A size and byte buffer. The single value (other than
+            // A primitive MSSIM2B. A size and byte buffer. The single value (other than
             // the tag) references the synthetic 'interface' value for the size
             // parameter.
             Tpm2bMarshal_mst* m2bt = (Tpm2bMarshal_mst*)sel;
             //
             if(IS_SUCCESS(Unmarshal(m2bt->sizeIndex, target, buffer, size)))
                 result = UnmarshalBytes(
-                    ((TPM2B*)target)->buffer, buffer, size, *((UINT16*)target));
+                    ((MSSIM2B*)target)->buffer, buffer, size, *((UINT16*)target));
             break;
         }
-        case TPM2BS_MTYPE:
+        case MSSIM2BS_MTYPE:
         {
-            // This is used when a TPM2B contains a structure.
+            // This is used when a MSSIM2B contains a structure.
             Tpm2bsMarshal_mst* m2bst = (Tpm2bsMarshal_mst*)sel;
             INT32              count;
             //
@@ -610,7 +610,7 @@ Unmarshal(UINT16  typeIndex,  // IN: the thing to marshal
                 if(count == 0)
                 {
                     if(m2bst->modifiers & SIZE_EQUAL)
-                        result = TPM_RC_SIZE;
+                        result = MSSIM_RC_SIZE;
                 }
                 else if((*size -= count) >= 0)
                 {
@@ -630,11 +630,11 @@ Unmarshal(UINT16  typeIndex,  // IN: the thing to marshal
                            &count)))
                     {
                         if(count != 0)
-                            result = TPM_RC_SIZE;
+                            result = MSSIM_RC_SIZE;
                     }
                 }
                 else
-                    result = TPM_RC_INSUFFICIENT;
+                    result = MSSIM_RC_INSUFFICIENT;
             }
             break;
         }
@@ -661,7 +661,7 @@ Unmarshal(UINT16  typeIndex,  // IN: the thing to marshal
         }
         case NULL_MTYPE:
         {
-            result = TPM_RC_SUCCESS;
+            result = MSSIM_RC_SUCCESS;
             break;
         }
 #  if 0
@@ -672,7 +672,7 @@ Unmarshal(UINT16  typeIndex,  // IN: the thing to marshal
             UINT8                   *buf = *buffer;
             INT32                   sz = *size;
         //
-            result = TPM_RC_VALUE;
+            result = MSSIM_RC_VALUE;
             for(i = GET_ELEMENT_COUNT(mct->modifiers) - 1; i <= 0; i--)
             {
                 marshalIndex_t      index = mct->types[i];
@@ -682,7 +682,7 @@ Unmarshal(UINT16  typeIndex,  // IN: the thing to marshal
                 // composite should have the takes null SET.
                 index |= typeIndex & NULL_MASK;
                 result = Unmarshal(index, target, buffer, size);
-                if(result == TPM_RC_SUCCESS)
+                if(result == MSSIM_RC_SUCCESS)
                     break;
                 // Each of the composite values does its own unmarshaling. This
                 // has some execution overhead if it is unmarshaled multiple times
@@ -698,7 +698,7 @@ Unmarshal(UINT16  typeIndex,  // IN: the thing to marshal
 #  endif  // 0
         default:
         {
-            result = TPM_RC_FAILURE;
+            result = MSSIM_RC_FAILURE;
             break;
         }
     }
@@ -729,7 +729,7 @@ UINT16 Marshal(UINT16  typeIndex,  // IN: the thing to marshal
         case ATTRIBUTES_MTYPE:
         case COMPOSITE_MTYPE:
         {
-#  if BIG_ENDIAN_TPM
+#  if BIG_ENDIAN_MSSIM
 #    define MM16 0
 #    define MM32 0
 #    define MM64 0
@@ -821,7 +821,7 @@ UINT16 Marshal(UINT16  typeIndex,  // IN: the thing to marshal
             }
             break;
         }
-        case TPM2B_MTYPE:
+        case MSSIM2B_MTYPE:
         {
             // Get the number of bytes being marshaled
             INT32 val = (int32_t) * ((UINT16*)source);
@@ -829,10 +829,10 @@ UINT16 Marshal(UINT16  typeIndex,  // IN: the thing to marshal
             retVal = Marshal(UINT16_MARSHAL_REF, source, buffer, size);
 
             // This is a standard 2B with a byte buffer
-            retVal += MarshalBytes(((TPM2B*)_source)->buffer, buffer, size, val);
+            retVal += MarshalBytes(((MSSIM2B*)_source)->buffer, buffer, size, val);
             break;
         }
-        case TPM2BS_MTYPE:  // A structure in a TPM2B
+        case MSSIM2BS_MTYPE:  // A structure in a MSSIM2B
         {
             Tpm2bsMarshal_mst* m2bst = (Tpm2bsMarshal_mst*)sel;
             UINT8*             offset;
@@ -846,7 +846,7 @@ UINT16 Marshal(UINT16  typeIndex,  // IN: the thing to marshal
             retVal = Marshal(UINT16_MARSHAL_REF, source, buffer, size);
 
             // This gets the 'offsetof' the structure to marshal. It was placed in the
-            // modifiers byte because the offset from the start of the TPM2B to the
+            // modifiers byte because the offset from the start of the MSSIM2B to the
             // start of the structure is going to be less than 8 and the modifiers
             // byte isn't needed for anything else.
             offset = _source + (m2bst->modifiers & SIGNED_MASK);

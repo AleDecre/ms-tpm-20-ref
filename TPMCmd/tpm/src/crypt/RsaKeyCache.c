@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,7 +40,7 @@
 // a key of that size is requested.
 //
 // If desired, the key cache can be populated from a file. This allows multiple
-// TPM to run with the same RSA keys. Also, when doing simulation, the DRBG will
+// MSSIM to run with the same RSA keys. Also, when doing simulation, the DRBG will
 // use preset sequences so it is not too hard to repeat sequences for debug or
 // profile or stress.
 //
@@ -48,13 +48,13 @@
 // GetCachedRsaKey(). If the cache is enabled and populated, then the cached key
 // of the requested size is returned. If a key of the requested size is not
 // available, the no key is loaded and the requested key will need to be generated.
-// If the cache is not populated, the TPM will open a file that has the appropriate
+// If the cache is not populated, the MSSIM will open a file that has the appropriate
 // name for the type of keys required (CRT or no-CRT). If the file is the right
 // size, it is used. If the file doesn't exist or the file does not have the correct
 // size, the TMP will populate the cache with new keys of the required size and
 // write the cache data to the file so that they will be available the next time.
 //
-// Currently, if two simulations are being run with TPM's that have different RSA
+// Currently, if two simulations are being run with MSSIM's that have different RSA
 // key sizes (e.g,, one with 1024 and 2048 and another with 2048 and 3072, then the
 // files will not match for the both of them and they will both try to overwrite
 // the other's cache file. I may try to do something about this if necessary.
@@ -76,12 +76,12 @@
 
 typedef struct _RSA_KEY_CACHE_
 {
-    TPM2B_PUBLIC_KEY_RSA  publicModulus;
-    TPM2B_PRIVATE_KEY_RSA privateExponent;
+    MSSIM2B_PUBLIC_KEY_RSA  publicModulus;
+    MSSIM2B_PRIVATE_KEY_RSA privateExponent;
 } RSA_KEY_CACHE;
 
 // Determine the number of RSA key sizes for the cache
-TPMI_RSA_KEY_BITS SupportedRsaKeySizes[] = {
+MSSIMI_RSA_KEY_BITS SupportedRsaKeySizes[] = {
 #  if RSA_1024
     1024,
 #  endif
@@ -119,21 +119,21 @@ LIB_EXPORT void RsaKeyCacheControl(int state)
 //  Return Type: BOOL
 //      TRUE(1)         success
 //      FALSE(0)        failure
-static BOOL InitializeKeyCache(TPMT_PUBLIC*    publicArea,
-                               TPMT_SENSITIVE* sensitive,
+static BOOL InitializeKeyCache(MSSIMT_PUBLIC*    publicArea,
+                               MSSIMT_SENSITIVE* sensitive,
                                RAND_STATE* rand  // IN: if not NULL, the deterministic
                                                  //     RNG state
 )
 {
     int          index;
-    TPM_KEY_BITS keySave = publicArea->parameters.rsaDetail.keyBits;
+    MSSIM_KEY_BITS keySave = publicArea->parameters.rsaDetail.keyBits;
     BOOL         OK      = TRUE;
     //
     s_rsaKeyCacheEnabled = FALSE;
     for(index = 0; OK && index < RSA_KEY_CACHE_ENTRIES; index++)
     {
         publicArea->parameters.rsaDetail.keyBits = SupportedRsaKeySizes[index];
-        OK = (CryptRsaGenerateKey(publicArea, sensitive, rand) == TPM_RC_SUCCESS);
+        OK = (CryptRsaGenerateKey(publicArea, sensitive, rand) == MSSIM_RC_SUCCESS);
         if(OK)
         {
             s_rsaKeyCache[index].publicModulus   = publicArea->unique.rsa;
@@ -178,8 +178,8 @@ static BOOL InitializeKeyCache(TPMT_PUBLIC*    publicArea,
 //  Return Type: BOOL
 //      TRUE(1)         cache loaded
 //      FALSE(0)        cache not loaded
-static BOOL KeyCacheLoaded(TPMT_PUBLIC*    publicArea,
-                           TPMT_SENSITIVE* sensitive,
+static BOOL KeyCacheLoaded(MSSIMT_PUBLIC*    publicArea,
+                           MSSIMT_SENSITIVE* sensitive,
                            RAND_STATE*     rand  // IN: if not NULL, the deterministic
                                                  //     RNG state
 )
@@ -217,8 +217,8 @@ static BOOL KeyCacheLoaded(TPMT_PUBLIC*    publicArea,
 //  Return Type: BOOL
 //      TRUE(1)         key loaded
 //      FALSE(0)        key not loaded
-BOOL GetCachedRsaKey(TPMT_PUBLIC*    publicArea,
-                     TPMT_SENSITIVE* sensitive,
+BOOL GetCachedRsaKey(MSSIMT_PUBLIC*    publicArea,
+                     MSSIMT_SENSITIVE* sensitive,
                      RAND_STATE*     rand  // IN: if not NULL, the deterministic
                                            //     RNG state
 )

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,17 +45,17 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_RH_NV_AUTH  authHandle;
-    TPMI_RH_NV_INDEX nvIndex;
+    MSSIMI_RH_NV_AUTH  authHandle;
+    MSSIMI_RH_NV_INDEX nvIndex;
 } NV_ReadLock_In;
 
 // Response code modifiers
-#    define RC_NV_ReadLock_authHandle (TPM_RC_H + TPM_RC_1)
-#    define RC_NV_ReadLock_nvIndex    (TPM_RC_H + TPM_RC_2)
+#    define RC_NV_ReadLock_authHandle (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_NV_ReadLock_nvIndex    (MSSIM_RC_H + MSSIM_RC_2)
 
 // Function prototype
-TPM_RC
-TPM2_NV_ReadLock(NV_ReadLock_In* in);
+MSSIM_RC
+MSSIM2_NV_ReadLock(NV_ReadLock_In* in);
 
 #  endif  // _NV_Read_Lock_FP_H_
 #endif    // CC_NV_ReadLock

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -477,7 +477,7 @@ LIB_EXPORT BOOL BnShiftRight(bigNum result, bigConst toShift, uint32_t shiftAmou
 
 //*** BnGetRandomBits()
 // This function gets random bits for use in various places. To make sure that the
-// number is generated in a portable format, it is created as a TPM2B and then
+// number is generated in a portable format, it is created as a MSSIM2B and then
 // converted to the internal format.
 //
 // One consequence of the generation scheme is that, if the number of bits requested
@@ -491,8 +491,8 @@ LIB_EXPORT BOOL BnGetRandomBits(bigNum n, size_t bits, RAND_STATE* rand)
 {
     // Since this could be used for ECC key generation using the extra bits method,
     // make sure that the value is large enough
-    TPM2B_TYPE(LARGEST, LARGEST_NUMBER + 8);
-    TPM2B_LARGEST large;
+    MSSIM2B_TYPE(LARGEST, LARGEST_NUMBER + 8);
+    MSSIM2B_LARGEST large;
     //
     large.b.size = (UINT16)BITS_TO_BYTES(bits);
     if(DRBG_Generate(rand, large.t.buffer, large.t.size) == large.t.size)

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,30 +45,30 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT         oldParent;
-    TPMI_DH_OBJECT         newParent;
-    TPM2B_PRIVATE          inDuplicate;
-    TPM2B_NAME             name;
-    TPM2B_ENCRYPTED_SECRET inSymSeed;
+    MSSIMI_DH_OBJECT         oldParent;
+    MSSIMI_DH_OBJECT         newParent;
+    MSSIM2B_PRIVATE          inDuplicate;
+    MSSIM2B_NAME             name;
+    MSSIM2B_ENCRYPTED_SECRET inSymSeed;
 } Rewrap_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_PRIVATE          outDuplicate;
-    TPM2B_ENCRYPTED_SECRET outSymSeed;
+    MSSIM2B_PRIVATE          outDuplicate;
+    MSSIM2B_ENCRYPTED_SECRET outSymSeed;
 } Rewrap_Out;
 
 // Response code modifiers
-#    define RC_Rewrap_oldParent   (TPM_RC_H + TPM_RC_1)
-#    define RC_Rewrap_newParent   (TPM_RC_H + TPM_RC_2)
-#    define RC_Rewrap_inDuplicate (TPM_RC_P + TPM_RC_1)
-#    define RC_Rewrap_name        (TPM_RC_P + TPM_RC_2)
-#    define RC_Rewrap_inSymSeed   (TPM_RC_P + TPM_RC_3)
+#    define RC_Rewrap_oldParent   (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_Rewrap_newParent   (MSSIM_RC_H + MSSIM_RC_2)
+#    define RC_Rewrap_inDuplicate (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_Rewrap_name        (MSSIM_RC_P + MSSIM_RC_2)
+#    define RC_Rewrap_inSymSeed   (MSSIM_RC_P + MSSIM_RC_3)
 
 // Function prototype
-TPM_RC
-TPM2_Rewrap(Rewrap_In* in, Rewrap_Out* out);
+MSSIM_RC
+MSSIM2_Rewrap(Rewrap_In* in, Rewrap_Out* out);
 
 #  endif  // _Rewrap_FP_H_
 #endif    // CC_Rewrap

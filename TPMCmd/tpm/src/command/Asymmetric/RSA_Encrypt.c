@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,44 +40,44 @@
 /*(See part 3 specification)
 // This command performs the padding and encryption of a data block
 */
-//  Return Type: TPM_RC
-//      TPM_RC_ATTRIBUTES           'decrypt' attribute is not SET in key referenced
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_ATTRIBUTES           'decrypt' attribute is not SET in key referenced
 //                                  by 'keyHandle'
-//      TPM_RC_KEY                  'keyHandle' does not reference an RSA key
-//      TPM_RC_SCHEME               incorrect input scheme, or the chosen
+//      MSSIM_RC_KEY                  'keyHandle' does not reference an RSA key
+//      MSSIM_RC_SCHEME               incorrect input scheme, or the chosen
 //                                  scheme is not a valid RSA decrypt scheme
-//      TPM_RC_VALUE                the numeric value of 'message' is greater than
+//      MSSIM_RC_VALUE                the numeric value of 'message' is greater than
 //                                  the public modulus of the key referenced by
 //                                  'keyHandle', or 'label' is not a null-terminated
 //                                  string
-TPM_RC
-TPM2_RSA_Encrypt(RSA_Encrypt_In*  in,  // IN: input parameter list
+MSSIM_RC
+MSSIM2_RSA_Encrypt(RSA_Encrypt_In*  in,  // IN: input parameter list
                  RSA_Encrypt_Out* out  // OUT: output parameter list
 )
 {
-    TPM_RC            result;
+    MSSIM_RC            result;
     OBJECT*           rsaKey;
-    TPMT_RSA_DECRYPT* scheme;
+    MSSIMT_RSA_DECRYPT* scheme;
     // Input Validation
     rsaKey = HandleToObject(in->keyHandle);
 
     // selected key must be an RSA key
-    if(rsaKey->publicArea.type != TPM_ALG_RSA)
-        return TPM_RCS_KEY + RC_RSA_Encrypt_keyHandle;
+    if(rsaKey->publicArea.type != MSSIM_ALG_RSA)
+        return MSSIM_RCS_KEY + RC_RSA_Encrypt_keyHandle;
     // selected key must have the decryption attribute
-    if(!IS_ATTRIBUTE(rsaKey->publicArea.objectAttributes, TPMA_OBJECT, decrypt))
-        return TPM_RCS_ATTRIBUTES + RC_RSA_Encrypt_keyHandle;
+    if(!IS_ATTRIBUTE(rsaKey->publicArea.objectAttributes, MSSIMA_OBJECT, decrypt))
+        return MSSIM_RCS_ATTRIBUTES + RC_RSA_Encrypt_keyHandle;
 
     // Is there a label?
     if(!IsLabelProperlyFormatted(&in->label.b))
-        return TPM_RCS_VALUE + RC_RSA_Encrypt_label;
+        return MSSIM_RCS_VALUE + RC_RSA_Encrypt_label;
     // Command Output
     // Select a scheme for encryption
     scheme = CryptRsaSelectScheme(in->keyHandle, &in->inScheme);
     if(scheme == NULL)
-        return TPM_RCS_SCHEME + RC_RSA_Encrypt_inScheme;
+        return MSSIM_RCS_SCHEME + RC_RSA_Encrypt_inScheme;
 
-    // Encryption.  TPM_RC_VALUE, or TPM_RC_SCHEME errors my be returned buy
+    // Encryption.  MSSIM_RC_VALUE, or MSSIM_RC_SCHEME errors my be returned buy
     // CryptEncyptRSA.
     out->outData.t.size = sizeof(out->outData.t.buffer);
 

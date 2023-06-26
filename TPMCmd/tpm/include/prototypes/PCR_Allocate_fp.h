@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,26 +45,26 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_RH_PLATFORM   authHandle;
-    TPML_PCR_SELECTION pcrAllocation;
+    MSSIMI_RH_PLATFORM   authHandle;
+    MSSIML_PCR_SELECTION pcrAllocation;
 } PCR_Allocate_In;
 
 // Output structure definition
 typedef struct
 {
-    TPMI_YES_NO allocationSuccess;
+    MSSIMI_YES_NO allocationSuccess;
     UINT32      maxPCR;
     UINT32      sizeNeeded;
     UINT32      sizeAvailable;
 } PCR_Allocate_Out;
 
 // Response code modifiers
-#    define RC_PCR_Allocate_authHandle    (TPM_RC_H + TPM_RC_1)
-#    define RC_PCR_Allocate_pcrAllocation (TPM_RC_P + TPM_RC_1)
+#    define RC_PCR_Allocate_authHandle    (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_PCR_Allocate_pcrAllocation (MSSIM_RC_P + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_PCR_Allocate(PCR_Allocate_In* in, PCR_Allocate_Out* out);
+MSSIM_RC
+MSSIM2_PCR_Allocate(PCR_Allocate_In* in, PCR_Allocate_Out* out);
 
 #  endif  // _PCR_Allocate_FP_H_
 #endif    // CC_PCR_Allocate

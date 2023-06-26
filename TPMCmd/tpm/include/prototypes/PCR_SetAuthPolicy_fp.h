@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,21 +45,21 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_RH_PLATFORM authHandle;
-    TPM2B_DIGEST     authPolicy;
-    TPMI_ALG_HASH    hashAlg;
-    TPMI_DH_PCR      pcrNum;
+    MSSIMI_RH_PLATFORM authHandle;
+    MSSIM2B_DIGEST     authPolicy;
+    MSSIMI_ALG_HASH    hashAlg;
+    MSSIMI_DH_PCR      pcrNum;
 } PCR_SetAuthPolicy_In;
 
 // Response code modifiers
-#    define RC_PCR_SetAuthPolicy_authHandle (TPM_RC_H + TPM_RC_1)
-#    define RC_PCR_SetAuthPolicy_authPolicy (TPM_RC_P + TPM_RC_1)
-#    define RC_PCR_SetAuthPolicy_hashAlg    (TPM_RC_P + TPM_RC_2)
-#    define RC_PCR_SetAuthPolicy_pcrNum     (TPM_RC_P + TPM_RC_3)
+#    define RC_PCR_SetAuthPolicy_authHandle (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_PCR_SetAuthPolicy_authPolicy (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_PCR_SetAuthPolicy_hashAlg    (MSSIM_RC_P + MSSIM_RC_2)
+#    define RC_PCR_SetAuthPolicy_pcrNum     (MSSIM_RC_P + MSSIM_RC_3)
 
 // Function prototype
-TPM_RC
-TPM2_PCR_SetAuthPolicy(PCR_SetAuthPolicy_In* in);
+MSSIM_RC
+MSSIM2_PCR_SetAuthPolicy(PCR_SetAuthPolicy_In* in);
 
 #  endif  // _PCR_Set_Auth_Policy_FP_H_
 #endif    // CC_PCR_SetAuthPolicy

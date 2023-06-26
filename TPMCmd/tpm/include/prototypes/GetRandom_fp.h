@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -51,15 +51,15 @@ typedef struct
 // Output structure definition
 typedef struct
 {
-    TPM2B_DIGEST randomBytes;
+    MSSIM2B_DIGEST randomBytes;
 } GetRandom_Out;
 
 // Response code modifiers
-#    define RC_GetRandom_bytesRequested (TPM_RC_P + TPM_RC_1)
+#    define RC_GetRandom_bytesRequested (MSSIM_RC_P + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_GetRandom(GetRandom_In* in, GetRandom_Out* out);
+MSSIM_RC
+MSSIM2_GetRandom(GetRandom_In* in, GetRandom_Out* out);
 
 #  endif  // _Get_Random_FP_H_
 #endif    // CC_GetRandom

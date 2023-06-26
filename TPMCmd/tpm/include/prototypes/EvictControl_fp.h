@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,19 +45,19 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_RH_PROVISION  auth;
-    TPMI_DH_OBJECT     objectHandle;
-    TPMI_DH_PERSISTENT persistentHandle;
+    MSSIMI_RH_PROVISION  auth;
+    MSSIMI_DH_OBJECT     objectHandle;
+    MSSIMI_DH_PERSISTENT persistentHandle;
 } EvictControl_In;
 
 // Response code modifiers
-#    define RC_EvictControl_auth             (TPM_RC_H + TPM_RC_1)
-#    define RC_EvictControl_objectHandle     (TPM_RC_H + TPM_RC_2)
-#    define RC_EvictControl_persistentHandle (TPM_RC_P + TPM_RC_1)
+#    define RC_EvictControl_auth             (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_EvictControl_objectHandle     (MSSIM_RC_H + MSSIM_RC_2)
+#    define RC_EvictControl_persistentHandle (MSSIM_RC_P + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_EvictControl(EvictControl_In* in);
+MSSIM_RC
+MSSIM2_EvictControl(EvictControl_In* in);
 
 #  endif  // _Evict_Control_FP_H_
 #endif    // CC_EvictControl

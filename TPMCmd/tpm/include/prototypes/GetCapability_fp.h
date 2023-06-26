@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,7 +45,7 @@
 // Input structure definition
 typedef struct
 {
-    TPM_CAP capability;
+    MSSIM_CAP capability;
     UINT32  property;
     UINT32  propertyCount;
 } GetCapability_In;
@@ -53,18 +53,18 @@ typedef struct
 // Output structure definition
 typedef struct
 {
-    TPMI_YES_NO          moreData;
-    TPMS_CAPABILITY_DATA capabilityData;
+    MSSIMI_YES_NO          moreData;
+    MSSIMS_CAPABILITY_DATA capabilityData;
 } GetCapability_Out;
 
 // Response code modifiers
-#    define RC_GetCapability_capability    (TPM_RC_P + TPM_RC_1)
-#    define RC_GetCapability_property      (TPM_RC_P + TPM_RC_2)
-#    define RC_GetCapability_propertyCount (TPM_RC_P + TPM_RC_3)
+#    define RC_GetCapability_capability    (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_GetCapability_property      (MSSIM_RC_P + MSSIM_RC_2)
+#    define RC_GetCapability_propertyCount (MSSIM_RC_P + MSSIM_RC_3)
 
 // Function prototype
-TPM_RC
-TPM2_GetCapability(GetCapability_In* in, GetCapability_Out* out);
+MSSIM_RC
+MSSIM2_GetCapability(GetCapability_In* in, GetCapability_Out* out);
 
 #  endif  // _Get_Capability_FP_H_
 #endif    // CC_GetCapability

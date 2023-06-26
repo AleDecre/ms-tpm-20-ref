@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,11 +40,11 @@
 /*(See part 3 specification)
 // This function is used to add data to a sequence object.
 */
-//  Return Type: TPM_RC
-//      TPM_RC_MODE             'sequenceHandle' does not reference a hash or HMAC
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_MODE             'sequenceHandle' does not reference a hash or HMAC
 //                              sequence object
-TPM_RC
-TPM2_SequenceUpdate(SequenceUpdate_In* in  // IN: input parameter list
+MSSIM_RC
+MSSIM2_SequenceUpdate(SequenceUpdate_In* in  // IN: input parameter list
 )
 {
     OBJECT*      object;
@@ -58,7 +58,7 @@ TPM2_SequenceUpdate(SequenceUpdate_In* in  // IN: input parameter list
 
     // Check that referenced object is a sequence object.
     if(!ObjectIsSequence(object))
-        return TPM_RCS_MODE + RC_SequenceUpdate_sequenceHandle;
+        return MSSIM_RCS_MODE + RC_SequenceUpdate_sequenceHandle;
 
     // Internal Data Update
 
@@ -84,7 +84,7 @@ TPM2_SequenceUpdate(SequenceUpdate_In* in  // IN: input parameter list
                 hashObject->attributes.firstBlock = SET;
 
                 // Check the first block to see if the first block can contain
-                // the TPM_GENERATED_VALUE.  If it does, it is not safe for
+                // the MSSIM_GENERATED_VALUE.  If it does, it is not safe for
                 // a ticket.
                 if(TicketIsSafe(&in->buffer.b))
                     hashObject->attributes.ticketSafe = SET;
@@ -99,7 +99,7 @@ TPM2_SequenceUpdate(SequenceUpdate_In* in  // IN: input parameter list
                                 &in->buffer.b);
         }
     }
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_SequenceUpdate

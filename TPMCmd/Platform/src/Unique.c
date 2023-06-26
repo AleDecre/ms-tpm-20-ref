@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -33,11 +33,11 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 //** Introduction
-// In some implementations of the TPM, the hardware can provide a secret
-// value to the TPM. This secret value is statistically unique to the
-// instance of the TPM. Typical uses of this value are to provide
+// In some implementations of the MSSIM, the hardware can provide a secret
+// value to the MSSIM. This secret value is statistically unique to the
+// instance of the MSSIM. Typical uses of this value are to provide
 // personalization to the random number generation and as a shared secret
-// between the TPM and the manufacturer.
+// between the MSSIM and the manufacturer.
 
 //** Includes
 #include "Platform.h"

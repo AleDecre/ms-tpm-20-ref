@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,19 +40,19 @@
 /*(See part 3 specification)
 // Allocate PCR banks
 */
-//  Return Type: TPM_RC
-//      TPM_RC_PCR              the allocation did not have required PCR
-//      TPM_RC_NV_UNAVAILABLE   NV is not accessible
-//      TPM_RC_NV_RATE          NV is in a rate-limiting mode
-TPM_RC
-TPM2_PCR_Allocate(PCR_Allocate_In*  in,  // IN: input parameter list
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_PCR              the allocation did not have required PCR
+//      MSSIM_RC_NV_UNAVAILABLE   NV is not accessible
+//      MSSIM_RC_NV_RATE          NV is in a rate-limiting mode
+MSSIM_RC
+MSSIM2_PCR_Allocate(PCR_Allocate_In*  in,  // IN: input parameter list
                   PCR_Allocate_Out* out  // OUT: output parameter list
 )
 {
-    TPM_RC result;
+    MSSIM_RC result;
 
     // The command needs NV update.  Check if NV is available.
-    // A TPM_RC_NV_UNAVAILABLE or TPM_RC_NV_RATE error may be returned at
+    // A MSSIM_RC_NV_UNAVAILABLE or MSSIM_RC_NV_RATE error may be returned at
     // this point.
     // Note: These codes are not listed in the return values above because it is
     // an implementation choice to check in this routine rather than in a common
@@ -65,18 +65,18 @@ TPM2_PCR_Allocate(PCR_Allocate_In*  in,  // IN: input parameter list
     // Call PCR Allocation function.
     result = PCRAllocate(
         &in->pcrAllocation, &out->maxPCR, &out->sizeNeeded, &out->sizeAvailable);
-    if(result == TPM_RC_PCR)
+    if(result == MSSIM_RC_PCR)
         return result;
 
     //
-    out->allocationSuccess = (result == TPM_RC_SUCCESS);
+    out->allocationSuccess = (result == MSSIM_RC_SUCCESS);
 
     // if re-configuration succeeds, set the flag to indicate PCR configuration is
     // going to be changed in next boot
     if(out->allocationSuccess == YES)
         g_pcrReConfig = TRUE;
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_PCR_Allocate

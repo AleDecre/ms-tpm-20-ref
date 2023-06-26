@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -38,12 +38,12 @@
 #if CC_ClearControl  // Conditional expansion of this file
 
 /*(See part 3 specification)
-// Enable or disable the execution of TPM2_Clear command
+// Enable or disable the execution of MSSIM2_Clear command
 */
-//  Return Type: TPM_RC
-//      TPM_RC_AUTH_FAIL            authorization is not properly given
-TPM_RC
-TPM2_ClearControl(ClearControl_In* in  // IN: input parameter list
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_AUTH_FAIL            authorization is not properly given
+MSSIM_RC
+MSSIM2_ClearControl(ClearControl_In* in  // IN: input parameter list
 )
 {
     // The command needs NV update.
@@ -52,8 +52,8 @@ TPM2_ClearControl(ClearControl_In* in  // IN: input parameter list
     // Input Validation
 
     // LockoutAuth may be used to set disableLockoutClear to TRUE but not to FALSE
-    if(in->auth == TPM_RH_LOCKOUT && in->disable == NO)
-        return TPM_RC_AUTH_FAIL;
+    if(in->auth == MSSIM_RH_LOCKOUT && in->disable == NO)
+        return MSSIM_RC_AUTH_FAIL;
 
     // Internal Data Update
 
@@ -65,7 +65,7 @@ TPM2_ClearControl(ClearControl_In* in  // IN: input parameter list
     // Record the change to NV
     NV_SYNC_PERSISTENT(disableClear);
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_ClearControl

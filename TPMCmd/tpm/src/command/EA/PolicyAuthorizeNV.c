@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -43,23 +43,23 @@
 /*(See part 3 specification)
 // Change policy by a signature from authority
 */
-//  Return Type: TPM_RC
-//      TPM_RC_HASH         hash algorithm in 'keyName' is not supported or is not
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_HASH         hash algorithm in 'keyName' is not supported or is not
 //                          the same as the hash algorithm of the policy session
-//      TPM_RC_SIZE         'keyName' is not the correct size for its hash algorithm
-//      TPM_RC_VALUE        the current policyDigest of 'policySession' does not
+//      MSSIM_RC_SIZE         'keyName' is not the correct size for its hash algorithm
+//      MSSIM_RC_VALUE        the current policyDigest of 'policySession' does not
 //                          match 'approvedPolicy'; or 'checkTicket' doesn't match
 //                          the provided values
-TPM_RC
-TPM2_PolicyAuthorizeNV(PolicyAuthorizeNV_In* in)
+MSSIM_RC
+MSSIM2_PolicyAuthorizeNV(PolicyAuthorizeNV_In* in)
 {
     SESSION*   session;
-    TPM_RC     result;
+    MSSIM_RC     result;
     NV_REF     locator;
     NV_INDEX*  nvIndex = NvGetIndexInfo(in->nvIndex, &locator);
-    TPM2B_NAME name;
-    TPMT_HA    policyInNv;
-    BYTE       nvTemp[sizeof(TPMT_HA)];
+    MSSIM2B_NAME name;
+    MSSIMT_HA    policyInNv;
+    BYTE       nvTemp[sizeof(MSSIMT_HA)];
     BYTE*      buffer = nvTemp;
     INT32      size;
 
@@ -72,35 +72,35 @@ TPM2_PolicyAuthorizeNV(PolicyAuthorizeNV_In* in)
     {
         // Check the authorizations for reading
         // Common read access checks. NvReadAccessChecks() returns
-        // TPM_RC_NV_AUTHORIZATION, TPM_RC_NV_LOCKED, or TPM_RC_NV_UNINITIALIZED
+        // MSSIM_RC_NV_AUTHORIZATION, MSSIM_RC_NV_LOCKED, or MSSIM_RC_NV_UNINITIALIZED
         // error may be returned at this point
         result = NvReadAccessChecks(
             in->authHandle, in->nvIndex, nvIndex->publicArea.attributes);
-        if(result != TPM_RC_SUCCESS)
+        if(result != MSSIM_RC_SUCCESS)
             return result;
 
         // Read the contents of the index into a temp buffer
-        size = MIN(nvIndex->publicArea.dataSize, sizeof(TPMT_HA));
+        size = MIN(nvIndex->publicArea.dataSize, sizeof(MSSIMT_HA));
         NvGetIndexData(nvIndex, locator, 0, (UINT16)size, nvTemp);
 
         // Unmarshal the contents of the buffer into the internal format of a
-        // TPMT_HA so that the hash and digest elements can be accessed from the
+        // MSSIMT_HA so that the hash and digest elements can be accessed from the
         // structure rather than the byte array that is in the Index (written by
         // user of the Index).
-        result = TPMT_HA_Unmarshal(&policyInNv, &buffer, &size, FALSE);
-        if(result != TPM_RC_SUCCESS)
+        result = MSSIMT_HA_Unmarshal(&policyInNv, &buffer, &size, FALSE);
+        if(result != MSSIM_RC_SUCCESS)
             return result;
 
         // Verify that the hash is the same
         if(policyInNv.hashAlg != session->authHashAlg)
-            return TPM_RC_HASH;
+            return MSSIM_RC_HASH;
 
         // See if the contents of the digest in the Index matches the value
         // in the policy
         if(!MemoryEqual(&policyInNv.digest,
                         &session->u2.policyDigest.t.buffer,
                         session->u2.policyDigest.t.size))
-            return TPM_RC_VALUE;
+            return MSSIM_RC_VALUE;
     }
 
     // Internal Data Update
@@ -109,14 +109,14 @@ TPM2_PolicyAuthorizeNV(PolicyAuthorizeNV_In* in)
     PolicyDigestClear(session);
 
     // Update policyDigest
-    PolicyContextUpdate(TPM_CC_PolicyAuthorizeNV,
+    PolicyContextUpdate(MSSIM_CC_PolicyAuthorizeNV,
                         EntityGetName(in->nvIndex, &name),
                         NULL,
                         NULL,
                         0,
                         session);
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_PolicyAuthorize

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,21 +40,21 @@
 /*(See part 3 specification)
 // Compute HMAC on a data buffer
 */
-//  Return Type: TPM_RC
-//      TPM_RC_ATTRIBUTES       key referenced by 'handle' is a restricted key
-//      TPM_RC_KEY              'handle' does not reference a signing key
-//      TPM_RC_TYPE             key referenced by 'handle' is not an HMAC key
-//      TPM_RC_VALUE           'hashAlg' is not compatible with the hash algorithm
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_ATTRIBUTES       key referenced by 'handle' is a restricted key
+//      MSSIM_RC_KEY              'handle' does not reference a signing key
+//      MSSIM_RC_TYPE             key referenced by 'handle' is not an HMAC key
+//      MSSIM_RC_VALUE           'hashAlg' is not compatible with the hash algorithm
 //                              of the scheme of the object referenced by 'handle'
-TPM_RC
-TPM2_HMAC(HMAC_In*  in,  // IN: input parameter list
+MSSIM_RC
+MSSIM2_HMAC(HMAC_In*  in,  // IN: input parameter list
           HMAC_Out* out  // OUT: output parameter list
 )
 {
     HMAC_STATE    hmacState;
     OBJECT*       hmacObject;
-    TPMI_ALG_HASH hashAlg;
-    TPMT_PUBLIC*  publicArea;
+    MSSIMI_ALG_HASH hashAlg;
+    MSSIMT_PUBLIC*  publicArea;
 
     // Input Validation
 
@@ -62,32 +62,32 @@ TPM2_HMAC(HMAC_In*  in,  // IN: input parameter list
     hmacObject = HandleToObject(in->handle);
     publicArea = &hmacObject->publicArea;
     // Make sure that the key is an HMAC key
-    if(publicArea->type != TPM_ALG_KEYEDHASH)
-        return TPM_RCS_TYPE + RC_HMAC_handle;
+    if(publicArea->type != MSSIM_ALG_KEYEDHASH)
+        return MSSIM_RCS_TYPE + RC_HMAC_handle;
 
     // and that it is unrestricted
-    if(IS_ATTRIBUTE(publicArea->objectAttributes, TPMA_OBJECT, restricted))
-        return TPM_RCS_ATTRIBUTES + RC_HMAC_handle;
+    if(IS_ATTRIBUTE(publicArea->objectAttributes, MSSIMA_OBJECT, restricted))
+        return MSSIM_RCS_ATTRIBUTES + RC_HMAC_handle;
 
     // and that it is a signing key
-    if(!IS_ATTRIBUTE(publicArea->objectAttributes, TPMA_OBJECT, sign))
-        return TPM_RCS_KEY + RC_HMAC_handle;
+    if(!IS_ATTRIBUTE(publicArea->objectAttributes, MSSIMA_OBJECT, sign))
+        return MSSIM_RCS_KEY + RC_HMAC_handle;
 
     // See if the key has a default
-    if(publicArea->parameters.keyedHashDetail.scheme.scheme == TPM_ALG_NULL)
+    if(publicArea->parameters.keyedHashDetail.scheme.scheme == MSSIM_ALG_NULL)
         // it doesn't so use the input value
         hashAlg = in->hashAlg;
     else
     {
         // key has a default so use it
         hashAlg = publicArea->parameters.keyedHashDetail.scheme.details.hmac.hashAlg;
-        // and verify that the input was either the  TPM_ALG_NULL or the default
-        if(in->hashAlg != TPM_ALG_NULL && in->hashAlg != hashAlg)
-            hashAlg = TPM_ALG_NULL;
+        // and verify that the input was either the  MSSIM_ALG_NULL or the default
+        if(in->hashAlg != MSSIM_ALG_NULL && in->hashAlg != hashAlg)
+            hashAlg = MSSIM_ALG_NULL;
     }
     // if we ended up without a hash algorithm then return an error
-    if(hashAlg == TPM_ALG_NULL)
-        return TPM_RCS_VALUE + RC_HMAC_hashAlg;
+    if(hashAlg == MSSIM_ALG_NULL)
+        return MSSIM_RCS_VALUE + RC_HMAC_hashAlg;
 
     // Command Output
 
@@ -100,7 +100,7 @@ TPM2_HMAC(HMAC_In*  in,  // IN: input parameter list
     // Complete HMAC
     CryptHmacEnd2B(&hmacState, &out->outHMAC.b);
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_HMAC

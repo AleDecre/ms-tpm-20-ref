@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,19 +45,19 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_RH_HIERARCHY_POLICY authHandle;
-    TPM2B_DIGEST             authPolicy;
-    TPMI_ALG_HASH            hashAlg;
+    MSSIMI_RH_HIERARCHY_POLICY authHandle;
+    MSSIM2B_DIGEST             authPolicy;
+    MSSIMI_ALG_HASH            hashAlg;
 } SetPrimaryPolicy_In;
 
 // Response code modifiers
-#    define RC_SetPrimaryPolicy_authHandle (TPM_RC_H + TPM_RC_1)
-#    define RC_SetPrimaryPolicy_authPolicy (TPM_RC_P + TPM_RC_1)
-#    define RC_SetPrimaryPolicy_hashAlg    (TPM_RC_P + TPM_RC_2)
+#    define RC_SetPrimaryPolicy_authHandle (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_SetPrimaryPolicy_authPolicy (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_SetPrimaryPolicy_hashAlg    (MSSIM_RC_P + MSSIM_RC_2)
 
 // Function prototype
-TPM_RC
-TPM2_SetPrimaryPolicy(SetPrimaryPolicy_In* in);
+MSSIM_RC
+MSSIM2_SetPrimaryPolicy(SetPrimaryPolicy_In* in);
 
 #  endif  // _SETPRIMARYPOLICY_FP_H_
 #endif    // CC_SetPrimaryPolicy

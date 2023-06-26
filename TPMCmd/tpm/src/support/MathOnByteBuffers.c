@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -107,11 +107,11 @@ int SignedCompareB(const UINT32 aSize,  // IN: size of a
 // This version is intended for use with RSA and requires that 'm' be
 // less than 'n'.
 //
-//  Return Type: TPM_RC
-//      TPM_RC_SIZE         number to exponentiate is larger than the modulus
-//      TPM_RC_NO_RESULT    result will not fit into the provided buffer
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_SIZE         number to exponentiate is larger than the modulus
+//      MSSIM_RC_NO_RESULT    result will not fit into the provided buffer
 //
-TPM_RC
+MSSIM_RC
 ModExpB(UINT32 cSize,  // IN: the size of the output buffer. It will
                        //     need to be the same size as the modulus
         BYTE* c,       // OUT: the buffer to receive the results
@@ -130,7 +130,7 @@ ModExpB(UINT32 cSize,  // IN: the size of the output buffer. It will
     BN_MAX(bnE);
     BN_MAX(bnN);
     NUMBYTES tSize  = (NUMBYTES)nSize;
-    TPM_RC   retVal = TPM_RC_SUCCESS;
+    MSSIM_RC   retVal = MSSIM_RC_SUCCESS;
 
     // Convert input parameters
     BnFromBytes(bnM, m, (NUMBYTES)mSize);
@@ -140,9 +140,9 @@ ModExpB(UINT32 cSize,  // IN: the size of the output buffer. It will
     // Make sure that the output is big enough to hold the result
     // and that 'm' is less than 'n' (the modulus)
     if(cSize < nSize)
-        ERROR_RETURN(TPM_RC_NO_RESULT);
+        ERROR_RETURN(MSSIM_RC_NO_RESULT);
     if(BnUnsignedCmp(bnM, bnN) >= 0)
-        ERROR_RETURN(TPM_RC_SIZE);
+        ERROR_RETURN(MSSIM_RC_SIZE);
     BnModExp(bnC, bnM, bnE, bnN);
     BnToBytes(bnC, c, &tSize);
 Exit:
@@ -154,13 +154,13 @@ Exit:
 // a remainder ('r'). If 'q' or 'r' is not needed, then the pointer to them
 // may be set to NULL.
 //
-//  Return Type: TPM_RC
-//      TPM_RC_NO_RESULT         'q' or 'r' is too small to receive the result
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_NO_RESULT         'q' or 'r' is too small to receive the result
 //
-LIB_EXPORT TPM_RC DivideB(const TPM2B* n,  // IN: numerator
-                          const TPM2B* d,  // IN: denominator
-                          TPM2B*       q,  // OUT: quotient
-                          TPM2B*       r   // OUT: remainder
+LIB_EXPORT MSSIM_RC DivideB(const MSSIM2B* n,  // IN: numerator
+                          const MSSIM2B* d,  // IN: denominator
+                          MSSIM2B*       q,  // OUT: quotient
+                          MSSIM2B*       r   // OUT: remainder
 )
 {
     BN_MAX_INITIALIZED(bnN, n);
@@ -175,20 +175,20 @@ LIB_EXPORT TPM_RC DivideB(const TPM2B* n,  // IN: numerator
     // number
     if(q != NULL)
         if(!BnTo2B(bnQ, q, q->size))
-            return TPM_RC_NO_RESULT;
+            return MSSIM_RC_NO_RESULT;
     if(r != NULL)
         if(!BnTo2B(bnR, r, r->size))
-            return TPM_RC_NO_RESULT;
-    return TPM_RC_SUCCESS;
+            return MSSIM_RC_NO_RESULT;
+    return MSSIM_RC_SUCCESS;
 }
 
 //*** AdjustNumberB()
-// Remove/add leading zeros from a number in a TPM2B. Will try to make the number
+// Remove/add leading zeros from a number in a MSSIM2B. Will try to make the number
 // by adding or removing leading zeros. If the number is larger than the requested
 // size, it will make the number as small as possible. Setting 'requestedSize' to
 // zero is equivalent to requesting that the number be normalized.
 UINT16
-AdjustNumberB(TPM2B* num, UINT16 requestedSize)
+AdjustNumberB(MSSIM2B* num, UINT16 requestedSize)
 {
     BYTE*  from;
     UINT16 i;
@@ -221,9 +221,9 @@ AdjustNumberB(TPM2B* num, UINT16 requestedSize)
 }
 
 //*** ShiftLeft()
-// This function shifts a byte buffer (a TPM2B) one byte to the left. That is,
+// This function shifts a byte buffer (a MSSIM2B) one byte to the left. That is,
 // the most significant bit of the most significant byte is lost.
-TPM2B* ShiftLeft(TPM2B* value  // IN/OUT: value to shift and shifted value out
+MSSIM2B* ShiftLeft(MSSIM2B* value  // IN/OUT: value to shift and shifted value out
 )
 {
     UINT16 count  = value->size;

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,7 +45,7 @@
 // to indicate the total size of the response.
 void BuildResponseHeader(COMMAND* command,  // IN: main control structure
                          BYTE*    buffer,   // OUT: the output buffer
-                         TPM_RC   result    // IN: the response code
+                         MSSIM_RC   result    // IN: the response code
 );
 
 #endif  // _RESPONSE_FP_H_

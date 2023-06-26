@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -35,7 +35,7 @@
 
 //** Introduction
 //
-// This header file is used to 'splice' the wolfcrypt hash code into the TPM code.
+// This header file is used to 'splice' the wolfcrypt hash code into the MSSIM code.
 //
 #ifndef HASH_LIB_DEFINED
 #define HASH_LIB_DEFINED
@@ -68,7 +68,7 @@
 
 // Redefine the internal name used for each of the hash state structures to the
 // name used by the library.
-// These defines need to be known in all parts of the TPM so that the structure
+// These defines need to be known in all parts of the MSSIM so that the structure
 // sizes can be properly computed when needed.
 
 #define tpmHashStateSHA1_t   wc_Sha

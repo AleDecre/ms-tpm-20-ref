@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -41,12 +41,12 @@
 // indicate that physical presence will need to be asserted at the time the
 // authorization is performed
 */
-TPM_RC
-TPM2_PolicyPhysicalPresence(PolicyPhysicalPresence_In* in  // IN: input parameter list
+MSSIM_RC
+MSSIM2_PolicyPhysicalPresence(PolicyPhysicalPresence_In* in  // IN: input parameter list
 )
 {
     SESSION*   session;
-    TPM_CC     commandCode = TPM_CC_PolicyPhysicalPresence;
+    MSSIM_CC     commandCode = MSSIM_CC_PolicyPhysicalPresence;
     HASH_STATE hashState;
 
     // Internal Data Update
@@ -55,7 +55,7 @@ TPM2_PolicyPhysicalPresence(PolicyPhysicalPresence_In* in  // IN: input paramete
     session = SessionGet(in->policySession);
 
     // Update policy hash
-    // policyDigestnew = hash(policyDigestold || TPM_CC_PolicyPhysicalPresence)
+    // policyDigestnew = hash(policyDigestold || MSSIM_CC_PolicyPhysicalPresence)
     //  Start hash
     CryptHashStart(&hashState, session->authHashAlg);
 
@@ -63,7 +63,7 @@ TPM2_PolicyPhysicalPresence(PolicyPhysicalPresence_In* in  // IN: input paramete
     CryptDigestUpdate2B(&hashState, &session->u2.policyDigest.b);
 
     //  add commandCode
-    CryptDigestUpdateInt(&hashState, sizeof(TPM_CC), commandCode);
+    CryptDigestUpdateInt(&hashState, sizeof(MSSIM_CC), commandCode);
 
     //  complete the digest
     CryptHashEnd2B(&hashState, &session->u2.policyDigest.b);
@@ -71,7 +71,7 @@ TPM2_PolicyPhysicalPresence(PolicyPhysicalPresence_In* in  // IN: input paramete
     // update session attribute
     session->attributes.isPPRequired = SET;
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_PolicyPhysicalPresence

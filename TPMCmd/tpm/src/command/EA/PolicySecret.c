@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -43,22 +43,22 @@
 /*(See part 3 specification)
 // Add a secret-based authorization to the policy evaluation
 */
-//  Return Type: TPM_RC
-//      TPM_RC_CPHASH           cpHash for policy was previously set to a
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_CPHASH           cpHash for policy was previously set to a
 //                              value that is not the same as 'cpHashA'
-//      TPM_RC_EXPIRED          'expiration' indicates a time in the past
-//      TPM_RC_NONCE            'nonceTPM' does not match the nonce associated
+//      MSSIM_RC_EXPIRED          'expiration' indicates a time in the past
+//      MSSIM_RC_NONCE            'nonceMSSIM' does not match the nonce associated
 //                              with 'policySession'
-//      TPM_RC_SIZE             'cpHashA' is not the size of a digest for the
+//      MSSIM_RC_SIZE             'cpHashA' is not the size of a digest for the
 //                              hash associated with 'policySession'
-TPM_RC
-TPM2_PolicySecret(PolicySecret_In*  in,  // IN: input parameter list
+MSSIM_RC
+MSSIM2_PolicySecret(PolicySecret_In*  in,  // IN: input parameter list
                   PolicySecret_Out* out  // OUT: output parameter list
 )
 {
-    TPM_RC     result;
+    MSSIM_RC     result;
     SESSION*   session;
-    TPM2B_NAME entityName;
+    MSSIM2B_NAME entityName;
     UINT64     authTimeout = 0;
     // Input Validation
     // Get pointer to the session structure
@@ -67,22 +67,22 @@ TPM2_PolicySecret(PolicySecret_In*  in,  // IN: input parameter list
     //Only do input validation if this is not a trial policy session
     if(session->attributes.isTrialPolicy == CLEAR)
     {
-        authTimeout = ComputeAuthTimeout(session, in->expiration, &in->nonceTPM);
+        authTimeout = ComputeAuthTimeout(session, in->expiration, &in->nonceMSSIM);
 
         result      = PolicyParameterChecks(session,
                                        authTimeout,
                                        &in->cpHashA,
-                                       &in->nonceTPM,
-                                       RC_PolicySecret_nonceTPM,
+                                       &in->nonceMSSIM,
+                                       RC_PolicySecret_nonceMSSIM,
                                        RC_PolicySecret_cpHashA,
                                        RC_PolicySecret_expiration);
-        if(result != TPM_RC_SUCCESS)
+        if(result != MSSIM_RC_SUCCESS)
             return result;
     }
     // Internal Data Update
     // Update policy context with input policyRef and name of authorizing key
     // This value is computed even for trial sessions. Possibly update the cpHash
-    PolicyContextUpdate(TPM_CC_PolicySecret,
+    PolicyContextUpdate(MSSIM_CC_PolicySecret,
                         EntityGetName(in->authHandle, &entityName),
                         &in->policyRef,
                         &in->cpHashA,
@@ -91,15 +91,15 @@ TPM2_PolicySecret(PolicySecret_In*  in,  // IN: input parameter list
     // Command Output
     // Create ticket and timeout buffer if in->expiration < 0 and this is not
     // a trial session.
-    // NOTE: PolicyParameterChecks() makes sure that nonceTPM is present
+    // NOTE: PolicyParameterChecks() makes sure that nonceMSSIM is present
     // when expiration is non-zero.
     if(in->expiration < 0 && session->attributes.isTrialPolicy == CLEAR
        && !NvIsPinPassIndex(in->authHandle))
     {
-        BOOL expiresOnReset = (in->nonceTPM.t.size == 0);
+        BOOL expiresOnReset = (in->nonceMSSIM.t.size == 0);
         // Compute policy ticket
         authTimeout &= ~EXPIRATION_BIT;
-        TicketComputeAuth(TPM_ST_AUTH_SECRET,
+        TicketComputeAuth(MSSIM_ST_AUTH_SECRET,
                           EntityGetHierarchy(in->authHandle),
                           authTimeout,
                           expiresOnReset,
@@ -108,7 +108,7 @@ TPM2_PolicySecret(PolicySecret_In*  in,  // IN: input parameter list
                           &entityName,
                           &out->policyTicket);
         // Generate timeout buffer.  The format of output timeout buffer is
-        // TPM-specific.
+        // MSSIM-specific.
         // Note: In this implementation, the timeout buffer value is computed after
         // the ticket is produced so, when the ticket is checked, the expiration
         // flag needs to be extracted before the ticket is checked.
@@ -126,11 +126,11 @@ TPM2_PolicySecret(PolicySecret_In*  in,  // IN: input parameter list
         out->timeout.t.size = 0;
 
         // authorization ticket is null
-        out->policyTicket.tag           = TPM_ST_AUTH_SECRET;
-        out->policyTicket.hierarchy     = TPM_RH_NULL;
+        out->policyTicket.tag           = MSSIM_ST_AUTH_SECRET;
+        out->policyTicket.hierarchy     = MSSIM_RH_NULL;
         out->policyTicket.digest.t.size = 0;
     }
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_PolicySecret

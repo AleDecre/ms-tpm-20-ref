@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,11 +40,11 @@
 /*(See part 3 specification)
 // read public area of a loaded object
 */
-//  Return Type: TPM_RC
-//      TPM_RC_SEQUENCE             can not read the public area of a sequence
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_SEQUENCE             can not read the public area of a sequence
 //                                  object
-TPM_RC
-TPM2_ReadPublic(ReadPublic_In*  in,  // IN: input parameter list
+MSSIM_RC
+MSSIM2_ReadPublic(ReadPublic_In*  in,  // IN: input parameter list
                 ReadPublic_Out* out  // OUT: output parameter list
 )
 {
@@ -53,14 +53,14 @@ TPM2_ReadPublic(ReadPublic_In*  in,  // IN: input parameter list
     // Input Validation
     // Can not read public area of a sequence object
     if(ObjectIsSequence(object))
-        return TPM_RC_SEQUENCE;
+        return MSSIM_RC_SEQUENCE;
 
     // Command Output
     out->outPublic.publicArea = object->publicArea;
     out->name                 = object->name;
     out->qualifiedName        = object->qualifiedName;
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_ReadPublic

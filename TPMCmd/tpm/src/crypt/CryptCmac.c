@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -54,12 +54,12 @@
 // and block cipher algorithm.
 UINT16
 CryptCmacStart(
-    SMAC_STATE* state, TPMU_PUBLIC_PARMS* keyParms, TPM_ALG_ID macAlg, TPM2B* key)
+    SMAC_STATE* state, MSSIMU_PUBLIC_PARMS* keyParms, MSSIM_ALG_ID macAlg, MSSIM2B* key)
 {
     tpmCmacState_t*      cState = &state->state.cmac;
-    TPMT_SYM_DEF_OBJECT* def    = &keyParms->symDetail.sym;
+    MSSIMT_SYM_DEF_OBJECT* def    = &keyParms->symDetail.sym;
     //
-    if(macAlg != TPM_ALG_CMAC)
+    if(macAlg != MSSIM_ALG_CMAC)
         return 0;
     // set up the encryption algorithm and parameters
     cState->symAlg      = def->algorithm;
@@ -84,7 +84,7 @@ CryptCmacStart(
 void CryptCmacData(SMAC_STATES* state, UINT32 size, const BYTE* buffer)
 {
     tpmCmacState_t*         cmacState     = &state->cmac;
-    TPM_ALG_ID              algorithm     = cmacState->symAlg;
+    MSSIM_ALG_ID              algorithm     = cmacState->symAlg;
     BYTE*                   key           = cmacState->symKey.t.buffer;
     UINT16                  keySizeInBits = cmacState->keySizeBits;
     tpmCryptKeySchedule_t   keySchedule;
@@ -121,12 +121,12 @@ CryptCmacEnd(SMAC_STATES* state, UINT32 outSize, BYTE* outBuffer)
     tpmCmacState_t* cState = &state->cmac;
     // Need to set algorithm, key, and keySizeInBits in the local context so that
     // the SELECT and ENCRYPT macros will work here
-    TPM_ALG_ID              algorithm     = cState->symAlg;
+    MSSIM_ALG_ID              algorithm     = cState->symAlg;
     BYTE*                   key           = cState->symKey.t.buffer;
     UINT16                  keySizeInBits = cState->keySizeBits;
     tpmCryptKeySchedule_t   keySchedule;
     TpmCryptSetSymKeyCall_t encrypt;
-    TPM2B_IV                subkey = {{0, {0}}};
+    MSSIM2B_IV                subkey = {{0, {0}}};
     BOOL                    xorVal;
     UINT16                  i;
 

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -37,13 +37,13 @@
  *  Date: Oct 24, 2019  Time: 11:37:07AM
  */
 
-#ifndef _TPM_TO_OSSL_MATH_FP_H_
-#define _TPM_TO_OSSL_MATH_FP_H_
+#ifndef _MSSIM_TO_OSSL_MATH_FP_H_
+#define _MSSIM_TO_OSSL_MATH_FP_H_
 
 #ifdef MATH_LIB_OSSL
 
 //*** OsslToTpmBn()
-// This function converts an OpenSSL BIGNUM to a TPM bignum. In this implementation
+// This function converts an OpenSSL BIGNUM to a MSSIM bignum. In this implementation
 // it is assumed that OpenSSL uses a different control structure but the same data
 // layout -- an array of native-endian words in little-endian order.
 //  Return Type: BOOL
@@ -53,7 +53,7 @@
 BOOL OsslToTpmBn(bigNum bn, BIGNUM* osslBn);
 
 //*** BigInitialized()
-// This function initializes an OSSL BIGNUM from a TPM bigConst. Do not use this for
+// This function initializes an OSSL BIGNUM from a MSSIM bigConst. Do not use this for
 // values that are passed to OpenSLL when they are not declared as const in the
 // function prototype. Instead, use BnNewVariable().
 BIGNUM* BigInitialized(BIGNUM* toInit, bigConst initializer);
@@ -122,15 +122,15 @@ LIB_EXPORT BOOL BnModInverse(bigNum result, bigConst number, bigConst modulus);
 
 //*** BnCurveInitialize()
 // This function initializes the OpenSSL curve information structure. This
-// structure points to the TPM-defined values for the curve, to the context for the
+// structure points to the MSSIM-defined values for the curve, to the context for the
 // number values in the frame, and to the OpenSSL-defined group values.
 //  Return Type: bigCurve *
-//      NULL        the TPM_ECC_CURVE is not valid or there was a problem in
+//      NULL        the MSSIM_ECC_CURVE is not valid or there was a problem in
 //                  in initializing the curve data
 //      non-NULL    points to 'E'
 LIB_EXPORT bigCurve BnCurveInitialize(
     bigCurve      E,       // IN: curve structure to initialize
-    TPM_ECC_CURVE curveId  // IN: curve identifier
+    MSSIM_ECC_CURVE curveId  // IN: curve identifier
 );
 
 //*** BnCurveFree()
@@ -174,4 +174,4 @@ LIB_EXPORT BOOL BnEccAdd(bigPoint   R,  // OUT: computed point
 #  endif  // ALG_ECC
 #endif    // MATHLIB OSSL
 
-#endif  // _TPM_TO_OSSL_MATH_FP_H_
+#endif  // _MSSIM_TO_OSSL_MATH_FP_H_

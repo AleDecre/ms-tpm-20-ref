@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -33,10 +33,10 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 //** Introduction
-// This header contains the hash structure definitions used in the TPM code
+// This header contains the hash structure definitions used in the MSSIM code
 // to define the amount of space to be reserved for the hash state. This allows
-// the TPM code to not have to import all of the symbols used by the hash
-// computations. This lets the build environment of the TPM code not to have
+// the MSSIM code to not have to import all of the symbols used by the hash
+// computations. This lets the build environment of the MSSIM code not to have
 // include the header files associated with the CryptoEngine code.
 
 #ifndef _CRYPT_HASH_H
@@ -65,11 +65,11 @@ typedef struct sequenceMethods
 // These definitions are here because the SMAC state is in the union of hash states.
 typedef struct tpmCmacState
 {
-    TPM_ALG_ID    symAlg;
+    MSSIM_ALG_ID    symAlg;
     UINT16        keySizeBits;
     INT16         bcount;  // current count of bytes accumulated in IV
-    TPM2B_IV      iv;      // IV buffer
-    TPM2B_SYM_KEY symKey;
+    MSSIM2B_IV      iv;      // IV buffer
+    MSSIM2B_SYM_KEY symKey;
 } tpmCmacState_t;
 
 typedef union SMAC_STATES
@@ -212,11 +212,11 @@ typedef struct _HASH_METHODS
                                         // context
 } HASH_METHODS, *PHASH_METHODS;
 
-#define HASH_TPM2B(HASH, Hash) TPM2B_TYPE(HASH##_DIGEST, HASH##_DIGEST_SIZE);
+#define HASH_MSSIM2B(HASH, Hash) MSSIM2B_TYPE(HASH##_DIGEST, HASH##_DIGEST_SIZE);
 
-FOR_EACH_HASH(HASH_TPM2B)
+FOR_EACH_HASH(HASH_MSSIM2B)
 
-// When the TPM implements RSA, the hash-dependent OID pointers are part of the
+// When the MSSIM implements RSA, the hash-dependent OID pointers are part of the
 // HASH_DEF. These macros conditionally add the OID reference to the HASH_DEF and the
 // HASH_DEF_TEMPLATE.
 #if ALG_RSA
@@ -227,7 +227,7 @@ FOR_EACH_HASH(HASH_TPM2B)
 #  define PKCS1_OID(NAME)
 #endif
 
-// When the TPM implements ECC, the hash-dependent OID pointers are part of the
+// When the MSSIM implements ECC, the hash-dependent OID pointers are part of the
 // HASH_DEF. These macros conditionally add the OID reference to the HASH_DEF and the
 // HASH_DEF_TEMPLATE.
 #if ALG_ECDSA
@@ -265,7 +265,7 @@ typedef const struct HASH_DEF
                          HASH##_BLOCK_SIZE,  /*block size */                        \
                          HASH##_DIGEST_SIZE, /*data size */                         \
                          sizeof(tpmHashState##HASH##_t),                            \
-                         TPM_ALG_##HASH,                                            \
+                         MSSIM_ALG_##HASH,                                            \
                          OID_##HASH PKCS1_OID(HASH) ECDSA_OID(HASH)};
 
 // These definitions are for the types that can be in a hash state structure.
@@ -294,7 +294,7 @@ typedef BYTE HASH_STATE_TYPE;
 typedef struct _HASH_STATE
 {
     HASH_STATE_TYPE type;  // type of the context
-    TPM_ALG_ID      hashAlg;
+    MSSIM_ALG_ID      hashAlg;
     PHASH_DEF       def;
     ANY_HASH_STATE  state;
 } HASH_STATE, *PHASH_STATE;
@@ -309,7 +309,7 @@ typedef const HASH_STATE* PCHASH_STATE;
 typedef struct hmacState
 {
     HASH_STATE       hashState;  // the hash state
-    TPM2B_HASH_BLOCK hmacKey;    // the HMAC key
+    MSSIM2B_HASH_BLOCK hmacKey;    // the HMAC key
 } HMAC_STATE, *PHMAC_STATE;
 
 // This is for the external hash state. This implementation assumes that the size

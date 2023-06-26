@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -38,24 +38,24 @@
 #if CC_Shutdown  // Conditional expansion of this file
 
 /*(See part 3 specification)
-// Shut down TPM for power off
+// Shut down MSSIM for power off
 */
-//  Return Type: TPM_RC
-//      TPM_RC_TYPE             if PCR bank has been re-configured, a
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_TYPE             if PCR bank has been re-configured, a
 //                              Shutdown(CLEAR) is required
-TPM_RC
-TPM2_Shutdown(Shutdown_In* in  // IN: input parameter list
+MSSIM_RC
+MSSIM2_Shutdown(Shutdown_In* in  // IN: input parameter list
 )
 {
     // The command needs NV update.  Check if NV is available.
-    // A TPM_RC_NV_UNAVAILABLE or TPM_RC_NV_RATE error may be returned at
+    // A MSSIM_RC_NV_UNAVAILABLE or MSSIM_RC_NV_RATE error may be returned at
     // this point
     RETURN_IF_NV_IS_NOT_AVAILABLE;
 
     // Input Validation
     // If PCR bank has been reconfigured, a CLEAR state save is required
-    if(g_pcrReConfig && in->shutdownType == TPM_SU_STATE)
-        return TPM_RCS_TYPE + RC_Shutdown_shutdownType;
+    if(g_pcrReConfig && in->shutdownType == MSSIM_SU_STATE)
+        return MSSIM_RCS_TYPE + RC_Shutdown_shutdownType;
     // Internal Data Update
     gp.orderlyState = in->shutdownType;
 
@@ -86,7 +86,7 @@ TPM2_Shutdown(Shutdown_In* in  // IN: input parameter list
     // Save all orderly data
     NvWrite(NV_ORDERLY_DATA, sizeof(ORDERLY_DATA), &go);
 
-    if(in->shutdownType == TPM_SU_STATE)
+    if(in->shutdownType == MSSIM_SU_STATE)
     {
         // Save STATE_RESET and STATE_CLEAR data
         NvWrite(NV_STATE_CLEAR_DATA, sizeof(STATE_CLEAR_DATA), &gc);
@@ -94,16 +94,16 @@ TPM2_Shutdown(Shutdown_In* in  // IN: input parameter list
 
         // Save the startup flags for resume
         if(g_DrtmPreStartup)
-            gp.orderlyState = TPM_SU_STATE | PRE_STARTUP_FLAG;
+            gp.orderlyState = MSSIM_SU_STATE | PRE_STARTUP_FLAG;
         else if(g_StartupLocality3)
-            gp.orderlyState = TPM_SU_STATE | STARTUP_LOCALITY_3;
+            gp.orderlyState = MSSIM_SU_STATE | STARTUP_LOCALITY_3;
     }
     // only two shutdown options.
-    else if(in->shutdownType != TPM_SU_CLEAR)
-        return TPM_RCS_VALUE + RC_Shutdown_shutdownType;
+    else if(in->shutdownType != MSSIM_SU_CLEAR)
+        return MSSIM_RCS_VALUE + RC_Shutdown_shutdownType;
 
     NV_SYNC_PERSISTENT(orderlyState);
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 #endif  // CC_Shutdown

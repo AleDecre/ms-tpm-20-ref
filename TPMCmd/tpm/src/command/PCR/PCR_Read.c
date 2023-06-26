@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,8 +40,8 @@
 /*(See part 3 specification)
 // Read a set of PCR
 */
-TPM_RC
-TPM2_PCR_Read(PCR_Read_In*  in,  // IN: input parameter list
+MSSIM_RC
+MSSIM2_PCR_Read(PCR_Read_In*  in,  // IN: input parameter list
               PCR_Read_Out* out  // OUT: output parameter list
 )
 {
@@ -53,7 +53,7 @@ TPM2_PCR_Read(PCR_Read_In*  in,  // IN: input parameter list
 
     out->pcrSelectionOut = in->pcrSelectionIn;
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_PCR_Read

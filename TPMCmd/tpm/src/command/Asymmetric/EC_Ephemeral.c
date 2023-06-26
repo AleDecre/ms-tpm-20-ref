@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,33 +40,33 @@
 /*(See part 3 specification)
 // This command creates an ephemeral key using the commit mechanism
 */
-//  Return Type: TPM_RC
-// TPM_RC_NO_RESULT             the TPM is not able to generate an 'r' value
-TPM_RC
-TPM2_EC_Ephemeral(EC_Ephemeral_In*  in,  // IN: input parameter list
+//  Return Type: MSSIM_RC
+// MSSIM_RC_NO_RESULT             the MSSIM is not able to generate an 'r' value
+MSSIM_RC
+MSSIM2_EC_Ephemeral(EC_Ephemeral_In*  in,  // IN: input parameter list
                   EC_Ephemeral_Out* out  // OUT: output parameter list
 )
 {
-    TPM2B_ECC_PARAMETER r;
-    TPM_RC              result;
+    MSSIM2B_ECC_PARAMETER r;
+    MSSIM_RC              result;
     //
     do
     {
         // Get the random value that will be used in the point multiplications
         // Note: this does not commit the count.
         if(!CryptGenerateR(&r, NULL, in->curveID, NULL))
-            return TPM_RC_NO_RESULT;
+            return MSSIM_RC_NO_RESULT;
         // do a point multiply
         result =
             CryptEccPointMultiply(&out->Q.point, in->curveID, NULL, &r, NULL, NULL);
         // commit the count value if either the r value results in the point at
         // infinity or if the value is good. The commit on the r value for infinity
         // is so that the r value will be skipped.
-        if((result == TPM_RC_SUCCESS) || (result == TPM_RC_NO_RESULT))
+        if((result == MSSIM_RC_SUCCESS) || (result == MSSIM_RC_NO_RESULT))
             out->counter = CryptCommit();
-    } while(result == TPM_RC_NO_RESULT);
+    } while(result == MSSIM_RC_NO_RESULT);
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_EC_Ephemeral

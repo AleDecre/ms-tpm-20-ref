@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -33,7 +33,7 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 //** Description
-// This file contains the function that performs the "manufacturing" of the TPM
+// This file contains the function that performs the "manufacturing" of the MSSIM
 // in a simulated environment. These functions should not be used outside of
 // a manufacturing or simulation environment.
 
@@ -44,20 +44,20 @@
 
 //** Functions
 
-//*** TPM_Manufacture()
-// This function initializes the TPM values in preparation for the TPM's first
-// use. This function will fail if previously called. The TPM can be re-manufactured
-// by calling TPM_Teardown() first and then calling this function again.
+//*** MSSIM_Manufacture()
+// This function initializes the MSSIM values in preparation for the MSSIM's first
+// use. This function will fail if previously called. The MSSIM can be re-manufactured
+// by calling MSSIM_Teardown() first and then calling this function again.
 //  Return Type: int
 //      -1          failure
 //      0           success
 //      1           manufacturing process previously performed
-LIB_EXPORT int TPM_Manufacture(
+LIB_EXPORT int MSSIM_Manufacture(
     int firstTime  // IN: indicates if this is the first call from
                    //     main()
 )
 {
-    TPM_SU orderlyShutdown;
+    MSSIM_SU orderlyShutdown;
 
 #if RUNTIME_SIZE_CHECKS
     // Call the function to verify the sizes of values that result from different
@@ -71,7 +71,7 @@ LIB_EXPORT int TPM_Manufacture(
         return -1;
 #endif
 
-    // If TPM has been manufactured, return indication.
+    // If MSSIM has been manufactured, return indication.
     if(!firstTime && g_manufactured)
         return 1;
 
@@ -106,7 +106,7 @@ LIB_EXPORT int TPM_Manufacture(
     CommandAuditPreInstall_Init();
 
     // first start up is required to be Startup(CLEAR)
-    orderlyShutdown = TPM_SU_CLEAR;
+    orderlyShutdown = MSSIM_SU_CLEAR;
     NV_WRITE_PERSISTENT(orderlyState, orderlyShutdown);
 
     // initialize the firmware version
@@ -141,17 +141,17 @@ LIB_EXPORT int TPM_Manufacture(
     return 0;
 }
 
-//*** TPM_TearDown()
-// This function prepares the TPM for re-manufacture. It should not be implemented
-// in anything other than a simulated TPM.
+//*** MSSIM_TearDown()
+// This function prepares the MSSIM for re-manufacture. It should not be implemented
+// in anything other than a simulated MSSIM.
 //
 // In this implementation, all that is needs is to stop the cryptographic units
-// and set a flag to indicate that the TPM can be re-manufactured. This should
+// and set a flag to indicate that the MSSIM can be re-manufactured. This should
 // be all that is necessary to start the manufacturing process again.
 //  Return Type: int
 //      0        success
-//      1        TPM not previously manufactured
-LIB_EXPORT int TPM_TearDown(void)
+//      1        MSSIM not previously manufactured
+LIB_EXPORT int MSSIM_TearDown(void)
 {
     g_manufactured = FALSE;
     return 0;

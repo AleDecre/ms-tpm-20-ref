@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -47,26 +47,26 @@
 /*(See part 3 specification)
 // Certify using an X509-formatted certificate
 */
-// return type: TPM_RC
-//      TPM_RC_ATTRIBUTES       the attributes of 'objectHandle' are not compatible
-//                              with the KeyUsage or TPMA_OBJECT values in the
+// return type: MSSIM_RC
+//      MSSIM_RC_ATTRIBUTES       the attributes of 'objectHandle' are not compatible
+//                              with the KeyUsage or MSSIMA_OBJECT values in the
 //                              extensions fields
-//      TPM_RC_BINDING          the public and private portions of the key are not
+//      MSSIM_RC_BINDING          the public and private portions of the key are not
 //                              properly bound.
-//      TPM_RC_HASH             the hash algorithm in the scheme is not supported
-//      TPM_RC_KEY              'signHandle' does not reference a signing key;
-//      TPM_RC_SCHEME           the scheme is not compatible with sign key type,
+//      MSSIM_RC_HASH             the hash algorithm in the scheme is not supported
+//      MSSIM_RC_KEY              'signHandle' does not reference a signing key;
+//      MSSIM_RC_SCHEME           the scheme is not compatible with sign key type,
 //                              or input scheme is not compatible with default
 //                              scheme, or the chosen scheme is not a valid
 //                              sign scheme
-//      TPM_RC_VALUE            most likely a problem with the format of
+//      MSSIM_RC_VALUE            most likely a problem with the format of
 //                              'partialCertificate'
-TPM_RC
-TPM2_CertifyX509(CertifyX509_In*  in,  // IN: input parameter list
+MSSIM_RC
+MSSIM2_CertifyX509(CertifyX509_In*  in,  // IN: input parameter list
                  CertifyX509_Out* out  // OUT: output parameter list
 )
 {
-    TPM_RC               result;
+    MSSIM_RC               result;
     OBJECT*              signKey = HandleToObject(in->signHandle);
     OBJECT*              object  = HandleToObject(in->objectHandle);
     HASH_STATE           hash;
@@ -91,28 +91,28 @@ TPM2_CertifyX509(CertifyX509_In*  in,  // IN: input parameter list
 
     // Input Validation
     if(in->reserved.b.size != 0)
-        return TPM_RC_SIZE + RC_CertifyX509_reserved;
+        return MSSIM_RC_SIZE + RC_CertifyX509_reserved;
     // signing key must be able to sign
     if(!IsSigningObject(signKey))
-        return TPM_RCS_KEY + RC_CertifyX509_signHandle;
+        return MSSIM_RCS_KEY + RC_CertifyX509_signHandle;
     // Pick a scheme for sign.  If the input sign scheme is not compatible with
     // the default scheme, return an error.
     if(!CryptSelectSignScheme(signKey, &in->inScheme))
-        return TPM_RCS_SCHEME + RC_CertifyX509_inScheme;
+        return MSSIM_RCS_SCHEME + RC_CertifyX509_inScheme;
     // Make sure that the public Key encoding is known
     if(X509AddPublicKey(NULL, object) == 0)
-        return TPM_RCS_ASYMMETRIC + RC_CertifyX509_objectHandle;
+        return MSSIM_RCS_ASYMMETRIC + RC_CertifyX509_objectHandle;
     // Unbundle 'partialCertificate'.
     // Initialize the unmarshaling context
     if(!ASN1UnmarshalContextInitialize(
            &ctx, in->partialCertificate.t.size, in->partialCertificate.t.buffer))
-        return TPM_RCS_VALUE + RC_CertifyX509_partialCertificate;
+        return MSSIM_RCS_VALUE + RC_CertifyX509_partialCertificate;
     // Make sure that this is a constructed SEQUENCE
     length = ASN1NextTag(&ctx);
     // Must be a constructed SEQUENCE that uses all of the input parameter
     if((ctx.tag != (ASN1_CONSTRUCTED_SEQUENCE))
        || ((ctx.offset + length) != in->partialCertificate.t.size))
-        return TPM_RCS_SIZE + RC_CertifyX509_partialCertificate;
+        return MSSIM_RCS_SIZE + RC_CertifyX509_partialCertificate;
 
     // This scans through the contents of the outermost SEQUENCE. This would be the
     // 'issuer', 'validity', 'subject', 'issuerUniqueID' (optional),
@@ -136,38 +136,38 @@ TPM2_CertifyX509(CertifyX509_In*  in,  // IN: input parameter list
         else if(ctx.tag == X509_EXTENSIONS)
         {
             if(certTBS[EXTENSIONS_REF].len != 0)
-                return TPM_RCS_VALUE + RC_CertifyX509_partialCertificate;
+                return MSSIM_RCS_VALUE + RC_CertifyX509_partialCertificate;
             certTBS[EXTENSIONS_REF].buf = &ctx.buffer[startOfElement];
             ctx.offset += length;
             certTBS[EXTENSIONS_REF].len = (INT16)ctx.offset - startOfElement;
         }
         else
-            return TPM_RCS_VALUE + RC_CertifyX509_partialCertificate;
+            return MSSIM_RCS_VALUE + RC_CertifyX509_partialCertificate;
     }
     // Make sure that we used all of the data and found at least the required
     // number of elements.
     if((ctx.offset != ctx.size) || (countOfSequences < 3) || (countOfSequences > 4)
        || (certTBS[EXTENSIONS_REF].buf == NULL))
-        return TPM_RCS_VALUE + RC_CertifyX509_partialCertificate;
+        return MSSIM_RCS_VALUE + RC_CertifyX509_partialCertificate;
     // Now that we know how many sequences there were, we can put them where they
     // belong
     for(i = 0; i < countOfSequences; i++)
         certTBS[SUBJECT_KEY_REF - i] = partial[countOfSequences - 1 - i];
 
-    // If only three SEQUENCES, then the TPM needs to produce the signature algorithm.
+    // If only three SEQUENCES, then the MSSIM needs to produce the signature algorithm.
     // See if it can
     if((countOfSequences == 3)
        && (X509AddSigningAlgorithm(NULL, signKey, &in->inScheme) == 0))
-        return TPM_RCS_SCHEME + RC_CertifyX509_signHandle;
+        return MSSIM_RCS_SCHEME + RC_CertifyX509_signHandle;
 
     // Process the extensions
     result = X509ProcessExtensions(object, &certTBS[EXTENSIONS_REF]);
-    if(result != TPM_RC_SUCCESS)
-        // If the extension has the TPMA_OBJECT extension and the attributes don't
-        // match, then the error code will be TPM_RCS_ATTRIBUTES. Otherwise, the error
+    if(result != MSSIM_RC_SUCCESS)
+        // If the extension has the MSSIMA_OBJECT extension and the attributes don't
+        // match, then the error code will be MSSIM_RCS_ATTRIBUTES. Otherwise, the error
         // indicates a malformed partialCertificate.
         return result
-               + ((result == TPM_RCS_ATTRIBUTES) ? RC_CertifyX509_objectHandle
+               + ((result == MSSIM_RCS_ATTRIBUTES) ? RC_CertifyX509_objectHandle
                                                  : RC_CertifyX509_partialCertificate);
     // Command Output
     // Create the addedToCertificate values
@@ -192,7 +192,7 @@ TPM2_CertifyX509(CertifyX509_In*  in,  // IN: input parameter list
     }
     // Create the serial number value. Use the out->tbsDigest as scratch.
     {
-        TPM2B* digest = &out->tbsDigest.b;
+        MSSIM2B* digest = &out->tbsDigest.b;
         //
         digest->size = (INT16)CryptHashStart(&hash, signKey->publicArea.nameAlg);
         pAssert(digest->size != 0);
@@ -239,7 +239,7 @@ TPM2_CertifyX509(CertifyX509_In*  in,  // IN: input parameter list
     }
     // sanity check
     if(ctxOut.offset < 0)
-        return TPM_RC_FAILURE;
+        return MSSIM_RC_FAILURE;
     // Create the tbsDigest to sign
     out->tbsDigest.t.size = CryptHashStart(&hash, in->inScheme.details.any.hashAlg);
     for(i = 0; i < REF_COUNT; i++)

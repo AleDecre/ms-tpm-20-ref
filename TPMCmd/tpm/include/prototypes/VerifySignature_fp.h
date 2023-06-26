@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,25 +45,25 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT keyHandle;
-    TPM2B_DIGEST   digest;
-    TPMT_SIGNATURE signature;
+    MSSIMI_DH_OBJECT keyHandle;
+    MSSIM2B_DIGEST   digest;
+    MSSIMT_SIGNATURE signature;
 } VerifySignature_In;
 
 // Output structure definition
 typedef struct
 {
-    TPMT_TK_VERIFIED validation;
+    MSSIMT_TK_VERIFIED validation;
 } VerifySignature_Out;
 
 // Response code modifiers
-#    define RC_VerifySignature_keyHandle (TPM_RC_H + TPM_RC_1)
-#    define RC_VerifySignature_digest    (TPM_RC_P + TPM_RC_1)
-#    define RC_VerifySignature_signature (TPM_RC_P + TPM_RC_2)
+#    define RC_VerifySignature_keyHandle (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_VerifySignature_digest    (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_VerifySignature_signature (MSSIM_RC_P + MSSIM_RC_2)
 
 // Function prototype
-TPM_RC
-TPM2_VerifySignature(VerifySignature_In* in, VerifySignature_Out* out);
+MSSIM_RC
+MSSIM2_VerifySignature(VerifySignature_In* in, VerifySignature_Out* out);
 
 #  endif  // _Verify_Signature_FP_H_
 #endif    // CC_VerifySignature

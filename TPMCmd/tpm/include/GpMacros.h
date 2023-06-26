@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -55,12 +55,12 @@
         CryptTestAlgorithm(alg, NULL); \
     } while(0)
 
-// Use of TPM_ALG_NULL is reserved for RSAEP/RSADP testing. If someone is wanting
+// Use of MSSIM_ALG_NULL is reserved for RSAEP/RSADP testing. If someone is wanting
 // to test a hash with that value, don't do it.
 #  define TEST_HASH(alg)                                   \
     do                                                     \
     {                                                      \
-      if(TEST_BIT(alg, g_toTest) && (alg != TPM_ALG_NULL)) \
+      if(TEST_BIT(alg, g_toTest) && (alg != MSSIM_ALG_NULL)) \
         CryptTestAlgorithm(alg, NULL);                     \
     } while(0)
 #else
@@ -98,17 +98,17 @@
     do                            \
     {                             \
     } while(0)
-#  define TPM_FAIL_RETURN NORETURN void
+#  define MSSIM_FAIL_RETURN NORETURN void
 #else
 #  define FAIL_RETURN(returnCode) \
     do                            \
     {                             \
       return (returnCode);        \
     } while(0)
-#  define TPM_FAIL_RETURN void
+#  define MSSIM_FAIL_RETURN void
 #endif
 
-// This macro tests that a condition is TRUE and puts the TPM into failure mode
+// This macro tests that a condition is TRUE and puts the MSSIM into failure mode
 // if it is not. If longjmp is being used, then the FAIL(FATAL_ERROR_) macro makes
 // a call from which there is no return. Otherwise, it returns and the function
 // will exit with the appropriate return code.
@@ -207,7 +207,7 @@
 #  define NOT_REFERENCED(x = x) ((void)(x))
 #endif
 
-#define STD_RESPONSE_HEADER (sizeof(TPM_ST) + sizeof(UINT32) + sizeof(TPM_RC))
+#define STD_RESPONSE_HEADER (sizeof(MSSIM_ST) + sizeof(UINT32) + sizeof(MSSIM_RC))
 
 #define JOIN(x, y)       x##y
 #define JOIN3(x, y, z)   x##y##z
@@ -235,7 +235,7 @@
 #  elif defined ALG_SHA1 && ALG_SHA1 == YES
 #    define CONTEXT_HASH_ALGORITHM SHA1
 #  endif
-#  define CONTEXT_INTEGRITY_HASH_ALG CONCAT(TPM_ALG_, CONTEXT_HASH_ALGORITHM)
+#  define CONTEXT_INTEGRITY_HASH_ALG CONCAT(MSSIM_ALG_, CONTEXT_HASH_ALGORITHM)
 #endif
 
 #ifndef CONTEXT_INTEGRITY_HASH_SIZE
@@ -301,7 +301,7 @@
 
 #if !SKIP_PROOF_ERRORS
 #  if PROOF_SIZE < COMPLIANT_PROOF_SIZE
-#    error "PROOF_SIZE is not compliant with TPM specification"
+#    error "PROOF_SIZE is not compliant with MSSIM specification"
 #  endif
 #  if PRIMARY_SEED_SIZE < COMPLIANT_PRIMARY_SEED_SIZE
 #    error Non-compliant PRIMARY_SEED_SIZE
@@ -334,17 +334,17 @@
 #  define LABEL_MAX_BUFFER MIN(32, MAX(MAX_ECC_KEY_BYTES, MAX_DIGEST_SIZE))
 #endif
 
-// This bit is used to indicate that an authorization ticket expires on TPM Reset
-// and TPM Restart. It is added to the timeout value returned by TPM2_PoliySigned()
-// and TPM2_PolicySecret() and used by TPM2_PolicyTicket(). The timeout value is
-// relative to Time (g_time). Time is reset whenever the TPM loses power and cannot
+// This bit is used to indicate that an authorization ticket expires on MSSIM Reset
+// and MSSIM Restart. It is added to the timeout value returned by MSSIM2_PoliySigned()
+// and MSSIM2_PolicySecret() and used by MSSIM2_PolicyTicket(). The timeout value is
+// relative to Time (g_time). Time is reset whenever the MSSIM loses power and cannot
 // be moved forward by the user (as can Clock). 'g_time' is a 64-bit value expressing
-// time in ms. Stealing the MSb for a flag means that the TPM needs to be reset
+// time in ms. Stealing the MSb for a flag means that the MSSIM needs to be reset
 // at least once every 292,471,208 years rather than once every 584,942,417 years.
 #define EXPIRATION_BIT ((UINT64)1 << 63)
 
 // Check for consistency of the bit ordering of bit fields
-#if BIG_ENDIAN_TPM && MOST_SIGNIFICANT_BIT_0 && USE_BIT_FIELD_STRUCTURES
+#if BIG_ENDIAN_MSSIM && MOST_SIGNIFICANT_BIT_0 && USE_BIT_FIELD_STRUCTURES
 #  error "Settings not consistent"
 #endif
 
@@ -354,7 +354,7 @@
 #  define SET_ATTRIBUTE(a, type, b)   (a.b = SET)
 #  define CLEAR_ATTRIBUTE(a, type, b) (a.b = CLEAR)
 #  define GET_ATTRIBUTE(a, type, b)   (a.b)
-#  define TPMA_ZERO_INITIALIZER() \
+#  define MSSIMA_ZERO_INITIALIZER() \
     {                             \
       0                           \
     }
@@ -363,7 +363,7 @@
 #  define SET_ATTRIBUTE(a, type, b)   (a |= type##_##b)
 #  define CLEAR_ATTRIBUTE(a, type, b) (a &= ~type##_##b)
 #  define GET_ATTRIBUTE(a, type, b)   (type)((a & type##_##b) >> type##_##b##_SHIFT)
-#  define TPMA_ZERO_INITIALIZER()     (0)
+#  define MSSIMA_ZERO_INITIALIZER()     (0)
 #endif
 
 #define VERIFY(_X) \
@@ -391,7 +391,7 @@
 #define MAKE_OID(NAME) EXTERN const BYTE OID##NAME[] INITIALIZER({OID##NAME##_VALUE})
 
 // This definition is moved from TpmProfile.h because it is not actually vendor-
-// specific. It has to be the same size as the 'sequence' parameter of a TPMS_CONTEXT
+// specific. It has to be the same size as the 'sequence' parameter of a MSSIMS_CONTEXT
 // and that is a UINT64. So, this is an invariant value
 #define CONTEXT_COUNTER UINT64
 

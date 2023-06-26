@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,21 +45,21 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_CONTEXT saveHandle;
+    MSSIMI_DH_CONTEXT saveHandle;
 } ContextSave_In;
 
 // Output structure definition
 typedef struct
 {
-    TPMS_CONTEXT context;
+    MSSIMS_CONTEXT context;
 } ContextSave_Out;
 
 // Response code modifiers
-#    define RC_ContextSave_saveHandle (TPM_RC_H + TPM_RC_1)
+#    define RC_ContextSave_saveHandle (MSSIM_RC_H + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_ContextSave(ContextSave_In* in, ContextSave_Out* out);
+MSSIM_RC
+MSSIM2_ContextSave(ContextSave_In* in, ContextSave_Out* out);
 
 #  endif  // _Context_Save_FP_H_
 #endif    // CC_ContextSave

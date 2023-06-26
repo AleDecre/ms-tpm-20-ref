@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,15 +45,15 @@
 // Input structure definition
 typedef struct
 {
-    TPM2B_SENSITIVE_DATA inData;
+    MSSIM2B_SENSITIVE_DATA inData;
 } StirRandom_In;
 
 // Response code modifiers
-#    define RC_StirRandom_inData (TPM_RC_P + TPM_RC_1)
+#    define RC_StirRandom_inData (MSSIM_RC_P + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_StirRandom(StirRandom_In* in);
+MSSIM_RC
+MSSIM2_StirRandom(StirRandom_In* in);
 
 #  endif  // _Stir_Random_FP_H_
 #endif    // CC_StirRandom

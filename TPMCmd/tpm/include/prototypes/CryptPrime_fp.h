@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -83,7 +83,7 @@ BOOL MillerRabin(bigNum bnW, RAND_STATE* rand);
 //
 // If sieving is used, the number is used to root a sieving process.
 //
-TPM_RC
+MSSIM_RC
 RsaCheckPrime(bigNum prime, UINT32 exponent, RAND_STATE* rand);
 
 //*** RsaAdjustPrimeCandiate()
@@ -118,7 +118,7 @@ LIB_EXPORT void RsaAdjustPrimeCandidate(bigNum prime);
 //***BnGeneratePrimeForRSA()
 // Function to generate a prime of the desired size with the proper attributes
 // for an RSA prime.
-TPM_RC
+MSSIM_RC
 BnGeneratePrimeForRSA(bigNum prime,      // IN/OUT: points to the BN that will get the
                                          //  random value
                       UINT32      bits,  // IN: number of bits to get

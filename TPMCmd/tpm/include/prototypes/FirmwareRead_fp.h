@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -51,15 +51,15 @@ typedef struct
 // Output structure definition
 typedef struct
 {
-    TPM2B_MAX_BUFFER fuData;
+    MSSIM2B_MAX_BUFFER fuData;
 } FirmwareRead_Out;
 
 // Response code modifiers
-#    define RC_FirmwareRead_sequenceNumber (TPM_RC_P + TPM_RC_1)
+#    define RC_FirmwareRead_sequenceNumber (MSSIM_RC_P + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_FirmwareRead(FirmwareRead_In* in, FirmwareRead_Out* out);
+MSSIM_RC
+MSSIM2_FirmwareRead(FirmwareRead_In* in, FirmwareRead_Out* out);
 
 #  endif  // _Firmware_Read_FP_H_
 #endif    // CC_FirmwareRead

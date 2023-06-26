@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -136,13 +136,13 @@ typedef const struct MinMaxMarshal_mst
 
 typedef const struct Tpm2bMarshal_mst
 {
-    UINT8  unmarshalType;  // TPM2B_MTYPE
+    UINT8  unmarshalType;  // MSSIM2B_MTYPE
     UINT16 sizeIndex;      // reference to type for this size value
 } Tpm2bMarshal_mst;
 
 typedef const struct Tpm2bsMarshal_mst
 {
-    UINT8  unmarshalType;  // TPM2BS_MTYPE
+    UINT8  unmarshalType;  // MSSIM2BS_MTYPE
     UINT8  modifiers;      // size= and offset (2 - 7)
     UINT16 sizeIndex;      // index of the size value;
     UINT16 dataIndex;      // the structure
@@ -150,7 +150,7 @@ typedef const struct Tpm2bsMarshal_mst
 
 typedef const struct ListMarshal_mst
 {
-    UINT8  unmarshalType;  // LIST_MTYPE (for TPML)
+    UINT8  unmarshalType;  // LIST_MTYPE (for MSSIML)
     UINT8  modifiers;      // size offset 2-7
     UINT16 sizeIndex;      // reference to the minmax structure that
                            //      unmarshals the size parameter
@@ -172,49 +172,49 @@ typedef const struct CompositeMarshal_mst
     marshalIndex_t types[1];      // array of unmarshaling types
 } CompositeMarshal_mst;
 
-typedef const struct TPM_ECC_CURVE_mst
+typedef const struct MSSIM_ECC_CURVE_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[4];
-} TPM_ECC_CURVE_mst;
+} MSSIM_ECC_CURVE_mst;
 
-typedef const struct TPM_CLOCK_ADJUST_mst
+typedef const struct MSSIM_CLOCK_ADJUST_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[2];
-} TPM_CLOCK_ADJUST_mst;
+} MSSIM_CLOCK_ADJUST_mst;
 
-typedef const struct TPM_EO_mst
+typedef const struct MSSIM_EO_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[2];
-} TPM_EO_mst;
+} MSSIM_EO_mst;
 
-typedef const struct TPM_SU_mst
+typedef const struct MSSIM_SU_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT8  entries;
     UINT32 values[2];
-} TPM_SU_mst;
+} MSSIM_SU_mst;
 
-typedef const struct TPM_SE_mst
+typedef const struct MSSIM_SE_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT8  entries;
     UINT32 values[3];
-} TPM_SE_mst;
+} MSSIM_SE_mst;
 
-typedef const struct TPM_CAP_mst
+typedef const struct MSSIM_CAP_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
@@ -222,18 +222,18 @@ typedef const struct TPM_CAP_mst
     UINT8  ranges;
     UINT8  singles;
     UINT32 values[3];
-} TPM_CAP_mst;
+} MSSIM_CAP_mst;
 
-typedef const struct TPMI_YES_NO_mst
+typedef const struct MSSIMI_YES_NO_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT8  entries;
     UINT32 values[2];
-} TPMI_YES_NO_mst;
+} MSSIMI_YES_NO_mst;
 
-typedef const struct TPMI_DH_OBJECT_mst
+typedef const struct MSSIMI_DH_OBJECT_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
@@ -241,9 +241,9 @@ typedef const struct TPMI_DH_OBJECT_mst
     UINT8  ranges;
     UINT8  singles;
     UINT32 values[5];
-} TPMI_DH_OBJECT_mst;
+} MSSIMI_DH_OBJECT_mst;
 
-typedef const struct TPMI_DH_PARENT_mst
+typedef const struct MSSIMI_DH_PARENT_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
@@ -251,17 +251,17 @@ typedef const struct TPMI_DH_PARENT_mst
     UINT8  ranges;
     UINT8  singles;
     UINT32 values[8];
-} TPMI_DH_PARENT_mst;
+} MSSIMI_DH_PARENT_mst;
 
-typedef const struct TPMI_DH_PERSISTENT_mst
+typedef const struct MSSIMI_DH_PERSISTENT_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[2];
-} TPMI_DH_PERSISTENT_mst;
+} MSSIMI_DH_PERSISTENT_mst;
 
-typedef const struct TPMI_DH_ENTITY_mst
+typedef const struct MSSIMI_DH_ENTITY_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
@@ -269,17 +269,17 @@ typedef const struct TPMI_DH_ENTITY_mst
     UINT8  ranges;
     UINT8  singles;
     UINT32 values[15];
-} TPMI_DH_ENTITY_mst;
+} MSSIMI_DH_ENTITY_mst;
 
-typedef const struct TPMI_DH_PCR_mst
+typedef const struct MSSIMI_DH_PCR_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[3];
-} TPMI_DH_PCR_mst;
+} MSSIMI_DH_PCR_mst;
 
-typedef const struct TPMI_SH_AUTH_SESSION_mst
+typedef const struct MSSIMI_SH_AUTH_SESSION_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
@@ -287,25 +287,25 @@ typedef const struct TPMI_SH_AUTH_SESSION_mst
     UINT8  ranges;
     UINT8  singles;
     UINT32 values[5];
-} TPMI_SH_AUTH_SESSION_mst;
+} MSSIMI_SH_AUTH_SESSION_mst;
 
-typedef const struct TPMI_SH_HMAC_mst
+typedef const struct MSSIMI_SH_HMAC_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[2];
-} TPMI_SH_HMAC_mst;
+} MSSIMI_SH_HMAC_mst;
 
-typedef const struct TPMI_SH_POLICY_mst
+typedef const struct MSSIMI_SH_POLICY_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[2];
-} TPMI_SH_POLICY_mst;
+} MSSIMI_SH_POLICY_mst;
 
-typedef const struct TPMI_DH_CONTEXT_mst
+typedef const struct MSSIMI_DH_CONTEXT_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
@@ -313,9 +313,9 @@ typedef const struct TPMI_DH_CONTEXT_mst
     UINT8  ranges;
     UINT8  singles;
     UINT32 values[6];
-} TPMI_DH_CONTEXT_mst;
+} MSSIMI_DH_CONTEXT_mst;
 
-typedef const struct TPMI_DH_SAVED_mst
+typedef const struct MSSIMI_DH_SAVED_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
@@ -323,36 +323,36 @@ typedef const struct TPMI_DH_SAVED_mst
     UINT8  ranges;
     UINT8  singles;
     UINT32 values[7];
-} TPMI_DH_SAVED_mst;
+} MSSIMI_DH_SAVED_mst;
 
-typedef const struct TPMI_RH_HIERARCHY_mst
+typedef const struct MSSIMI_RH_HIERARCHY_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT8  entries;
     UINT32 values[4];
-} TPMI_RH_HIERARCHY_mst;
+} MSSIMI_RH_HIERARCHY_mst;
 
-typedef const struct TPMI_RH_ENABLES_mst
+typedef const struct MSSIMI_RH_ENABLES_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT8  entries;
     UINT32 values[5];
-} TPMI_RH_ENABLES_mst;
+} MSSIMI_RH_ENABLES_mst;
 
-typedef const struct TPMI_RH_HIERARCHY_AUTH_mst
+typedef const struct MSSIMI_RH_HIERARCHY_AUTH_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT8  entries;
     UINT32 values[4];
-} TPMI_RH_HIERARCHY_AUTH_mst;
+} MSSIMI_RH_HIERARCHY_AUTH_mst;
 
-typedef const struct TPMI_RH_HIERARCHY_POLICY_mst
+typedef const struct MSSIMI_RH_HIERARCHY_POLICY_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
@@ -360,54 +360,54 @@ typedef const struct TPMI_RH_HIERARCHY_POLICY_mst
     UINT8  ranges;
     UINT8  singles;
     UINT32 values[6];
-} TPMI_RH_HIERARCHY_POLICY_mst;
+} MSSIMI_RH_HIERARCHY_POLICY_mst;
 
-typedef const struct TPMI_RH_PLATFORM_mst
+typedef const struct MSSIMI_RH_PLATFORM_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT8  entries;
     UINT32 values[1];
-} TPMI_RH_PLATFORM_mst;
+} MSSIMI_RH_PLATFORM_mst;
 
-typedef const struct TPMI_RH_OWNER_mst
+typedef const struct MSSIMI_RH_OWNER_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT8  entries;
     UINT32 values[2];
-} TPMI_RH_OWNER_mst;
+} MSSIMI_RH_OWNER_mst;
 
-typedef const struct TPMI_RH_ENDORSEMENT_mst
+typedef const struct MSSIMI_RH_ENDORSEMENT_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT8  entries;
     UINT32 values[2];
-} TPMI_RH_ENDORSEMENT_mst;
+} MSSIMI_RH_ENDORSEMENT_mst;
 
-typedef const struct TPMI_RH_PROVISION_mst
+typedef const struct MSSIMI_RH_PROVISION_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT8  entries;
     UINT32 values[2];
-} TPMI_RH_PROVISION_mst;
+} MSSIMI_RH_PROVISION_mst;
 
-typedef const struct TPMI_RH_CLEAR_mst
+typedef const struct MSSIMI_RH_CLEAR_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT8  entries;
     UINT32 values[2];
-} TPMI_RH_CLEAR_mst;
+} MSSIMI_RH_CLEAR_mst;
 
-typedef const struct TPMI_RH_NV_AUTH_mst
+typedef const struct MSSIMI_RH_NV_AUTH_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
@@ -415,324 +415,324 @@ typedef const struct TPMI_RH_NV_AUTH_mst
     UINT8  ranges;
     UINT8  singles;
     UINT32 values[4];
-} TPMI_RH_NV_AUTH_mst;
+} MSSIMI_RH_NV_AUTH_mst;
 
-typedef const struct TPMI_RH_LOCKOUT_mst
+typedef const struct MSSIMI_RH_LOCKOUT_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT8  entries;
     UINT32 values[1];
-} TPMI_RH_LOCKOUT_mst;
+} MSSIMI_RH_LOCKOUT_mst;
 
-typedef const struct TPMI_RH_NV_INDEX_mst
+typedef const struct MSSIMI_RH_NV_INDEX_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[2];
-} TPMI_RH_NV_INDEX_mst;
+} MSSIMI_RH_NV_INDEX_mst;
 
-typedef const struct TPMI_RH_AC_mst
+typedef const struct MSSIMI_RH_AC_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[2];
-} TPMI_RH_AC_mst;
+} MSSIMI_RH_AC_mst;
 
-typedef const struct TPMI_RH_ACT_mst
+typedef const struct MSSIMI_RH_ACT_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[2];
-} TPMI_RH_ACT_mst;
+} MSSIMI_RH_ACT_mst;
 
-typedef const struct TPMI_ALG_HASH_mst
+typedef const struct MSSIMI_ALG_HASH_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[5];
-} TPMI_ALG_HASH_mst;
+} MSSIMI_ALG_HASH_mst;
 
-typedef const struct TPMI_ALG_ASYM_mst
+typedef const struct MSSIMI_ALG_ASYM_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[5];
-} TPMI_ALG_ASYM_mst;
+} MSSIMI_ALG_ASYM_mst;
 
-typedef const struct TPMI_ALG_SYM_mst
+typedef const struct MSSIMI_ALG_SYM_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[5];
-} TPMI_ALG_SYM_mst;
+} MSSIMI_ALG_SYM_mst;
 
-typedef const struct TPMI_ALG_SYM_OBJECT_mst
+typedef const struct MSSIMI_ALG_SYM_OBJECT_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[5];
-} TPMI_ALG_SYM_OBJECT_mst;
+} MSSIMI_ALG_SYM_OBJECT_mst;
 
-typedef const struct TPMI_ALG_SYM_MODE_mst
+typedef const struct MSSIMI_ALG_SYM_MODE_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[4];
-} TPMI_ALG_SYM_MODE_mst;
+} MSSIMI_ALG_SYM_MODE_mst;
 
-typedef const struct TPMI_ALG_KDF_mst
+typedef const struct MSSIMI_ALG_KDF_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[4];
-} TPMI_ALG_KDF_mst;
+} MSSIMI_ALG_KDF_mst;
 
-typedef const struct TPMI_ALG_SIG_SCHEME_mst
+typedef const struct MSSIMI_ALG_SIG_SCHEME_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[4];
-} TPMI_ALG_SIG_SCHEME_mst;
+} MSSIMI_ALG_SIG_SCHEME_mst;
 
-typedef const struct TPMI_ECC_KEY_EXCHANGE_mst
+typedef const struct MSSIMI_ECC_KEY_EXCHANGE_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[4];
-} TPMI_ECC_KEY_EXCHANGE_mst;
+} MSSIMI_ECC_KEY_EXCHANGE_mst;
 
-typedef const struct TPMI_ST_COMMAND_TAG_mst
+typedef const struct MSSIMI_ST_COMMAND_TAG_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT8  entries;
     UINT32 values[2];
-} TPMI_ST_COMMAND_TAG_mst;
+} MSSIMI_ST_COMMAND_TAG_mst;
 
-typedef const struct TPMI_ALG_MAC_SCHEME_mst
+typedef const struct MSSIMI_ALG_MAC_SCHEME_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[5];
-} TPMI_ALG_MAC_SCHEME_mst;
+} MSSIMI_ALG_MAC_SCHEME_mst;
 
-typedef const struct TPMI_ALG_CIPHER_MODE_mst
+typedef const struct MSSIMI_ALG_CIPHER_MODE_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[4];
-} TPMI_ALG_CIPHER_MODE_mst;
+} MSSIMI_ALG_CIPHER_MODE_mst;
 
-typedef const struct TPMS_EMPTY_mst
+typedef const struct MSSIMS_EMPTY_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[3];
-} TPMS_EMPTY_mst;
+} MSSIMS_EMPTY_mst;
 
-typedef const struct TPMS_ALGORITHM_DESCRIPTION_mst
+typedef const struct MSSIMS_ALGORITHM_DESCRIPTION_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMS_ALGORITHM_DESCRIPTION_mst;
+} MSSIMS_ALGORITHM_DESCRIPTION_mst;
 
-typedef struct TPMU_HA_mst
+typedef struct MSSIMU_HA_mst
 {
     BYTE   countOfselectors;
     BYTE   modifiers;
     UINT16 offsetOfUnmarshalTypes;
     UINT32 selectors[9];
     UINT16 marshalingTypes[9];
-} TPMU_HA_mst;
+} MSSIMU_HA_mst;
 
-typedef const struct TPMT_HA_mst
+typedef const struct MSSIMT_HA_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMT_HA_mst;
+} MSSIMT_HA_mst;
 
-typedef const struct TPMS_PCR_SELECT_mst
+typedef const struct MSSIMS_PCR_SELECT_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMS_PCR_SELECT_mst;
+} MSSIMS_PCR_SELECT_mst;
 
-typedef const struct TPMS_PCR_SELECTION_mst
+typedef const struct MSSIMS_PCR_SELECTION_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[9];
-} TPMS_PCR_SELECTION_mst;
+} MSSIMS_PCR_SELECTION_mst;
 
-typedef const struct TPMT_TK_CREATION_mst
+typedef const struct MSSIMT_TK_CREATION_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[9];
-} TPMT_TK_CREATION_mst;
+} MSSIMT_TK_CREATION_mst;
 
-typedef const struct TPMT_TK_VERIFIED_mst
+typedef const struct MSSIMT_TK_VERIFIED_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[9];
-} TPMT_TK_VERIFIED_mst;
+} MSSIMT_TK_VERIFIED_mst;
 
-typedef const struct TPMT_TK_AUTH_mst
+typedef const struct MSSIMT_TK_AUTH_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[9];
-} TPMT_TK_AUTH_mst;
+} MSSIMT_TK_AUTH_mst;
 
-typedef const struct TPMT_TK_HASHCHECK_mst
+typedef const struct MSSIMT_TK_HASHCHECK_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[9];
-} TPMT_TK_HASHCHECK_mst;
+} MSSIMT_TK_HASHCHECK_mst;
 
-typedef const struct TPMS_ALG_PROPERTY_mst
+typedef const struct MSSIMS_ALG_PROPERTY_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMS_ALG_PROPERTY_mst;
+} MSSIMS_ALG_PROPERTY_mst;
 
-typedef const struct TPMS_TAGGED_PROPERTY_mst
+typedef const struct MSSIMS_TAGGED_PROPERTY_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMS_TAGGED_PROPERTY_mst;
+} MSSIMS_TAGGED_PROPERTY_mst;
 
-typedef const struct TPMS_TAGGED_PCR_SELECT_mst
+typedef const struct MSSIMS_TAGGED_PCR_SELECT_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[9];
-} TPMS_TAGGED_PCR_SELECT_mst;
+} MSSIMS_TAGGED_PCR_SELECT_mst;
 
-typedef const struct TPMS_TAGGED_POLICY_mst
+typedef const struct MSSIMS_TAGGED_POLICY_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMS_TAGGED_POLICY_mst;
+} MSSIMS_TAGGED_POLICY_mst;
 
-typedef const struct TPMS_ACT_DATA_mst
+typedef const struct MSSIMS_ACT_DATA_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[9];
-} TPMS_ACT_DATA_mst;
+} MSSIMS_ACT_DATA_mst;
 
-typedef struct TPMU_CAPABILITIES_mst
+typedef struct MSSIMU_CAPABILITIES_mst
 {
     BYTE   countOfselectors;
     BYTE   modifiers;
     UINT16 offsetOfUnmarshalTypes;
     UINT32 selectors[11];
     UINT16 marshalingTypes[11];
-} TPMU_CAPABILITIES_mst;
+} MSSIMU_CAPABILITIES_mst;
 
-typedef const struct TPMS_CAPABILITY_DATA_mst
+typedef const struct MSSIMS_CAPABILITY_DATA_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMS_CAPABILITY_DATA_mst;
+} MSSIMS_CAPABILITY_DATA_mst;
 
-typedef const struct TPMS_CLOCK_INFO_mst
+typedef const struct MSSIMS_CLOCK_INFO_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[12];
-} TPMS_CLOCK_INFO_mst;
+} MSSIMS_CLOCK_INFO_mst;
 
-typedef const struct TPMS_TIME_INFO_mst
+typedef const struct MSSIMS_TIME_INFO_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMS_TIME_INFO_mst;
+} MSSIMS_TIME_INFO_mst;
 
-typedef const struct TPMS_TIME_ATTEST_INFO_mst
+typedef const struct MSSIMS_TIME_ATTEST_INFO_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMS_TIME_ATTEST_INFO_mst;
+} MSSIMS_TIME_ATTEST_INFO_mst;
 
-typedef const struct TPMS_CERTIFY_INFO_mst
+typedef const struct MSSIMS_CERTIFY_INFO_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMS_CERTIFY_INFO_mst;
+} MSSIMS_CERTIFY_INFO_mst;
 
-typedef const struct TPMS_QUOTE_INFO_mst
+typedef const struct MSSIMS_QUOTE_INFO_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMS_QUOTE_INFO_mst;
+} MSSIMS_QUOTE_INFO_mst;
 
-typedef const struct TPMS_COMMAND_AUDIT_INFO_mst
+typedef const struct MSSIMS_COMMAND_AUDIT_INFO_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[12];
-} TPMS_COMMAND_AUDIT_INFO_mst;
+} MSSIMS_COMMAND_AUDIT_INFO_mst;
 
-typedef const struct TPMS_SESSION_AUDIT_INFO_mst
+typedef const struct MSSIMS_SESSION_AUDIT_INFO_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMS_SESSION_AUDIT_INFO_mst;
+} MSSIMS_SESSION_AUDIT_INFO_mst;
 
-typedef const struct TPMS_CREATION_INFO_mst
+typedef const struct MSSIMS_CREATION_INFO_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMS_CREATION_INFO_mst;
+} MSSIMS_CREATION_INFO_mst;
 
-typedef const struct TPMS_NV_CERTIFY_INFO_mst
+typedef const struct MSSIMS_NV_CERTIFY_INFO_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[9];
-} TPMS_NV_CERTIFY_INFO_mst;
+} MSSIMS_NV_CERTIFY_INFO_mst;
 
-typedef const struct TPMS_NV_DIGEST_CERTIFY_INFO_mst
+typedef const struct MSSIMS_NV_DIGEST_CERTIFY_INFO_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMS_NV_DIGEST_CERTIFY_INFO_mst;
+} MSSIMS_NV_DIGEST_CERTIFY_INFO_mst;
 
-typedef const struct TPMI_ST_ATTEST_mst
+typedef const struct MSSIMI_ST_ATTEST_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
@@ -740,463 +740,463 @@ typedef const struct TPMI_ST_ATTEST_mst
     UINT8  ranges;
     UINT8  singles;
     UINT32 values[3];
-} TPMI_ST_ATTEST_mst;
+} MSSIMI_ST_ATTEST_mst;
 
-typedef struct TPMU_ATTEST_mst
+typedef struct MSSIMU_ATTEST_mst
 {
     BYTE   countOfselectors;
     BYTE   modifiers;
     UINT16 offsetOfUnmarshalTypes;
     UINT32 selectors[8];
     UINT16 marshalingTypes[8];
-} TPMU_ATTEST_mst;
+} MSSIMU_ATTEST_mst;
 
-typedef const struct TPMS_ATTEST_mst
+typedef const struct MSSIMS_ATTEST_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[21];
-} TPMS_ATTEST_mst;
+} MSSIMS_ATTEST_mst;
 
-typedef const struct TPMS_AUTH_COMMAND_mst
+typedef const struct MSSIMS_AUTH_COMMAND_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[12];
-} TPMS_AUTH_COMMAND_mst;
+} MSSIMS_AUTH_COMMAND_mst;
 
-typedef const struct TPMS_AUTH_RESPONSE_mst
+typedef const struct MSSIMS_AUTH_RESPONSE_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[9];
-} TPMS_AUTH_RESPONSE_mst;
+} MSSIMS_AUTH_RESPONSE_mst;
 
-typedef const struct TPMI_TDES_KEY_BITS_mst
+typedef const struct MSSIMI_TDES_KEY_BITS_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT8  entries;
     UINT32 values[1];
-} TPMI_TDES_KEY_BITS_mst;
+} MSSIMI_TDES_KEY_BITS_mst;
 
-typedef const struct TPMI_AES_KEY_BITS_mst
+typedef const struct MSSIMI_AES_KEY_BITS_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT8  entries;
     UINT32 values[3];
-} TPMI_AES_KEY_BITS_mst;
+} MSSIMI_AES_KEY_BITS_mst;
 
-typedef const struct TPMI_SM4_KEY_BITS_mst
+typedef const struct MSSIMI_SM4_KEY_BITS_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT8  entries;
     UINT32 values[1];
-} TPMI_SM4_KEY_BITS_mst;
+} MSSIMI_SM4_KEY_BITS_mst;
 
-typedef const struct TPMI_CAMELLIA_KEY_BITS_mst
+typedef const struct MSSIMI_CAMELLIA_KEY_BITS_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT8  entries;
     UINT32 values[3];
-} TPMI_CAMELLIA_KEY_BITS_mst;
+} MSSIMI_CAMELLIA_KEY_BITS_mst;
 
-typedef struct TPMU_SYM_KEY_BITS_mst
+typedef struct MSSIMU_SYM_KEY_BITS_mst
 {
     BYTE   countOfselectors;
     BYTE   modifiers;
     UINT16 offsetOfUnmarshalTypes;
     UINT32 selectors[6];
     UINT16 marshalingTypes[6];
-} TPMU_SYM_KEY_BITS_mst;
+} MSSIMU_SYM_KEY_BITS_mst;
 
-typedef struct TPMU_SYM_MODE_mst
+typedef struct MSSIMU_SYM_MODE_mst
 {
     BYTE   countOfselectors;
     BYTE   modifiers;
     UINT16 offsetOfUnmarshalTypes;
     UINT32 selectors[6];
     UINT16 marshalingTypes[6];
-} TPMU_SYM_MODE_mst;
+} MSSIMU_SYM_MODE_mst;
 
-typedef const struct TPMT_SYM_DEF_mst
+typedef const struct MSSIMT_SYM_DEF_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[9];
-} TPMT_SYM_DEF_mst;
+} MSSIMT_SYM_DEF_mst;
 
-typedef const struct TPMT_SYM_DEF_OBJECT_mst
+typedef const struct MSSIMT_SYM_DEF_OBJECT_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[9];
-} TPMT_SYM_DEF_OBJECT_mst;
+} MSSIMT_SYM_DEF_OBJECT_mst;
 
-typedef const struct TPMS_SYMCIPHER_PARMS_mst
+typedef const struct MSSIMS_SYMCIPHER_PARMS_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[3];
-} TPMS_SYMCIPHER_PARMS_mst;
+} MSSIMS_SYMCIPHER_PARMS_mst;
 
-typedef const struct TPMS_DERIVE_mst
+typedef const struct MSSIMS_DERIVE_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMS_DERIVE_mst;
+} MSSIMS_DERIVE_mst;
 
-typedef const struct TPMS_SENSITIVE_CREATE_mst
+typedef const struct MSSIMS_SENSITIVE_CREATE_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMS_SENSITIVE_CREATE_mst;
+} MSSIMS_SENSITIVE_CREATE_mst;
 
-typedef const struct TPMS_SCHEME_HASH_mst
+typedef const struct MSSIMS_SCHEME_HASH_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[3];
-} TPMS_SCHEME_HASH_mst;
+} MSSIMS_SCHEME_HASH_mst;
 
-typedef const struct TPMS_SCHEME_ECDAA_mst
+typedef const struct MSSIMS_SCHEME_ECDAA_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMS_SCHEME_ECDAA_mst;
+} MSSIMS_SCHEME_ECDAA_mst;
 
-typedef const struct TPMI_ALG_KEYEDHASH_SCHEME_mst
+typedef const struct MSSIMI_ALG_KEYEDHASH_SCHEME_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[4];
-} TPMI_ALG_KEYEDHASH_SCHEME_mst;
+} MSSIMI_ALG_KEYEDHASH_SCHEME_mst;
 
-typedef const struct TPMS_SCHEME_XOR_mst
+typedef const struct MSSIMS_SCHEME_XOR_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMS_SCHEME_XOR_mst;
+} MSSIMS_SCHEME_XOR_mst;
 
-typedef struct TPMU_SCHEME_KEYEDHASH_mst
+typedef struct MSSIMU_SCHEME_KEYEDHASH_mst
 {
     BYTE   countOfselectors;
     BYTE   modifiers;
     UINT16 offsetOfUnmarshalTypes;
     UINT32 selectors[3];
     UINT16 marshalingTypes[3];
-} TPMU_SCHEME_KEYEDHASH_mst;
+} MSSIMU_SCHEME_KEYEDHASH_mst;
 
-typedef const struct TPMT_KEYEDHASH_SCHEME_mst
+typedef const struct MSSIMT_KEYEDHASH_SCHEME_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMT_KEYEDHASH_SCHEME_mst;
+} MSSIMT_KEYEDHASH_SCHEME_mst;
 
-typedef struct TPMU_SIG_SCHEME_mst
+typedef struct MSSIMU_SIG_SCHEME_mst
 {
     BYTE   countOfselectors;
     BYTE   modifiers;
     UINT16 offsetOfUnmarshalTypes;
     UINT32 selectors[8];
     UINT16 marshalingTypes[8];
-} TPMU_SIG_SCHEME_mst;
+} MSSIMU_SIG_SCHEME_mst;
 
-typedef const struct TPMT_SIG_SCHEME_mst
+typedef const struct MSSIMT_SIG_SCHEME_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMT_SIG_SCHEME_mst;
+} MSSIMT_SIG_SCHEME_mst;
 
-typedef struct TPMU_KDF_SCHEME_mst
+typedef struct MSSIMU_KDF_SCHEME_mst
 {
     BYTE   countOfselectors;
     BYTE   modifiers;
     UINT16 offsetOfUnmarshalTypes;
     UINT32 selectors[5];
     UINT16 marshalingTypes[5];
-} TPMU_KDF_SCHEME_mst;
+} MSSIMU_KDF_SCHEME_mst;
 
-typedef const struct TPMT_KDF_SCHEME_mst
+typedef const struct MSSIMT_KDF_SCHEME_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMT_KDF_SCHEME_mst;
+} MSSIMT_KDF_SCHEME_mst;
 
-typedef const struct TPMI_ALG_ASYM_SCHEME_mst
+typedef const struct MSSIMI_ALG_ASYM_SCHEME_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[4];
-} TPMI_ALG_ASYM_SCHEME_mst;
+} MSSIMI_ALG_ASYM_SCHEME_mst;
 
-typedef struct TPMU_ASYM_SCHEME_mst
+typedef struct MSSIMU_ASYM_SCHEME_mst
 {
     BYTE   countOfselectors;
     BYTE   modifiers;
     UINT16 offsetOfUnmarshalTypes;
     UINT32 selectors[11];
     UINT16 marshalingTypes[11];
-} TPMU_ASYM_SCHEME_mst;
+} MSSIMU_ASYM_SCHEME_mst;
 
-typedef const struct TPMI_ALG_RSA_SCHEME_mst
+typedef const struct MSSIMI_ALG_RSA_SCHEME_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[4];
-} TPMI_ALG_RSA_SCHEME_mst;
+} MSSIMI_ALG_RSA_SCHEME_mst;
 
-typedef const struct TPMT_RSA_SCHEME_mst
+typedef const struct MSSIMT_RSA_SCHEME_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMT_RSA_SCHEME_mst;
+} MSSIMT_RSA_SCHEME_mst;
 
-typedef const struct TPMI_ALG_RSA_DECRYPT_mst
+typedef const struct MSSIMI_ALG_RSA_DECRYPT_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[4];
-} TPMI_ALG_RSA_DECRYPT_mst;
+} MSSIMI_ALG_RSA_DECRYPT_mst;
 
-typedef const struct TPMT_RSA_DECRYPT_mst
+typedef const struct MSSIMT_RSA_DECRYPT_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMT_RSA_DECRYPT_mst;
+} MSSIMT_RSA_DECRYPT_mst;
 
-typedef const struct TPMI_RSA_KEY_BITS_mst
+typedef const struct MSSIMI_RSA_KEY_BITS_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT8  entries;
     UINT32 values[3];
-} TPMI_RSA_KEY_BITS_mst;
+} MSSIMI_RSA_KEY_BITS_mst;
 
-typedef const struct TPMS_ECC_POINT_mst
+typedef const struct MSSIMS_ECC_POINT_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMS_ECC_POINT_mst;
+} MSSIMS_ECC_POINT_mst;
 
-typedef const struct TPMI_ALG_ECC_SCHEME_mst
+typedef const struct MSSIMI_ALG_ECC_SCHEME_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[4];
-} TPMI_ALG_ECC_SCHEME_mst;
+} MSSIMI_ALG_ECC_SCHEME_mst;
 
-typedef const struct TPMI_ECC_CURVE_mst
+typedef const struct MSSIMI_ECC_CURVE_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[3];
-} TPMI_ECC_CURVE_mst;
+} MSSIMI_ECC_CURVE_mst;
 
-typedef const struct TPMT_ECC_SCHEME_mst
+typedef const struct MSSIMT_ECC_SCHEME_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMT_ECC_SCHEME_mst;
+} MSSIMT_ECC_SCHEME_mst;
 
-typedef const struct TPMS_ALGORITHM_DETAIL_ECC_mst
+typedef const struct MSSIMS_ALGORITHM_DETAIL_ECC_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[33];
-} TPMS_ALGORITHM_DETAIL_ECC_mst;
+} MSSIMS_ALGORITHM_DETAIL_ECC_mst;
 
-typedef const struct TPMS_SIGNATURE_RSA_mst
+typedef const struct MSSIMS_SIGNATURE_RSA_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMS_SIGNATURE_RSA_mst;
+} MSSIMS_SIGNATURE_RSA_mst;
 
-typedef const struct TPMS_SIGNATURE_ECC_mst
+typedef const struct MSSIMS_SIGNATURE_ECC_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[9];
-} TPMS_SIGNATURE_ECC_mst;
+} MSSIMS_SIGNATURE_ECC_mst;
 
-typedef struct TPMU_SIGNATURE_mst
+typedef struct MSSIMU_SIGNATURE_mst
 {
     BYTE   countOfselectors;
     BYTE   modifiers;
     UINT16 offsetOfUnmarshalTypes;
     UINT32 selectors[8];
     UINT16 marshalingTypes[8];
-} TPMU_SIGNATURE_mst;
+} MSSIMU_SIGNATURE_mst;
 
-typedef const struct TPMT_SIGNATURE_mst
+typedef const struct MSSIMT_SIGNATURE_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMT_SIGNATURE_mst;
+} MSSIMT_SIGNATURE_mst;
 
-typedef struct TPMU_ENCRYPTED_SECRET_mst
+typedef struct MSSIMU_ENCRYPTED_SECRET_mst
 {
     BYTE   countOfselectors;
     BYTE   modifiers;
     UINT16 offsetOfUnmarshalTypes;
     UINT32 selectors[4];
     UINT16 marshalingTypes[4];
-} TPMU_ENCRYPTED_SECRET_mst;
+} MSSIMU_ENCRYPTED_SECRET_mst;
 
-typedef const struct TPMI_ALG_PUBLIC_mst
+typedef const struct MSSIMI_ALG_PUBLIC_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT32 values[4];
-} TPMI_ALG_PUBLIC_mst;
+} MSSIMI_ALG_PUBLIC_mst;
 
-typedef struct TPMU_PUBLIC_ID_mst
+typedef struct MSSIMU_PUBLIC_ID_mst
 {
     BYTE   countOfselectors;
     BYTE   modifiers;
     UINT16 offsetOfUnmarshalTypes;
     UINT32 selectors[4];
     UINT16 marshalingTypes[4];
-} TPMU_PUBLIC_ID_mst;
+} MSSIMU_PUBLIC_ID_mst;
 
-typedef const struct TPMS_KEYEDHASH_PARMS_mst
+typedef const struct MSSIMS_KEYEDHASH_PARMS_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[3];
-} TPMS_KEYEDHASH_PARMS_mst;
+} MSSIMS_KEYEDHASH_PARMS_mst;
 
-typedef const struct TPMS_RSA_PARMS_mst
+typedef const struct MSSIMS_RSA_PARMS_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[12];
-} TPMS_RSA_PARMS_mst;
+} MSSIMS_RSA_PARMS_mst;
 
-typedef const struct TPMS_ECC_PARMS_mst
+typedef const struct MSSIMS_ECC_PARMS_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[12];
-} TPMS_ECC_PARMS_mst;
+} MSSIMS_ECC_PARMS_mst;
 
-typedef struct TPMU_PUBLIC_PARMS_mst
+typedef struct MSSIMU_PUBLIC_PARMS_mst
 {
     BYTE   countOfselectors;
     BYTE   modifiers;
     UINT16 offsetOfUnmarshalTypes;
     UINT32 selectors[4];
     UINT16 marshalingTypes[4];
-} TPMU_PUBLIC_PARMS_mst;
+} MSSIMU_PUBLIC_PARMS_mst;
 
-typedef const struct TPMT_PUBLIC_PARMS_mst
+typedef const struct MSSIMT_PUBLIC_PARMS_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMT_PUBLIC_PARMS_mst;
+} MSSIMT_PUBLIC_PARMS_mst;
 
-typedef const struct TPMT_PUBLIC_mst
+typedef const struct MSSIMT_PUBLIC_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[18];
-} TPMT_PUBLIC_mst;
+} MSSIMT_PUBLIC_mst;
 
-typedef struct TPMU_SENSITIVE_COMPOSITE_mst
+typedef struct MSSIMU_SENSITIVE_COMPOSITE_mst
 {
     BYTE   countOfselectors;
     BYTE   modifiers;
     UINT16 offsetOfUnmarshalTypes;
     UINT32 selectors[4];
     UINT16 marshalingTypes[4];
-} TPMU_SENSITIVE_COMPOSITE_mst;
+} MSSIMU_SENSITIVE_COMPOSITE_mst;
 
-typedef const struct TPMT_SENSITIVE_mst
+typedef const struct MSSIMT_SENSITIVE_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[12];
-} TPMT_SENSITIVE_mst;
+} MSSIMT_SENSITIVE_mst;
 
-typedef const struct TPMS_NV_PIN_COUNTER_PARAMETERS_mst
+typedef const struct MSSIMS_NV_PIN_COUNTER_PARAMETERS_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMS_NV_PIN_COUNTER_PARAMETERS_mst;
+} MSSIMS_NV_PIN_COUNTER_PARAMETERS_mst;
 
-typedef const struct TPMS_NV_PUBLIC_mst
+typedef const struct MSSIMS_NV_PUBLIC_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[15];
-} TPMS_NV_PUBLIC_mst;
+} MSSIMS_NV_PUBLIC_mst;
 
-typedef const struct TPMS_CONTEXT_DATA_mst
+typedef const struct MSSIMS_CONTEXT_DATA_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMS_CONTEXT_DATA_mst;
+} MSSIMS_CONTEXT_DATA_mst;
 
-typedef const struct TPMS_CONTEXT_mst
+typedef const struct MSSIMS_CONTEXT_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[12];
-} TPMS_CONTEXT_mst;
+} MSSIMS_CONTEXT_mst;
 
-typedef const struct TPMS_CREATION_DATA_mst
+typedef const struct MSSIMS_CREATION_DATA_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[21];
-} TPMS_CREATION_DATA_mst;
+} MSSIMS_CREATION_DATA_mst;
 
-typedef const struct TPM_AT_mst
+typedef const struct MSSIM_AT_mst
 {
     UINT8  marshalType;
     UINT8  modifiers;
     UINT8  errorCode;
     UINT8  entries;
     UINT32 values[4];
-} TPM_AT_mst;
+} MSSIM_AT_mst;
 
-typedef const struct TPMS_AC_OUTPUT_mst
+typedef const struct MSSIMS_AC_OUTPUT_mst
 {
     UINT8  marshalType;
     UINT8  elements;
     UINT16 values[6];
-} TPMS_AC_OUTPUT_mst;
+} MSSIMS_AC_OUTPUT_mst;
 
 typedef const struct Type02_mst
 {
@@ -1447,184 +1447,184 @@ typedef const struct MarshalData_st
     UintMarshal_mst                    INT32_DATA;
     UintMarshal_mst                    INT64_DATA;
     UintMarshal_mst                    UINT0_DATA;
-    TPM_ECC_CURVE_mst                  TPM_ECC_CURVE_DATA;
-    TPM_CLOCK_ADJUST_mst               TPM_CLOCK_ADJUST_DATA;
-    TPM_EO_mst                         TPM_EO_DATA;
-    TPM_SU_mst                         TPM_SU_DATA;
-    TPM_SE_mst                         TPM_SE_DATA;
-    TPM_CAP_mst                        TPM_CAP_DATA;
-    AttributesMarshal_mst              TPMA_ALGORITHM_DATA;
-    AttributesMarshal_mst              TPMA_OBJECT_DATA;
-    AttributesMarshal_mst              TPMA_SESSION_DATA;
-    AttributesMarshal_mst              TPMA_ACT_DATA;
-    TPMI_YES_NO_mst                    TPMI_YES_NO_DATA;
-    TPMI_DH_OBJECT_mst                 TPMI_DH_OBJECT_DATA;
-    TPMI_DH_PARENT_mst                 TPMI_DH_PARENT_DATA;
-    TPMI_DH_PERSISTENT_mst             TPMI_DH_PERSISTENT_DATA;
-    TPMI_DH_ENTITY_mst                 TPMI_DH_ENTITY_DATA;
-    TPMI_DH_PCR_mst                    TPMI_DH_PCR_DATA;
-    TPMI_SH_AUTH_SESSION_mst           TPMI_SH_AUTH_SESSION_DATA;
-    TPMI_SH_HMAC_mst                   TPMI_SH_HMAC_DATA;
-    TPMI_SH_POLICY_mst                 TPMI_SH_POLICY_DATA;
-    TPMI_DH_CONTEXT_mst                TPMI_DH_CONTEXT_DATA;
-    TPMI_DH_SAVED_mst                  TPMI_DH_SAVED_DATA;
-    TPMI_RH_HIERARCHY_mst              TPMI_RH_HIERARCHY_DATA;
-    TPMI_RH_ENABLES_mst                TPMI_RH_ENABLES_DATA;
-    TPMI_RH_HIERARCHY_AUTH_mst         TPMI_RH_HIERARCHY_AUTH_DATA;
-    TPMI_RH_HIERARCHY_POLICY_mst       TPMI_RH_HIERARCHY_POLICY_DATA;
-    TPMI_RH_PLATFORM_mst               TPMI_RH_PLATFORM_DATA;
-    TPMI_RH_OWNER_mst                  TPMI_RH_OWNER_DATA;
-    TPMI_RH_ENDORSEMENT_mst            TPMI_RH_ENDORSEMENT_DATA;
-    TPMI_RH_PROVISION_mst              TPMI_RH_PROVISION_DATA;
-    TPMI_RH_CLEAR_mst                  TPMI_RH_CLEAR_DATA;
-    TPMI_RH_NV_AUTH_mst                TPMI_RH_NV_AUTH_DATA;
-    TPMI_RH_LOCKOUT_mst                TPMI_RH_LOCKOUT_DATA;
-    TPMI_RH_NV_INDEX_mst               TPMI_RH_NV_INDEX_DATA;
-    TPMI_RH_AC_mst                     TPMI_RH_AC_DATA;
-    TPMI_RH_ACT_mst                    TPMI_RH_ACT_DATA;
-    TPMI_ALG_HASH_mst                  TPMI_ALG_HASH_DATA;
-    TPMI_ALG_ASYM_mst                  TPMI_ALG_ASYM_DATA;
-    TPMI_ALG_SYM_mst                   TPMI_ALG_SYM_DATA;
-    TPMI_ALG_SYM_OBJECT_mst            TPMI_ALG_SYM_OBJECT_DATA;
-    TPMI_ALG_SYM_MODE_mst              TPMI_ALG_SYM_MODE_DATA;
-    TPMI_ALG_KDF_mst                   TPMI_ALG_KDF_DATA;
-    TPMI_ALG_SIG_SCHEME_mst            TPMI_ALG_SIG_SCHEME_DATA;
-    TPMI_ECC_KEY_EXCHANGE_mst          TPMI_ECC_KEY_EXCHANGE_DATA;
-    TPMI_ST_COMMAND_TAG_mst            TPMI_ST_COMMAND_TAG_DATA;
-    TPMI_ALG_MAC_SCHEME_mst            TPMI_ALG_MAC_SCHEME_DATA;
-    TPMI_ALG_CIPHER_MODE_mst           TPMI_ALG_CIPHER_MODE_DATA;
-    TPMS_EMPTY_mst                     TPMS_EMPTY_DATA;
-    TPMS_ALGORITHM_DESCRIPTION_mst     TPMS_ALGORITHM_DESCRIPTION_DATA;
-    TPMU_HA_mst                        TPMU_HA_DATA;
-    TPMT_HA_mst                        TPMT_HA_DATA;
-    Tpm2bMarshal_mst                   TPM2B_DIGEST_DATA;
-    Tpm2bMarshal_mst                   TPM2B_DATA_DATA;
-    Tpm2bMarshal_mst                   TPM2B_EVENT_DATA;
-    Tpm2bMarshal_mst                   TPM2B_MAX_BUFFER_DATA;
-    Tpm2bMarshal_mst                   TPM2B_MAX_NV_BUFFER_DATA;
-    Tpm2bMarshal_mst                   TPM2B_TIMEOUT_DATA;
-    Tpm2bMarshal_mst                   TPM2B_IV_DATA;
+    MSSIM_ECC_CURVE_mst                  MSSIM_ECC_CURVE_DATA;
+    MSSIM_CLOCK_ADJUST_mst               MSSIM_CLOCK_ADJUST_DATA;
+    MSSIM_EO_mst                         MSSIM_EO_DATA;
+    MSSIM_SU_mst                         MSSIM_SU_DATA;
+    MSSIM_SE_mst                         MSSIM_SE_DATA;
+    MSSIM_CAP_mst                        MSSIM_CAP_DATA;
+    AttributesMarshal_mst              MSSIMA_ALGORITHM_DATA;
+    AttributesMarshal_mst              MSSIMA_OBJECT_DATA;
+    AttributesMarshal_mst              MSSIMA_SESSION_DATA;
+    AttributesMarshal_mst              MSSIMA_ACT_DATA;
+    MSSIMI_YES_NO_mst                    MSSIMI_YES_NO_DATA;
+    MSSIMI_DH_OBJECT_mst                 MSSIMI_DH_OBJECT_DATA;
+    MSSIMI_DH_PARENT_mst                 MSSIMI_DH_PARENT_DATA;
+    MSSIMI_DH_PERSISTENT_mst             MSSIMI_DH_PERSISTENT_DATA;
+    MSSIMI_DH_ENTITY_mst                 MSSIMI_DH_ENTITY_DATA;
+    MSSIMI_DH_PCR_mst                    MSSIMI_DH_PCR_DATA;
+    MSSIMI_SH_AUTH_SESSION_mst           MSSIMI_SH_AUTH_SESSION_DATA;
+    MSSIMI_SH_HMAC_mst                   MSSIMI_SH_HMAC_DATA;
+    MSSIMI_SH_POLICY_mst                 MSSIMI_SH_POLICY_DATA;
+    MSSIMI_DH_CONTEXT_mst                MSSIMI_DH_CONTEXT_DATA;
+    MSSIMI_DH_SAVED_mst                  MSSIMI_DH_SAVED_DATA;
+    MSSIMI_RH_HIERARCHY_mst              MSSIMI_RH_HIERARCHY_DATA;
+    MSSIMI_RH_ENABLES_mst                MSSIMI_RH_ENABLES_DATA;
+    MSSIMI_RH_HIERARCHY_AUTH_mst         MSSIMI_RH_HIERARCHY_AUTH_DATA;
+    MSSIMI_RH_HIERARCHY_POLICY_mst       MSSIMI_RH_HIERARCHY_POLICY_DATA;
+    MSSIMI_RH_PLATFORM_mst               MSSIMI_RH_PLATFORM_DATA;
+    MSSIMI_RH_OWNER_mst                  MSSIMI_RH_OWNER_DATA;
+    MSSIMI_RH_ENDORSEMENT_mst            MSSIMI_RH_ENDORSEMENT_DATA;
+    MSSIMI_RH_PROVISION_mst              MSSIMI_RH_PROVISION_DATA;
+    MSSIMI_RH_CLEAR_mst                  MSSIMI_RH_CLEAR_DATA;
+    MSSIMI_RH_NV_AUTH_mst                MSSIMI_RH_NV_AUTH_DATA;
+    MSSIMI_RH_LOCKOUT_mst                MSSIMI_RH_LOCKOUT_DATA;
+    MSSIMI_RH_NV_INDEX_mst               MSSIMI_RH_NV_INDEX_DATA;
+    MSSIMI_RH_AC_mst                     MSSIMI_RH_AC_DATA;
+    MSSIMI_RH_ACT_mst                    MSSIMI_RH_ACT_DATA;
+    MSSIMI_ALG_HASH_mst                  MSSIMI_ALG_HASH_DATA;
+    MSSIMI_ALG_ASYM_mst                  MSSIMI_ALG_ASYM_DATA;
+    MSSIMI_ALG_SYM_mst                   MSSIMI_ALG_SYM_DATA;
+    MSSIMI_ALG_SYM_OBJECT_mst            MSSIMI_ALG_SYM_OBJECT_DATA;
+    MSSIMI_ALG_SYM_MODE_mst              MSSIMI_ALG_SYM_MODE_DATA;
+    MSSIMI_ALG_KDF_mst                   MSSIMI_ALG_KDF_DATA;
+    MSSIMI_ALG_SIG_SCHEME_mst            MSSIMI_ALG_SIG_SCHEME_DATA;
+    MSSIMI_ECC_KEY_EXCHANGE_mst          MSSIMI_ECC_KEY_EXCHANGE_DATA;
+    MSSIMI_ST_COMMAND_TAG_mst            MSSIMI_ST_COMMAND_TAG_DATA;
+    MSSIMI_ALG_MAC_SCHEME_mst            MSSIMI_ALG_MAC_SCHEME_DATA;
+    MSSIMI_ALG_CIPHER_MODE_mst           MSSIMI_ALG_CIPHER_MODE_DATA;
+    MSSIMS_EMPTY_mst                     MSSIMS_EMPTY_DATA;
+    MSSIMS_ALGORITHM_DESCRIPTION_mst     MSSIMS_ALGORITHM_DESCRIPTION_DATA;
+    MSSIMU_HA_mst                        MSSIMU_HA_DATA;
+    MSSIMT_HA_mst                        MSSIMT_HA_DATA;
+    Tpm2bMarshal_mst                   MSSIM2B_DIGEST_DATA;
+    Tpm2bMarshal_mst                   MSSIM2B_DATA_DATA;
+    Tpm2bMarshal_mst                   MSSIM2B_EVENT_DATA;
+    Tpm2bMarshal_mst                   MSSIM2B_MAX_BUFFER_DATA;
+    Tpm2bMarshal_mst                   MSSIM2B_MAX_NV_BUFFER_DATA;
+    Tpm2bMarshal_mst                   MSSIM2B_TIMEOUT_DATA;
+    Tpm2bMarshal_mst                   MSSIM2B_IV_DATA;
     NullUnionMarshal_mst               NULL_UNION_DATA;
-    Tpm2bMarshal_mst                   TPM2B_NAME_DATA;
-    TPMS_PCR_SELECT_mst                TPMS_PCR_SELECT_DATA;
-    TPMS_PCR_SELECTION_mst             TPMS_PCR_SELECTION_DATA;
-    TPMT_TK_CREATION_mst               TPMT_TK_CREATION_DATA;
-    TPMT_TK_VERIFIED_mst               TPMT_TK_VERIFIED_DATA;
-    TPMT_TK_AUTH_mst                   TPMT_TK_AUTH_DATA;
-    TPMT_TK_HASHCHECK_mst              TPMT_TK_HASHCHECK_DATA;
-    TPMS_ALG_PROPERTY_mst              TPMS_ALG_PROPERTY_DATA;
-    TPMS_TAGGED_PROPERTY_mst           TPMS_TAGGED_PROPERTY_DATA;
-    TPMS_TAGGED_PCR_SELECT_mst         TPMS_TAGGED_PCR_SELECT_DATA;
-    TPMS_TAGGED_POLICY_mst             TPMS_TAGGED_POLICY_DATA;
-    TPMS_ACT_DATA_mst                  TPMS_ACT_DATA_DATA;
-    ListMarshal_mst                    TPML_CC_DATA;
-    ListMarshal_mst                    TPML_CCA_DATA;
-    ListMarshal_mst                    TPML_ALG_DATA;
-    ListMarshal_mst                    TPML_HANDLE_DATA;
-    ListMarshal_mst                    TPML_DIGEST_DATA;
-    ListMarshal_mst                    TPML_DIGEST_VALUES_DATA;
-    ListMarshal_mst                    TPML_PCR_SELECTION_DATA;
-    ListMarshal_mst                    TPML_ALG_PROPERTY_DATA;
-    ListMarshal_mst                    TPML_TAGGED_TPM_PROPERTY_DATA;
-    ListMarshal_mst                    TPML_TAGGED_PCR_PROPERTY_DATA;
-    ListMarshal_mst                    TPML_ECC_CURVE_DATA;
-    ListMarshal_mst                    TPML_TAGGED_POLICY_DATA;
-    ListMarshal_mst                    TPML_ACT_DATA_DATA;
-    TPMU_CAPABILITIES_mst              TPMU_CAPABILITIES_DATA;
-    TPMS_CAPABILITY_DATA_mst           TPMS_CAPABILITY_DATA_DATA;
-    TPMS_CLOCK_INFO_mst                TPMS_CLOCK_INFO_DATA;
-    TPMS_TIME_INFO_mst                 TPMS_TIME_INFO_DATA;
-    TPMS_TIME_ATTEST_INFO_mst          TPMS_TIME_ATTEST_INFO_DATA;
-    TPMS_CERTIFY_INFO_mst              TPMS_CERTIFY_INFO_DATA;
-    TPMS_QUOTE_INFO_mst                TPMS_QUOTE_INFO_DATA;
-    TPMS_COMMAND_AUDIT_INFO_mst        TPMS_COMMAND_AUDIT_INFO_DATA;
-    TPMS_SESSION_AUDIT_INFO_mst        TPMS_SESSION_AUDIT_INFO_DATA;
-    TPMS_CREATION_INFO_mst             TPMS_CREATION_INFO_DATA;
-    TPMS_NV_CERTIFY_INFO_mst           TPMS_NV_CERTIFY_INFO_DATA;
-    TPMS_NV_DIGEST_CERTIFY_INFO_mst    TPMS_NV_DIGEST_CERTIFY_INFO_DATA;
-    TPMI_ST_ATTEST_mst                 TPMI_ST_ATTEST_DATA;
-    TPMU_ATTEST_mst                    TPMU_ATTEST_DATA;
-    TPMS_ATTEST_mst                    TPMS_ATTEST_DATA;
-    Tpm2bMarshal_mst                   TPM2B_ATTEST_DATA;
-    TPMS_AUTH_COMMAND_mst              TPMS_AUTH_COMMAND_DATA;
-    TPMS_AUTH_RESPONSE_mst             TPMS_AUTH_RESPONSE_DATA;
-    TPMI_TDES_KEY_BITS_mst             TPMI_TDES_KEY_BITS_DATA;
-    TPMI_AES_KEY_BITS_mst              TPMI_AES_KEY_BITS_DATA;
-    TPMI_SM4_KEY_BITS_mst              TPMI_SM4_KEY_BITS_DATA;
-    TPMI_CAMELLIA_KEY_BITS_mst         TPMI_CAMELLIA_KEY_BITS_DATA;
-    TPMU_SYM_KEY_BITS_mst              TPMU_SYM_KEY_BITS_DATA;
-    TPMU_SYM_MODE_mst                  TPMU_SYM_MODE_DATA;
-    TPMT_SYM_DEF_mst                   TPMT_SYM_DEF_DATA;
-    TPMT_SYM_DEF_OBJECT_mst            TPMT_SYM_DEF_OBJECT_DATA;
-    Tpm2bMarshal_mst                   TPM2B_SYM_KEY_DATA;
-    TPMS_SYMCIPHER_PARMS_mst           TPMS_SYMCIPHER_PARMS_DATA;
-    Tpm2bMarshal_mst                   TPM2B_LABEL_DATA;
-    TPMS_DERIVE_mst                    TPMS_DERIVE_DATA;
-    Tpm2bMarshal_mst                   TPM2B_DERIVE_DATA;
-    Tpm2bMarshal_mst                   TPM2B_SENSITIVE_DATA_DATA;
-    TPMS_SENSITIVE_CREATE_mst          TPMS_SENSITIVE_CREATE_DATA;
-    Tpm2bsMarshal_mst                  TPM2B_SENSITIVE_CREATE_DATA;
-    TPMS_SCHEME_HASH_mst               TPMS_SCHEME_HASH_DATA;
-    TPMS_SCHEME_ECDAA_mst              TPMS_SCHEME_ECDAA_DATA;
-    TPMI_ALG_KEYEDHASH_SCHEME_mst      TPMI_ALG_KEYEDHASH_SCHEME_DATA;
-    TPMS_SCHEME_XOR_mst                TPMS_SCHEME_XOR_DATA;
-    TPMU_SCHEME_KEYEDHASH_mst          TPMU_SCHEME_KEYEDHASH_DATA;
-    TPMT_KEYEDHASH_SCHEME_mst          TPMT_KEYEDHASH_SCHEME_DATA;
-    TPMU_SIG_SCHEME_mst                TPMU_SIG_SCHEME_DATA;
-    TPMT_SIG_SCHEME_mst                TPMT_SIG_SCHEME_DATA;
-    TPMU_KDF_SCHEME_mst                TPMU_KDF_SCHEME_DATA;
-    TPMT_KDF_SCHEME_mst                TPMT_KDF_SCHEME_DATA;
-    TPMI_ALG_ASYM_SCHEME_mst           TPMI_ALG_ASYM_SCHEME_DATA;
-    TPMU_ASYM_SCHEME_mst               TPMU_ASYM_SCHEME_DATA;
-    TPMI_ALG_RSA_SCHEME_mst            TPMI_ALG_RSA_SCHEME_DATA;
-    TPMT_RSA_SCHEME_mst                TPMT_RSA_SCHEME_DATA;
-    TPMI_ALG_RSA_DECRYPT_mst           TPMI_ALG_RSA_DECRYPT_DATA;
-    TPMT_RSA_DECRYPT_mst               TPMT_RSA_DECRYPT_DATA;
-    Tpm2bMarshal_mst                   TPM2B_PUBLIC_KEY_RSA_DATA;
-    TPMI_RSA_KEY_BITS_mst              TPMI_RSA_KEY_BITS_DATA;
-    Tpm2bMarshal_mst                   TPM2B_PRIVATE_KEY_RSA_DATA;
-    Tpm2bMarshal_mst                   TPM2B_ECC_PARAMETER_DATA;
-    TPMS_ECC_POINT_mst                 TPMS_ECC_POINT_DATA;
-    Tpm2bsMarshal_mst                  TPM2B_ECC_POINT_DATA;
-    TPMI_ALG_ECC_SCHEME_mst            TPMI_ALG_ECC_SCHEME_DATA;
-    TPMI_ECC_CURVE_mst                 TPMI_ECC_CURVE_DATA;
-    TPMT_ECC_SCHEME_mst                TPMT_ECC_SCHEME_DATA;
-    TPMS_ALGORITHM_DETAIL_ECC_mst      TPMS_ALGORITHM_DETAIL_ECC_DATA;
-    TPMS_SIGNATURE_RSA_mst             TPMS_SIGNATURE_RSA_DATA;
-    TPMS_SIGNATURE_ECC_mst             TPMS_SIGNATURE_ECC_DATA;
-    TPMU_SIGNATURE_mst                 TPMU_SIGNATURE_DATA;
-    TPMT_SIGNATURE_mst                 TPMT_SIGNATURE_DATA;
-    TPMU_ENCRYPTED_SECRET_mst          TPMU_ENCRYPTED_SECRET_DATA;
-    Tpm2bMarshal_mst                   TPM2B_ENCRYPTED_SECRET_DATA;
-    TPMI_ALG_PUBLIC_mst                TPMI_ALG_PUBLIC_DATA;
-    TPMU_PUBLIC_ID_mst                 TPMU_PUBLIC_ID_DATA;
-    TPMS_KEYEDHASH_PARMS_mst           TPMS_KEYEDHASH_PARMS_DATA;
-    TPMS_RSA_PARMS_mst                 TPMS_RSA_PARMS_DATA;
-    TPMS_ECC_PARMS_mst                 TPMS_ECC_PARMS_DATA;
-    TPMU_PUBLIC_PARMS_mst              TPMU_PUBLIC_PARMS_DATA;
-    TPMT_PUBLIC_PARMS_mst              TPMT_PUBLIC_PARMS_DATA;
-    TPMT_PUBLIC_mst                    TPMT_PUBLIC_DATA;
-    Tpm2bsMarshal_mst                  TPM2B_PUBLIC_DATA;
-    Tpm2bMarshal_mst                   TPM2B_TEMPLATE_DATA;
-    Tpm2bMarshal_mst                   TPM2B_PRIVATE_VENDOR_SPECIFIC_DATA;
-    TPMU_SENSITIVE_COMPOSITE_mst       TPMU_SENSITIVE_COMPOSITE_DATA;
-    TPMT_SENSITIVE_mst                 TPMT_SENSITIVE_DATA;
-    Tpm2bsMarshal_mst                  TPM2B_SENSITIVE_DATA;
-    Tpm2bMarshal_mst                   TPM2B_PRIVATE_DATA;
-    Tpm2bMarshal_mst                   TPM2B_ID_OBJECT_DATA;
-    TPMS_NV_PIN_COUNTER_PARAMETERS_mst TPMS_NV_PIN_COUNTER_PARAMETERS_DATA;
-    AttributesMarshal_mst              TPMA_NV_DATA;
-    TPMS_NV_PUBLIC_mst                 TPMS_NV_PUBLIC_DATA;
-    Tpm2bsMarshal_mst                  TPM2B_NV_PUBLIC_DATA;
-    Tpm2bMarshal_mst                   TPM2B_CONTEXT_SENSITIVE_DATA;
-    TPMS_CONTEXT_DATA_mst              TPMS_CONTEXT_DATA_DATA;
-    Tpm2bMarshal_mst                   TPM2B_CONTEXT_DATA_DATA;
-    TPMS_CONTEXT_mst                   TPMS_CONTEXT_DATA;
-    TPMS_CREATION_DATA_mst             TPMS_CREATION_DATA_DATA;
-    Tpm2bsMarshal_mst                  TPM2B_CREATION_DATA_DATA;
-    TPM_AT_mst                         TPM_AT_DATA;
-    TPMS_AC_OUTPUT_mst                 TPMS_AC_OUTPUT_DATA;
-    ListMarshal_mst                    TPML_AC_CAPABILITIES_DATA;
+    Tpm2bMarshal_mst                   MSSIM2B_NAME_DATA;
+    MSSIMS_PCR_SELECT_mst                MSSIMS_PCR_SELECT_DATA;
+    MSSIMS_PCR_SELECTION_mst             MSSIMS_PCR_SELECTION_DATA;
+    MSSIMT_TK_CREATION_mst               MSSIMT_TK_CREATION_DATA;
+    MSSIMT_TK_VERIFIED_mst               MSSIMT_TK_VERIFIED_DATA;
+    MSSIMT_TK_AUTH_mst                   MSSIMT_TK_AUTH_DATA;
+    MSSIMT_TK_HASHCHECK_mst              MSSIMT_TK_HASHCHECK_DATA;
+    MSSIMS_ALG_PROPERTY_mst              MSSIMS_ALG_PROPERTY_DATA;
+    MSSIMS_TAGGED_PROPERTY_mst           MSSIMS_TAGGED_PROPERTY_DATA;
+    MSSIMS_TAGGED_PCR_SELECT_mst         MSSIMS_TAGGED_PCR_SELECT_DATA;
+    MSSIMS_TAGGED_POLICY_mst             MSSIMS_TAGGED_POLICY_DATA;
+    MSSIMS_ACT_DATA_mst                  MSSIMS_ACT_DATA_DATA;
+    ListMarshal_mst                    MSSIML_CC_DATA;
+    ListMarshal_mst                    MSSIML_CCA_DATA;
+    ListMarshal_mst                    MSSIML_ALG_DATA;
+    ListMarshal_mst                    MSSIML_HANDLE_DATA;
+    ListMarshal_mst                    MSSIML_DIGEST_DATA;
+    ListMarshal_mst                    MSSIML_DIGEST_VALUES_DATA;
+    ListMarshal_mst                    MSSIML_PCR_SELECTION_DATA;
+    ListMarshal_mst                    MSSIML_ALG_PROPERTY_DATA;
+    ListMarshal_mst                    MSSIML_TAGGED_MSSIM_PROPERTY_DATA;
+    ListMarshal_mst                    MSSIML_TAGGED_PCR_PROPERTY_DATA;
+    ListMarshal_mst                    MSSIML_ECC_CURVE_DATA;
+    ListMarshal_mst                    MSSIML_TAGGED_POLICY_DATA;
+    ListMarshal_mst                    MSSIML_ACT_DATA_DATA;
+    MSSIMU_CAPABILITIES_mst              MSSIMU_CAPABILITIES_DATA;
+    MSSIMS_CAPABILITY_DATA_mst           MSSIMS_CAPABILITY_DATA_DATA;
+    MSSIMS_CLOCK_INFO_mst                MSSIMS_CLOCK_INFO_DATA;
+    MSSIMS_TIME_INFO_mst                 MSSIMS_TIME_INFO_DATA;
+    MSSIMS_TIME_ATTEST_INFO_mst          MSSIMS_TIME_ATTEST_INFO_DATA;
+    MSSIMS_CERTIFY_INFO_mst              MSSIMS_CERTIFY_INFO_DATA;
+    MSSIMS_QUOTE_INFO_mst                MSSIMS_QUOTE_INFO_DATA;
+    MSSIMS_COMMAND_AUDIT_INFO_mst        MSSIMS_COMMAND_AUDIT_INFO_DATA;
+    MSSIMS_SESSION_AUDIT_INFO_mst        MSSIMS_SESSION_AUDIT_INFO_DATA;
+    MSSIMS_CREATION_INFO_mst             MSSIMS_CREATION_INFO_DATA;
+    MSSIMS_NV_CERTIFY_INFO_mst           MSSIMS_NV_CERTIFY_INFO_DATA;
+    MSSIMS_NV_DIGEST_CERTIFY_INFO_mst    MSSIMS_NV_DIGEST_CERTIFY_INFO_DATA;
+    MSSIMI_ST_ATTEST_mst                 MSSIMI_ST_ATTEST_DATA;
+    MSSIMU_ATTEST_mst                    MSSIMU_ATTEST_DATA;
+    MSSIMS_ATTEST_mst                    MSSIMS_ATTEST_DATA;
+    Tpm2bMarshal_mst                   MSSIM2B_ATTEST_DATA;
+    MSSIMS_AUTH_COMMAND_mst              MSSIMS_AUTH_COMMAND_DATA;
+    MSSIMS_AUTH_RESPONSE_mst             MSSIMS_AUTH_RESPONSE_DATA;
+    MSSIMI_TDES_KEY_BITS_mst             MSSIMI_TDES_KEY_BITS_DATA;
+    MSSIMI_AES_KEY_BITS_mst              MSSIMI_AES_KEY_BITS_DATA;
+    MSSIMI_SM4_KEY_BITS_mst              MSSIMI_SM4_KEY_BITS_DATA;
+    MSSIMI_CAMELLIA_KEY_BITS_mst         MSSIMI_CAMELLIA_KEY_BITS_DATA;
+    MSSIMU_SYM_KEY_BITS_mst              MSSIMU_SYM_KEY_BITS_DATA;
+    MSSIMU_SYM_MODE_mst                  MSSIMU_SYM_MODE_DATA;
+    MSSIMT_SYM_DEF_mst                   MSSIMT_SYM_DEF_DATA;
+    MSSIMT_SYM_DEF_OBJECT_mst            MSSIMT_SYM_DEF_OBJECT_DATA;
+    Tpm2bMarshal_mst                   MSSIM2B_SYM_KEY_DATA;
+    MSSIMS_SYMCIPHER_PARMS_mst           MSSIMS_SYMCIPHER_PARMS_DATA;
+    Tpm2bMarshal_mst                   MSSIM2B_LABEL_DATA;
+    MSSIMS_DERIVE_mst                    MSSIMS_DERIVE_DATA;
+    Tpm2bMarshal_mst                   MSSIM2B_DERIVE_DATA;
+    Tpm2bMarshal_mst                   MSSIM2B_SENSITIVE_DATA_DATA;
+    MSSIMS_SENSITIVE_CREATE_mst          MSSIMS_SENSITIVE_CREATE_DATA;
+    Tpm2bsMarshal_mst                  MSSIM2B_SENSITIVE_CREATE_DATA;
+    MSSIMS_SCHEME_HASH_mst               MSSIMS_SCHEME_HASH_DATA;
+    MSSIMS_SCHEME_ECDAA_mst              MSSIMS_SCHEME_ECDAA_DATA;
+    MSSIMI_ALG_KEYEDHASH_SCHEME_mst      MSSIMI_ALG_KEYEDHASH_SCHEME_DATA;
+    MSSIMS_SCHEME_XOR_mst                MSSIMS_SCHEME_XOR_DATA;
+    MSSIMU_SCHEME_KEYEDHASH_mst          MSSIMU_SCHEME_KEYEDHASH_DATA;
+    MSSIMT_KEYEDHASH_SCHEME_mst          MSSIMT_KEYEDHASH_SCHEME_DATA;
+    MSSIMU_SIG_SCHEME_mst                MSSIMU_SIG_SCHEME_DATA;
+    MSSIMT_SIG_SCHEME_mst                MSSIMT_SIG_SCHEME_DATA;
+    MSSIMU_KDF_SCHEME_mst                MSSIMU_KDF_SCHEME_DATA;
+    MSSIMT_KDF_SCHEME_mst                MSSIMT_KDF_SCHEME_DATA;
+    MSSIMI_ALG_ASYM_SCHEME_mst           MSSIMI_ALG_ASYM_SCHEME_DATA;
+    MSSIMU_ASYM_SCHEME_mst               MSSIMU_ASYM_SCHEME_DATA;
+    MSSIMI_ALG_RSA_SCHEME_mst            MSSIMI_ALG_RSA_SCHEME_DATA;
+    MSSIMT_RSA_SCHEME_mst                MSSIMT_RSA_SCHEME_DATA;
+    MSSIMI_ALG_RSA_DECRYPT_mst           MSSIMI_ALG_RSA_DECRYPT_DATA;
+    MSSIMT_RSA_DECRYPT_mst               MSSIMT_RSA_DECRYPT_DATA;
+    Tpm2bMarshal_mst                   MSSIM2B_PUBLIC_KEY_RSA_DATA;
+    MSSIMI_RSA_KEY_BITS_mst              MSSIMI_RSA_KEY_BITS_DATA;
+    Tpm2bMarshal_mst                   MSSIM2B_PRIVATE_KEY_RSA_DATA;
+    Tpm2bMarshal_mst                   MSSIM2B_ECC_PARAMETER_DATA;
+    MSSIMS_ECC_POINT_mst                 MSSIMS_ECC_POINT_DATA;
+    Tpm2bsMarshal_mst                  MSSIM2B_ECC_POINT_DATA;
+    MSSIMI_ALG_ECC_SCHEME_mst            MSSIMI_ALG_ECC_SCHEME_DATA;
+    MSSIMI_ECC_CURVE_mst                 MSSIMI_ECC_CURVE_DATA;
+    MSSIMT_ECC_SCHEME_mst                MSSIMT_ECC_SCHEME_DATA;
+    MSSIMS_ALGORITHM_DETAIL_ECC_mst      MSSIMS_ALGORITHM_DETAIL_ECC_DATA;
+    MSSIMS_SIGNATURE_RSA_mst             MSSIMS_SIGNATURE_RSA_DATA;
+    MSSIMS_SIGNATURE_ECC_mst             MSSIMS_SIGNATURE_ECC_DATA;
+    MSSIMU_SIGNATURE_mst                 MSSIMU_SIGNATURE_DATA;
+    MSSIMT_SIGNATURE_mst                 MSSIMT_SIGNATURE_DATA;
+    MSSIMU_ENCRYPTED_SECRET_mst          MSSIMU_ENCRYPTED_SECRET_DATA;
+    Tpm2bMarshal_mst                   MSSIM2B_ENCRYPTED_SECRET_DATA;
+    MSSIMI_ALG_PUBLIC_mst                MSSIMI_ALG_PUBLIC_DATA;
+    MSSIMU_PUBLIC_ID_mst                 MSSIMU_PUBLIC_ID_DATA;
+    MSSIMS_KEYEDHASH_PARMS_mst           MSSIMS_KEYEDHASH_PARMS_DATA;
+    MSSIMS_RSA_PARMS_mst                 MSSIMS_RSA_PARMS_DATA;
+    MSSIMS_ECC_PARMS_mst                 MSSIMS_ECC_PARMS_DATA;
+    MSSIMU_PUBLIC_PARMS_mst              MSSIMU_PUBLIC_PARMS_DATA;
+    MSSIMT_PUBLIC_PARMS_mst              MSSIMT_PUBLIC_PARMS_DATA;
+    MSSIMT_PUBLIC_mst                    MSSIMT_PUBLIC_DATA;
+    Tpm2bsMarshal_mst                  MSSIM2B_PUBLIC_DATA;
+    Tpm2bMarshal_mst                   MSSIM2B_TEMPLATE_DATA;
+    Tpm2bMarshal_mst                   MSSIM2B_PRIVATE_VENDOR_SPECIFIC_DATA;
+    MSSIMU_SENSITIVE_COMPOSITE_mst       MSSIMU_SENSITIVE_COMPOSITE_DATA;
+    MSSIMT_SENSITIVE_mst                 MSSIMT_SENSITIVE_DATA;
+    Tpm2bsMarshal_mst                  MSSIM2B_SENSITIVE_DATA;
+    Tpm2bMarshal_mst                   MSSIM2B_PRIVATE_DATA;
+    Tpm2bMarshal_mst                   MSSIM2B_ID_OBJECT_DATA;
+    MSSIMS_NV_PIN_COUNTER_PARAMETERS_mst MSSIMS_NV_PIN_COUNTER_PARAMETERS_DATA;
+    AttributesMarshal_mst              MSSIMA_NV_DATA;
+    MSSIMS_NV_PUBLIC_mst                 MSSIMS_NV_PUBLIC_DATA;
+    Tpm2bsMarshal_mst                  MSSIM2B_NV_PUBLIC_DATA;
+    Tpm2bMarshal_mst                   MSSIM2B_CONTEXT_SENSITIVE_DATA;
+    MSSIMS_CONTEXT_DATA_mst              MSSIMS_CONTEXT_DATA_DATA;
+    Tpm2bMarshal_mst                   MSSIM2B_CONTEXT_DATA_DATA;
+    MSSIMS_CONTEXT_mst                   MSSIMS_CONTEXT_DATA;
+    MSSIMS_CREATION_DATA_mst             MSSIMS_CREATION_DATA_DATA;
+    Tpm2bsMarshal_mst                  MSSIM2B_CREATION_DATA_DATA;
+    MSSIM_AT_mst                         MSSIM_AT_DATA;
+    MSSIMS_AC_OUTPUT_mst                 MSSIMS_AC_OUTPUT_DATA;
+    ListMarshal_mst                    MSSIML_AC_CAPABILITIES_DATA;
     MinMaxMarshal_mst                  Type00_DATA;
     MinMaxMarshal_mst                  Type01_DATA;
     Type02_mst                         Type02_DATA;

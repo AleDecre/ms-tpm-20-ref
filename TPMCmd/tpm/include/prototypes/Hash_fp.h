@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,26 +45,26 @@
 // Input structure definition
 typedef struct
 {
-    TPM2B_MAX_BUFFER  data;
-    TPMI_ALG_HASH     hashAlg;
-    TPMI_RH_HIERARCHY hierarchy;
+    MSSIM2B_MAX_BUFFER  data;
+    MSSIMI_ALG_HASH     hashAlg;
+    MSSIMI_RH_HIERARCHY hierarchy;
 } Hash_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_DIGEST      outHash;
-    TPMT_TK_HASHCHECK validation;
+    MSSIM2B_DIGEST      outHash;
+    MSSIMT_TK_HASHCHECK validation;
 } Hash_Out;
 
 // Response code modifiers
-#    define RC_Hash_data      (TPM_RC_P + TPM_RC_1)
-#    define RC_Hash_hashAlg   (TPM_RC_P + TPM_RC_2)
-#    define RC_Hash_hierarchy (TPM_RC_P + TPM_RC_3)
+#    define RC_Hash_data      (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_Hash_hashAlg   (MSSIM_RC_P + MSSIM_RC_2)
+#    define RC_Hash_hierarchy (MSSIM_RC_P + MSSIM_RC_3)
 
 // Function prototype
-TPM_RC
-TPM2_Hash(Hash_In* in, Hash_Out* out);
+MSSIM_RC
+MSSIM2_Hash(Hash_In* in, Hash_Out* out);
 
 #  endif  // _Hash_FP_H_
 #endif    // CC_Hash

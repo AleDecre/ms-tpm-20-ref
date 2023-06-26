@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -48,7 +48,7 @@
 //  Return Type: BOOL
 //      TRUE(1)         PCR belongs an authorization group
 //      FALSE(0)        PCR does not belong an authorization group
-BOOL PCRBelongsAuthGroup(TPMI_DH_PCR handle,     // IN: handle of PCR
+BOOL PCRBelongsAuthGroup(MSSIMI_DH_PCR handle,     // IN: handle of PCR
                          UINT32*     groupIndex  // OUT: group index if PCR belongs a
                          //      group that allows authValue.  If PCR
                          //      does not belong to an authorization
@@ -66,7 +66,7 @@ BOOL PCRBelongsAuthGroup(TPMI_DH_PCR handle,     // IN: handle of PCR
 //      TRUE(1)         PCR belongs to a policy group
 //      FALSE(0)        PCR does not belong to a policy group
 BOOL PCRBelongsPolicyGroup(
-    TPMI_DH_PCR handle,     // IN: handle of PCR
+    MSSIMI_DH_PCR handle,     // IN: handle of PCR
     UINT32*     groupIndex  // OUT: group index if PCR belongs a group that
                             //     allows policy.  If PCR does not belong to
                             //     a policy group, the value in this
@@ -79,28 +79,28 @@ BOOL PCRBelongsPolicyGroup(
 //  Return Type: BOOL
 //      TRUE(1)         the PCR may be authorized by policy
 //      FALSE(0)        the PCR does not allow policy
-BOOL PCRPolicyIsAvailable(TPMI_DH_PCR handle  // IN: PCR handle
+BOOL PCRPolicyIsAvailable(MSSIMI_DH_PCR handle  // IN: PCR handle
 );
 
 //*** PCRGetAuthValue()
 // This function is used to access the authValue of a PCR.  If PCR does not
 // belong to an authValue group, an EmptyAuth will be returned.
-TPM2B_AUTH* PCRGetAuthValue(TPMI_DH_PCR handle  // IN: PCR handle
+MSSIM2B_AUTH* PCRGetAuthValue(MSSIMI_DH_PCR handle  // IN: PCR handle
 );
 
 //*** PCRGetAuthPolicy()
 // This function is used to access the authorization policy of a PCR. It sets
 // 'policy' to the authorization policy and returns the hash algorithm for policy
-//  If the PCR does not allow a policy, TPM_ALG_NULL is returned.
-TPMI_ALG_HASH
-PCRGetAuthPolicy(TPMI_DH_PCR   handle,  // IN: PCR handle
-                 TPM2B_DIGEST* policy   // OUT: policy of PCR
+//  If the PCR does not allow a policy, MSSIM_ALG_NULL is returned.
+MSSIMI_ALG_HASH
+PCRGetAuthPolicy(MSSIMI_DH_PCR   handle,  // IN: PCR handle
+                 MSSIM2B_DIGEST* policy   // OUT: policy of PCR
 );
 
 //*** PCRSimStart()
-// This function is used to initialize the policies when a TPM is manufactured.
+// This function is used to initialize the policies when a MSSIM is manufactured.
 // This function would only be called in a manufacturing environment or in
-// a TPM simulator.
+// a MSSIM simulator.
 void PCRSimStart(void);
 
 //*** PcrIsAllocated()
@@ -110,50 +110,50 @@ void PCRSimStart(void);
 //      TRUE(1)         PCR is allocated
 //      FALSE(0)        PCR is not allocated
 BOOL PcrIsAllocated(UINT32        pcr,     // IN: The number of the PCR
-                    TPMI_ALG_HASH hashAlg  // IN: The PCR algorithm
+                    MSSIMI_ALG_HASH hashAlg  // IN: The PCR algorithm
 );
 
 //*** PcrDrtm()
 // This function does the DRTM and H-CRTM processing it is called from
-// _TPM_Hash_End.
-void PcrDrtm(const TPMI_DH_PCR pcrHandle,  // IN: the index of the PCR to be
+// _MSSIM_Hash_End.
+void PcrDrtm(const MSSIMI_DH_PCR pcrHandle,  // IN: the index of the PCR to be
                                            //     modified
-             const TPMI_ALG_HASH hash,     // IN: the bank identifier
-             const TPM2B_DIGEST* digest    // IN: the digest to modify the PCR
+             const MSSIMI_ALG_HASH hash,     // IN: the bank identifier
+             const MSSIM2B_DIGEST* digest    // IN: the digest to modify the PCR
 );
 
 //*** PCR_ClearAuth()
 // This function is used to reset the PCR authorization values. It is called
-// on TPM2_Startup(CLEAR) and TPM2_Clear().
+// on MSSIM2_Startup(CLEAR) and MSSIM2_Clear().
 void PCR_ClearAuth(void);
 
 //*** PCRStartup()
-// This function initializes the PCR subsystem at TPM2_Startup().
+// This function initializes the PCR subsystem at MSSIM2_Startup().
 BOOL PCRStartup(STARTUP_TYPE type,     // IN: startup type
                 BYTE         locality  // IN: startup locality
 );
 
 //*** PCRStateSave()
-// This function is used to save the PCR values that will be restored on TPM Resume.
-void PCRStateSave(TPM_SU type  // IN: startup type
+// This function is used to save the PCR values that will be restored on MSSIM Resume.
+void PCRStateSave(MSSIM_SU type  // IN: startup type
 );
 
 //*** PCRIsStateSaved()
 // This function indicates if the selected PCR is a PCR that is state saved
-// on TPM2_Shutdown(STATE). The return value is based on PCR attributes.
+// on MSSIM2_Shutdown(STATE). The return value is based on PCR attributes.
 //  Return Type: BOOL
 //      TRUE(1)         PCR is state saved
 //      FALSE(0)        PCR is not state saved
-BOOL PCRIsStateSaved(TPMI_DH_PCR handle  // IN: PCR handle to be extended
+BOOL PCRIsStateSaved(MSSIMI_DH_PCR handle  // IN: PCR handle to be extended
 );
 
 //*** PCRIsResetAllowed()
 // This function indicates if a PCR may be reset by the current command locality.
 // The return value is based on PCR attributes, and not the PCR allocation.
 //  Return Type: BOOL
-//      TRUE(1)         TPM2_PCR_Reset is allowed
-//      FALSE(0)        TPM2_PCR_Reset is not allowed
-BOOL PCRIsResetAllowed(TPMI_DH_PCR handle  // IN: PCR handle to be extended
+//      TRUE(1)         MSSIM2_PCR_Reset is allowed
+//      FALSE(0)        MSSIM2_PCR_Reset is not allowed
+BOOL PCRIsResetAllowed(MSSIMI_DH_PCR handle  // IN: PCR handle to be extended
 );
 
 //*** PCRChanged()
@@ -161,8 +161,8 @@ BOOL PCRIsResetAllowed(TPMI_DH_PCR handle  // IN: PCR handle to be extended
 // so that any change to the PCR causes an increment of the pcrCounter. If it does,
 // then the function increments the counter. Will also bump the counter if the
 // handle is zero which means that PCR 0 can not be in the TCB group. Bump on zero
-// is used by TPM2_Clear().
-void PCRChanged(TPM_HANDLE pcrHandle  // IN: the handle of the PCR that changed.
+// is used by MSSIM2_Clear().
+void PCRChanged(MSSIM_HANDLE pcrHandle  // IN: the handle of the PCR that changed.
 );
 
 //*** PCRIsExtendAllowed()
@@ -171,13 +171,13 @@ void PCRChanged(TPM_HANDLE pcrHandle  // IN: the handle of the PCR that changed.
 //  Return Type: BOOL
 //      TRUE(1)         extend is allowed
 //      FALSE(0)        extend is not allowed
-BOOL PCRIsExtendAllowed(TPMI_DH_PCR handle  // IN: PCR handle to be extended
+BOOL PCRIsExtendAllowed(MSSIMI_DH_PCR handle  // IN: PCR handle to be extended
 );
 
 //*** PCRExtend()
 // This function is used to extend a PCR in a specific bank.
-void PCRExtend(TPMI_DH_PCR   handle,  // IN: PCR handle to be extended
-               TPMI_ALG_HASH hash,    // IN: hash algorithm of PCR
+void PCRExtend(MSSIMI_DH_PCR   handle,  // IN: PCR handle to be extended
+               MSSIMI_ALG_HASH hash,    // IN: hash algorithm of PCR
                UINT32        size,    // IN: size of data to be extended
                BYTE*         data     // IN: data to be extended
 );
@@ -188,30 +188,30 @@ void PCRExtend(TPMI_DH_PCR   handle,  // IN: PCR handle to be extended
 // As a side-effect, 'selection' is modified so that only the implemented PCR
 // will have their bits still set.
 void PCRComputeCurrentDigest(
-    TPMI_ALG_HASH       hashAlg,    // IN: hash algorithm to compute digest
-    TPML_PCR_SELECTION* selection,  // IN/OUT: PCR selection (filtered on
+    MSSIMI_ALG_HASH       hashAlg,    // IN: hash algorithm to compute digest
+    MSSIML_PCR_SELECTION* selection,  // IN/OUT: PCR selection (filtered on
                                     //     output)
-    TPM2B_DIGEST* digest            // OUT: digest
+    MSSIM2B_DIGEST* digest            // OUT: digest
 );
 
 //*** PCRRead()
 // This function is used to read a list of selected PCR.  If the requested PCR
 // number exceeds the maximum number that can be output, the 'selection' is
 // adjusted to reflect the actual output PCR.
-void PCRRead(TPML_PCR_SELECTION* selection,  // IN/OUT: PCR selection (filtered on
+void PCRRead(MSSIML_PCR_SELECTION* selection,  // IN/OUT: PCR selection (filtered on
                                              //     output)
-             TPML_DIGEST* digest,            // OUT: digest
+             MSSIML_DIGEST* digest,            // OUT: digest
              UINT32*      pcrCounter  // OUT: the current value of PCR generation
                                       //     number
 );
 
 //*** PCRAllocate()
 // This function is used to change the PCR allocation.
-//  Return Type: TPM_RC
-//      TPM_RC_NO_RESULT        allocate failed
-//      TPM_RC_PCR              improper allocation
-TPM_RC
-PCRAllocate(TPML_PCR_SELECTION* allocate,      // IN: required allocation
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_NO_RESULT        allocate failed
+//      MSSIM_RC_PCR              improper allocation
+MSSIM_RC
+PCRAllocate(MSSIML_PCR_SELECTION* allocate,      // IN: required allocation
             UINT32*             maxPCR,        // OUT: Maximum number of PCR
             UINT32*             sizeNeeded,    // OUT: required space
             UINT32*             sizeAvailable  // OUT: available space
@@ -221,7 +221,7 @@ PCRAllocate(TPML_PCR_SELECTION* allocate,      // IN: required allocation
 // This function is used to set the designated PCR in all banks to an initial value.
 // The initial value is signed and will be sign extended into the entire PCR.
 //
-void PCRSetValue(TPM_HANDLE handle,       // IN: the handle of the PCR to set
+void PCRSetValue(MSSIM_HANDLE handle,       // IN: the handle of the PCR to set
                  INT8       initialValue  // IN: the value to set
 );
 
@@ -232,36 +232,36 @@ void PCRResetDynamics(void);
 
 //*** PCRCapGetAllocation()
 // This function is used to get the current allocation of PCR banks.
-//  Return Type: TPMI_YES_NO
+//  Return Type: MSSIMI_YES_NO
 //      YES         if the return count is 0
 //      NO          if the return count is not 0
-TPMI_YES_NO
+MSSIMI_YES_NO
 PCRCapGetAllocation(UINT32              count,        // IN: count of return
-                    TPML_PCR_SELECTION* pcrSelection  // OUT: PCR allocation list
+                    MSSIML_PCR_SELECTION* pcrSelection  // OUT: PCR allocation list
 );
 
 //*** PCRCapGetProperties()
 // This function returns a list of PCR properties starting at 'property'.
-//  Return Type: TPMI_YES_NO
+//  Return Type: MSSIMI_YES_NO
 //      YES         if no more property is available
 //      NO          if there are more properties not reported
-TPMI_YES_NO
-PCRCapGetProperties(TPM_PT_PCR property,  // IN: the starting PCR property
+MSSIMI_YES_NO
+PCRCapGetProperties(MSSIM_PT_PCR property,  // IN: the starting PCR property
                     UINT32     count,     // IN: count of returned properties
-                    TPML_TAGGED_PCR_PROPERTY* select  // OUT: PCR select
+                    MSSIML_TAGGED_PCR_PROPERTY* select  // OUT: PCR select
 );
 
 //*** PCRCapGetHandles()
 // This function is used to get a list of handles of PCR, started from 'handle'.
 // If 'handle' exceeds the maximum PCR handle range, an empty list will be
 // returned and the return value will be NO.
-//  Return Type: TPMI_YES_NO
+//  Return Type: MSSIMI_YES_NO
 //      YES         if there are more handles available
 //      NO          all the available handles has been returned
-TPMI_YES_NO
-PCRCapGetHandles(TPMI_DH_PCR  handle,     // IN: start handle
+MSSIMI_YES_NO
+PCRCapGetHandles(MSSIMI_DH_PCR  handle,     // IN: start handle
                  UINT32       count,      // IN: count of returned handles
-                 TPML_HANDLE* handleList  // OUT: list of handle
+                 MSSIML_HANDLE* handleList  // OUT: list of handle
 );
 
 #endif  // _PCR_FP_H_

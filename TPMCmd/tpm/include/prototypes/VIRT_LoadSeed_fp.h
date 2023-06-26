@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -44,7 +44,7 @@
 
 // Function prototype
 LIB_EXPORT void
-TPM2_VIRT_LoadSeed();
+MSSIM2_VIRT_LoadSeed();
 
 #  endif  // _VIRT_LoadSeed_FP_H_
 // #endif    // CC_VIRT_LoadSeed

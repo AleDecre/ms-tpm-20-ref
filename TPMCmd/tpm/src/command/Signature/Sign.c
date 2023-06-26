@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -42,44 +42,44 @@
 /*(See part 3 specification)
 // sign an externally provided hash using an asymmetric signing key
 */
-//  Return Type: TPM_RC
-//      TPM_RC_BINDING          The public and private portions of the key are not
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_BINDING          The public and private portions of the key are not
 //                              properly bound.
-//      TPM_RC_KEY              'signHandle' does not reference a signing key;
-//      TPM_RC_SCHEME           the scheme is not compatible with sign key type,
+//      MSSIM_RC_KEY              'signHandle' does not reference a signing key;
+//      MSSIM_RC_SCHEME           the scheme is not compatible with sign key type,
 //                              or input scheme is not compatible with default
 //                              scheme, or the chosen scheme is not a valid
 //                              sign scheme
-//      TPM_RC_TICKET           'validation' is not a valid ticket
-//      TPM_RC_VALUE            the value to sign is larger than allowed for the
+//      MSSIM_RC_TICKET           'validation' is not a valid ticket
+//      MSSIM_RC_VALUE            the value to sign is larger than allowed for the
 //                              type of 'keyHandle'
 
-TPM_RC
-TPM2_Sign(Sign_In*  in,  // IN: input parameter list
+MSSIM_RC
+MSSIM2_Sign(Sign_In*  in,  // IN: input parameter list
           Sign_Out* out  // OUT: output parameter list
 )
 {
-    TPM_RC            result;
-    TPMT_TK_HASHCHECK ticket;
+    MSSIM_RC            result;
+    MSSIMT_TK_HASHCHECK ticket;
     OBJECT*           signObject = HandleToObject(in->keyHandle);
     //
     // Input Validation
     if(!IsSigningObject(signObject))
-        return TPM_RCS_KEY + RC_Sign_keyHandle;
+        return MSSIM_RCS_KEY + RC_Sign_keyHandle;
 
-    // A key that will be used for x.509 signatures can't be used in TPM2_Sign().
-    if(IS_ATTRIBUTE(signObject->publicArea.objectAttributes, TPMA_OBJECT, x509sign))
-        return TPM_RCS_ATTRIBUTES + RC_Sign_keyHandle;
+    // A key that will be used for x.509 signatures can't be used in MSSIM2_Sign().
+    if(IS_ATTRIBUTE(signObject->publicArea.objectAttributes, MSSIMA_OBJECT, x509sign))
+        return MSSIM_RCS_ATTRIBUTES + RC_Sign_keyHandle;
 
     // pick a scheme for sign.  If the input sign scheme is not compatible with
     // the default scheme, return an error.
     if(!CryptSelectSignScheme(signObject, &in->inScheme))
-        return TPM_RCS_SCHEME + RC_Sign_inScheme;
+        return MSSIM_RCS_SCHEME + RC_Sign_inScheme;
 
     // If validation is provided, or the key is restricted, check the ticket
     if(in->validation.digest.t.size != 0
        || IS_ATTRIBUTE(
-           signObject->publicArea.objectAttributes, TPMA_OBJECT, restricted))
+           signObject->publicArea.objectAttributes, MSSIMA_OBJECT, restricted))
     {
         // Compute and compare ticket
         TicketComputeHashCheck(in->validation.hierarchy,
@@ -88,7 +88,7 @@ TPM2_Sign(Sign_In*  in,  // IN: input parameter list
                                &ticket);
 
         if(!MemoryEqual2B(&in->validation.digest.b, &ticket.digest.b))
-            return TPM_RCS_TICKET + RC_Sign_validation;
+            return MSSIM_RCS_TICKET + RC_Sign_validation;
     }
     else
     // If we don't have a ticket, at least verify that the provided 'digest'
@@ -98,11 +98,11 @@ TPM2_Sign(Sign_In*  in,  // IN: input parameter list
     {
         if(in->digest.t.size
            != CryptHashGetDigestSize(in->inScheme.details.any.hashAlg))
-            return TPM_RCS_SIZE + RC_Sign_digest;
+            return MSSIM_RCS_SIZE + RC_Sign_digest;
     }
 
     // Command Output
-    // Sign the hash. A TPM_RC_VALUE or TPM_RC_SCHEME
+    // Sign the hash. A MSSIM_RC_VALUE or MSSIM_RC_SCHEME
     // error may be returned at this point
     result = CryptSign(signObject, &in->inScheme, &in->digest, &out->signature);
 

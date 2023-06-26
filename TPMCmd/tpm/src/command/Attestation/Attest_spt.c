@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,27 +40,27 @@
 //** Functions
 
 //***FillInAttestInfo()
-// Fill in common fields of TPMS_ATTEST structure.
+// Fill in common fields of MSSIMS_ATTEST structure.
 void FillInAttestInfo(
-    TPMI_DH_OBJECT   signHandle,  // IN: handle of signing object
-    TPMT_SIG_SCHEME* scheme,      // IN/OUT: scheme to be used for signing
-    TPM2B_DATA*      data,        // IN: qualifying data
-    TPMS_ATTEST*     attest       // OUT: attest structure
+    MSSIMI_DH_OBJECT   signHandle,  // IN: handle of signing object
+    MSSIMT_SIG_SCHEME* scheme,      // IN/OUT: scheme to be used for signing
+    MSSIM2B_DATA*      data,        // IN: qualifying data
+    MSSIMS_ATTEST*     attest       // OUT: attest structure
 )
 {
     OBJECT* signObject = HandleToObject(signHandle);
 
     // Magic number
-    attest->magic = TPM_GENERATED_VALUE;
+    attest->magic = MSSIM_GENERATED_VALUE;
 
     if(signObject == NULL)
     {
-        // The name for a null handle is TPM_RH_NULL
+        // The name for a null handle is MSSIM_RH_NULL
         // This is defined because UINT32_TO_BYTE_ARRAY does a cast. If the
         // size of the cast is smaller than a constant, the compiler warns
         // about the truncation of a constant value.
-        TPM_HANDLE nullHandle          = TPM_RH_NULL;
-        attest->qualifiedSigner.t.size = sizeof(TPM_HANDLE);
+        MSSIM_HANDLE nullHandle          = MSSIM_RH_NULL;
+        attest->qualifiedSigner.t.size = sizeof(MSSIM_HANDLE);
         UINT32_TO_BYTE_ARRAY(nullHandle, attest->qualifiedSigner.t.name);
     }
     else
@@ -80,7 +80,7 @@ void FillInAttestInfo(
     attest->firmwareVersion += gp.firmwareV2;
 
     // Check the hierarchy of sign object.  For NULL sign handle, the hierarchy
-    // will be TPM_RH_NULL
+    // will be MSSIM_RH_NULL
     if((signObject == NULL)
        || (!signObject->attributes.epsHierarchy
            && !signObject->attributes.ppsHierarchy))
@@ -115,44 +115,44 @@ void FillInAttestInfo(
 }
 
 //***SignAttestInfo()
-// Sign a TPMS_ATTEST structure. If signHandle is TPM_RH_NULL, a null signature
+// Sign a MSSIMS_ATTEST structure. If signHandle is MSSIM_RH_NULL, a null signature
 // is returned.
 //
-//  Return Type: TPM_RC
-//      TPM_RC_ATTRIBUTES   'signHandle' references not a signing key
-//      TPM_RC_SCHEME       'scheme' is not compatible with 'signHandle' type
-//      TPM_RC_VALUE        digest generated for the given 'scheme' is greater than
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_ATTRIBUTES   'signHandle' references not a signing key
+//      MSSIM_RC_SCHEME       'scheme' is not compatible with 'signHandle' type
+//      MSSIM_RC_VALUE        digest generated for the given 'scheme' is greater than
 //                          the modulus of 'signHandle' (for an RSA key);
 //                          invalid commit status or failed to generate "r" value
 //                          (for an ECC key)
-TPM_RC
+MSSIM_RC
 SignAttestInfo(OBJECT*          signKey,         // IN: sign object
-               TPMT_SIG_SCHEME* scheme,          // IN: sign scheme
-               TPMS_ATTEST*     certifyInfo,     // IN: the data to be signed
-               TPM2B_DATA*      qualifyingData,  // IN: extra data for the signing
+               MSSIMT_SIG_SCHEME* scheme,          // IN: sign scheme
+               MSSIMS_ATTEST*     certifyInfo,     // IN: the data to be signed
+               MSSIM2B_DATA*      qualifyingData,  // IN: extra data for the signing
                                                  //     process
-               TPM2B_ATTEST* attest,             // OUT: marshaled attest blob to be
+               MSSIM2B_ATTEST* attest,             // OUT: marshaled attest blob to be
                                                  //     signed
-               TPMT_SIGNATURE* signature         // OUT: signature
+               MSSIMT_SIGNATURE* signature         // OUT: signature
 )
 {
     BYTE*        buffer;
     HASH_STATE   hashState;
-    TPM2B_DIGEST digest;
-    TPM_RC       result;
+    MSSIM2B_DIGEST digest;
+    MSSIM_RC       result;
 
-    // Marshal TPMS_ATTEST structure for hash
+    // Marshal MSSIMS_ATTEST structure for hash
     buffer         = attest->t.attestationData;
-    attest->t.size = TPMS_ATTEST_Marshal(certifyInfo, &buffer, NULL);
+    attest->t.size = MSSIMS_ATTEST_Marshal(certifyInfo, &buffer, NULL);
 
     if(signKey == NULL)
     {
-        signature->sigAlg = TPM_ALG_NULL;
-        result            = TPM_RC_SUCCESS;
+        signature->sigAlg = MSSIM_ALG_NULL;
+        result            = MSSIM_RC_SUCCESS;
     }
     else
     {
-        TPMI_ALG_HASH hashAlg;
+        MSSIMI_ALG_HASH hashAlg;
         // Compute hash
         hashAlg = scheme->details.any.hashAlg;
         // need to set the receive buffer to get something put in it
@@ -171,13 +171,13 @@ SignAttestInfo(OBJECT*          signKey,         // IN: sign object
             CryptDigestUpdate2B(&hashState, &digest.b);
             CryptHashEnd2B(&hashState, &digest.b);
         }
-        // Sign the hash. A TPM_RC_VALUE, TPM_RC_SCHEME, or
-        // TPM_RC_ATTRIBUTES error may be returned at this point
+        // Sign the hash. A MSSIM_RC_VALUE, MSSIM_RC_SCHEME, or
+        // MSSIM_RC_ATTRIBUTES error may be returned at this point
         result = CryptSign(signKey, scheme, &digest, signature);
 
         // Since the clock is used in an attestation, the state in NV is no longer
         // "orderly" with respect to the data in RAM if the signature is valid
-        if(result == TPM_RC_SUCCESS)
+        if(result == MSSIM_RC_SUCCESS)
         {
             // Command uses the clock so need to clear the orderly state if it is
             // set.
@@ -198,6 +198,6 @@ BOOL IsSigningObject(OBJECT* object  // IN:
 )
 {
     return ((object == NULL)
-            || ((IS_ATTRIBUTE(object->publicArea.objectAttributes, TPMA_OBJECT, sign)
-                 && object->publicArea.type != TPM_ALG_SYMCIPHER)));
+            || ((IS_ATTRIBUTE(object->publicArea.objectAttributes, MSSIMA_OBJECT, sign)
+                 && object->publicArea.type != MSSIM_ALG_SYMCIPHER)));
 }

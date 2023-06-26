@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -43,12 +43,12 @@
 // allows a policy to be bound to the authorization value of the authorized
 // object
 */
-TPM_RC
-TPM2_PolicyAuthValue(PolicyAuthValue_In* in  // IN: input parameter list
+MSSIM_RC
+MSSIM2_PolicyAuthValue(PolicyAuthValue_In* in  // IN: input parameter list
 )
 {
     SESSION*   session;
-    TPM_CC     commandCode = TPM_CC_PolicyAuthValue;
+    MSSIM_CC     commandCode = MSSIM_CC_PolicyAuthValue;
     HASH_STATE hashState;
 
     // Internal Data Update
@@ -57,7 +57,7 @@ TPM2_PolicyAuthValue(PolicyAuthValue_In* in  // IN: input parameter list
     session = SessionGet(in->policySession);
 
     // Update policy hash
-    // policyDigestnew = hash(policyDigestold || TPM_CC_PolicyAuthValue)
+    // policyDigestnew = hash(policyDigestold || MSSIM_CC_PolicyAuthValue)
     //   Start hash
     CryptHashStart(&hashState, session->authHashAlg);
 
@@ -65,7 +65,7 @@ TPM2_PolicyAuthValue(PolicyAuthValue_In* in  // IN: input parameter list
     CryptDigestUpdate2B(&hashState, &session->u2.policyDigest.b);
 
     //  add commandCode
-    CryptDigestUpdateInt(&hashState, sizeof(TPM_CC), commandCode);
+    CryptDigestUpdateInt(&hashState, sizeof(MSSIM_CC), commandCode);
 
     //  complete the hash and get the results
     CryptHashEnd2B(&hashState, &session->u2.policyDigest.b);
@@ -74,7 +74,7 @@ TPM2_PolicyAuthValue(PolicyAuthValue_In* in  // IN: input parameter list
     session->attributes.isAuthValueNeeded = SET;
     session->attributes.isPasswordNeeded  = CLEAR;
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_PolicyAuthValue

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -41,69 +41,69 @@
 
 /*(See part 3 specification)
 // to load an object that is not a Protected Object into the public portion
-// of an object into the TPM. The command allows loading of a public area or
+// of an object into the MSSIM. The command allows loading of a public area or
 // both a public and sensitive area
 */
-//  Return Type: TPM_RC
-//      TPM_RC_ATTRIBUTES       'fixedParent', 'fixedTPM', and 'restricted' must
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_ATTRIBUTES       'fixedParent', 'fixedMSSIM', and 'restricted' must
 //                              be CLEAR if sensitive portion of an object is loaded
-//      TPM_RC_BINDING          the 'inPublic' and 'inPrivate' structures are not
+//      MSSIM_RC_BINDING          the 'inPublic' and 'inPrivate' structures are not
 //                              cryptographically bound
-//      TPM_RC_HASH             incorrect hash selection for signing key
-//      TPM_RC_HIERARCHY        'hierarchy' is turned off, or only NULL hierarchy
+//      MSSIM_RC_HASH             incorrect hash selection for signing key
+//      MSSIM_RC_HIERARCHY        'hierarchy' is turned off, or only NULL hierarchy
 //                              is allowed when loading public and private parts
 //                              of an object
-//      TPM_RC_KDF              incorrect KDF selection for decrypting
+//      MSSIM_RC_KDF              incorrect KDF selection for decrypting
 //                              keyedHash object
-//      TPM_RC_KEY              the size of the object's 'unique' field is not
+//      MSSIM_RC_KEY              the size of the object's 'unique' field is not
 //                              consistent with the indicated size in the object's
 //                              parameters
-//      TPM_RC_OBJECT_MEMORY    if there is no free slot for an object
-//      TPM_RC_ECC_POINT        for a public-only ECC key, the ECC point is not
+//      MSSIM_RC_OBJECT_MEMORY    if there is no free slot for an object
+//      MSSIM_RC_ECC_POINT        for a public-only ECC key, the ECC point is not
 //                              on the curve
-//      TPM_RC_SCHEME           the signing scheme is not valid for the key
-//      TPM_RC_SIZE             'authPolicy' is not zero and is not the size of a
+//      MSSIM_RC_SCHEME           the signing scheme is not valid for the key
+//      MSSIM_RC_SIZE             'authPolicy' is not zero and is not the size of a
 //                              digest produced by the object's 'nameAlg'
-//                              TPM_RH_NULL hierarchy
-//      TPM_RC_SYMMETRIC        symmetric algorithm not provided when required
-//      TPM_RC_TYPE             'inPublic' and 'inPrivate' are not the same type
-TPM_RC
-TPM2_LoadExternal(LoadExternal_In*  in,  // IN: input parameter list
+//                              MSSIM_RH_NULL hierarchy
+//      MSSIM_RC_SYMMETRIC        symmetric algorithm not provided when required
+//      MSSIM_RC_TYPE             'inPublic' and 'inPrivate' are not the same type
+MSSIM_RC
+MSSIM2_LoadExternal(LoadExternal_In*  in,  // IN: input parameter list
                   LoadExternal_Out* out  // OUT: output parameter list
 )
 {
-    TPM_RC          result;
+    MSSIM_RC          result;
     OBJECT*         object;
-    TPMT_SENSITIVE* sensitive = NULL;
+    MSSIMT_SENSITIVE* sensitive = NULL;
 
     // Input Validation
     // Don't get invested in loading if there is no place to put it.
     object = FindEmptyObjectSlot(&out->objectHandle);
     if(object == NULL)
-        return TPM_RC_OBJECT_MEMORY;
+        return MSSIM_RC_OBJECT_MEMORY;
 
     // If the hierarchy to be associated with this object is turned off, the object
     // cannot be loaded.
     if(!HierarchyIsEnabled(in->hierarchy))
-        return TPM_RCS_HIERARCHY + RC_LoadExternal_hierarchy;
+        return MSSIM_RCS_HIERARCHY + RC_LoadExternal_hierarchy;
 
     // For loading an object with both public and sensitive
     if(in->inPrivate.size != 0)
     {
         // An external object with a sensitive area can only be loaded in the
         // NULL hierarchy
-        if(in->hierarchy != TPM_RH_NULL)
-            return TPM_RCS_HIERARCHY + RC_LoadExternal_hierarchy;
-        // An external object with a sensitive area must have fixedTPM == CLEAR
+        if(in->hierarchy != MSSIM_RH_NULL)
+            return MSSIM_RCS_HIERARCHY + RC_LoadExternal_hierarchy;
+        // An external object with a sensitive area must have fixedMSSIM == CLEAR
         // fixedParent == CLEAR so that it does not appear to be a key created by
-        // this TPM.
+        // this MSSIM.
         if(IS_ATTRIBUTE(
-               in->inPublic.publicArea.objectAttributes, TPMA_OBJECT, fixedTPM)
+               in->inPublic.publicArea.objectAttributes, MSSIMA_OBJECT, fixedMSSIM)
            || IS_ATTRIBUTE(
-               in->inPublic.publicArea.objectAttributes, TPMA_OBJECT, fixedParent)
+               in->inPublic.publicArea.objectAttributes, MSSIMA_OBJECT, fixedParent)
            || IS_ATTRIBUTE(
-               in->inPublic.publicArea.objectAttributes, TPMA_OBJECT, restricted))
-            return TPM_RCS_ATTRIBUTES + RC_LoadExternal_inPublic;
+               in->inPublic.publicArea.objectAttributes, MSSIMA_OBJECT, restricted))
+            return MSSIM_RCS_ATTRIBUTES + RC_LoadExternal_inPublic;
 
         // Have sensitive point to something other than NULL so that object
         // initialization will load the sensitive part too
@@ -121,7 +121,7 @@ TPM2_LoadExternal(LoadExternal_In*  in,  // IN: input parameter list
                         RC_LoadExternal_inPublic,
                         RC_LoadExternal_inPrivate,
                         &out->name);
-    if(result == TPM_RC_SUCCESS)
+    if(result == MSSIM_RC_SUCCESS)
     {
         object->attributes.external = SET;
         // Set the common OBJECT attributes for a loaded object.

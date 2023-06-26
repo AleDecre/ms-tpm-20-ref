@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -37,8 +37,8 @@
  *  Date: Mar  4, 2020  Time: 02:36:43PM
  */
 
-#ifndef _TPM_PROFILE_H_
-#define _TPM_PROFILE_H_
+#ifndef _MSSIM_PROFILE_H_
+#define _MSSIM_PROFILE_H_
 
 // Table 2:4 - Defines for Logic Values
 #undef TRUE
@@ -55,11 +55,11 @@
 #define CLEAR 0
 
 // Table 0:1 - Defines for Processor Values
-#ifndef BIG_ENDIAN_TPM
-#  define BIG_ENDIAN_TPM NO
+#ifndef BIG_ENDIAN_MSSIM
+#  define BIG_ENDIAN_MSSIM NO
 #endif
-#ifndef LITTLE_ENDIAN_TPM
-#  define LITTLE_ENDIAN_TPM !BIG_ENDIAN_TPM
+#ifndef LITTLE_ENDIAN_MSSIM
+#  define LITTLE_ENDIAN_MSSIM !BIG_ENDIAN_MSSIM
 #endif
 #ifndef MOST_SIGNIFICANT_BIT_0
 #  define MOST_SIGNIFICANT_BIT_0 NO
@@ -784,4 +784,4 @@
 #  define CC_ZGen_2Phase (CC_YES && ALG_ECC)
 #endif
 
-#endif  // _TPM_PROFILE_H_
+#endif  // _MSSIM_PROFILE_H_

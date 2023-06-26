@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,11 +40,11 @@
 /*(See part 3 specification)
 // Enable or disable use of a hierarchy
 */
-//  Return Type: TPM_RC
-//      TPM_RC_AUTH_TYPE        'authHandle' is not applicable to 'hierarchy' in its
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_AUTH_TYPE        'authHandle' is not applicable to 'hierarchy' in its
 //                              current state
-TPM_RC
-TPM2_HierarchyControl(HierarchyControl_In* in  // IN: input parameter list
+MSSIM_RC
+MSSIM2_HierarchyControl(HierarchyControl_In* in  // IN: input parameter list
 )
 {
     BOOL  select   = (in->state == YES);
@@ -56,34 +56,34 @@ TPM2_HierarchyControl(HierarchyControl_In* in  // IN: input parameter list
         // Platform hierarchy has to be disabled by PlatformAuth
         // If the platform hierarchy has already been disabled, only a reboot
         // can enable it again
-        case TPM_RH_PLATFORM:
-        case TPM_RH_PLATFORM_NV:
-            if(in->authHandle != TPM_RH_PLATFORM)
-                return TPM_RC_AUTH_TYPE;
+        case MSSIM_RH_PLATFORM:
+        case MSSIM_RH_PLATFORM_NV:
+            if(in->authHandle != MSSIM_RH_PLATFORM)
+                return MSSIM_RC_AUTH_TYPE;
             break;
 
         // ShEnable may be disabled if PlatformAuth/PlatformPolicy or
         // OwnerAuth/OwnerPolicy is provided.  If ShEnable is disabled, then it
         // may only be enabled if PlatformAuth/PlatformPolicy is provided.
-        case TPM_RH_OWNER:
-            if(in->authHandle != TPM_RH_PLATFORM && in->authHandle != TPM_RH_OWNER)
-                return TPM_RC_AUTH_TYPE;
+        case MSSIM_RH_OWNER:
+            if(in->authHandle != MSSIM_RH_PLATFORM && in->authHandle != MSSIM_RH_OWNER)
+                return MSSIM_RC_AUTH_TYPE;
             if(gc.shEnable == FALSE && in->state == YES
-               && in->authHandle != TPM_RH_PLATFORM)
-                return TPM_RC_AUTH_TYPE;
+               && in->authHandle != MSSIM_RH_PLATFORM)
+                return MSSIM_RC_AUTH_TYPE;
             break;
 
         // EhEnable may be disabled if either PlatformAuth/PlatformPolicy or
         // EndosementAuth/EndorsementPolicy is provided.  If EhEnable is disabled,
         // then it may only be enabled if PlatformAuth/PlatformPolicy is
         // provided.
-        case TPM_RH_ENDORSEMENT:
-            if(in->authHandle != TPM_RH_PLATFORM
-               && in->authHandle != TPM_RH_ENDORSEMENT)
-                return TPM_RC_AUTH_TYPE;
+        case MSSIM_RH_ENDORSEMENT:
+            if(in->authHandle != MSSIM_RH_PLATFORM
+               && in->authHandle != MSSIM_RH_ENDORSEMENT)
+                return MSSIM_RC_AUTH_TYPE;
             if(gc.ehEnable == FALSE && in->state == YES
-               && in->authHandle != TPM_RH_PLATFORM)
-                return TPM_RC_AUTH_TYPE;
+               && in->authHandle != MSSIM_RH_PLATFORM)
+                return MSSIM_RC_AUTH_TYPE;
             break;
         default:
             FAIL(FATAL_ERROR_INTERNAL);
@@ -103,16 +103,16 @@ TPM2_HierarchyControl(HierarchyControl_In* in  // IN: input parameter list
     // policy is provided.
     switch(in->enable)
     {
-        case TPM_RH_OWNER:
+        case MSSIM_RH_OWNER:
             selected = &gc.shEnable;
             break;
-        case TPM_RH_ENDORSEMENT:
+        case MSSIM_RH_ENDORSEMENT:
             selected = &gc.ehEnable;
             break;
-        case TPM_RH_PLATFORM:
+        case MSSIM_RH_PLATFORM:
             selected = &g_phEnable;
             break;
-        case TPM_RH_PLATFORM_NV:
+        case MSSIM_RH_PLATFORM_NV:
             selected = &gc.phEnableNV;
             break;
         default:
@@ -128,7 +128,7 @@ TPM2_HierarchyControl(HierarchyControl_In* in  // IN: input parameter list
         // state is changing and NV is available so modify
         *selected = select;
         // If a hierarchy was just disabled, flush it
-        if(select == CLEAR && in->enable != TPM_RH_PLATFORM_NV)
+        if(select == CLEAR && in->enable != MSSIM_RH_PLATFORM_NV)
             // Flush hierarchy
             ObjectFlushHierarchy(in->enable);
 
@@ -136,7 +136,7 @@ TPM2_HierarchyControl(HierarchyControl_In* in  // IN: input parameter list
         // This gets processed in ExecuteCommand() on the way out.
         g_clearOrderly = TRUE;
     }
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_HierarchyControl

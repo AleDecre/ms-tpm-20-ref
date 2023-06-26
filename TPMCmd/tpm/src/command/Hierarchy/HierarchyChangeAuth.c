@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -42,11 +42,11 @@
 /*(See part 3 specification)
 // Set a hierarchy authValue
 */
-//  Return Type: TPM_RC
-//      TPM_RC_SIZE        'newAuth' size is greater than that of integrity hash
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_SIZE        'newAuth' size is greater than that of integrity hash
 //                          digest
-TPM_RC
-TPM2_HierarchyChangeAuth(HierarchyChangeAuth_In* in  // IN: input parameter list
+MSSIM_RC
+MSSIM2_HierarchyChangeAuth(HierarchyChangeAuth_In* in  // IN: input parameter list
 )
 {
     // The command needs NV update.
@@ -55,27 +55,27 @@ TPM2_HierarchyChangeAuth(HierarchyChangeAuth_In* in  // IN: input parameter list
     // Make sure that the authorization value is a reasonable size (not larger than
     // the size of the digest produced by the integrity hash. The integrity
     // hash is assumed to produce the longest digest of any hash implemented
-    // on the TPM. This will also remove trailing zeros from the authValue.
+    // on the MSSIM. This will also remove trailing zeros from the authValue.
     if(MemoryRemoveTrailingZeros(&in->newAuth) > CONTEXT_INTEGRITY_HASH_SIZE)
-        return TPM_RCS_SIZE + RC_HierarchyChangeAuth_newAuth;
+        return MSSIM_RCS_SIZE + RC_HierarchyChangeAuth_newAuth;
 
     // Set hierarchy authValue
     switch(in->authHandle)
     {
-        case TPM_RH_OWNER:
+        case MSSIM_RH_OWNER:
             gp.ownerAuth = in->newAuth;
             NV_SYNC_PERSISTENT(ownerAuth);
             break;
-        case TPM_RH_ENDORSEMENT:
+        case MSSIM_RH_ENDORSEMENT:
             gp.endorsementAuth = in->newAuth;
             NV_SYNC_PERSISTENT(endorsementAuth);
             break;
-        case TPM_RH_PLATFORM:
+        case MSSIM_RH_PLATFORM:
             gc.platformAuth = in->newAuth;
             // orderly state should be cleared
             g_clearOrderly = TRUE;
             break;
-        case TPM_RH_LOCKOUT:
+        case MSSIM_RH_LOCKOUT:
             gp.lockoutAuth = in->newAuth;
             NV_SYNC_PERSISTENT(lockoutAuth);
             break;
@@ -84,7 +84,7 @@ TPM2_HierarchyChangeAuth(HierarchyChangeAuth_In* in  // IN: input parameter list
             break;
     }
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_HierarchyChangeAuth

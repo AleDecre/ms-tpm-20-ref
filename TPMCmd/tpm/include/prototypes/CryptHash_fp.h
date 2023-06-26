@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -41,76 +41,76 @@
 #define _CRYPT_HASH_FP_H_
 
 //*** CryptHashInit()
-// This function is called by _TPM_Init do perform the initialization operations for
+// This function is called by _MSSIM_Init do perform the initialization operations for
 // the library.
 BOOL CryptHashInit(void);
 
 //*** CryptHashStartup()
-// This function is called by TPM2_Startup(). It checks that the size of the
+// This function is called by MSSIM2_Startup(). It checks that the size of the
 // HashDefArray is consistent with the HASH_COUNT.
 BOOL CryptHashStartup(void);
 
 //*** CryptGetHashDef()
 // This function accesses the hash descriptor associated with a hash a
 // algorithm. The function returns a pointer to a 'null' descriptor if hashAlg is
-// TPM_ALG_NULL or not a defined algorithm.
+// MSSIM_ALG_NULL or not a defined algorithm.
 PHASH_DEF
-CryptGetHashDef(TPM_ALG_ID hashAlg);
+CryptGetHashDef(MSSIM_ALG_ID hashAlg);
 
 //*** CryptHashIsValidAlg()
 // This function tests to see if an algorithm ID is a valid hash algorithm. If
-// flag is true, then TPM_ALG_NULL is a valid hash.
+// flag is true, then MSSIM_ALG_NULL is a valid hash.
 //  Return Type: BOOL
-//      TRUE(1)         hashAlg is a valid, implemented hash on this TPM
-//      FALSE(0)        hashAlg is not valid for this TPM
-BOOL CryptHashIsValidAlg(TPM_ALG_ID hashAlg,  // IN: the algorithm to check
-                         BOOL       flag  // IN: TRUE if TPM_ALG_NULL is to be treated
+//      TRUE(1)         hashAlg is a valid, implemented hash on this MSSIM
+//      FALSE(0)        hashAlg is not valid for this MSSIM
+BOOL CryptHashIsValidAlg(MSSIM_ALG_ID hashAlg,  // IN: the algorithm to check
+                         BOOL       flag  // IN: TRUE if MSSIM_ALG_NULL is to be treated
                                           //     as a valid hash
 );
 
 //*** CryptHashGetAlgByIndex()
-// This function is used to iterate through the hashes. TPM_ALG_NULL
+// This function is used to iterate through the hashes. MSSIM_ALG_NULL
 // is returned for all indexes that are not valid hashes.
-// If the TPM implements 3 hashes, then an 'index' value of 0 will
+// If the MSSIM implements 3 hashes, then an 'index' value of 0 will
 // return the first implemented hash and an 'index' of 2 will return the
-// last. All other index values will return TPM_ALG_NULL.
+// last. All other index values will return MSSIM_ALG_NULL.
 //
-//  Return Type: TPM_ALG_ID
-// TPM_ALG_xxx         a hash algorithm
-// TPM_ALG_NULL        this can be used as a stop value
-LIB_EXPORT TPM_ALG_ID CryptHashGetAlgByIndex(UINT32 index  // IN: the index
+//  Return Type: MSSIM_ALG_ID
+// MSSIM_ALG_xxx         a hash algorithm
+// MSSIM_ALG_NULL        this can be used as a stop value
+LIB_EXPORT MSSIM_ALG_ID CryptHashGetAlgByIndex(UINT32 index  // IN: the index
 );
 
 //*** CryptHashGetDigestSize()
 // Returns the size of the digest produced by the hash. If 'hashAlg' is not a hash
-// algorithm, the TPM will FAIL.
+// algorithm, the MSSIM will FAIL.
 //  Return Type: UINT16
-//   0       TPM_ALG_NULL
+//   0       MSSIM_ALG_NULL
 //   > 0     the digest size
 //
 LIB_EXPORT UINT16 CryptHashGetDigestSize(
-    TPM_ALG_ID hashAlg  // IN: hash algorithm to look up
+    MSSIM_ALG_ID hashAlg  // IN: hash algorithm to look up
 );
 
 //*** CryptHashGetBlockSize()
 // Returns the size of the block used by the hash. If 'hashAlg' is not a hash
-// algorithm, the TPM will FAIL.
+// algorithm, the MSSIM will FAIL.
 //  Return Type: UINT16
-//   0       TPM_ALG_NULL
+//   0       MSSIM_ALG_NULL
 //   > 0     the digest size
 //
 LIB_EXPORT UINT16 CryptHashGetBlockSize(
-    TPM_ALG_ID hashAlg  // IN: hash algorithm to look up
+    MSSIM_ALG_ID hashAlg  // IN: hash algorithm to look up
 );
 
 //*** CryptHashGetOid()
 // This function returns a pointer to DER=encoded OID for a hash algorithm. All OIDs
 // are full OID values including the Tag (0x06) and length byte.
-LIB_EXPORT const BYTE* CryptHashGetOid(TPM_ALG_ID hashAlg);
+LIB_EXPORT const BYTE* CryptHashGetOid(MSSIM_ALG_ID hashAlg);
 
 //***  CryptHashGetContextAlg()
 // This function returns the hash algorithm associated with a hash context.
-TPM_ALG_ID
+MSSIM_ALG_ID
 CryptHashGetContextAlg(PHASH_STATE state  // IN: the context to check
 );
 
@@ -144,7 +144,7 @@ void CryptHashImportState(
 // Start a hash stack and returns the digest size. As a side effect, the
 // value of 'stateSize' in hashState is updated to indicate the number of bytes
 // of state that were saved. This function calls GetHashServer() and that function
-// will put the TPM into failure mode if the hash algorithm is not supported.
+// will put the MSSIM into failure mode if the hash algorithm is not supported.
 //
 // This function does not use the sequence parameter. If it is necessary to import
 // or export context, this will start the sequence in a local state
@@ -152,11 +152,11 @@ void CryptHashImportState(
 // structure to indicate that it needs to be imported before it can be used.
 // (BLEH).
 //  Return Type: UINT16
-//  0           hash is TPM_ALG_NULL
+//  0           hash is MSSIM_ALG_NULL
 // >0           digest size
 LIB_EXPORT UINT16 CryptHashStart(
     PHASH_STATE hashState,  // OUT: the running hash state
-    TPM_ALG_ID  hashAlg     // IN: hash algorithm
+    MSSIM_ALG_ID  hashAlg     // IN: hash algorithm
 );
 
 //*** CryptDigestUpdate()
@@ -188,7 +188,7 @@ LIB_EXPORT UINT16 CryptHashEnd(PHASH_STATE hashState,  // IN: the state of hash 
 // significant bytes are returned.
 //  Return Type: UINT16
 //  >= 0        number of bytes placed in 'dOut'
-LIB_EXPORT UINT16 CryptHashBlock(TPM_ALG_ID  hashAlg,   // IN: The hash algorithm
+LIB_EXPORT UINT16 CryptHashBlock(MSSIM_ALG_ID  hashAlg,   // IN: The hash algorithm
                                  UINT32      dataSize,  // IN: size of buffer to hash
                                  const BYTE* data,      // IN: the buffer to hash
                                  UINT32 dOutSize,  // IN: size of the digest buffer
@@ -196,17 +196,17 @@ LIB_EXPORT UINT16 CryptHashBlock(TPM_ALG_ID  hashAlg,   // IN: The hash algorith
 );
 
 //*** CryptDigestUpdate2B()
-// This function updates a digest (hash or HMAC) with a TPM2B.
+// This function updates a digest (hash or HMAC) with a MSSIM2B.
 //
 // This function can be used for both HMAC and hash functions so the
 // 'digestState' is void so that either state type can be passed.
 LIB_EXPORT void CryptDigestUpdate2B(PHASH_STATE  state,  // IN: the digest state
-                                    const TPM2B* bIn     // IN: 2B containing the data
+                                    const MSSIM2B* bIn     // IN: 2B containing the data
 );
 
 //*** CryptHashEnd2B()
 // This function is the same as CryptCompleteHash() but the digest is
-// placed in a TPM2B. This is the most common use and this is provided
+// placed in a MSSIM2B. This is the most common use and this is provided
 // for specification clarity. 'digest.size' should be set to indicate the number of
 // bytes to place in the buffer
 //  Return Type: UINT16
@@ -237,7 +237,7 @@ LIB_EXPORT void CryptDigestUpdateInt(
 //  >= 0        number of bytes in digest produced by 'hashAlg' (may be zero)
 //
 LIB_EXPORT UINT16 CryptHmacStart(PHMAC_STATE state,    // IN/OUT: the state buffer
-                                 TPM_ALG_ID  hashAlg,  // IN: the algorithm to use
+                                 MSSIM_ALG_ID  hashAlg,  // IN: the algorithm to use
                                  UINT16      keySize,  // IN: the size of the HMAC key
                                  const BYTE* key       // IN: the HMAC key
 );
@@ -259,7 +259,7 @@ LIB_EXPORT UINT16 CryptHmacEnd(PHMAC_STATE state,     // IN: the hash state buff
 // that will be produced.
 //
 // This function is provided to support the most common use of starting an HMAC
-// with a TPM2B key.
+// with a MSSIM2B key.
 //
 // The caller must provide a block of memory in which the hash sequence state
 // is kept.  The caller should not alter the contents of this buffer until the
@@ -267,17 +267,17 @@ LIB_EXPORT UINT16 CryptHmacEnd(PHMAC_STATE state,     // IN: the hash state buff
 //
 //  Return Type: UINT16
 //      > 0     the digest size of the algorithm
-//      = 0     the hashAlg was TPM_ALG_NULL
+//      = 0     the hashAlg was MSSIM_ALG_NULL
 LIB_EXPORT UINT16 CryptHmacStart2B(
     PHMAC_STATE hmacState,  // OUT: the state of HMAC stack. It will be used
                             //     in HMAC update and completion
-    TPMI_ALG_HASH hashAlg,  // IN: hash algorithm
+    MSSIMI_ALG_HASH hashAlg,  // IN: hash algorithm
     P2B           key       // IN: HMAC key
 );
 
 //*** CryptHmacEnd2B()
 //   This function is the same as CryptHmacEnd() but the HMAC result
-//   is returned in a TPM2B which is the most common use.
+//   is returned in a MSSIM2B which is the most common use.
 //  Return Type: UINT16
 //      >=0     the number of bytes placed in 'digest'
 LIB_EXPORT UINT16 CryptHmacEnd2B(
@@ -296,11 +296,11 @@ LIB_EXPORT UINT16 CryptHmacEnd2B(
 // This function returns the length of the mask produced which
 // could be zero if the digest algorithm is not supported
 //  Return Type: UINT16
-//      0       hash algorithm was TPM_ALG_NULL
+//      0       hash algorithm was MSSIM_ALG_NULL
 //    > 0       should be the same as 'mSize'
 LIB_EXPORT UINT16 CryptMGF_KDF(UINT32 mSize,  // IN: length of the mask to be produced
                                BYTE*  mask,   // OUT: buffer to receive the mask
-                               TPM_ALG_ID hashAlg,   // IN: hash to use
+                               MSSIM_ALG_ID hashAlg,   // IN: hash to use
                                UINT32     seedSize,  // IN: size of the seed
                                BYTE*      seed,      // IN: seed size
                                UINT32     counter    // IN: counter initial value
@@ -308,7 +308,7 @@ LIB_EXPORT UINT16 CryptMGF_KDF(UINT32 mSize,  // IN: length of the mask to be pr
 
 //*** CryptKDFa()
 // This function performs the key generation according to Part 1 of the
-// TPM specification.
+// MSSIM specification.
 //
 // This function returns the number of bytes generated which may be zero.
 //
@@ -326,14 +326,14 @@ LIB_EXPORT UINT16 CryptMGF_KDF(UINT32 mSize,  // IN: length of the mask to be pr
 //
 // Any error in the processing of this command is considered fatal.
 //  Return Type: UINT16
-//     0            hash algorithm is not supported or is TPM_ALG_NULL
+//     0            hash algorithm is not supported or is MSSIM_ALG_NULL
 //    > 0           the number of bytes in the 'keyStream' buffer
 LIB_EXPORT UINT16 CryptKDFa(
-    TPM_ALG_ID   hashAlg,       // IN: hash algorithm used in HMAC
-    const TPM2B* key,           // IN: HMAC key
-    const TPM2B* label,         // IN: a label for the KDF
-    const TPM2B* contextU,      // IN: context U
-    const TPM2B* contextV,      // IN: context V
+    MSSIM_ALG_ID   hashAlg,       // IN: hash algorithm used in HMAC
+    const MSSIM2B* key,           // IN: HMAC key
+    const MSSIM2B* label,         // IN: a label for the KDF
+    const MSSIM2B* contextU,      // IN: context U
+    const MSSIM2B* contextV,      // IN: context V
     UINT32       sizeInBits,    // IN: size of generated key in bits
     BYTE*        keyStream,     // OUT: key buffer
     UINT32*      counterInOut,  // IN/OUT: caller may provide the iteration
@@ -345,7 +345,7 @@ LIB_EXPORT UINT16 CryptKDFa(
 );
 
 //*** CryptKDFe()
-// This function implements KDFe() as defined in TPM specification part 1.
+// This function implements KDFe() as defined in MSSIM specification part 1.
 //
 // This function returns the number of bytes generated which may be zero.
 //
@@ -354,14 +354,14 @@ LIB_EXPORT UINT16 CryptKDFa(
 // than (2^18)-1 = 256K bits (32385 bytes).
 // Any error in the processing of this command is considered fatal.
 //  Return Type: UINT16
-//     0            hash algorithm is not supported or is TPM_ALG_NULL
+//     0            hash algorithm is not supported or is MSSIM_ALG_NULL
 //    > 0           the number of bytes in the 'keyStream' buffer
 //
-LIB_EXPORT UINT16 CryptKDFe(TPM_ALG_ID   hashAlg,  // IN: hash algorithm used in HMAC
-                            TPM2B*       Z,        // IN: Z
-                            const TPM2B* label,    // IN: a label value for the KDF
-                            TPM2B*       partyUInfo,  // IN: PartyUInfo
-                            TPM2B*       partyVInfo,  // IN: PartyVInfo
+LIB_EXPORT UINT16 CryptKDFe(MSSIM_ALG_ID   hashAlg,  // IN: hash algorithm used in HMAC
+                            MSSIM2B*       Z,        // IN: Z
+                            const MSSIM2B* label,    // IN: a label value for the KDF
+                            MSSIM2B*       partyUInfo,  // IN: PartyUInfo
+                            MSSIM2B*       partyVInfo,  // IN: PartyVInfo
                             UINT32 sizeInBits,  // IN: size of generated key in bits
                             BYTE*  keyStream    // OUT: key buffer
 );

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -43,11 +43,11 @@
 #if ALG_RSA
 
 //*** CryptRsaInit()
-// Function called at _TPM_Init().
+// Function called at _MSSIM_Init().
 BOOL CryptRsaInit(void);
 
 //*** CryptRsaStartup()
-// Function called at TPM2_Startup()
+// Function called at MSSIM2_Startup()
 BOOL CryptRsaStartup(void);
 
 //*** CryptRsaPssSaltSize()
@@ -63,30 +63,30 @@ CryptRsaPssSaltSize(INT16 hashSize, INT16 outSize);
 //   > 0        size of value
 //   <= 0       no hash exists
 INT16
-MakeDerTag(TPM_ALG_ID hashAlg, INT16 sizeOfBuffer, BYTE* buffer);
+MakeDerTag(MSSIM_ALG_ID hashAlg, INT16 sizeOfBuffer, BYTE* buffer);
 
 //*** CryptRsaSelectScheme()
-// This function is used by TPM2_RSA_Decrypt and TPM2_RSA_Encrypt.  It sets up
+// This function is used by MSSIM2_RSA_Decrypt and MSSIM2_RSA_Encrypt.  It sets up
 // the rules to select a scheme between input and object default.
 // This function assume the RSA object is loaded.
 // If a default scheme is defined in object, the default scheme should be chosen,
 // otherwise, the input scheme should be chosen.
-// In the case that both the object and 'scheme' are not TPM_ALG_NULL, then
+// In the case that both the object and 'scheme' are not MSSIM_ALG_NULL, then
 // if the schemes are the same, the input scheme will be chosen.
 // if the scheme are not compatible, a NULL pointer will be returned.
 //
-// The return pointer may point to a TPM_ALG_NULL scheme.
-TPMT_RSA_DECRYPT* CryptRsaSelectScheme(
-    TPMI_DH_OBJECT    rsaHandle,  // IN: handle of an RSA key
-    TPMT_RSA_DECRYPT* scheme      // IN: a sign or decrypt scheme
+// The return pointer may point to a MSSIM_ALG_NULL scheme.
+MSSIMT_RSA_DECRYPT* CryptRsaSelectScheme(
+    MSSIMI_DH_OBJECT    rsaHandle,  // IN: handle of an RSA key
+    MSSIMT_RSA_DECRYPT* scheme      // IN: a sign or decrypt scheme
 );
 
 //*** CryptRsaLoadPrivateExponent()
 // This function is called to generate the private exponent of an RSA key.
-//  Return Type: TPM_RC
-//      TPM_RC_BINDING      public and private parts of 'rsaKey' are not matched
-TPM_RC
-CryptRsaLoadPrivateExponent(TPMT_PUBLIC* publicArea, TPMT_SENSITIVE* sensitive);
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_BINDING      public and private parts of 'rsaKey' are not matched
+MSSIM_RC
+CryptRsaLoadPrivateExponent(MSSIMT_PUBLIC* publicArea, MSSIMT_SENSITIVE* sensitive);
 
 //*** CryptRsaEncrypt()
 // This is the entry point for encryption using RSA. Encryption is
@@ -104,18 +104,18 @@ CryptRsaLoadPrivateExponent(TPMT_PUBLIC* publicArea, TPMT_SENSITIVE* sensitive);
 //       added, it would have a numeric value larger than the modulus even though
 //       it started out with a lower numeric value.
 //
-//  Return Type: TPM_RC
-//      TPM_RC_VALUE     'cOutSize' is too small (must be the size
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_VALUE     'cOutSize' is too small (must be the size
 //                        of the modulus)
-//      TPM_RC_SCHEME    'padType' is not a supported scheme
+//      MSSIM_RC_SCHEME    'padType' is not a supported scheme
 //
-LIB_EXPORT TPM_RC CryptRsaEncrypt(
-    TPM2B_PUBLIC_KEY_RSA* cOut,    // OUT: the encrypted data
-    TPM2B*                dIn,     // IN: the data to encrypt
+LIB_EXPORT MSSIM_RC CryptRsaEncrypt(
+    MSSIM2B_PUBLIC_KEY_RSA* cOut,    // OUT: the encrypted data
+    MSSIM2B*                dIn,     // IN: the data to encrypt
     OBJECT*               key,     // IN: the key used for encryption
-    TPMT_RSA_DECRYPT*     scheme,  // IN: the type of padding and hash
+    MSSIMT_RSA_DECRYPT*     scheme,  // IN: the type of padding and hash
                                    //     if needed
-    const TPM2B* label,            // IN: in case it is needed
+    const MSSIM2B* label,            // IN: in case it is needed
     RAND_STATE*  rand              // IN: random number generator
                                    //     state (mostly for testing)
 );
@@ -125,60 +125,60 @@ LIB_EXPORT TPM_RC CryptRsaEncrypt(
 // use of the private exponent. The 'padType' parameter determines what
 // padding was used.
 //
-//  Return Type: TPM_RC
-//      TPM_RC_SIZE        'cInSize' is not the same as the size of the public
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_SIZE        'cInSize' is not the same as the size of the public
 //                          modulus of 'key'; or numeric value of the encrypted
 //                          data is greater than the modulus
-//      TPM_RC_VALUE       'dOutSize' is not large enough for the result
-//      TPM_RC_SCHEME      'padType' is not supported
+//      MSSIM_RC_VALUE       'dOutSize' is not large enough for the result
+//      MSSIM_RC_SCHEME      'padType' is not supported
 //
-LIB_EXPORT TPM_RC CryptRsaDecrypt(
-    TPM2B*            dOut,    // OUT: the decrypted data
-    TPM2B*            cIn,     // IN: the data to decrypt
+LIB_EXPORT MSSIM_RC CryptRsaDecrypt(
+    MSSIM2B*            dOut,    // OUT: the decrypted data
+    MSSIM2B*            cIn,     // IN: the data to decrypt
     OBJECT*           key,     // IN: the key to use for decryption
-    TPMT_RSA_DECRYPT* scheme,  // IN: the padding scheme
-    const TPM2B*      label    // IN: in case it is needed for the scheme
+    MSSIMT_RSA_DECRYPT* scheme,  // IN: the padding scheme
+    const MSSIM2B*      label    // IN: in case it is needed for the scheme
 );
 
 //*** CryptRsaSign()
 // This function is used to generate an RSA signature of the type indicated in
 // 'scheme'.
 //
-//  Return Type: TPM_RC
-//      TPM_RC_SCHEME       'scheme' or 'hashAlg' are not supported
-//      TPM_RC_VALUE        'hInSize' does not match 'hashAlg' (for RSASSA)
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_SCHEME       'scheme' or 'hashAlg' are not supported
+//      MSSIM_RC_VALUE        'hInSize' does not match 'hashAlg' (for RSASSA)
 //
-LIB_EXPORT TPM_RC CryptRsaSign(TPMT_SIGNATURE* sigOut,
+LIB_EXPORT MSSIM_RC CryptRsaSign(MSSIMT_SIGNATURE* sigOut,
                                OBJECT*         key,  // IN: key to use
-                               TPM2B_DIGEST*   hIn,  // IN: the digest to sign
+                               MSSIM2B_DIGEST*   hIn,  // IN: the digest to sign
                                RAND_STATE* rand  // IN: the random number generator
                                                  //      to use (mostly for testing)
 );
 
 //*** CryptRsaValidateSignature()
 // This function is used to validate an RSA signature. If the signature is valid
-// TPM_RC_SUCCESS is returned. If the signature is not valid, TPM_RC_SIGNATURE is
+// MSSIM_RC_SUCCESS is returned. If the signature is not valid, MSSIM_RC_SIGNATURE is
 // returned. Other return codes indicate either parameter problems or fatal errors.
 //
-//  Return Type: TPM_RC
-//      TPM_RC_SIGNATURE    the signature does not check
-//      TPM_RC_SCHEME       unsupported scheme or hash algorithm
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_SIGNATURE    the signature does not check
+//      MSSIM_RC_SCHEME       unsupported scheme or hash algorithm
 //
-LIB_EXPORT TPM_RC CryptRsaValidateSignature(
-    TPMT_SIGNATURE* sig,    // IN: signature
+LIB_EXPORT MSSIM_RC CryptRsaValidateSignature(
+    MSSIMT_SIGNATURE* sig,    // IN: signature
     OBJECT*         key,    // IN: public modulus
-    TPM2B_DIGEST*   digest  // IN: The digest being validated
+    MSSIM2B_DIGEST*   digest  // IN: The digest being validated
 );
 
 //*** CryptRsaGenerateKey()
 // Generate an RSA key from a provided seed
-//  Return Type: TPM_RC
-//      TPM_RC_CANCELED     operation was canceled
-//      TPM_RC_RANGE        public exponent is not supported
-//      TPM_RC_VALUE        could not find a prime using the provided parameters
-LIB_EXPORT TPM_RC CryptRsaGenerateKey(
-    TPMT_PUBLIC*    publicArea,
-    TPMT_SENSITIVE* sensitive,
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_CANCELED     operation was canceled
+//      MSSIM_RC_RANGE        public exponent is not supported
+//      MSSIM_RC_VALUE        could not find a prime using the provided parameters
+LIB_EXPORT MSSIM_RC CryptRsaGenerateKey(
+    MSSIMT_PUBLIC*    publicArea,
+    MSSIMT_SENSITIVE* sensitive,
     RAND_STATE*     rand  // IN: if not NULL, the deterministic
                           //     RNG state
 );

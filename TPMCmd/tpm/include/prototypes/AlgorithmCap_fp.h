@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -41,16 +41,16 @@
 #define _ALGORITHM_CAP_FP_H_
 
 //** AlgorithmCapGetImplemented()
-// This function is used by TPM2_GetCapability() to return a list of the
+// This function is used by MSSIM2_GetCapability() to return a list of the
 // implemented algorithms.
 //
-//  Return Type: TPMI_YES_NO
+//  Return Type: MSSIMI_YES_NO
 //  YES        more algorithms to report
 //  NO         no more algorithms to report
-TPMI_YES_NO
-AlgorithmCapGetImplemented(TPM_ALG_ID algID,  // IN: the starting algorithm ID
+MSSIMI_YES_NO
+AlgorithmCapGetImplemented(MSSIM_ALG_ID algID,  // IN: the starting algorithm ID
                            UINT32     count,  // IN: count of returned algorithms
-                           TPML_ALG_PROPERTY* algList  // OUT: algorithm list
+                           MSSIML_ALG_PROPERTY* algList  // OUT: algorithm list
 );
 
 //** AlgorithmGetImplementedVector()

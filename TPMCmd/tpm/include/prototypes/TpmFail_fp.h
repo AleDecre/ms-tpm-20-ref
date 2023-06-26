@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -37,8 +37,8 @@
  *  Date: Apr  2, 2019  Time: 03:18:00PM
  */
 
-#ifndef _TPM_FAIL_FP_H_
-#define _TPM_FAIL_FP_H_
+#ifndef _MSSIM_FAIL_FP_H_
+#define _MSSIM_FAIL_FP_H_
 
 //*** SetForceFailureMode()
 // This function is called by the simulator to enable failure mode testing.
@@ -58,8 +58,8 @@ void TpmLogFailure(
     int code);
 
 //*** TpmFail()
-// This function is called by TPM.lib when a failure occurs. It will set up the
-// failure values to be returned on TPM2_GetTestResult().
+// This function is called by MSSIM.lib when a failure occurs. It will set up the
+// failure values to be returned on MSSIM2_GetTestResult().
 NORETURN void TpmFail(
 #if FAIL_TRACE
     const char* function,
@@ -81,4 +81,4 @@ void TpmFailureMode(unsigned int    inRequestSize,    // IN: command buffer size
 // that is not defined. Don't ever expect this to be called but...
 void UnmarshalFail(void* type, BYTE** buffer, INT32* size);
 
-#endif  // _TPM_FAIL_FP_H_
+#endif  // _MSSIM_FAIL_FP_H_

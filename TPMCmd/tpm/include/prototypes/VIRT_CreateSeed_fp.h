@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,35 +45,35 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT         parentHandle;
+    MSSIMI_DH_OBJECT         parentHandle;
     UINT16                 bytesRequested;
-    TPM2B_SENSITIVE_CREATE inSensitive;
-    TPM2B_PUBLIC           inPublic;
-    TPM2B_DATA             outsideInfo;
-    TPML_PCR_SELECTION     creationPCR;
+    MSSIM2B_SENSITIVE_CREATE inSensitive;
+    MSSIM2B_PUBLIC           inPublic;
+    MSSIM2B_DATA             outsideInfo;
+    MSSIML_PCR_SELECTION     creationPCR;
 } VIRTCreateSeed_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_PRIVATE       outPrivate;
-    TPM2B_PUBLIC        outPublic;
-    TPM2B_CREATION_DATA creationData;
-    TPM2B_DIGEST        creationHash;
-    TPMT_TK_CREATION    creationTicket;
+    MSSIM2B_PRIVATE       outPrivate;
+    MSSIM2B_PUBLIC        outPublic;
+    MSSIM2B_CREATION_DATA creationData;
+    MSSIM2B_DIGEST        creationHash;
+    MSSIMT_TK_CREATION    creationTicket;
 } VIRTCreateSeed_Out;
 
 // Response code modifiers
-#    define RC_VIRT_CreateSeed_parentHandle     (TPM_RC_H + TPM_RC_1)
-#    define RC_VIRT_CreateSeed_inSensitive      (TPM_RC_P + TPM_RC_1)
-#    define RC_VIRT_CreateSeed_inPublic         (TPM_RC_P + TPM_RC_2)
-#    define RC_VIRT_CreateSeed_outsideInfo      (TPM_RC_P + TPM_RC_3)
-#    define RC_VIRT_CreateSeed_creationPCR      (TPM_RC_P + TPM_RC_4)
-#    define RC_VIRT_CreateSeed_bytesRequested   (TPM_RC_P + TPM_RC_5)
+#    define RC_VIRT_CreateSeed_parentHandle     (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_VIRT_CreateSeed_inSensitive      (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_VIRT_CreateSeed_inPublic         (MSSIM_RC_P + MSSIM_RC_2)
+#    define RC_VIRT_CreateSeed_outsideInfo      (MSSIM_RC_P + MSSIM_RC_3)
+#    define RC_VIRT_CreateSeed_creationPCR      (MSSIM_RC_P + MSSIM_RC_4)
+#    define RC_VIRT_CreateSeed_bytesRequested   (MSSIM_RC_P + MSSIM_RC_5)
 
 // Function prototype
-TPM_RC
-TPM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out);
+MSSIM_RC
+MSSIM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out);
 
 #  endif  // _VIRT_CreateSeed_FP_H_
 #endif    // CC_VIRT_CreateSeed

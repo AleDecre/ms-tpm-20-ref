@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -36,20 +36,20 @@
 /*
     The code in this file is used to manage the session context counter.
     The scheme implemented here is a "truncated counter".
-    This scheme allows the TPM to not need TPM_SU_CLEAR for a
+    This scheme allows the MSSIM to not need MSSIM_SU_CLEAR for a
     very long period of time and still not have the context
     count for a session repeated.
 
     The counter (contextCounter)in this implementation is a UINT64 but
     can be smaller.  The "tracking array" (contextArray) only
     has 16-bits per context.  The tracking array is the data
-    that needs to be saved and restored across TPM_SU_STATE so that
+    that needs to be saved and restored across MSSIM_SU_STATE so that
     sessions are not lost when the system enters the sleep state.
-    Also, when the TPM is active, the tracking array is kept in
+    Also, when the MSSIM is active, the tracking array is kept in
     RAM making it important that the number of bytes for each
     entry be kept as small as possible.
 
-    The TPM prevents "collisions" of these truncated values by
+    The MSSIM prevents "collisions" of these truncated values by
     not allowing a contextID to be assigned if it would be the
     same as an existing value.  Since the array holds 16 bits,
     after a context has been saved, an additional 2^16-1 contexts
@@ -58,56 +58,56 @@
     value is needed again but it is always possible to have long-lived
     sessions.
 
-    The contextID is assigned when the context is saved (TPM2_ContextSave()).
-    At that time, the TPM will compare the low-order 16 bits of
+    The contextID is assigned when the context is saved (MSSIM2_ContextSave()).
+    At that time, the MSSIM will compare the low-order 16 bits of
     contextCounter to the existing values in contextArray and if one
-    matches, the TPM will return TPM_RC_CONTEXT_GAP (by construction,
+    matches, the MSSIM will return MSSIM_RC_CONTEXT_GAP (by construction,
     the entry that contains the matching value is the oldest
     context).
 
     The expected remediation by the TRM is to load the oldest saved
-    session context (the one found by the TPM), and save it.  Since loading
+    session context (the one found by the MSSIM), and save it.  Since loading
     the oldest session also eliminates its contextID value from
-    contextArray, there TPM will always be able to load and save the oldest
+    contextArray, there MSSIM will always be able to load and save the oldest
     existing context.
 
     In the worst case, software may have to load and save several contexts
     in order to save an additional one.  This should happen very infrequently.
 
-    When the TPM searches contextArray and finds that none of the contextIDs
-    match the low-order 16-bits of contextCount, the TPM can copy the low bits
+    When the MSSIM searches contextArray and finds that none of the contextIDs
+    match the low-order 16-bits of contextCount, the MSSIM can copy the low bits
     to the contextArray associated with the session, and increment contextCount.
 
     There is one entry in contextArray for each of the active sessions
-    allowed by the TPM implementation.  This array contains either a
+    allowed by the MSSIM implementation.  This array contains either a
     context count, an index, or a value indicating the slot is available (0).
 
     The index into the contextArray is the handle for the session with the region
     selector byte of the session set to zero.  If an entry in contextArray contains
     0, then the corresponding handle may be assigned to a session.  If the entry
     contains a value that is less than or equal to the number of loaded sessions
-    for the TPM, then the array entry is the slot in which the context is loaded.
+    for the MSSIM, then the array entry is the slot in which the context is loaded.
 
-    EXAMPLE:    If the TPM allows 8 loaded sessions, then the slot numbers would
+    EXAMPLE:    If the MSSIM allows 8 loaded sessions, then the slot numbers would
     be 1-8 and a contextArrary value in that range would represent the loaded
     session.
 
-    NOTE:   When the TPM firmware determines that the array entry is for a loaded
+    NOTE:   When the MSSIM firmware determines that the array entry is for a loaded
     session, it will subtract 1 to create the zero-based slot number.
 
     There is one significant corner case in this scheme.  When the contextCount
     is equal to a value in the contextArray, the oldest session needs to be
     recycled or flushed. In order to recycle the session, it must be loaded.
     To be loaded, there must be an available slot.  Rather than require that a
-    spare slot be available all the time, the TPM will check to see if the
+    spare slot be available all the time, the MSSIM will check to see if the
     contextCount is equal to some value in the contextArray when a session is
     created.  This prevents the last session slot from being used when it
     is likely that a session will need to be recycled.
 
-    If a TPM with both 1.2 and 2.0 functionality uses this scheme for both
+    If a MSSIM with both 1.2 and 2.0 functionality uses this scheme for both
     1.2 and 2.0 sessions, and the list of active contexts is read with
-    TPM_GetCapabiltiy(), the TPM will create 32-bit representations of the
-    list that contains 16-bit values (the TPM2_GetCapability() returns a list
+    MSSIM_GetCapabiltiy(), the MSSIM will create 32-bit representations of the
+    list that contains 16-bit values (the MSSIM2_GetCapability() returns a list
     of handles for active sessions rather than a list of contextID).  The full
     contextID has high-order bits that are either the same as the current
     contextCount or one less.  It is one less if the 16-bits
@@ -171,7 +171,7 @@ static void ContextIdSetOldest(void)
 }
 
 //** Startup Function -- SessionStartup()
-// This function initializes the session subsystem on TPM2_Startup().
+// This function initializes the session subsystem on MSSIM2_Startup().
 BOOL SessionStartup(STARTUP_TYPE type)
 {
     UINT32 i;
@@ -233,11 +233,11 @@ BOOL SessionStartup(STARTUP_TYPE type)
 //      TRUE(1)         session is loaded
 //      FALSE(0)        session is not loaded
 //
-BOOL SessionIsLoaded(TPM_HANDLE handle  // IN: session handle
+BOOL SessionIsLoaded(MSSIM_HANDLE handle  // IN: session handle
 )
 {
-    pAssert(HandleGetType(handle) == TPM_HT_POLICY_SESSION
-            || HandleGetType(handle) == TPM_HT_HMAC_SESSION);
+    pAssert(HandleGetType(handle) == MSSIM_HT_POLICY_SESSION
+            || HandleGetType(handle) == MSSIM_HT_HMAC_SESSION);
 
     handle = handle & HR_HANDLE_MASK;
 
@@ -262,11 +262,11 @@ BOOL SessionIsLoaded(TPM_HANDLE handle  // IN: session handle
 //      TRUE(1)         session is saved
 //      FALSE(0)        session is not saved
 //
-BOOL SessionIsSaved(TPM_HANDLE handle  // IN: session handle
+BOOL SessionIsSaved(MSSIM_HANDLE handle  // IN: session handle
 )
 {
-    pAssert(HandleGetType(handle) == TPM_HT_POLICY_SESSION
-            || HandleGetType(handle) == TPM_HT_HMAC_SESSION);
+    pAssert(HandleGetType(handle) == MSSIM_HT_POLICY_SESSION
+            || HandleGetType(handle) == MSSIM_HT_HMAC_SESSION);
 
     handle = handle & HR_HANDLE_MASK;
     // if out of range of possible active session, or not assigned, or
@@ -282,13 +282,13 @@ BOOL SessionIsSaved(TPM_HANDLE handle  // IN: session handle
 // This function validates that the sequence number and handle value within a
 // saved context are valid.
 BOOL SequenceNumberForSavedContextIsValid(
-    TPMS_CONTEXT* context  // IN: pointer to a context structure to be
+    MSSIMS_CONTEXT* context  // IN: pointer to a context structure to be
                            //     validated
 )
 {
 #define MAX_CONTEXT_GAP ((UINT64)((CONTEXT_SLOT)~0) + 1)
 
-    TPM_HANDLE handle = context->savedHandle & HR_HANDLE_MASK;
+    MSSIM_HANDLE handle = context->savedHandle & HR_HANDLE_MASK;
 
     if(  // Handle must be with the range of active sessions
         handle >= MAX_ACTIVE_SESSIONS
@@ -328,14 +328,14 @@ BOOL SessionPCRValueIsCurrent(SESSION* session  // IN: session structure
 // session handle.
 //
 // The function requires that the session is loaded.
-SESSION* SessionGet(TPM_HANDLE handle  // IN: session handle
+SESSION* SessionGet(MSSIM_HANDLE handle  // IN: session handle
 )
 {
     size_t       slotIndex;
     CONTEXT_SLOT sessionIndex;
 
-    pAssert(HandleGetType(handle) == TPM_HT_POLICY_SESSION
-            || HandleGetType(handle) == TPM_HT_HMAC_SESSION);
+    pAssert(HandleGetType(handle) == MSSIM_HT_POLICY_SESSION
+            || HandleGetType(handle) == MSSIM_HT_HMAC_SESSION);
 
     slotIndex = handle & HR_HANDLE_MASK;
 
@@ -358,19 +358,19 @@ SESSION* SessionGet(TPM_HANDLE handle  // IN: session handle
 //
 //  This function is called when a session is created.  It will check
 //  to see if the current gap would prevent a context from being saved.  If
-//  so it will return TPM_RC_CONTEXT_GAP.  Otherwise, it will try to find
+//  so it will return MSSIM_RC_CONTEXT_GAP.  Otherwise, it will try to find
 //  an open slot in contextArray, set contextArray to the slot.
 //
 //  This routine requires that the caller has determined the session array
 //  index for the session.
 //
-//  Return Type: TPM_RC
-//      TPM_RC_CONTEXT_GAP      can't assign a new contextID until the oldest
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_CONTEXT_GAP      can't assign a new contextID until the oldest
 //                              saved session context is recycled
-//      TPM_RC_SESSION_HANDLE   there is no slot available in the context array
+//      MSSIM_RC_SESSION_HANDLE   there is no slot available in the context array
 //                              for tracking of this session context
-static TPM_RC ContextIdSessionCreate(
-    TPM_HANDLE* handle,  // OUT: receives the assigned handle. This will
+static MSSIM_RC ContextIdSessionCreate(
+    MSSIM_HANDLE* handle,  // OUT: receives the assigned handle. This will
                          //     be an index that must be adjusted by the
                          //     caller according to the type of the
                          //     session created
@@ -393,7 +393,7 @@ static TPM_RC ContextIdSessionCreate(
         // existing context, then we can't use it because of the ambiguity it would
         // create.
         if((CONTEXT_SLOT)gr.contextCounter == gr.contextArray[s_oldestSavedSession])
-            return TPM_RC_CONTEXT_GAP;
+            return MSSIM_RC_CONTEXT_GAP;
     }
 
     // Find an unoccupied entry in the contextArray
@@ -404,10 +404,10 @@ static TPM_RC ContextIdSessionCreate(
             // indicate that the session associated with this handle
             // references a loaded session
             gr.contextArray[*handle] = (CONTEXT_SLOT)(sessionIndex + 1);
-            return TPM_RC_SUCCESS;
+            return MSSIM_RC_SUCCESS;
         }
     }
-    return TPM_RC_SESSION_HANDLES;
+    return MSSIM_RC_SESSION_HANDLES;
 }
 
 //*** SessionCreate()
@@ -418,31 +418,31 @@ static TPM_RC ContextIdSessionCreate(
 //  uses a fixed memory allocation to hold sessions and a fixed allocation
 //  to hold the contextID for the saved contexts.
 //
-//  Return Type: TPM_RC
-//      TPM_RC_CONTEXT_GAP          need to recycle sessions
-//      TPM_RC_SESSION_HANDLE       active session space is full
-//      TPM_RC_SESSION_MEMORY       loaded session space is full
-TPM_RC
-SessionCreate(TPM_SE         sessionType,    // IN: the session type
-              TPMI_ALG_HASH  authHash,       // IN: the hash algorithm
-              TPM2B_NONCE*   nonceCaller,    // IN: initial nonceCaller
-              TPMT_SYM_DEF*  symmetric,      // IN: the symmetric algorithm
-              TPMI_DH_ENTITY bind,           // IN: the bind object
-              TPM2B_DATA*    seed,           // IN: seed data
-              TPM_HANDLE*    sessionHandle,  // OUT: the session handle
-              TPM2B_NONCE*   nonceTpm        // OUT: the session nonce
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_CONTEXT_GAP          need to recycle sessions
+//      MSSIM_RC_SESSION_HANDLE       active session space is full
+//      MSSIM_RC_SESSION_MEMORY       loaded session space is full
+MSSIM_RC
+SessionCreate(MSSIM_SE         sessionType,    // IN: the session type
+              MSSIMI_ALG_HASH  authHash,       // IN: the hash algorithm
+              MSSIM2B_NONCE*   nonceCaller,    // IN: initial nonceCaller
+              MSSIMT_SYM_DEF*  symmetric,      // IN: the symmetric algorithm
+              MSSIMI_DH_ENTITY bind,           // IN: the bind object
+              MSSIM2B_DATA*    seed,           // IN: seed data
+              MSSIM_HANDLE*    sessionHandle,  // OUT: the session handle
+              MSSIM2B_NONCE*   nonceTpm        // OUT: the session nonce
 )
 {
-    TPM_RC       result = TPM_RC_SUCCESS;
+    MSSIM_RC       result = MSSIM_RC_SUCCESS;
     CONTEXT_SLOT slotIndex;
     SESSION*     session = NULL;
 
-    pAssert(sessionType == TPM_SE_HMAC || sessionType == TPM_SE_POLICY
-            || sessionType == TPM_SE_TRIAL);
+    pAssert(sessionType == MSSIM_SE_HMAC || sessionType == MSSIM_SE_POLICY
+            || sessionType == MSSIM_SE_TRIAL);
 
     // If there are no open spots in the session array, then no point in searching
     if(s_freeSessionSlots == 0)
-        return TPM_RC_SESSION_MEMORY;
+        return MSSIM_RC_SESSION_MEMORY;
 
     // Find a space for loading a session
     for(slotIndex = 0; slotIndex < MAX_LOADED_SESSIONS; slotIndex++)
@@ -458,13 +458,13 @@ SessionCreate(TPM_SE         sessionType,    // IN: the session type
     if(slotIndex >= MAX_LOADED_SESSIONS)
         FAIL(FATAL_ERROR_INTERNAL);
 
-    // Call context ID function to get a handle.  TPM_RC_SESSION_HANDLE may be
+    // Call context ID function to get a handle.  MSSIM_RC_SESSION_HANDLE may be
     // returned from ContextIdHandelAssign()
     result = ContextIdSessionCreate(sessionHandle, slotIndex);
-    if(result != TPM_RC_SUCCESS)
+    if(result != MSSIM_RC_SUCCESS)
         return result;
 
-    //*** Only return from this point on is TPM_RC_SUCCESS
+    //*** Only return from this point on is MSSIM_RC_SUCCESS
 
     // Can now indicate that the session array entry is occupied.
     s_freeSessionSlots--;
@@ -476,7 +476,7 @@ SessionCreate(TPM_SE         sessionType,    // IN: the session type
     // Initialize internal session data
     session->authHashAlg = authHash;
     // Initialize session type
-    if(sessionType == TPM_SE_HMAC)
+    if(sessionType == MSSIM_SE_HMAC)
     {
         *sessionHandle += HMAC_SESSION_FIRST;
     }
@@ -484,9 +484,9 @@ SessionCreate(TPM_SE         sessionType,    // IN: the session type
     {
         *sessionHandle += POLICY_SESSION_FIRST;
 
-        // For TPM_SE_POLICY or TPM_SE_TRIAL
+        // For MSSIM_SE_POLICY or MSSIM_SE_TRIAL
         session->attributes.isPolicy = SET;
-        if(sessionType == TPM_SE_TRIAL)
+        if(sessionType == MSSIM_SE_TRIAL)
             session->attributes.isTrialPolicy = SET;
 
         SessionSetStartTime(session);
@@ -498,29 +498,29 @@ SessionCreate(TPM_SE         sessionType,    // IN: the session type
             CryptHashGetDigestSize(session->authHashAlg);
     }
     // Create initial session nonce
-    session->nonceTPM.t.size = nonceCaller->t.size;
-    CryptRandomGenerate(session->nonceTPM.t.size, session->nonceTPM.t.buffer);
-    MemoryCopy2B(&nonceTpm->b, &session->nonceTPM.b, sizeof(nonceTpm->t.buffer));
+    session->nonceMSSIM.t.size = nonceCaller->t.size;
+    CryptRandomGenerate(session->nonceMSSIM.t.size, session->nonceMSSIM.t.buffer);
+    MemoryCopy2B(&nonceTpm->b, &session->nonceMSSIM.b, sizeof(nonceTpm->t.buffer));
 
     // Set up session parameter encryption algorithm
     session->symmetric = *symmetric;
 
     // If there is a bind object or a session secret, then need to compute
     // a sessionKey.
-    if(bind != TPM_RH_NULL || seed->t.size != 0)
+    if(bind != MSSIM_RH_NULL || seed->t.size != 0)
     {
-        // sessionKey = KDFa(hash, (authValue || seed), "ATH", nonceTPM,
+        // sessionKey = KDFa(hash, (authValue || seed), "ATH", nonceMSSIM,
         //                      nonceCaller, bits)
         // The HMAC key for generating the sessionSecret can be the concatenation
         // of an authorization value and a seed value
-        TPM2B_TYPE(KEY, (sizeof(TPMT_HA) + sizeof(seed->t.buffer)));
-        TPM2B_KEY key;
+        MSSIM2B_TYPE(KEY, (sizeof(MSSIMT_HA) + sizeof(seed->t.buffer)));
+        MSSIM2B_KEY key;
 
         // Get hash size, which is also the length of sessionKey
         session->sessionKey.t.size = CryptHashGetDigestSize(session->authHashAlg);
 
         // Get authValue of associated entity
-        EntityGetAuthValue(bind, (TPM2B_AUTH*)&key);
+        EntityGetAuthValue(bind, (MSSIM2B_AUTH*)&key);
         pAssert(key.t.size + seed->t.size <= sizeof(key.t.buffer));
 
         // Concatenate authValue and seed
@@ -530,7 +530,7 @@ SessionCreate(TPM_SE         sessionType,    // IN: the session type
         CryptKDFa(session->authHashAlg,
                   &key.b,
                   SESSION_KEY,
-                  &session->nonceTPM.b,
+                  &session->nonceMSSIM.b,
                   &nonceCaller->b,
                   session->sessionKey.t.size * 8,
                   session->sessionKey.t.buffer,
@@ -540,37 +540,37 @@ SessionCreate(TPM_SE         sessionType,    // IN: the session type
 
     // Copy the name of the entity that the HMAC session is bound to
     // Policy session is not bound to an entity
-    if(bind != TPM_RH_NULL && sessionType == TPM_SE_HMAC)
+    if(bind != MSSIM_RH_NULL && sessionType == MSSIM_SE_HMAC)
     {
         session->attributes.isBound = SET;
         SessionComputeBoundEntity(bind, &session->u1.boundEntity);
     }
     // If there is a bind object and it is subject to DA, then use of this session
     // is subject to DA regardless of how it is used.
-    session->attributes.isDaBound = (bind != TPM_RH_NULL)
+    session->attributes.isDaBound = (bind != MSSIM_RH_NULL)
                                     && (IsDAExempted(bind) == FALSE);
 
     // If the session is bound, then check to see if it is bound to lockoutAuth
     session->attributes.isLockoutBound = (session->attributes.isDaBound == SET)
-                                         && (bind == TPM_RH_LOCKOUT);
-    return TPM_RC_SUCCESS;
+                                         && (bind == MSSIM_RH_LOCKOUT);
+    return MSSIM_RC_SUCCESS;
 }
 
 //*** SessionContextSave()
 // This function is called when a session context is to be saved.  The
 // contextID of the saved session is returned.  If no contextID can be
-// assigned, then the routine returns TPM_RC_CONTEXT_GAP.
+// assigned, then the routine returns MSSIM_RC_CONTEXT_GAP.
 // If the function completes normally, the session slot will be freed.
 //
 // This function requires that 'handle' references a loaded session.
 // Otherwise, it should not be called at the first place.
 //
-//  Return Type: TPM_RC
-//      TPM_RC_CONTEXT_GAP              a contextID could not be assigned
-//      TPM_RC_TOO_MANY_CONTEXTS        the counter maxed out
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_CONTEXT_GAP              a contextID could not be assigned
+//      MSSIM_RC_TOO_MANY_CONTEXTS        the counter maxed out
 //
-TPM_RC
-SessionContextSave(TPM_HANDLE       handle,    // IN: session handle
+MSSIM_RC
+SessionContextSave(MSSIM_HANDLE       handle,    // IN: session handle
                    CONTEXT_COUNTER* contextID  // OUT: assigned contextID
 )
 {
@@ -585,7 +585,7 @@ SessionContextSave(TPM_HANDLE       handle,    // IN: session handle
        // if the oldest saved session has the same value as the low bits
        // of the contextCounter, then the GAP is maxed out.
        && gr.contextArray[s_oldestSavedSession] == (CONTEXT_SLOT)gr.contextCounter)
-        return TPM_RC_CONTEXT_GAP;
+        return MSSIM_RC_CONTEXT_GAP;
 
     // if the caller wants the context counter, set it
     if(contextID != NULL)
@@ -611,7 +611,7 @@ SessionContextSave(TPM_HANDLE       handle,    // IN: session handle
         // back it up
         gr.contextCounter--;
         // return an error
-        return TPM_RC_TOO_MANY_CONTEXTS;
+        return MSSIM_RC_TOO_MANY_CONTEXTS;
     }
     // if the low-order bits wrapped, need to advance the value to skip over
     // the values used to indicate that a session is loaded
@@ -628,7 +628,7 @@ SessionContextSave(TPM_HANDLE       handle,    // IN: session handle
     // and indicate that there is an additional open slot
     s_freeSessionSlots++;
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 //*** SessionContextLoad()
@@ -636,29 +636,29 @@ SessionContextSave(TPM_HANDLE       handle,    // IN: session handle
 // handle must be for a saved context.
 //
 // If the gap is at a maximum, then the only session that can be loaded is
-// the oldest session, otherwise TPM_RC_CONTEXT_GAP is returned.
+// the oldest session, otherwise MSSIM_RC_CONTEXT_GAP is returned.
 ///
 // This function requires that 'handle' references a valid saved session.
 //
-//  Return Type: TPM_RC
-//      TPM_RC_SESSION_MEMORY       no free session slots
-//      TPM_RC_CONTEXT_GAP          the gap count is maximum and this
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_SESSION_MEMORY       no free session slots
+//      MSSIM_RC_CONTEXT_GAP          the gap count is maximum and this
 //                                  is not the oldest saved context
 //
-TPM_RC
+MSSIM_RC
 SessionContextLoad(SESSION_BUF* session,  // IN: session structure from saved context
-                   TPM_HANDLE*  handle    // IN/OUT: session handle
+                   MSSIM_HANDLE*  handle    // IN/OUT: session handle
 )
 {
     UINT32       contextIndex;
     CONTEXT_SLOT slotIndex;
 
-    pAssert(HandleGetType(*handle) == TPM_HT_POLICY_SESSION
-            || HandleGetType(*handle) == TPM_HT_HMAC_SESSION);
+    pAssert(HandleGetType(*handle) == MSSIM_HT_POLICY_SESSION
+            || HandleGetType(*handle) == MSSIM_HT_HMAC_SESSION);
 
     // Don't bother looking if no openings
     if(s_freeSessionSlots == 0)
-        return TPM_RC_SESSION_MEMORY;
+        return MSSIM_RC_SESSION_MEMORY;
 
     // Find a free session slot to load the session
     for(slotIndex = 0; slotIndex < MAX_LOADED_SESSIONS; slotIndex++)
@@ -675,7 +675,7 @@ SessionContextLoad(SESSION_BUF* session,  // IN: session structure from saved co
     if(s_oldestSavedSession < MAX_ACTIVE_SESSIONS && s_freeSessionSlots == 1
        && (CONTEXT_SLOT)gr.contextCounter == gr.contextArray[s_oldestSavedSession]
        && contextIndex != s_oldestSavedSession)
-        return TPM_RC_CONTEXT_GAP;
+        return MSSIM_RC_CONTEXT_GAP;
 
     pAssert(contextIndex < MAX_ACTIVE_SESSIONS);
 
@@ -696,7 +696,7 @@ SessionContextLoad(SESSION_BUF* session,  // IN: session structure from saved co
     // Reduce the number of open spots
     s_freeSessionSlots--;
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 //*** SessionFlush()
@@ -706,14 +706,14 @@ SessionContextLoad(SESSION_BUF* session,  // IN: session structure from saved co
 //
 // This function requires that 'handle' be a valid active session.
 //
-void SessionFlush(TPM_HANDLE handle  // IN: loaded or saved session handle
+void SessionFlush(MSSIM_HANDLE handle  // IN: loaded or saved session handle
 )
 {
     CONTEXT_SLOT slotIndex;
     UINT32       contextIndex;  // Index into contextArray
 
-    pAssert((HandleGetType(handle) == TPM_HT_POLICY_SESSION
-             || HandleGetType(handle) == TPM_HT_HMAC_SESSION)
+    pAssert((HandleGetType(handle) == MSSIM_HT_POLICY_SESSION
+             || HandleGetType(handle) == MSSIM_HT_HMAC_SESSION)
             && (SessionIsLoaded(handle) || SessionIsSaved(handle)));
 
     // Flush context ID of this session
@@ -756,11 +756,11 @@ void SessionFlush(TPM_HANDLE handle  // IN: loaded or saved session handle
 // For those values, the Name and the authValue are concatenated
 // into the bind buffer.  If they will not both fit, the will be overlapped
 // by XORing bytes.  If XOR is required, the bind value will be full.
-void SessionComputeBoundEntity(TPMI_DH_ENTITY entityHandle,  // IN: handle of entity
-                               TPM2B_NAME*    bind           // OUT: binding value
+void SessionComputeBoundEntity(MSSIMI_DH_ENTITY entityHandle,  // IN: handle of entity
+                               MSSIM2B_NAME*    bind           // OUT: binding value
 )
 {
-    TPM2B_AUTH auth;
+    MSSIM2B_AUTH auth;
     BYTE*      pAuth = auth.t.buffer;
     UINT16     i;
 
@@ -768,7 +768,7 @@ void SessionComputeBoundEntity(TPMI_DH_ENTITY entityHandle,  // IN: handle of en
     EntityGetName(entityHandle, bind);
 
     //    // The bound value of a reserved handle is the handle itself
-    //    if(bind->t.size == sizeof(TPM_HANDLE)) return;
+    //    if(bind->t.size == sizeof(MSSIM_HANDLE)) return;
 
     // For all the other entities, concatenate the authorization value to the name.
     // Get a local copy of the authorization value because some overlapping
@@ -845,19 +845,19 @@ void SessionResetPolicyData(SESSION* session  // IN: the session to reset
 //
 // 'Handle' must be in valid loaded session handle range, but does not
 // have to point to a loaded session.
-//  Return Type: TPMI_YES_NO
+//  Return Type: MSSIMI_YES_NO
 //      YES         if there are more handles available
 //      NO          all the available handles has been returned
-TPMI_YES_NO
-SessionCapGetLoaded(TPMI_SH_POLICY handle,     // IN: start handle
+MSSIMI_YES_NO
+SessionCapGetLoaded(MSSIMI_SH_POLICY handle,     // IN: start handle
                     UINT32         count,      // IN: count of returned handles
-                    TPML_HANDLE*   handleList  // OUT: list of handle
+                    MSSIML_HANDLE*   handleList  // OUT: list of handle
 )
 {
-    TPMI_YES_NO more = NO;
+    MSSIMI_YES_NO more = NO;
     UINT32      i;
 
-    pAssert(HandleGetType(handle) == TPM_HT_LOADED_SESSION);
+    pAssert(HandleGetType(handle) == MSSIM_HT_LOADED_SESSION);
 
     // Initialize output handle list
     handleList->count = 0;
@@ -910,22 +910,22 @@ SessionCapGetLoaded(TPMI_SH_POLICY handle,     // IN: start handle
 // 'Handle' must be in a valid handle range, but does not have to point to a
 // saved session
 //
-//  Return Type: TPMI_YES_NO
+//  Return Type: MSSIMI_YES_NO
 //      YES         if there are more handles available
 //      NO          all the available handles has been returned
-TPMI_YES_NO
-SessionCapGetSaved(TPMI_SH_HMAC handle,     // IN: start handle
+MSSIMI_YES_NO
+SessionCapGetSaved(MSSIMI_SH_HMAC handle,     // IN: start handle
                    UINT32       count,      // IN: count of returned handles
-                   TPML_HANDLE* handleList  // OUT: list of handle
+                   MSSIML_HANDLE* handleList  // OUT: list of handle
 )
 {
-    TPMI_YES_NO more = NO;
+    MSSIMI_YES_NO more = NO;
     UINT32      i;
 
-#ifdef TPM_HT_SAVED_SESSION
-    pAssert(HandleGetType(handle) == TPM_HT_SAVED_SESSION);
+#ifdef MSSIM_HT_SAVED_SESSION
+    pAssert(HandleGetType(handle) == MSSIM_HT_SAVED_SESSION);
 #else
-    pAssert(HandleGetType(handle) == TPM_HT_ACTIVE_SESSION);
+    pAssert(HandleGetType(handle) == MSSIM_HT_ACTIVE_SESSION);
 #endif
 
     // Initialize output handle list
@@ -967,7 +967,7 @@ SessionCapGetSaved(TPMI_SH_HMAC handle,     // IN: start handle
 
 //*** SessionCapGetLoadedNumber()
 // This function return the number of authorization sessions currently
-// loaded into TPM RAM.
+// loaded into MSSIM RAM.
 UINT32
 SessionCapGetLoadedNumber(void)
 {
@@ -976,7 +976,7 @@ SessionCapGetLoadedNumber(void)
 
 //*** SessionCapGetLoadedAvail()
 // This function returns the number of additional authorization sessions, of
-// any type, that could be loaded into TPM RAM.
+// any type, that could be loaded into MSSIM RAM.
 // NOTE: In other implementations, this number may just be an estimate. The only
 //       requirement for the estimate is, if it is one or more, then at least one
 //       session must be loadable.
@@ -988,7 +988,7 @@ SessionCapGetLoadedAvail(void)
 
 //*** SessionCapGetActiveNumber()
 // This function returns the number of active authorization sessions currently
-// being tracked by the TPM.
+// being tracked by the MSSIM.
 UINT32
 SessionCapGetActiveNumber(void)
 {
@@ -1008,7 +1008,7 @@ SessionCapGetActiveNumber(void)
 //*** SessionCapGetActiveAvail()
 // This function returns the number of additional authorization sessions, of any
 // type, that could be created. This not the number of slots for sessions, but
-// the number of additional sessions that the TPM is capable of tracking.
+// the number of additional sessions that the MSSIM is capable of tracking.
 UINT32
 SessionCapGetActiveAvail(void)
 {

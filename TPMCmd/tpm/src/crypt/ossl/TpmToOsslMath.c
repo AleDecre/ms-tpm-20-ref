@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -33,7 +33,7 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 //** Introduction
-// The functions in this file provide the low-level interface between the TPM code
+// The functions in this file provide the low-level interface between the MSSIM code
 // and the big number and elliptic curve math routines in OpenSSL.
 //
 // Most math on big numbers require a context. The context contains the memory in
@@ -62,7 +62,7 @@
 //** Functions
 
 //*** OsslToTpmBn()
-// This function converts an OpenSSL BIGNUM to a TPM bignum. In this implementation
+// This function converts an OpenSSL BIGNUM to a MSSIM bignum. In this implementation
 // it is assumed that OpenSSL uses a different control structure but the same data
 // layout -- an array of native-endian words in little-endian order.
 //  Return Type: BOOL
@@ -89,7 +89,7 @@ Error:
 }
 
 //*** BigInitialized()
-// This function initializes an OSSL BIGNUM from a TPM bigConst. Do not use this for
+// This function initializes an OSSL BIGNUM from a MSSIM bigConst. Do not use this for
 // values that are passed to OpenSLL when they are not declared as const in the
 // function prototype. Instead, use BnNewVariable().
 BIGNUM* BigInitialized(BIGNUM* toInit, bigConst initializer)
@@ -413,15 +413,15 @@ static EC_POINT* EcPointInitialized(pointConst initializer, bigCurve E)
 
 //*** BnCurveInitialize()
 // This function initializes the OpenSSL curve information structure. This
-// structure points to the TPM-defined values for the curve, to the context for the
+// structure points to the MSSIM-defined values for the curve, to the context for the
 // number values in the frame, and to the OpenSSL-defined group values.
 //  Return Type: bigCurve *
-//      NULL        the TPM_ECC_CURVE is not valid or there was a problem in
+//      NULL        the MSSIM_ECC_CURVE is not valid or there was a problem in
 //                  in initializing the curve data
 //      non-NULL    points to 'E'
 LIB_EXPORT bigCurve BnCurveInitialize(
     bigCurve      E,       // IN: curve structure to initialize
-    TPM_ECC_CURVE curveId  // IN: curve identifier
+    MSSIM_ECC_CURVE curveId  // IN: curve identifier
 )
 {
     const ECC_CURVE_DATA* C = GetCurveData(curveId);
@@ -431,7 +431,7 @@ LIB_EXPORT bigCurve BnCurveInitialize(
     {
         // This creates the OpenSSL memory context that stays in effect as long as the
         // curve (E) is defined.
-        OSSL_ENTER();  // if the allocation fails, the TPM fails
+        OSSL_ENTER();  // if the allocation fails, the MSSIM fails
         EC_POINT* P = NULL;
         BIG_INITIALIZED(bnP, C->prime);
         BIG_INITIALIZED(bnA, C->a);

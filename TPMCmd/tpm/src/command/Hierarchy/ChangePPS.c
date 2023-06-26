@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,13 +40,13 @@
 /*(See part 3 specification)
 // Reset current PPS value
 */
-TPM_RC
-TPM2_ChangePPS(ChangePPS_In* in  // IN: input parameter list
+MSSIM_RC
+MSSIM2_ChangePPS(ChangePPS_In* in  // IN: input parameter list
 )
 {
     UINT32 i;
 
-    // Check if NV is available.  A TPM_RC_NV_UNAVAILABLE or TPM_RC_NV_RATE
+    // Check if NV is available.  A MSSIM_RC_NV_UNAVAILABLE or MSSIM_RC_NV_RATE
     // error may be returned at this point
     RETURN_IF_NV_IS_NOT_AVAILABLE;
 
@@ -63,14 +63,14 @@ TPM2_ChangePPS(ChangePPS_In* in  // IN: input parameter list
     CryptRandomGenerate(sizeof(gp.phProof.t.buffer), gp.phProof.t.buffer);
 
     // Set platform authPolicy to null
-    gc.platformAlg           = TPM_ALG_NULL;
+    gc.platformAlg           = MSSIM_ALG_NULL;
     gc.platformPolicy.t.size = 0;
 
     // Flush loaded object in platform hierarchy
-    ObjectFlushHierarchy(TPM_RH_PLATFORM);
+    ObjectFlushHierarchy(MSSIM_RH_PLATFORM);
 
     // Flush platform evict object and index in NV
-    NvFlushHierarchy(TPM_RH_PLATFORM);
+    NvFlushHierarchy(MSSIM_RH_PLATFORM);
 
     // Save hierarchy changes to NV
     NV_SYNC_PERSISTENT(PPSeed);
@@ -80,7 +80,7 @@ TPM2_ChangePPS(ChangePPS_In* in  // IN: input parameter list
 #  if defined NUM_POLICY_PCR_GROUP && NUM_POLICY_PCR_GROUP > 0
     for(i = 0; i < NUM_POLICY_PCR_GROUP; i++)
     {
-        gp.pcrPolicies.hashAlg[i]       = TPM_ALG_NULL;
+        gp.pcrPolicies.hashAlg[i]       = MSSIM_ALG_NULL;
         gp.pcrPolicies.policy[i].t.size = 0;
     }
     NV_SYNC_PERSISTENT(pcrPolicies);
@@ -89,7 +89,7 @@ TPM2_ChangePPS(ChangePPS_In* in  // IN: input parameter list
     // orderly state should be cleared because of the update to state clear data
     g_clearOrderly = TRUE;
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_ChangePPS

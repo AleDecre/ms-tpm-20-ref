@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -37,7 +37,7 @@
 //
 // This file contains the math functions that are not implemented in the BnMath
 // library (yet). These math functions will call the ST MPA library or the
-// LibTomCrypt library to execute the operations. Since the TPM internal big number
+// LibTomCrypt library to execute the operations. Since the MSSIM internal big number
 // format is identical to the MPA format, no reformatting is required.
 
 //** Includes
@@ -111,7 +111,7 @@ LIB_EXPORT BOOL BnDiv(
     return TRUE;
 }
 
-#  ifdef TPM_ALG_RSA
+#  ifdef MSSIM_ALG_RSA
 //*** BnGcd()
 // Get the greatest common divisor of two numbers
 LIB_EXPORT BOOL BnGcd(bigNum   gcd,      // OUT: the common divisor
@@ -173,9 +173,9 @@ LIB_EXPORT BOOL BnModInverse(bigNum result, bigConst number, bigConst modulus)
     MPA_LEAVE();
     return retVal;
 }
-#  endif  // TPM_ALG_RSA
+#  endif  // MSSIM_ALG_RSA
 
-#  ifdef TPM_ALG_ECC
+#  ifdef MSSIM_ALG_ECC
 
 //*** BnEccModMult()
 // This function does a point multiply of the form R = [d]S
@@ -204,7 +204,7 @@ LIB_EXPORT BOOL BnEccModMult(bigPoint   R,  // OUT: computed point
         BnPointCopy(R, result);
 
     MPA_LEAVE();
-    return OK ? TPM_RC_SUCCESS : TPM_RC_NO_RESULT;
+    return OK ? MSSIM_RC_SUCCESS : MSSIM_RC_NO_RESULT;
 }
 
 //*** BnEccModMult2()
@@ -242,7 +242,7 @@ LIB_EXPORT BOOL BnEccModMult2(bigPoint   R,  // OUT: computed point
         BnPointCopy(R, result);
 
     MPA_LEAVE();
-    return OK ? TPM_RC_SUCCESS : TPM_RC_NO_RESULT;
+    return OK ? MSSIM_RC_SUCCESS : MSSIM_RC_NO_RESULT;
 }
 
 //*** BnEccAdd()
@@ -262,6 +262,6 @@ LIB_EXPORT BOOL BnEccAdd(bigPoint   R,  // OUT: computed point
     return BnEccModMult2(R, S, one, Q, one, E);
 }
 
-#  endif  // TPM_ALG_ECC
+#  endif  // MSSIM_ALG_ECC
 
 #endif  // MATH_LIB_LTC

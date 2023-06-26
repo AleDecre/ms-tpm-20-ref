@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -37,8 +37,8 @@
  *  Date: Aug 30, 2019  Time: 02:11:54PM
  */
 
-#ifndef _TPM_TO_LTC_DES_SUPPORT_FP_H_
-#define _TPM_TO_LTC_DES_SUPPORT_FP_H_
+#ifndef _MSSIM_TO_LTC_DES_SUPPORT_FP_H_
+#define _MSSIM_TO_LTC_DES_SUPPORT_FP_H_
 
 #if(defined SYM_LIB_LTC) && ALG_TDES
 
@@ -50,4 +50,4 @@
 void TDES_setup(const BYTE* key, UINT32 keyBits, symmetric_key* skey);
 #endif  // MATH_LIB_LTC && ALG_TDES
 
-#endif  // _TPM_TO_LTC_DES_SUPPORT_FP_H_
+#endif  // _MSSIM_TO_LTC_DES_SUPPORT_FP_H_

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -38,10 +38,10 @@
 #define _CRYPT_TEST_H
 
 // This is the definition of a bit array with one bit per algorithm.
-// NOTE: Since bit numbering starts at zero, when TPM_ALG_LAST is a multiple of 8,
+// NOTE: Since bit numbering starts at zero, when MSSIM_ALG_LAST is a multiple of 8,
 // ALGORITHM_VECTOR will need to have byte for the single bit in the last byte. So,
-// for example, when TPM_ALG_LAST is 8, ALGORITHM_VECTOR will need 2 bytes.
-#define ALGORITHM_VECTOR_BYTES ((TPM_ALG_LAST + 8) / 8)
+// for example, when MSSIM_ALG_LAST is 8, ALGORITHM_VECTOR will need 2 bytes.
+#define ALGORITHM_VECTOR_BYTES ((MSSIM_ALG_LAST + 8) / 8)
 typedef BYTE ALGORITHM_VECTOR[ALGORITHM_VECTOR_BYTES];
 
 #ifdef TEST_SELF_TEST

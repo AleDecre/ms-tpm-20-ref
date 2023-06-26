@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -38,37 +38,37 @@
 #if CC_ECDH_KeyGen  // Conditional expansion of this file
 
 /*(See part 3 specification)
-// This command uses the TPM to generate an ephemeral public key and the product
+// This command uses the MSSIM to generate an ephemeral public key and the product
 // of the ephemeral private key and the public portion of an ECC key.
 */
-//  Return Type: TPM_RC
-//      TPM_RC_KEY              'keyHandle' does not reference an ECC key
-TPM_RC
-TPM2_ECDH_KeyGen(ECDH_KeyGen_In*  in,  // IN: input parameter list
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_KEY              'keyHandle' does not reference an ECC key
+MSSIM_RC
+MSSIM2_ECDH_KeyGen(ECDH_KeyGen_In*  in,  // IN: input parameter list
                  ECDH_KeyGen_Out* out  // OUT: output parameter list
 )
 {
     OBJECT*             eccKey;
-    TPM2B_ECC_PARAMETER sensitive;
-    TPM_RC              result;
+    MSSIM2B_ECC_PARAMETER sensitive;
+    MSSIM_RC              result;
 
     // Input Validation
 
     eccKey = HandleToObject(in->keyHandle);
 
     // Referenced key must be an ECC key
-    if(eccKey->publicArea.type != TPM_ALG_ECC)
-        return TPM_RCS_KEY + RC_ECDH_KeyGen_keyHandle;
+    if(eccKey->publicArea.type != MSSIM_ALG_ECC)
+        return MSSIM_RCS_KEY + RC_ECDH_KeyGen_keyHandle;
 
     // Command Output
     do
     {
-        TPMT_PUBLIC* keyPublic = &eccKey->publicArea;
+        MSSIMT_PUBLIC* keyPublic = &eccKey->publicArea;
         // Create ephemeral ECC key
         result = CryptEccNewKeyPair(&out->pubPoint.point,
                                     &sensitive,
                                     keyPublic->parameters.eccDetail.curveID);
-        if(result == TPM_RC_SUCCESS)
+        if(result == MSSIM_RC_SUCCESS)
         {
             // Compute Z
             result = CryptEccPointMultiply(&out->zPoint.point,
@@ -79,14 +79,14 @@ TPM2_ECDH_KeyGen(ECDH_KeyGen_In*  in,  // IN: input parameter list
                                            NULL);
             // The point in the key is not on the curve. Indicate
             // that the key is bad.
-            if(result == TPM_RC_ECC_POINT)
-                return TPM_RCS_KEY + RC_ECDH_KeyGen_keyHandle;
+            if(result == MSSIM_RC_ECC_POINT)
+                return MSSIM_RCS_KEY + RC_ECDH_KeyGen_keyHandle;
             // The other possible error from CryptEccPointMultiply is
-            // TPM_RC_NO_RESULT indicating that the multiplication resulted in
+            // MSSIM_RC_NO_RESULT indicating that the multiplication resulted in
             // the point at infinity, so get a new random key and start over
             // BTW, this never happens.
         }
-    } while(result == TPM_RC_NO_RESULT);
+    } while(result == MSSIM_RC_NO_RESULT);
     return result;
 }
 

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,26 +45,26 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT handle;
-    TPM2B_DIGEST   credential;
-    TPM2B_NAME     objectName;
+    MSSIMI_DH_OBJECT handle;
+    MSSIM2B_DIGEST   credential;
+    MSSIM2B_NAME     objectName;
 } MakeCredential_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_ID_OBJECT        credentialBlob;
-    TPM2B_ENCRYPTED_SECRET secret;
+    MSSIM2B_ID_OBJECT        credentialBlob;
+    MSSIM2B_ENCRYPTED_SECRET secret;
 } MakeCredential_Out;
 
 // Response code modifiers
-#    define RC_MakeCredential_handle     (TPM_RC_H + TPM_RC_1)
-#    define RC_MakeCredential_credential (TPM_RC_P + TPM_RC_1)
-#    define RC_MakeCredential_objectName (TPM_RC_P + TPM_RC_2)
+#    define RC_MakeCredential_handle     (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_MakeCredential_credential (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_MakeCredential_objectName (MSSIM_RC_P + MSSIM_RC_2)
 
 // Function prototype
-TPM_RC
-TPM2_MakeCredential(MakeCredential_In* in, MakeCredential_Out* out);
+MSSIM_RC
+MSSIM2_MakeCredential(MakeCredential_In* in, MakeCredential_Out* out);
 
 #  endif  // _Make_Credential_FP_H_
 #endif    // CC_MakeCredential

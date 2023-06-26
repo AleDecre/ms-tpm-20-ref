@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -54,16 +54,16 @@ CryptSetOddByteParity(UINT64 k);
 // of valid is that none of the elements are on the list of weak, semi-weak, or
 // possibly weak keys; and that for two keys, K1!=K2, and for three keys that
 // K1!=K2 and K2!=K3.
-BOOL CryptDesValidateKey(TPM2B_SYM_KEY* desKey  // IN: key to validate
+BOOL CryptDesValidateKey(MSSIM2B_SYM_KEY* desKey  // IN: key to validate
 );
 
 //*** CryptGenerateKeyDes()
 // This function is used to create a DES key of the appropriate size. The key will
 // have odd parity in the bytes.
-TPM_RC
-CryptGenerateKeyDes(TPMT_PUBLIC* publicArea,    // IN/OUT: The public area template
+MSSIM_RC
+CryptGenerateKeyDes(MSSIMT_PUBLIC* publicArea,    // IN/OUT: The public area template
                                                 //     for the new key.
-                    TPMT_SENSITIVE* sensitive,  // OUT: sensitive area
+                    MSSIMT_SENSITIVE* sensitive,  // OUT: sensitive area
                     RAND_STATE*     rand        // IN: the "entropy" source for
 );
 #endif

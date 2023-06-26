@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,46 +40,46 @@
 /*(See part 3 specification)
 // Creates a primary or temporary object from a primary seed.
 */
-//  Return Type: TPM_RC
-//      TPM_RC_ATTRIBUTES       sensitiveDataOrigin is CLEAR when sensitive.data is an
-//                              Empty Buffer 'fixedTPM', 'fixedParent', or
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_ATTRIBUTES       sensitiveDataOrigin is CLEAR when sensitive.data is an
+//                              Empty Buffer 'fixedMSSIM', 'fixedParent', or
 //                              'encryptedDuplication' attributes are inconsistent
 //                              between themselves or with those of the parent object;
 //                              inconsistent 'restricted', 'decrypt' and 'sign'
 //                              attributes
 //                              attempt to inject sensitive data for an asymmetric
 //                              key;
-//      TPM_RC_KDF              incorrect KDF specified for decrypting keyed hash
+//      MSSIM_RC_KDF              incorrect KDF specified for decrypting keyed hash
 //                              object
-//      TPM_RC_KEY              a provided symmetric key value is not allowed
-//      TPM_RC_OBJECT_MEMORY    there is no free slot for the object
-//      TPM_RC_SCHEME           inconsistent attributes 'decrypt', 'sign',
+//      MSSIM_RC_KEY              a provided symmetric key value is not allowed
+//      MSSIM_RC_OBJECT_MEMORY    there is no free slot for the object
+//      MSSIM_RC_SCHEME           inconsistent attributes 'decrypt', 'sign',
 //                              'restricted' and key's scheme ID; or hash algorithm is
 //                              inconsistent with the scheme ID for keyed hash object
-//      TPM_RC_SIZE             size of public authorization policy or sensitive
+//      MSSIM_RC_SIZE             size of public authorization policy or sensitive
 //                              authorization value does not match digest size of the
 //                              name algorithm; or sensitive data size for the keyed
 //                              hash object is larger than is allowed for the scheme
-//      TPM_RC_SYMMETRIC        a storage key with no symmetric algorithm specified;
+//      MSSIM_RC_SYMMETRIC        a storage key with no symmetric algorithm specified;
 //                              or non-storage key with symmetric algorithm different
-//                              from TPM_ALG_NULL
-//      TPM_RC_TYPE             unknown object type
-TPM_RC
-TPM2_CreatePrimary(CreatePrimary_In*  in,  // IN: input parameter list
+//                              from MSSIM_ALG_NULL
+//      MSSIM_RC_TYPE             unknown object type
+MSSIM_RC
+MSSIM2_CreatePrimary(CreatePrimary_In*  in,  // IN: input parameter list
                    CreatePrimary_Out* out  // OUT: output parameter list
 )
 {
-    TPM_RC       result = TPM_RC_SUCCESS;
-    TPMT_PUBLIC* publicArea;
+    MSSIM_RC       result = MSSIM_RC_SUCCESS;
+    MSSIMT_PUBLIC* publicArea;
     DRBG_STATE   rand;
     OBJECT*      newObject;
-    TPM2B_NAME   name;
+    MSSIM2B_NAME   name;
 
     // Input Validation
     // Will need a place to put the result
     newObject = FindEmptyObjectSlot(&out->objectHandle);
     if(newObject == NULL)
-        return TPM_RC_OBJECT_MEMORY;
+        return MSSIM_RC_OBJECT_MEMORY;
     // Get the address of the public area in the new object
     // (this is just to save typing)
     publicArea  = &newObject->publicArea;
@@ -90,11 +90,11 @@ TPM2_CreatePrimary(CreatePrimary_In*  in,  // IN: input parameter list
     // are unique to creation and then validates the attributes and values that are
     // common to create and load.
     result = CreateChecks(NULL, publicArea, in->inSensitive.sensitive.data.t.size);
-    if(result != TPM_RC_SUCCESS)
+    if(result != MSSIM_RC_SUCCESS)
         return RcSafeAddToResult(result, RC_CreatePrimary_inPublic);
     // Validate the sensitive area values
     if(!AdjustAuthSize(&in->inSensitive.sensitive.userAuth, publicArea->nameAlg))
-        return TPM_RCS_SIZE + RC_CreatePrimary_inSensitive;
+        return MSSIM_RCS_SIZE + RC_CreatePrimary_inSensitive;
     // Command output
     // Compute the name using out->name as a scratch area (this is not the value
     // that ultimately will be returned, then instantiate the state that will be
@@ -105,19 +105,19 @@ TPM2_CreatePrimary(CreatePrimary_In*  in,  // IN: input parameter list
         DRBG_InstantiateSeeded(&rand,
                                &HierarchyGetPrimarySeed(in->primaryHandle)->b,
                                PRIMARY_OBJECT_CREATION,
-                               (TPM2B*)PublicMarshalAndComputeName(publicArea, &name),
+                               (MSSIM2B*)PublicMarshalAndComputeName(publicArea, &name),
                                &in->inSensitive.sensitive.data.b);
-    if(result == TPM_RC_SUCCESS)
+    if(result == MSSIM_RC_SUCCESS)
     {
         newObject->attributes.primary = SET;
-        if(in->primaryHandle == TPM_RH_ENDORSEMENT)
+        if(in->primaryHandle == MSSIM_RH_ENDORSEMENT)
             newObject->attributes.epsHierarchy = SET;
 
         // Create the primary object.
         result = CryptCreateObject(
             newObject, &in->inSensitive.sensitive, (RAND_STATE*)&rand);
     }
-    if(result != TPM_RC_SUCCESS)
+    if(result != MSSIM_RC_SUCCESS)
         return result;
 
     // Set the publicArea and name from the computed values

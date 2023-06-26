@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,33 +45,33 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT         parentHandle;
-    TPM2B_SENSITIVE_CREATE inSensitive;
-    TPM2B_PUBLIC           inPublic;
-    TPM2B_DATA             outsideInfo;
-    TPML_PCR_SELECTION     creationPCR;
+    MSSIMI_DH_OBJECT         parentHandle;
+    MSSIM2B_SENSITIVE_CREATE inSensitive;
+    MSSIM2B_PUBLIC           inPublic;
+    MSSIM2B_DATA             outsideInfo;
+    MSSIML_PCR_SELECTION     creationPCR;
 } Create_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_PRIVATE       outPrivate;
-    TPM2B_PUBLIC        outPublic;
-    TPM2B_CREATION_DATA creationData;
-    TPM2B_DIGEST        creationHash;
-    TPMT_TK_CREATION    creationTicket;
+    MSSIM2B_PRIVATE       outPrivate;
+    MSSIM2B_PUBLIC        outPublic;
+    MSSIM2B_CREATION_DATA creationData;
+    MSSIM2B_DIGEST        creationHash;
+    MSSIMT_TK_CREATION    creationTicket;
 } Create_Out;
 
 // Response code modifiers
-#    define RC_Create_parentHandle (TPM_RC_H + TPM_RC_1)
-#    define RC_Create_inSensitive  (TPM_RC_P + TPM_RC_1)
-#    define RC_Create_inPublic     (TPM_RC_P + TPM_RC_2)
-#    define RC_Create_outsideInfo  (TPM_RC_P + TPM_RC_3)
-#    define RC_Create_creationPCR  (TPM_RC_P + TPM_RC_4)
+#    define RC_Create_parentHandle (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_Create_inSensitive  (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_Create_inPublic     (MSSIM_RC_P + MSSIM_RC_2)
+#    define RC_Create_outsideInfo  (MSSIM_RC_P + MSSIM_RC_3)
+#    define RC_Create_creationPCR  (MSSIM_RC_P + MSSIM_RC_4)
 
 // Function prototype
-TPM_RC
-TPM2_Create(Create_In* in, Create_Out* out);
+MSSIM_RC
+MSSIM2_Create(Create_In* in, Create_Out* out);
 
 #  endif  // _Create_FP_H_
 #endif    // CC_Create

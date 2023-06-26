@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -34,56 +34,56 @@
  */
 //** Introduction
 
-// TPM commands are communicated as uint8_t streams on a TCP connection.  The TPM
+// MSSIM commands are communicated as uint8_t streams on a TCP connection.  The MSSIM
 // command protocol is enveloped with the interface protocol described in this
 // file. The command is indicated by a uint32 with one of the values below.  Most
-// commands take no parameters return no TPM errors.  In these cases the TPM
+// commands take no parameters return no MSSIM errors.  In these cases the MSSIM
 // interface protocol acknowledges that command processing is completed by returning
-// a uint32=0. The command TPM_SIGNAL_HASH_DATA takes a uint32-prepended variable
+// a uint32=0. The command MSSIM_SIGNAL_HASH_DATA takes a uint32-prepended variable
 // length byte array and the interface protocol acknowledges command completion
-// with a uint32=0. Most TPM commands are enveloped using the TPM_SEND_COMMAND
+// with a uint32=0. Most MSSIM commands are enveloped using the MSSIM_SEND_COMMAND
 // interface command. The parameters are as indicated below.  The interface layer
-// also appends a UIN32=0 to the TPM response for regularity.
+// also appends a UIN32=0 to the MSSIM response for regularity.
 
 //** Typedefs and Defines
-#ifndef TCP_TPM_PROTOCOL_H
-#define TCP_TPM_PROTOCOL_H
+#ifndef TCP_MSSIM_PROTOCOL_H
+#define TCP_MSSIM_PROTOCOL_H
 
-//** TPM Commands.
+//** MSSIM Commands.
 // All commands acknowledge processing by returning a uint32 == 0 except where noted
-#define TPM_SIGNAL_POWER_ON      1
-#define TPM_SIGNAL_POWER_OFF     2
-#define TPM_SIGNAL_PHYS_PRES_ON  3
-#define TPM_SIGNAL_PHYS_PRES_OFF 4
-#define TPM_SIGNAL_HASH_START    5
-#define TPM_SIGNAL_HASH_DATA     6
+#define MSSIM_SIGNAL_POWER_ON      1
+#define MSSIM_SIGNAL_POWER_OFF     2
+#define MSSIM_SIGNAL_PHYS_PRES_ON  3
+#define MSSIM_SIGNAL_PHYS_PRES_OFF 4
+#define MSSIM_SIGNAL_HASH_START    5
+#define MSSIM_SIGNAL_HASH_DATA     6
 // {uint32_t BufferSize, uint8_t[BufferSize] Buffer}
-#define TPM_SIGNAL_HASH_END 7
-#define TPM_SEND_COMMAND    8
+#define MSSIM_SIGNAL_HASH_END 7
+#define MSSIM_SEND_COMMAND    8
 // {uint8_t Locality, uint32_t InBufferSize, uint8_t[InBufferSize] InBuffer} ->
 //     {uint32_t OutBufferSize, uint8_t[OutBufferSize] OutBuffer}
 
-#define TPM_SIGNAL_CANCEL_ON     9
-#define TPM_SIGNAL_CANCEL_OFF    10
-#define TPM_SIGNAL_NV_ON         11
-#define TPM_SIGNAL_NV_OFF        12
-#define TPM_SIGNAL_KEY_CACHE_ON  13
-#define TPM_SIGNAL_KEY_CACHE_OFF 14
+#define MSSIM_SIGNAL_CANCEL_ON     9
+#define MSSIM_SIGNAL_CANCEL_OFF    10
+#define MSSIM_SIGNAL_NV_ON         11
+#define MSSIM_SIGNAL_NV_OFF        12
+#define MSSIM_SIGNAL_KEY_CACHE_ON  13
+#define MSSIM_SIGNAL_KEY_CACHE_OFF 14
 
-#define TPM_REMOTE_HANDSHAKE       15
-#define TPM_SET_ALTERNATIVE_RESULT 16
+#define MSSIM_REMOTE_HANDSHAKE       15
+#define MSSIM_SET_ALTERNATIVE_RESULT 16
 
-#define TPM_SIGNAL_RESET   17
-#define TPM_SIGNAL_RESTART 18
+#define MSSIM_SIGNAL_RESET   17
+#define MSSIM_SIGNAL_RESTART 18
 
-#define TPM_SESSION_END 20
-#define TPM_STOP        21
+#define MSSIM_SESSION_END 20
+#define MSSIM_STOP        21
 
-#define TPM_GET_COMMAND_RESPONSE_SIZES 25
+#define MSSIM_GET_COMMAND_RESPONSE_SIZES 25
 
-#define TPM_ACT_GET_SIGNALED 26
+#define MSSIM_ACT_GET_SIGNALED 26
 
-#define TPM_TEST_FAILURE_MODE 30
+#define MSSIM_TEST_FAILURE_MODE 30
 
 //** Enumerations and Structures
 enum TpmEndPointInfo

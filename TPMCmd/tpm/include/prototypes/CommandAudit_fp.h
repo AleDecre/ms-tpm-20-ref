@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -51,38 +51,38 @@
 void CommandAuditPreInstall_Init(void);
 
 //*** CommandAuditStartup()
-// This function clears the command audit digest on a TPM Reset.
+// This function clears the command audit digest on a MSSIM Reset.
 BOOL CommandAuditStartup(STARTUP_TYPE type  // IN: start up type
 );
 
 //*** CommandAuditSet()
 // This function will SET the audit flag for a command. This function
 // will not SET the audit flag for a command that is not implemented. This
-// ensures that the audit status is not SET when TPM2_GetCapability() is
+// ensures that the audit status is not SET when MSSIM2_GetCapability() is
 // used to read the list of audited commands.
 //
-// This function is only used by TPM2_SetCommandCodeAuditStatus().
+// This function is only used by MSSIM2_SetCommandCodeAuditStatus().
 //
-// The actions in TPM2_SetCommandCodeAuditStatus() are expected to cause the
+// The actions in MSSIM2_SetCommandCodeAuditStatus() are expected to cause the
 // changes to be saved to NV after it is setting and clearing bits.
 //  Return Type: BOOL
 //      TRUE(1)         command code audit status was changed
 //      FALSE(0)        command code audit status was not changed
-BOOL CommandAuditSet(TPM_CC commandCode  // IN: command code
+BOOL CommandAuditSet(MSSIM_CC commandCode  // IN: command code
 );
 
 //*** CommandAuditClear()
 // This function will CLEAR the audit flag for a command. It will not CLEAR the
-// audit flag for TPM_CC_SetCommandCodeAuditStatus().
+// audit flag for MSSIM_CC_SetCommandCodeAuditStatus().
 //
-// This function is only used by TPM2_SetCommandCodeAuditStatus().
+// This function is only used by MSSIM2_SetCommandCodeAuditStatus().
 //
-// The actions in TPM2_SetCommandCodeAuditStatus() are expected to cause the
+// The actions in MSSIM2_SetCommandCodeAuditStatus() are expected to cause the
 // changes to be saved to NV after it is setting and clearing bits.
 //  Return Type: BOOL
 //      TRUE(1)         command code audit status was changed
 //      FALSE(0)        command code audit status was not changed
-BOOL CommandAuditClear(TPM_CC commandCode  // IN: command code
+BOOL CommandAuditClear(MSSIM_CC commandCode  // IN: command code
 );
 
 //*** CommandAuditIsRequired()
@@ -97,21 +97,21 @@ BOOL CommandAuditIsRequired(COMMAND_INDEX commandIndex  // IN: command index
 // This function returns a list of commands that have their audit bit SET.
 //
 // The list starts at the input commandCode.
-//  Return Type: TPMI_YES_NO
+//  Return Type: MSSIMI_YES_NO
 //      YES         if there are more command code available
 //      NO          all the available command code has been returned
-TPMI_YES_NO
-CommandAuditCapGetCCList(TPM_CC   commandCode,  // IN: start command code
-                         UINT32   count,        // IN: count of returned TPM_CC
-                         TPML_CC* commandList   // OUT: list of TPM_CC
+MSSIMI_YES_NO
+CommandAuditCapGetCCList(MSSIM_CC   commandCode,  // IN: start command code
+                         UINT32   count,        // IN: count of returned MSSIM_CC
+                         MSSIML_CC* commandList   // OUT: list of MSSIM_CC
 );
 
 //*** CommandAuditGetDigest
 // This command is used to create a digest of the commands being audited. The
-// commands are processed in ascending numeric order with a list of TPM_CC being
+// commands are processed in ascending numeric order with a list of MSSIM_CC being
 // added to a hash. This operates as if all the audited command codes were
 // concatenated and then hashed.
-void CommandAuditGetDigest(TPM2B_DIGEST* digest  // OUT: command digest
+void CommandAuditGetDigest(MSSIM2B_DIGEST* digest  // OUT: command digest
 );
 
 #endif  // _COMMAND_AUDIT_FP_H_

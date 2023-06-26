@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -42,39 +42,39 @@
 
 //*** NvReadAccessChecks()
 // Common routine for validating a read
-// Used by TPM2_NV_Read, TPM2_NV_ReadLock and TPM2_PolicyNV
-//  Return Type: TPM_RC
-//      TPM_RC_NV_AUTHORIZATION     autHandle is not allowed to authorize read
+// Used by MSSIM2_NV_Read, MSSIM2_NV_ReadLock and MSSIM2_PolicyNV
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_NV_AUTHORIZATION     autHandle is not allowed to authorize read
 //                                  of the index
-//      TPM_RC_NV_LOCKED            Read locked
-//      TPM_RC_NV_UNINITIALIZED     Try to read an uninitialized index
+//      MSSIM_RC_NV_LOCKED            Read locked
+//      MSSIM_RC_NV_UNINITIALIZED     Try to read an uninitialized index
 //
-TPM_RC
-NvReadAccessChecks(TPM_HANDLE authHandle,  // IN: the handle that provided the
+MSSIM_RC
+NvReadAccessChecks(MSSIM_HANDLE authHandle,  // IN: the handle that provided the
                                            //     authorization
-                   TPM_HANDLE nvHandle,   // IN: the handle of the NV index to be read
-                   TPMA_NV    attributes  // IN: the attributes of 'nvHandle'
+                   MSSIM_HANDLE nvHandle,   // IN: the handle of the NV index to be read
+                   MSSIMA_NV    attributes  // IN: the attributes of 'nvHandle'
 );
 
 //*** NvWriteAccessChecks()
 // Common routine for validating a write
-// Used by TPM2_NV_Write, TPM2_NV_Increment, TPM2_SetBits, and TPM2_NV_WriteLock
-//  Return Type: TPM_RC
-//      TPM_RC_NV_AUTHORIZATION     Authorization fails
-//      TPM_RC_NV_LOCKED            Write locked
+// Used by MSSIM2_NV_Write, MSSIM2_NV_Increment, MSSIM2_SetBits, and MSSIM2_NV_WriteLock
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_NV_AUTHORIZATION     Authorization fails
+//      MSSIM_RC_NV_LOCKED            Write locked
 //
-TPM_RC
+MSSIM_RC
 NvWriteAccessChecks(
-    TPM_HANDLE authHandle,  // IN: the handle that provided the
+    MSSIM_HANDLE authHandle,  // IN: the handle that provided the
                             //     authorization
-    TPM_HANDLE nvHandle,    // IN: the handle of the NV index to be written
-    TPMA_NV    attributes   // IN: the attributes of 'nvHandle'
+    MSSIM_HANDLE nvHandle,    // IN: the handle of the NV index to be written
+    MSSIMA_NV    attributes   // IN: the attributes of 'nvHandle'
 );
 
 //*** NvClearOrderly()
 // This function is used to cause gp.orderlyState to be cleared to the
 // non-orderly state.
-TPM_RC
+MSSIM_RC
 NvClearOrderly(void);
 
 //*** NvIsPinPassIndex()
@@ -82,7 +82,7 @@ NvClearOrderly(void);
 //  Return Type: BOOL
 //      TRUE(1)         is pin pass
 //      FALSE(0)        is not pin pass
-BOOL NvIsPinPassIndex(TPM_HANDLE index  // IN: Handle to check
+BOOL NvIsPinPassIndex(MSSIM_HANDLE index  // IN: Handle to check
 );
 
 #endif  // _NV_SPT_FP_H_

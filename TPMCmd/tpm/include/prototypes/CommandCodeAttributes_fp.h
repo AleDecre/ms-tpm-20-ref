@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -47,7 +47,7 @@
 //  UNIMPLEMENTED_COMMAND_INDEX     command is not implemented
 //  other                           index of a command
 COMMAND_INDEX
-GetClosestCommandIndex(TPM_CC commandCode  // IN: the command code to start at
+GetClosestCommandIndex(MSSIM_CC commandCode  // IN: the command code to start at
 );
 
 //*** CommandCodeToComandIndex()
@@ -57,7 +57,7 @@ GetClosestCommandIndex(TPM_CC commandCode  // IN: the command code to start at
 //  UNIMPLEMENTED_COMMAND_INDEX     command is not implemented
 //  other                           index of the command
 COMMAND_INDEX
-CommandCodeToCommandIndex(TPM_CC commandCode  // IN: the command code to look up
+CommandCodeToCommandIndex(MSSIM_CC commandCode  // IN: the command code to look up
 );
 
 //*** GetNextCommandIndex()
@@ -71,7 +71,7 @@ GetNextCommandIndex(COMMAND_INDEX commandIndex  // IN: the starting index
 
 //*** GetCommandCode()
 // This function returns the commandCode associated with the command index
-TPM_CC
+MSSIM_CC
 GetCommandCode(COMMAND_INDEX commandIndex  // IN: the command index
 );
 
@@ -140,14 +140,14 @@ BOOL IsReadOperation(COMMAND_INDEX commandIndex  // IN: Command to check
 //*** CommandCapGetCCList()
 // This function returns a list of implemented commands and command attributes
 // starting from the command in 'commandCode'.
-//  Return Type: TPMI_YES_NO
+//  Return Type: MSSIMI_YES_NO
 //      YES         more command attributes are available
 //      NO          no more command attributes are available
-TPMI_YES_NO
-CommandCapGetCCList(TPM_CC commandCode,  // IN: start command code
+MSSIMI_YES_NO
+CommandCapGetCCList(MSSIM_CC commandCode,  // IN: start command code
                     UINT32 count,        // IN: maximum count for number of entries in
                                          //     'commandList'
-                    TPML_CCA* commandList  // OUT: list of TPMA_CC
+                    MSSIML_CCA* commandList  // OUT: list of MSSIMA_CC
 );
 
 //*** IsVendorCommand()

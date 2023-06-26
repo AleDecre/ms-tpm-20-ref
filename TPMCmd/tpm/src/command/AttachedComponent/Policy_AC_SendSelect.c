@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,16 +40,16 @@
 /*(See part 3 specification)
 // allows qualification of attached component and object to be sent.
 */
-//  Return Type: TPM_RC
-//      TPM_RC_COMMAND_CODE   'commandCode' of 'policySession' is not empty
-//      TPM_RC_CPHASH         'cpHash' of 'policySession' is not empty
-TPM_RC
-TPM2_Policy_AC_SendSelect(Policy_AC_SendSelect_In* in  // IN: input parameter list
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_COMMAND_CODE   'commandCode' of 'policySession' is not empty
+//      MSSIM_RC_CPHASH         'cpHash' of 'policySession' is not empty
+MSSIM_RC
+MSSIM2_Policy_AC_SendSelect(Policy_AC_SendSelect_In* in  // IN: input parameter list
 )
 {
     SESSION*   session;
     HASH_STATE hashState;
-    TPM_CC     commandCode = TPM_CC_Policy_AC_SendSelect;
+    MSSIM_CC     commandCode = MSSIM_CC_Policy_AC_SendSelect;
 
     // Input Validation
 
@@ -58,10 +58,10 @@ TPM2_Policy_AC_SendSelect(Policy_AC_SendSelect_In* in  // IN: input parameter li
 
     // cpHash in session context must be empty
     if(session->u1.cpHash.t.size != 0)
-        return TPM_RC_CPHASH;
+        return MSSIM_RC_CPHASH;
     // commandCode in session context must be empty
     if(session->commandCode != 0)
-        return TPM_RC_COMMAND_CODE;
+        return MSSIM_RC_COMMAND_CODE;
     // Internal Data Update
     // Update name hash
     session->u1.cpHash.t.size = CryptHashStart(&hashState, session->authHashAlg);
@@ -87,7 +87,7 @@ TPM2_Policy_AC_SendSelect(Policy_AC_SendSelect_In* in  // IN: input parameter li
     CryptDigestUpdate2B(&hashState, &session->u2.policyDigest.b);
 
     //  add command code
-    CryptDigestUpdateInt(&hashState, sizeof(TPM_CC), commandCode);
+    CryptDigestUpdateInt(&hashState, sizeof(MSSIM_CC), commandCode);
 
     //  add objectName
     if(in->includeObject == YES)
@@ -100,15 +100,15 @@ TPM2_Policy_AC_SendSelect(Policy_AC_SendSelect_In* in  // IN: input parameter li
     CryptDigestUpdate2B(&hashState, &in->acName.b);
 
     //  add includeObject
-    CryptDigestUpdateInt(&hashState, sizeof(TPMI_YES_NO), in->includeObject);
+    CryptDigestUpdateInt(&hashState, sizeof(MSSIMI_YES_NO), in->includeObject);
 
     //  complete digest
     CryptHashEnd2B(&hashState, &session->u2.policyDigest.b);
 
     // set commandCode in session context
-    session->commandCode = TPM_CC_AC_Send;
+    session->commandCode = MSSIM_CC_AC_Send;
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_Policy_AC_SendSelect

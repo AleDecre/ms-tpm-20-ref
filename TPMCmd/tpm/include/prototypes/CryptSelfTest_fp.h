@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -46,33 +46,33 @@
 // 'fullTest' is YES, then 'g_untestedDecryptionAlgorithms' is reinitialized and then
 // all tests are run.
 // This implementation of the reference design does not support processing outside
-// the framework of a TPM command. As a consequence, this command does not
-// complete until all tests are done. Since this can take a long time, the TPM
+// the framework of a MSSIM command. As a consequence, this command does not
+// complete until all tests are done. Since this can take a long time, the MSSIM
 // will check after each test to see if the command is canceled. If so, then the
-// TPM will returned TPM_RC_CANCELLED. To continue with the self-tests, call
-// TPM2_SelfTest(fullTest == No) and the TPM will complete the testing.
-//  Return Type: TPM_RC
-//      TPM_RC_CANCELED        if the command is canceled
+// MSSIM will returned MSSIM_RC_CANCELLED. To continue with the self-tests, call
+// MSSIM2_SelfTest(fullTest == No) and the MSSIM will complete the testing.
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_CANCELED        if the command is canceled
 LIB_EXPORT
-TPM_RC
-CryptSelfTest(TPMI_YES_NO fullTest  // IN: if full test is required
+MSSIM_RC
+CryptSelfTest(MSSIMI_YES_NO fullTest  // IN: if full test is required
 );
 
 //*** CryptIncrementalSelfTest()
 // This function is used to perform an incremental self-test. This implementation
 // will perform the toTest values before returning. That is, it assumes that the
-// TPM cannot perform background tasks between commands.
+// MSSIM cannot perform background tasks between commands.
 //
 // This command may be canceled. If it is, then there is no return result.
 // However, this command can be run again and the incremental progress will not
 // be lost.
-//  Return Type: TPM_RC
-//      TPM_RC_CANCELED         processing of this command was canceled
-//      TPM_RC_TESTING          if toTest list is not empty
-//      TPM_RC_VALUE            an algorithm in the toTest list is not implemented
-TPM_RC
-CryptIncrementalSelfTest(TPML_ALG* toTest,   // IN: list of algorithms to be tested
-                         TPML_ALG* toDoList  // OUT: list of algorithms needing test
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_CANCELED         processing of this command was canceled
+//      MSSIM_RC_TESTING          if toTest list is not empty
+//      MSSIM_RC_VALUE            an algorithm in the toTest list is not implemented
+MSSIM_RC
+CryptIncrementalSelfTest(MSSIML_ALG* toTest,   // IN: list of algorithms to be tested
+                         MSSIML_ALG* toDoList  // OUT: list of algorithms needing test
 );
 
 //*** CryptInitializeToTest()
@@ -83,7 +83,7 @@ void CryptInitializeToTest(void);
 
 //*** CryptTestAlgorithm()
 // Only point of contact with the actual self tests. If a self-test fails, there
-// is no return and the TPM goes into failure mode.
+// is no return and the MSSIM goes into failure mode.
 // The call to TestAlgorithm uses an algorithm selector and a bit vector. When the
 // test is run, the corresponding bit in 'toTest' and in 'g_toTest' is CLEAR. If
 // 'toTest' is NULL, then only the bit in 'g_toTest' is CLEAR.
@@ -91,10 +91,10 @@ void CryptInitializeToTest(void);
 // ALG_ERROR, TestAlgorithm() will CLEAR any bit in 'toTest' for which it has
 // no test. This allows the knowledge about which algorithms have test to be
 // accessed through the interface that provides the test.
-//  Return Type: TPM_RC
-//      TPM_RC_CANCELED     test was canceled
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_CANCELED     test was canceled
 LIB_EXPORT
-TPM_RC
-CryptTestAlgorithm(TPM_ALG_ID alg, ALGORITHM_VECTOR* toTest);
+MSSIM_RC
+CryptTestAlgorithm(MSSIM_ALG_ID alg, ALGORITHM_VECTOR* toTest);
 
 #endif  // _CRYPT_SELF_TEST_FP_H_

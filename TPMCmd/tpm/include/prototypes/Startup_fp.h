@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,15 +45,15 @@
 // Input structure definition
 typedef struct
 {
-    TPM_SU startupType;
+    MSSIM_SU startupType;
 } Startup_In;
 
 // Response code modifiers
-#    define RC_Startup_startupType (TPM_RC_P + TPM_RC_1)
+#    define RC_Startup_startupType (MSSIM_RC_P + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_Startup(Startup_In* in);
+MSSIM_RC
+MSSIM2_Startup(Startup_In* in);
 
 #  endif  // _Startup_FP_H_
 #endif    // CC_Startup

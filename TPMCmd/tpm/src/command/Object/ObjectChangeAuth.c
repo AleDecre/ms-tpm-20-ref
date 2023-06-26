@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -42,31 +42,31 @@
 /*(See part 3 specification)
 // Create an object
 */
-//  Return Type: TPM_RC
-//      TPM_RC_SIZE             'newAuth' is larger than the size of the digest
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_SIZE             'newAuth' is larger than the size of the digest
 //                              of the Name algorithm of 'objectHandle'
-//      TPM_RC_TYPE             the key referenced by 'parentHandle' is not the
+//      MSSIM_RC_TYPE             the key referenced by 'parentHandle' is not the
 //                              parent of the object referenced by 'objectHandle';
 //                              or 'objectHandle' is a sequence object.
-TPM_RC
-TPM2_ObjectChangeAuth(ObjectChangeAuth_In*  in,  // IN: input parameter list
+MSSIM_RC
+MSSIM2_ObjectChangeAuth(ObjectChangeAuth_In*  in,  // IN: input parameter list
                       ObjectChangeAuth_Out* out  // OUT: output parameter list
 )
 {
-    TPMT_SENSITIVE sensitive;
+    MSSIMT_SENSITIVE sensitive;
 
     OBJECT*        object = HandleToObject(in->objectHandle);
-    TPM2B_NAME     QNCompare;
+    MSSIM2B_NAME     QNCompare;
 
     // Input Validation
 
     // Can not change authorization on sequence object
     if(ObjectIsSequence(object))
-        return TPM_RCS_TYPE + RC_ObjectChangeAuth_objectHandle;
+        return MSSIM_RCS_TYPE + RC_ObjectChangeAuth_objectHandle;
 
     // Make sure that the authorization value is consistent with the nameAlg
     if(!AdjustAuthSize(&in->newAuth, object->publicArea.nameAlg))
-        return TPM_RCS_SIZE + RC_ObjectChangeAuth_newAuth;
+        return MSSIM_RCS_SIZE + RC_ObjectChangeAuth_newAuth;
 
     // Parent handle should be the parent of object handle.  In this
     // implementation we verify this by checking the QN of object.  Other
@@ -74,7 +74,7 @@ TPM2_ObjectChangeAuth(ObjectChangeAuth_In*  in,  // IN: input parameter list
     ComputeQualifiedName(
         in->parentHandle, object->publicArea.nameAlg, &object->name, &QNCompare);
     if(!MemoryEqual2B(&object->qualifiedName.b, &QNCompare.b))
-        return TPM_RCS_TYPE + RC_ObjectChangeAuth_parentHandle;
+        return MSSIM_RCS_TYPE + RC_ObjectChangeAuth_parentHandle;
 
     // Command Output
     // Prepare the sensitive area with the new authorization value
@@ -87,7 +87,7 @@ TPM2_ObjectChangeAuth(ObjectChangeAuth_In*  in,  // IN: input parameter list
                        HandleToObject(in->parentHandle),
                        object->publicArea.nameAlg,
                        &out->outPrivate);
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_ObjectChangeAuth

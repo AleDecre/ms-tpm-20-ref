@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,19 +45,19 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_RH_NV_AUTH  authHandle;
-    TPMI_RH_NV_INDEX nvIndex;
-    TPMI_SH_POLICY   policySession;
+    MSSIMI_RH_NV_AUTH  authHandle;
+    MSSIMI_RH_NV_INDEX nvIndex;
+    MSSIMI_SH_POLICY   policySession;
 } PolicyAuthorizeNV_In;
 
 // Response code modifiers
-#    define RC_PolicyAuthorizeNV_authHandle    (TPM_RC_H + TPM_RC_1)
-#    define RC_PolicyAuthorizeNV_nvIndex       (TPM_RC_H + TPM_RC_2)
-#    define RC_PolicyAuthorizeNV_policySession (TPM_RC_H + TPM_RC_3)
+#    define RC_PolicyAuthorizeNV_authHandle    (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_PolicyAuthorizeNV_nvIndex       (MSSIM_RC_H + MSSIM_RC_2)
+#    define RC_PolicyAuthorizeNV_policySession (MSSIM_RC_H + MSSIM_RC_3)
 
 // Function prototype
-TPM_RC
-TPM2_PolicyAuthorizeNV(PolicyAuthorizeNV_In* in);
+MSSIM_RC
+MSSIM2_PolicyAuthorizeNV(PolicyAuthorizeNV_In* in);
 
 #  endif  // _Policy_Authorize_NV_FP_H_
 #endif    // CC_PolicyAuthorizeNV

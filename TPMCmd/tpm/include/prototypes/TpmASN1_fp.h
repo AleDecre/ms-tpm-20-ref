@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -37,8 +37,8 @@
  *  Date: Aug 30, 2019  Time: 02:11:54PM
  */
 
-#ifndef _TPM_ASN1_FP_H_
-#define _TPM_ASN1_FP_H_
+#ifndef _MSSIM_ASN1_FP_H_
+#define _MSSIM_ASN1_FP_H_
 
 //*** ASN1UnmarshalContextInitialize()
 // Function does standard initialization of a context.
@@ -180,4 +180,4 @@ ASN1PushInteger(ASN1MarshalContext* ctx,     // IN/OUT: buffer context
 INT16
 ASN1PushOID(ASN1MarshalContext* ctx, const BYTE* OID);
 
-#endif  // _TPM_ASN1_FP_H_
+#endif  // _MSSIM_ASN1_FP_H_

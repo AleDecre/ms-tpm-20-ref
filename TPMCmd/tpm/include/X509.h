@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -79,7 +79,7 @@ typedef struct stringRef
 // This is defined to avoid bit by bit comparisons within a UINT32
 typedef union x509KeyUsageUnion
 {
-    TPMA_X509_KEY_USAGE x509;
+    MSSIMA_X509_KEY_USAGE x509;
     UINT32              integer;
 } x509KeyUsageUnion;
 
@@ -92,15 +92,15 @@ typedef union x509KeyUsageUnion
 #define OID_KEY_USAGE_EXTENSION_VALUE 0x06, 0x03, 0x55, 0x1D, 0x0F
 MAKE_OID(_KEY_USAGE_EXTENSION);
 
-// This is the DER-encoded value for the TCG-defined TPMA_OBJECT OID
+// This is the DER-encoded value for the TCG-defined MSSIMA_OBJECT OID
 // (2.23.133.10.1.1.1)
-#define OID_TCG_TPMA_OBJECT_VALUE 0x06, 0x07, 0x67, 0x81, 0x05, 0x0a, 0x01, 0x01, 0x01
-MAKE_OID(_TCG_TPMA_OBJECT);
+#define OID_TCG_MSSIMA_OBJECT_VALUE 0x06, 0x07, 0x67, 0x81, 0x05, 0x0a, 0x01, 0x01, 0x01
+MAKE_OID(_TCG_MSSIMA_OBJECT);
 
 #ifdef _X509_SPT_
 // If a bit is SET in KEY_USAGE_SIGN is also SET in keyUsage then
 // the associated key has to have 'sign' SET.
-const x509KeyUsageUnion KEY_USAGE_SIGN = {TPMA_X509_KEY_USAGE_INITIALIZER(
+const x509KeyUsageUnion KEY_USAGE_SIGN = {MSSIMA_X509_KEY_USAGE_INITIALIZER(
     /* bits_at_0        */ 0,
     /* decipheronly    */ 0,
     /* encipheronly   */ 0,
@@ -113,7 +113,7 @@ const x509KeyUsageUnion KEY_USAGE_SIGN = {TPMA_X509_KEY_USAGE_INITIALIZER(
     /* digitalsignature */ 1)};
 // If a bit is SET in KEY_USAGE_DECRYPT is also SET in keyUsage then
 // the associated key has to have 'decrypt' SET.
-const x509KeyUsageUnion KEY_USAGE_DECRYPT = {TPMA_X509_KEY_USAGE_INITIALIZER(
+const x509KeyUsageUnion KEY_USAGE_DECRYPT = {MSSIMA_X509_KEY_USAGE_INITIALIZER(
     /* bits_at_0        */ 0,
     /* decipheronly    */ 1,
     /* encipheronly   */ 1,

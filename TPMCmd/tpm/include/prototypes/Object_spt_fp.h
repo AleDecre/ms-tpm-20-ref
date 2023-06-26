@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -44,8 +44,8 @@
 // This function will validate that the input authValue is no larger than the
 // digestSize for the nameAlg. It will then pad with zeros to the size of the
 // digest.
-BOOL AdjustAuthSize(TPM2B_AUTH*   auth,    // IN/OUT: value to adjust
-                    TPMI_ALG_HASH nameAlg  // IN:
+BOOL AdjustAuthSize(MSSIM2B_AUTH*   auth,    // IN/OUT: value to adjust
+                    MSSIMI_ALG_HASH nameAlg  // IN:
 );
 
 //*** AreAttributesForParent()
@@ -61,49 +61,49 @@ BOOL ObjectIsParent(OBJECT* parentObject  // IN: parent handle
 
 //*** CreateChecks()
 // Attribute checks that are unique to creation.
-//  Return Type: TPM_RC
-//      TPM_RC_ATTRIBUTES       sensitiveDataOrigin is not consistent with the
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_ATTRIBUTES       sensitiveDataOrigin is not consistent with the
 //                              object type
 //      other                   returns from PublicAttributesValidation()
-TPM_RC
-CreateChecks(OBJECT* parentObject, TPMT_PUBLIC* publicArea, UINT16 sensitiveDataSize);
+MSSIM_RC
+CreateChecks(OBJECT* parentObject, MSSIMT_PUBLIC* publicArea, UINT16 sensitiveDataSize);
 
 //*** CreateChecks()
 // Attribute checks that are unique to creation.
-//  Return Type: TPM_RC
-//      TPM_RC_ATTRIBUTES       sensitiveDataOrigin is not consistent with the
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_ATTRIBUTES       sensitiveDataOrigin is not consistent with the
 //                              object type
 //      other                   returns from PublicAttributesValidation()
-TPM_RC
-VIRTCreateChecks(OBJECT* parentObject, TPMT_PUBLIC* publicArea, UINT16 sensitiveDataSize);
+MSSIM_RC
+VIRTCreateChecks(OBJECT* parentObject, MSSIMT_PUBLIC* publicArea, UINT16 sensitiveDataSize);
 
 //*** SchemeChecks
-// This function is called by TPM2_LoadExternal() and PublicAttributesValidation().
+// This function is called by MSSIM2_LoadExternal() and PublicAttributesValidation().
 // This function validates the schemes in the public area of an object.
-//  Return Type: TPM_RC
-//      TPM_RC_HASH         non-duplicable storage key and its parent have different
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_HASH         non-duplicable storage key and its parent have different
 //                          name algorithm
-//      TPM_RC_KDF          incorrect KDF specified for decrypting keyed hash object
-//      TPM_RC_KEY          invalid key size values in an asymmetric key public area
-//      TPM_RCS_SCHEME       inconsistent attributes 'decrypt', 'sign', 'restricted'
+//      MSSIM_RC_KDF          incorrect KDF specified for decrypting keyed hash object
+//      MSSIM_RC_KEY          invalid key size values in an asymmetric key public area
+//      MSSIM_RCS_SCHEME       inconsistent attributes 'decrypt', 'sign', 'restricted'
 //                          and key's scheme ID; or hash algorithm is inconsistent
 //                          with the scheme ID for keyed hash object
-//      TPM_RC_SYMMETRIC    a storage key with no symmetric algorithm specified; or
+//      MSSIM_RC_SYMMETRIC    a storage key with no symmetric algorithm specified; or
 //                          non-storage key with symmetric algorithm different from
-//                          TPM_ALG_NULL
-TPM_RC
+//                          MSSIM_ALG_NULL
+MSSIM_RC
 SchemeChecks(OBJECT*      parentObject,  // IN: parent (null if primary seed)
-             TPMT_PUBLIC* publicArea     // IN: public area of the object
+             MSSIMT_PUBLIC* publicArea     // IN: public area of the object
 );
 
 //*** PublicAttributesValidation()
 // This function validates the values in the public area of an object.
-// This function is used in the processing of TPM2_Create, TPM2_CreatePrimary,
-// TPM2_CreateLoaded(), TPM2_Load(),  TPM2_Import(), and TPM2_LoadExternal().
-// For TPM2_Import() this is only used if the new parent has fixedTPM SET. For
-// TPM2_LoadExternal(), this is not used for a public-only key
-//  Return Type: TPM_RC
-//      TPM_RC_ATTRIBUTES   'fixedTPM', 'fixedParent', or 'encryptedDuplication'
+// This function is used in the processing of MSSIM2_Create, MSSIM2_CreatePrimary,
+// MSSIM2_CreateLoaded(), MSSIM2_Load(),  MSSIM2_Import(), and MSSIM2_LoadExternal().
+// For MSSIM2_Import() this is only used if the new parent has fixedMSSIM SET. For
+// MSSIM2_LoadExternal(), this is not used for a public-only key
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_ATTRIBUTES   'fixedMSSIM', 'fixedParent', or 'encryptedDuplication'
 //                          attributes are inconsistent between themselves or with
 //                          those of the parent object;
 //                          inconsistent 'restricted', 'decrypt' and 'sign'
@@ -111,22 +111,22 @@ SchemeChecks(OBJECT*      parentObject,  // IN: parent (null if primary seed)
 //                          attempt to inject sensitive data for an asymmetric key;
 //                          attempt to create a symmetric cipher key that is not
 //                          a decryption key
-//      TPM_RC_HASH         nameAlg is TPM_ALG_NULL
-//      TPM_RC_SIZE         'authPolicy' size does not match digest size of the name
+//      MSSIM_RC_HASH         nameAlg is MSSIM_ALG_NULL
+//      MSSIM_RC_SIZE         'authPolicy' size does not match digest size of the name
 //                          algorithm in 'publicArea'
 //   other                  returns from SchemeChecks()
-TPM_RC
+MSSIM_RC
 PublicAttributesValidation(OBJECT*      parentObject,  // IN: input parent object
-                           TPMT_PUBLIC* publicArea  // IN: public area of the object
+                           MSSIMT_PUBLIC* publicArea  // IN: public area of the object
 );
 //*** PublicAttributesValidation()
 // This function validates the values in the public area of an object.
-// This function is used in the processing of TPM2_Create, TPM2_CreatePrimary,
-// TPM2_CreateLoaded(), TPM2_Load(),  TPM2_Import(), and TPM2_LoadExternal().
-// For TPM2_Import() this is only used if the new parent has fixedTPM SET. For
-// TPM2_LoadExternal(), this is not used for a public-only key
-//  Return Type: TPM_RC
-//      TPM_RC_ATTRIBUTES   'fixedTPM', 'fixedParent', or 'encryptedDuplication'
+// This function is used in the processing of MSSIM2_Create, MSSIM2_CreatePrimary,
+// MSSIM2_CreateLoaded(), MSSIM2_Load(),  MSSIM2_Import(), and MSSIM2_LoadExternal().
+// For MSSIM2_Import() this is only used if the new parent has fixedMSSIM SET. For
+// MSSIM2_LoadExternal(), this is not used for a public-only key
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_ATTRIBUTES   'fixedMSSIM', 'fixedParent', or 'encryptedDuplication'
 //                          attributes are inconsistent between themselves or with
 //                          those of the parent object;
 //                          inconsistent 'restricted', 'decrypt' and 'sign'
@@ -134,30 +134,30 @@ PublicAttributesValidation(OBJECT*      parentObject,  // IN: input parent objec
 //                          attempt to inject sensitive data for an asymmetric key;
 //                          attempt to create a symmetric cipher key that is not
 //                          a decryption key
-//      TPM_RC_HASH         nameAlg is TPM_ALG_NULL
-//      TPM_RC_SIZE         'authPolicy' size does not match digest size of the name
+//      MSSIM_RC_HASH         nameAlg is MSSIM_ALG_NULL
+//      MSSIM_RC_SIZE         'authPolicy' size does not match digest size of the name
 //                          algorithm in 'publicArea'
 //   other                  returns from SchemeChecks()
-TPM_RC
+MSSIM_RC
 PublicVIRTAttributesValidation(OBJECT*      parentObject,  // IN: input parent object
-                           TPMT_PUBLIC* publicArea  // IN: public area of the object
+                           MSSIMT_PUBLIC* publicArea  // IN: public area of the object
 );
 
 //*** FillInCreationData()
 // Fill in creation data for an object.
 //  Return Type: void
 void FillInCreationData(
-    TPMI_DH_OBJECT       parentHandle,   // IN: handle of parent
-    TPMI_ALG_HASH        nameHashAlg,    // IN: name hash algorithm
-    TPML_PCR_SELECTION*  creationPCR,    // IN: PCR selection
-    TPM2B_DATA*          outsideData,    // IN: outside data
-    TPM2B_CREATION_DATA* outCreation,    // OUT: creation data for output
-    TPM2B_DIGEST*        creationDigest  // OUT: creation digest
+    MSSIMI_DH_OBJECT       parentHandle,   // IN: handle of parent
+    MSSIMI_ALG_HASH        nameHashAlg,    // IN: name hash algorithm
+    MSSIML_PCR_SELECTION*  creationPCR,    // IN: PCR selection
+    MSSIM2B_DATA*          outsideData,    // IN: outside data
+    MSSIM2B_CREATION_DATA* outCreation,    // OUT: creation data for output
+    MSSIM2B_DIGEST*        creationDigest  // OUT: creation digest
 );
 
 //*** GetSeedForKDF()
 // Get a seed for KDF.  The KDF for encryption and HMAC key use the same seed.
-const TPM2B* GetSeedForKDF(OBJECT* protector  // IN: the protector handle
+const MSSIM2B* GetSeedForKDF(OBJECT* protector  // IN: the protector handle
 );
 
 //*** ProduceOuterWrap()
@@ -176,9 +176,9 @@ ProduceOuterWrap(OBJECT* protector,   // IN: The handle of the object that provi
                                       //     protection.  For object, it is parent
                                       //     handle. For credential, it is the handle
                                       //     of encrypt object.
-                 TPM2B*     name,     // IN: the name of the object
-                 TPM_ALG_ID hashAlg,  // IN: hash algorithm for outer wrap
-                 TPM2B*     seed,     // IN: an external seed may be provided for
+                 MSSIM2B*     name,     // IN: the name of the object
+                 MSSIM_ALG_ID hashAlg,  // IN: hash algorithm for outer wrap
+                 MSSIM2B*     seed,     // IN: an external seed may be provided for
                                       //     duplication blob. For non duplication
                                       //     blob, this parameter should be NULL
                  BOOL   useIV,        // IN: indicate if an IV is used
@@ -195,20 +195,20 @@ ProduceOuterWrap(OBJECT* protector,   // IN: The handle of the object that provi
 //  a) checks integrity of outer blob; and
 //  b) decrypts the outer blob.
 //
-//  Return Type: TPM_RC
-//      TPM_RCS_INSUFFICIENT     error during sensitive data unmarshaling
-//      TPM_RCS_INTEGRITY        sensitive data integrity is broken
-//      TPM_RCS_SIZE             error during sensitive data unmarshaling
-//      TPM_RCS_VALUE            IV size for CFB does not match the encryption
+//  Return Type: MSSIM_RC
+//      MSSIM_RCS_INSUFFICIENT     error during sensitive data unmarshaling
+//      MSSIM_RCS_INTEGRITY        sensitive data integrity is broken
+//      MSSIM_RCS_SIZE             error during sensitive data unmarshaling
+//      MSSIM_RCS_VALUE            IV size for CFB does not match the encryption
 //                               algorithm block size
-TPM_RC
+MSSIM_RC
 UnwrapOuter(OBJECT* protector,   // IN: The object that provides
                                  //     protection.  For object, it is parent
                                  //     handle. For credential, it is the
                                  //     encrypt object.
-            TPM2B*     name,     // IN: the name of the object
-            TPM_ALG_ID hashAlg,  // IN: hash algorithm for outer wrap
-            TPM2B*     seed,     // IN: an external seed may be provided for
+            MSSIM2B*     name,     // IN: the name of the object
+            MSSIM_ALG_ID hashAlg,  // IN: hash algorithm for outer wrap
+            MSSIM2B*     seed,     // IN: an external seed may be provided for
                                  //     duplication blob. For non duplication
                                  //     blob, this parameter should be NULL.
             BOOL   useIV,        // IN: indicates if an IV is used
@@ -221,18 +221,18 @@ UnwrapOuter(OBJECT* protector,   // IN: The object that provides
 //*** SensitiveToPrivate()
 // This function prepare the private blob for off the chip storage
 // This function:
-//  a) marshals TPM2B_SENSITIVE structure into the buffer of TPM2B_PRIVATE
+//  a) marshals MSSIM2B_SENSITIVE structure into the buffer of MSSIM2B_PRIVATE
 //  b) applies encryption to the sensitive area; and
 //  c) applies outer integrity computation.
 void SensitiveToPrivate(
-    TPMT_SENSITIVE* sensitive,  // IN: sensitive structure
-    TPM2B_NAME*     name,       // IN: the name of the object
+    MSSIMT_SENSITIVE* sensitive,  // IN: sensitive structure
+    MSSIM2B_NAME*     name,       // IN: the name of the object
     OBJECT*         parent,     // IN: The parent object
-    TPM_ALG_ID      nameAlg,    // IN: hash algorithm in public area.  This
+    MSSIM_ALG_ID      nameAlg,    // IN: hash algorithm in public area.  This
                                 //     parameter is used when parentHandle is
                                 //     NULL, in which case the object is
                                 //     temporary.
-    TPM2B_PRIVATE* outPrivate   // OUT: output private structure
+    MSSIM2B_PRIVATE* outPrivate   // OUT: output private structure
 );
 
 //*** PrivateToSensitive()
@@ -241,19 +241,19 @@ void SensitiveToPrivate(
 // This function:
 //  a) checks the integrity HMAC of the input private area;
 //  b) decrypts the private buffer; and
-//  c) unmarshals TPMT_SENSITIVE structure into the buffer of TPMT_SENSITIVE.
-//  Return Type: TPM_RC
-//      TPM_RCS_INTEGRITY       if the private area integrity is bad
-//      TPM_RC_SENSITIVE        unmarshal errors while unmarshaling TPMS_ENCRYPT
+//  c) unmarshals MSSIMT_SENSITIVE structure into the buffer of MSSIMT_SENSITIVE.
+//  Return Type: MSSIM_RC
+//      MSSIM_RCS_INTEGRITY       if the private area integrity is bad
+//      MSSIM_RC_SENSITIVE        unmarshal errors while unmarshaling MSSIMS_ENCRYPT
 //                              from input private
-//      TPM_RCS_SIZE            error during sensitive data unmarshaling
-//      TPM_RCS_VALUE           outer wrapper does not have an iV of the correct
+//      MSSIM_RCS_SIZE            error during sensitive data unmarshaling
+//      MSSIM_RCS_VALUE           outer wrapper does not have an iV of the correct
 //                              size
-TPM_RC
-PrivateToSensitive(TPM2B*     inPrivate,  // IN: input private structure
-                   TPM2B*     name,       // IN: the name of the object
+MSSIM_RC
+PrivateToSensitive(MSSIM2B*     inPrivate,  // IN: input private structure
+                   MSSIM2B*     name,       // IN: the name of the object
                    OBJECT*    parent,     // IN: parent object
-                   TPM_ALG_ID nameAlg,    // IN: hash algorithm in public area.  It is
+                   MSSIM_ALG_ID nameAlg,    // IN: hash algorithm in public area.  It is
                    //     passed separately because we only pass
                    //     name, rather than the whole public area
                    //     of the object.  This parameter is used in
@@ -261,35 +261,35 @@ PrivateToSensitive(TPM2B*     inPrivate,  // IN: input private structure
                    //     objects. 2. duplication blob with inner
                    //     wrap.  In other cases, this parameter
                    //     will be ignored
-                   TPMT_SENSITIVE* sensitive  // OUT: sensitive structure
+                   MSSIMT_SENSITIVE* sensitive  // OUT: sensitive structure
 );
 
 //*** SensitiveToDuplicate()
 // This function prepare the duplication blob from the sensitive area.
 // This function:
-//  a) marshals TPMT_SENSITIVE structure into the buffer of TPM2B_PRIVATE;
+//  a) marshals MSSIMT_SENSITIVE structure into the buffer of MSSIM2B_PRIVATE;
 //  b) applies inner wrap to the sensitive area if required; and
 //  c) applies outer wrap if required.
 void SensitiveToDuplicate(
-    TPMT_SENSITIVE* sensitive,    // IN: sensitive structure
-    TPM2B*          name,         // IN: the name of the object
+    MSSIMT_SENSITIVE* sensitive,    // IN: sensitive structure
+    MSSIM2B*          name,         // IN: the name of the object
     OBJECT*         parent,       // IN: The new parent object
-    TPM_ALG_ID      nameAlg,      // IN: hash algorithm in public area. It
+    MSSIM_ALG_ID      nameAlg,      // IN: hash algorithm in public area. It
                                   //     is passed separately because we
                                   //     only pass name, rather than the
                                   //     whole public area of the object.
-    TPM2B* seed,                  // IN: the external seed. If external
+    MSSIM2B* seed,                  // IN: the external seed. If external
                                   //     seed is provided with size of 0,
                                   //     no outer wrap should be applied
                                   //     to duplication blob.
-    TPMT_SYM_DEF_OBJECT* symDef,  // IN: Symmetric key definition. If the
+    MSSIMT_SYM_DEF_OBJECT* symDef,  // IN: Symmetric key definition. If the
                                   //     symmetric key algorithm is NULL,
                                   //     no inner wrap should be applied.
-    TPM2B_DATA* innerSymKey,      // IN/OUT: a symmetric key may be
+    MSSIM2B_DATA* innerSymKey,      // IN/OUT: a symmetric key may be
                                   //     provided to encrypt the inner
                                   //     wrap of a duplication blob. May
                                   //     be generated here if needed.
-    TPM2B_PRIVATE* outPrivate     // OUT: output private structure
+    MSSIM2B_PRIVATE* outPrivate     // OUT: output private structure
 );
 
 //*** DuplicateToSensitive()
@@ -298,99 +298,99 @@ void SensitiveToDuplicate(
 // This function:
 //  a) checks the integrity HMAC of the input private area;
 //  b) decrypts the private buffer; and
-//  c) unmarshals TPMT_SENSITIVE structure into the buffer of TPMT_SENSITIVE.
+//  c) unmarshals MSSIMT_SENSITIVE structure into the buffer of MSSIMT_SENSITIVE.
 //
-//  Return Type: TPM_RC
-//      TPM_RC_INSUFFICIENT      unmarshaling sensitive data from 'inPrivate' failed
-//      TPM_RC_INTEGRITY         'inPrivate' data integrity is broken
-//      TPM_RC_SIZE              unmarshaling sensitive data from 'inPrivate' failed
-TPM_RC
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_INSUFFICIENT      unmarshaling sensitive data from 'inPrivate' failed
+//      MSSIM_RC_INTEGRITY         'inPrivate' data integrity is broken
+//      MSSIM_RC_SIZE              unmarshaling sensitive data from 'inPrivate' failed
+MSSIM_RC
 DuplicateToSensitive(
-    TPM2B*     inPrivate,         // IN: input private structure
-    TPM2B*     name,              // IN: the name of the object
+    MSSIM2B*     inPrivate,         // IN: input private structure
+    MSSIM2B*     name,              // IN: the name of the object
     OBJECT*    parent,            // IN: the parent
-    TPM_ALG_ID nameAlg,           // IN: hash algorithm in public area.
-    TPM2B*     seed,              // IN: an external seed may be provided.
+    MSSIM_ALG_ID nameAlg,           // IN: hash algorithm in public area.
+    MSSIM2B*     seed,              // IN: an external seed may be provided.
                                   //     If external seed is provided with
                                   //     size of 0, no outer wrap is
                                   //     applied
-    TPMT_SYM_DEF_OBJECT* symDef,  // IN: Symmetric key definition. If the
+    MSSIMT_SYM_DEF_OBJECT* symDef,  // IN: Symmetric key definition. If the
                                   //     symmetric key algorithm is NULL,
                                   //     no inner wrap is applied
-    TPM2B* innerSymKey,           // IN: a symmetric key may be provided
+    MSSIM2B* innerSymKey,           // IN: a symmetric key may be provided
                                   //     to decrypt the inner wrap of a
                                   //     duplication blob.
-    TPMT_SENSITIVE* sensitive     // OUT: sensitive structure
+    MSSIMT_SENSITIVE* sensitive     // OUT: sensitive structure
 );
 
 //*** SecretToCredential()
-// This function prepare the credential blob from a secret (a TPM2B_DIGEST)
+// This function prepare the credential blob from a secret (a MSSIM2B_DIGEST)
 // This function:
-//  a) marshals TPM2B_DIGEST structure into the buffer of TPM2B_ID_OBJECT;
+//  a) marshals MSSIM2B_DIGEST structure into the buffer of MSSIM2B_ID_OBJECT;
 //  b) encrypts the private buffer, excluding the leading integrity HMAC area;
 //  c) computes integrity HMAC and append to the beginning of the buffer; and
-//  d) sets the total size of TPM2B_ID_OBJECT buffer.
-void SecretToCredential(TPM2B_DIGEST*    secret,      // IN: secret information
-                        TPM2B*           name,        // IN: the name of the object
-                        TPM2B*           seed,        // IN: an external seed.
+//  d) sets the total size of MSSIM2B_ID_OBJECT buffer.
+void SecretToCredential(MSSIM2B_DIGEST*    secret,      // IN: secret information
+                        MSSIM2B*           name,        // IN: the name of the object
+                        MSSIM2B*           seed,        // IN: an external seed.
                         OBJECT*          protector,   // IN: the protector
-                        TPM2B_ID_OBJECT* outIDObject  // OUT: output credential
+                        MSSIM2B_ID_OBJECT* outIDObject  // OUT: output credential
 );
 
 //*** CredentialToSecret()
 // Unwrap a credential.  Check the integrity, decrypt and retrieve data
-// to a TPM2B_DIGEST structure.
+// to a MSSIM2B_DIGEST structure.
 // This function:
 //  a) checks the integrity HMAC of the input credential area;
 //  b) decrypts the credential buffer; and
-//  c) unmarshals TPM2B_DIGEST structure into the buffer of TPM2B_DIGEST.
+//  c) unmarshals MSSIM2B_DIGEST structure into the buffer of MSSIM2B_DIGEST.
 //
-//  Return Type: TPM_RC
-//      TPM_RC_INSUFFICIENT      error during credential unmarshaling
-//      TPM_RC_INTEGRITY         credential integrity is broken
-//      TPM_RC_SIZE              error during credential unmarshaling
-//      TPM_RC_VALUE             IV size does not match the encryption algorithm
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_INSUFFICIENT      error during credential unmarshaling
+//      MSSIM_RC_INTEGRITY         credential integrity is broken
+//      MSSIM_RC_SIZE              error during credential unmarshaling
+//      MSSIM_RC_VALUE             IV size does not match the encryption algorithm
 //                               block size
-TPM_RC
-CredentialToSecret(TPM2B*        inIDObject,  // IN: input credential blob
-                   TPM2B*        name,        // IN: the name of the object
-                   TPM2B*        seed,        // IN: an external seed.
+MSSIM_RC
+CredentialToSecret(MSSIM2B*        inIDObject,  // IN: input credential blob
+                   MSSIM2B*        name,        // IN: the name of the object
+                   MSSIM2B*        seed,        // IN: an external seed.
                    OBJECT*       protector,   // IN: the protector
-                   TPM2B_DIGEST* secret       // OUT: secret information
+                   MSSIM2B_DIGEST* secret       // OUT: secret information
 );
 
 //*** MemoryRemoveTrailingZeros()
 // This function is used to adjust the length of an authorization value.
-// It adjusts the size of the TPM2B so that it does not include octets
+// It adjusts the size of the MSSIM2B so that it does not include octets
 // at the end of the buffer that contain zero.
 //
 // This function returns the number of non-zero octets in the buffer.
 UINT16
-MemoryRemoveTrailingZeros(TPM2B_AUTH* auth  // IN/OUT: value to adjust
+MemoryRemoveTrailingZeros(MSSIM2B_AUTH* auth  // IN/OUT: value to adjust
 );
 
 //*** SetLabelAndContext()
 // This function sets the label and context for a derived key. It is possible
 // that 'label' or 'context' can end up being an Empty Buffer.
-TPM_RC
-SetLabelAndContext(TPMS_DERIVE* labelContext,       // IN/OUT: the recovered label and
+MSSIM_RC
+SetLabelAndContext(MSSIMS_DERIVE* labelContext,       // IN/OUT: the recovered label and
                                                     //      context
-                   TPM2B_SENSITIVE_DATA* sensitive  // IN: the sensitive data
+                   MSSIM2B_SENSITIVE_DATA* sensitive  // IN: the sensitive data
 );
 
 //*** UnmarshalToPublic()
 // Support function to unmarshal the template. This is used because the
-// Input may be a TPMT_TEMPLATE and that structure does not have the same
-// size as a TPMT_PUBLIC because of the difference between the 'unique' and
+// Input may be a MSSIMT_TEMPLATE and that structure does not have the same
+// size as a MSSIMT_PUBLIC because of the difference between the 'unique' and
 // 'seed' fields.
 //
 // If 'derive' is not NULL, then the 'seed' field is assumed to contain
 // a 'label' and 'context' that are unmarshaled into 'derive'.
-TPM_RC
-UnmarshalToPublic(TPMT_PUBLIC*    tOut,  // OUT: output
-                  TPM2B_TEMPLATE* tIn,   // IN:
+MSSIM_RC
+UnmarshalToPublic(MSSIMT_PUBLIC*    tOut,  // OUT: output
+                  MSSIM2B_TEMPLATE* tIn,   // IN:
                   BOOL derivation,       // IN: indicates if this is for a derivation
-                  TPMS_DERIVE* labelContext  // OUT: label and context if derivation
+                  MSSIMS_DERIVE* labelContext  // OUT: label and context if derivation
 );
 
 //*** ObjectSetExternal()

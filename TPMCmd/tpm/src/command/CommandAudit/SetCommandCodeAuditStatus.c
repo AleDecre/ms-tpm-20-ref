@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -41,25 +41,25 @@
 // change the audit status of a command or to set the hash algorithm used for
 // the audit digest.
 */
-TPM_RC
-TPM2_SetCommandCodeAuditStatus(
+MSSIM_RC
+MSSIM2_SetCommandCodeAuditStatus(
     SetCommandCodeAuditStatus_In* in  // IN: input parameter list
 )
 {
 
     // The command needs NV update.  Check if NV is available.
-    // A TPM_RC_NV_UNAVAILABLE or TPM_RC_NV_RATE error may be returned at
+    // A MSSIM_RC_NV_UNAVAILABLE or MSSIM_RC_NV_RATE error may be returned at
     // this point
     RETURN_IF_NV_IS_NOT_AVAILABLE;
 
     // Internal Data Update
 
     // Update hash algorithm
-    if(in->auditAlg != TPM_ALG_NULL && in->auditAlg != gp.auditHashAlg)
+    if(in->auditAlg != MSSIM_ALG_NULL && in->auditAlg != gp.auditHashAlg)
     {
         // Can't change the algorithm and command list at the same time
         if(in->setList.count != 0 || in->clearList.count != 0)
-            return TPM_RCS_VALUE + RC_SetCommandCodeAuditStatus_auditAlg;
+            return MSSIM_RCS_VALUE + RC_SetCommandCodeAuditStatus_auditAlg;
 
         // Change the hash algorithm for audit
         gp.auditHashAlg = in->auditAlg;
@@ -97,7 +97,7 @@ TPM2_SetCommandCodeAuditStatus(
             NV_SYNC_PERSISTENT(auditCommands);
     }
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_SetCommandCodeAuditStatus

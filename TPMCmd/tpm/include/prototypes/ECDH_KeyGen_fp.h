@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,22 +45,22 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT keyHandle;
+    MSSIMI_DH_OBJECT keyHandle;
 } ECDH_KeyGen_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_ECC_POINT zPoint;
-    TPM2B_ECC_POINT pubPoint;
+    MSSIM2B_ECC_POINT zPoint;
+    MSSIM2B_ECC_POINT pubPoint;
 } ECDH_KeyGen_Out;
 
 // Response code modifiers
-#    define RC_ECDH_KeyGen_keyHandle (TPM_RC_H + TPM_RC_1)
+#    define RC_ECDH_KeyGen_keyHandle (MSSIM_RC_H + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_ECDH_KeyGen(ECDH_KeyGen_In* in, ECDH_KeyGen_Out* out);
+MSSIM_RC
+MSSIM2_ECDH_KeyGen(ECDH_KeyGen_In* in, ECDH_KeyGen_Out* out);
 
 #  endif  // _ECDH_Key_Gen_FP_H_
 #endif    // CC_ECDH_KeyGen

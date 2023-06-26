@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -37,8 +37,8 @@
  *  Date: Aug 30, 2019  Time: 02:11:54PM
  */
 
-#ifndef _TPM_TO_LTC_MATH_FP_H_
-#define _TPM_TO_LTC_MATH_FP_H_
+#ifndef _MSSIM_TO_LTC_MATH_FP_H_
+#define _MSSIM_TO_LTC_MATH_FP_H_
 
 #ifdef MATH_LIB_LTC
 
@@ -56,7 +56,7 @@ LIB_EXPORT BOOL BnMult(bigNum result, bigConst multiplicand, bigConst multiplier
 LIB_EXPORT BOOL BnDiv(
     bigNum quotient, bigNum remainder, bigConst dividend, bigConst divisor);
 
-#  ifdef TPM_ALG_RSA
+#  ifdef MSSIM_ALG_RSA
 //*** BnGcd()
 // Get the greatest common divisor of two numbers
 LIB_EXPORT BOOL BnGcd(bigNum   gcd,      // OUT: the common divisor
@@ -76,8 +76,8 @@ LIB_EXPORT BOOL BnModExp(bigNum   result,    // OUT: the result
 //*** BnModInverse()
 // Modular multiplicative inverse
 LIB_EXPORT BOOL BnModInverse(bigNum result, bigConst number, bigConst modulus);
-#  endif  // TPM_ALG_RSA
-#  ifdef TPM_ALG_ECC
+#  endif  // MSSIM_ALG_RSA
+#  ifdef MSSIM_ALG_ECC
 
 //*** BnEccModMult()
 // This function does a point multiply of the form R = [d]S
@@ -112,7 +112,7 @@ LIB_EXPORT BOOL BnEccAdd(bigPoint   R,  // OUT: computed point
                          pointConst Q,  // IN: second point
                          bigCurve   E   // IN: curve
 );
-#  endif  // TPM_ALG_ECC
+#  endif  // MSSIM_ALG_ECC
 #endif    // MATH_LIB_LTC
 
-#endif  // _TPM_TO_LTC_MATH_FP_H_
+#endif  // _MSSIM_TO_LTC_MATH_FP_H_

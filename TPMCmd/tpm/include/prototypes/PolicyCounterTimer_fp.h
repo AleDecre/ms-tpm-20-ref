@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,21 +45,21 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_SH_POLICY policySession;
-    TPM2B_OPERAND  operandB;
+    MSSIMI_SH_POLICY policySession;
+    MSSIM2B_OPERAND  operandB;
     UINT16         offset;
-    TPM_EO         operation;
+    MSSIM_EO         operation;
 } PolicyCounterTimer_In;
 
 // Response code modifiers
-#    define RC_PolicyCounterTimer_policySession (TPM_RC_H + TPM_RC_1)
-#    define RC_PolicyCounterTimer_operandB      (TPM_RC_P + TPM_RC_1)
-#    define RC_PolicyCounterTimer_offset        (TPM_RC_P + TPM_RC_2)
-#    define RC_PolicyCounterTimer_operation     (TPM_RC_P + TPM_RC_3)
+#    define RC_PolicyCounterTimer_policySession (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_PolicyCounterTimer_operandB      (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_PolicyCounterTimer_offset        (MSSIM_RC_P + MSSIM_RC_2)
+#    define RC_PolicyCounterTimer_operation     (MSSIM_RC_P + MSSIM_RC_3)
 
 // Function prototype
-TPM_RC
-TPM2_PolicyCounterTimer(PolicyCounterTimer_In* in);
+MSSIM_RC
+MSSIM2_PolicyCounterTimer(PolicyCounterTimer_In* in);
 
 #  endif  // _Policy_Counter_Timer_FP_H_
 #endif    // CC_PolicyCounterTimer

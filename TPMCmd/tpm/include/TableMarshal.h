@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -44,9 +44,9 @@
 #define MIN_MAX_MTYPE    (TABLE_MTYPE + 1)
 #define ATTRIBUTES_MTYPE (MIN_MAX_MTYPE + 1)
 #define STRUCTURE_MTYPE  (ATTRIBUTES_MTYPE + 1)
-#define TPM2B_MTYPE      (STRUCTURE_MTYPE + 1)
-#define TPM2BS_MTYPE     (TPM2B_MTYPE + 1)
-#define LIST_MTYPE       (TPM2BS_MTYPE + 1)  // TPML
+#define MSSIM2B_MTYPE      (STRUCTURE_MTYPE + 1)
+#define MSSIM2BS_MTYPE     (MSSIM2B_MTYPE + 1)
+#define LIST_MTYPE       (MSSIM2BS_MTYPE + 1)  // MSSIML
 #define ERROR_MTYPE      (LIST_MTYPE + 1)
 #define NULL_MTYPE       (ERROR_MTYPE + 1)
 #define COMPOSITE_MTYPE  (NULL_MTYPE + 1)
@@ -54,8 +54,8 @@
 //*** The Marshal Index
 // A structure is used to hold the values that guide the marshaling/unmarshaling of
 // each of the types. Each structure has a name and an address. For a structure to
-// define a TPMS_name, the structure is a TPMS_name_MARSHAL_STRUCT and its
-// index is TPMS_name_MARSHAL_INDEX. So, to get the proper structure, use the
+// define a MSSIMS_name, the structure is a MSSIMS_name_MARSHAL_STRUCT and its
+// index is MSSIMS_name_MARSHAL_INDEX. So, to get the proper structure, use the
 // associated marshal index. The marshal index is passed to Marshal() or Unmarshal()
 // and those functions look up the proper structure.
 //
@@ -128,9 +128,9 @@ typedef struct attributesModifier
     unsigned unused : 5;
 } attributesModifier;
 
-// the modifier byte is not present in a STRUCTURE_MTYPE or an TPM2B_MTYPE
+// the modifier byte is not present in a STRUCTURE_MTYPE or an MSSIM2B_MTYPE
 
-// the modifier byte for a TPM2BS_MTYPE
+// the modifier byte for a MSSIM2BS_MTYPE
 typedef struct tpm2bsModifier
 {
     unsigned offset        : 4;
@@ -173,7 +173,7 @@ typedef struct listModifier
 // In a union, we need to know if this is a union of constant arrays.
 #define IS_ARRAY_UNION (1 << 6)
 
-// In a TPM2BS_MTYPE
+// In a MSSIM2BS_MTYPE
 #define SIZE_EQUAL  (1 << 6)
 #define OFFSET_MASK (0xF)
 

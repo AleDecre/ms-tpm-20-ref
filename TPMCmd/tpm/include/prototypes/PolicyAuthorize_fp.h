@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,23 +45,23 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_SH_POLICY   policySession;
-    TPM2B_DIGEST     approvedPolicy;
-    TPM2B_NONCE      policyRef;
-    TPM2B_NAME       keySign;
-    TPMT_TK_VERIFIED checkTicket;
+    MSSIMI_SH_POLICY   policySession;
+    MSSIM2B_DIGEST     approvedPolicy;
+    MSSIM2B_NONCE      policyRef;
+    MSSIM2B_NAME       keySign;
+    MSSIMT_TK_VERIFIED checkTicket;
 } PolicyAuthorize_In;
 
 // Response code modifiers
-#    define RC_PolicyAuthorize_policySession  (TPM_RC_H + TPM_RC_1)
-#    define RC_PolicyAuthorize_approvedPolicy (TPM_RC_P + TPM_RC_1)
-#    define RC_PolicyAuthorize_policyRef      (TPM_RC_P + TPM_RC_2)
-#    define RC_PolicyAuthorize_keySign        (TPM_RC_P + TPM_RC_3)
-#    define RC_PolicyAuthorize_checkTicket    (TPM_RC_P + TPM_RC_4)
+#    define RC_PolicyAuthorize_policySession  (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_PolicyAuthorize_approvedPolicy (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_PolicyAuthorize_policyRef      (MSSIM_RC_P + MSSIM_RC_2)
+#    define RC_PolicyAuthorize_keySign        (MSSIM_RC_P + MSSIM_RC_3)
+#    define RC_PolicyAuthorize_checkTicket    (MSSIM_RC_P + MSSIM_RC_4)
 
 // Function prototype
-TPM_RC
-TPM2_PolicyAuthorize(PolicyAuthorize_In* in);
+MSSIM_RC
+MSSIM2_PolicyAuthorize(PolicyAuthorize_In* in);
 
 #  endif  // _Policy_Authorize_FP_H_
 #endif    // CC_PolicyAuthorize

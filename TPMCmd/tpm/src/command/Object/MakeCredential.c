@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -42,22 +42,22 @@
 /*(See part 3 specification)
 // Make Credential with an object
 */
-//  Return Type: TPM_RC
-//      TPM_RC_KEY              'handle' referenced an ECC key that has a unique
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_KEY              'handle' referenced an ECC key that has a unique
 //                              field that is not a point on the curve of the key
-//      TPM_RC_SIZE             'credential' is larger than the digest size of
+//      MSSIM_RC_SIZE             'credential' is larger than the digest size of
 //                              Name algorithm of 'handle'
-//      TPM_RC_TYPE             'handle' does not reference an asymmetric
+//      MSSIM_RC_TYPE             'handle' does not reference an asymmetric
 //                              decryption key
-TPM_RC
-TPM2_MakeCredential(MakeCredential_In*  in,  // IN: input parameter list
+MSSIM_RC
+MSSIM2_MakeCredential(MakeCredential_In*  in,  // IN: input parameter list
                     MakeCredential_Out* out  // OUT: output parameter list
 )
 {
-    TPM_RC     result = TPM_RC_SUCCESS;
+    MSSIM_RC     result = MSSIM_RC_SUCCESS;
 
     OBJECT*    object;
-    TPM2B_DATA data;
+    MSSIM2B_DATA data;
 
     // Input Validation
 
@@ -67,28 +67,28 @@ TPM2_MakeCredential(MakeCredential_In*  in,  // IN: input parameter list
     // input key must be an asymmetric, restricted decryption key
     // NOTE: Needs to be restricted to have a symmetric value.
     if(!CryptIsAsymAlgorithm(object->publicArea.type)
-       || !IS_ATTRIBUTE(object->publicArea.objectAttributes, TPMA_OBJECT, decrypt)
-       || !IS_ATTRIBUTE(object->publicArea.objectAttributes, TPMA_OBJECT, restricted))
-        return TPM_RCS_TYPE + RC_MakeCredential_handle;
+       || !IS_ATTRIBUTE(object->publicArea.objectAttributes, MSSIMA_OBJECT, decrypt)
+       || !IS_ATTRIBUTE(object->publicArea.objectAttributes, MSSIMA_OBJECT, restricted))
+        return MSSIM_RCS_TYPE + RC_MakeCredential_handle;
 
     // The credential information may not be larger than the digest size used for
     // the Name of the key associated with handle.
     if(in->credential.t.size > CryptHashGetDigestSize(object->publicArea.nameAlg))
-        return TPM_RCS_SIZE + RC_MakeCredential_credential;
+        return MSSIM_RCS_SIZE + RC_MakeCredential_credential;
 
     // Command Output
 
     // Make encrypt key and its associated secret structure.
     out->secret.t.size = sizeof(out->secret.t.secret);
     result = CryptSecretEncrypt(object, IDENTITY_STRING, &data, &out->secret);
-    if(result != TPM_RC_SUCCESS)
+    if(result != MSSIM_RC_SUCCESS)
         return result;
 
     // Prepare output credential data from secret
     SecretToCredential(
         &in->credential, &in->objectName.b, &data.b, object, &out->credentialBlob);
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_MakeCredential

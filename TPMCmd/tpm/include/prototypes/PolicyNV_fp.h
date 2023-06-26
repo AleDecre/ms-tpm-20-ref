@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,25 +45,25 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_RH_NV_AUTH  authHandle;
-    TPMI_RH_NV_INDEX nvIndex;
-    TPMI_SH_POLICY   policySession;
-    TPM2B_OPERAND    operandB;
+    MSSIMI_RH_NV_AUTH  authHandle;
+    MSSIMI_RH_NV_INDEX nvIndex;
+    MSSIMI_SH_POLICY   policySession;
+    MSSIM2B_OPERAND    operandB;
     UINT16           offset;
-    TPM_EO           operation;
+    MSSIM_EO           operation;
 } PolicyNV_In;
 
 // Response code modifiers
-#    define RC_PolicyNV_authHandle    (TPM_RC_H + TPM_RC_1)
-#    define RC_PolicyNV_nvIndex       (TPM_RC_H + TPM_RC_2)
-#    define RC_PolicyNV_policySession (TPM_RC_H + TPM_RC_3)
-#    define RC_PolicyNV_operandB      (TPM_RC_P + TPM_RC_1)
-#    define RC_PolicyNV_offset        (TPM_RC_P + TPM_RC_2)
-#    define RC_PolicyNV_operation     (TPM_RC_P + TPM_RC_3)
+#    define RC_PolicyNV_authHandle    (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_PolicyNV_nvIndex       (MSSIM_RC_H + MSSIM_RC_2)
+#    define RC_PolicyNV_policySession (MSSIM_RC_H + MSSIM_RC_3)
+#    define RC_PolicyNV_operandB      (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_PolicyNV_offset        (MSSIM_RC_P + MSSIM_RC_2)
+#    define RC_PolicyNV_operation     (MSSIM_RC_P + MSSIM_RC_3)
 
 // Function prototype
-TPM_RC
-TPM2_PolicyNV(PolicyNV_In* in);
+MSSIM_RC
+MSSIM2_PolicyNV(PolicyNV_In* in);
 
 #  endif  // _Policy_NV_FP_H_
 #endif    // CC_PolicyNV

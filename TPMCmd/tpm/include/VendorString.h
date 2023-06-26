@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -37,7 +37,7 @@
 #define _VENDOR_STRING_H
 
 // Define up to 4-byte values for MANUFACTURER.  This value defines the response
-// for TPM_PT_MANUFACTURER in TPM2_GetCapability.
+// for MSSIM_PT_MANUFACTURER in MSSIM2_GetCapability.
 // The following line should be un-commented and a vendor specific string
 // should be provided here.
 #define MANUFACTURER "MSFT"
@@ -51,13 +51,13 @@ manufacturer name.
 
 // Define up to 4, 4-byte values. The values must each be 4 bytes long and the last
 // value used may contain trailing zeros.
-// These values define the response for TPM_PT_VENDOR_STRING_(1-4)
-// in TPM2_GetCapability.
+// These values define the response for MSSIM_PT_VENDOR_STRING_(1-4)
+// in MSSIM2_GetCapability.
 // The following line should be un-commented and a vendor specific string
 // should be provided here.
 // The vendor strings 2-4 may also be defined as appropriate.
 #define VENDOR_STRING_1 "xCG "
-#define VENDOR_STRING_2 "fTPM"
+#define VENDOR_STRING_2 "fMSSIM"
 // #define       VENDOR_STRING_3
 // #define       VENDOR_STRING_4
 

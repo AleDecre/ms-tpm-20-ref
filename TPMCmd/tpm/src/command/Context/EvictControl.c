@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,22 +40,22 @@
 /*(See part 3 specification)
 // Make a transient object persistent or evict a persistent object
 */
-//  Return Type: TPM_RC
-//      TPM_RC_ATTRIBUTES   an object with 'temporary', 'stClear' or 'publicOnly'
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_ATTRIBUTES   an object with 'temporary', 'stClear' or 'publicOnly'
 //                          attribute SET cannot be made persistent
-//      TPM_RC_HIERARCHY    'auth' cannot authorize the operation in the hierarchy
+//      MSSIM_RC_HIERARCHY    'auth' cannot authorize the operation in the hierarchy
 //                          of 'evictObject'
-//      TPM_RC_HANDLE       'evictHandle' of the persistent object to be evicted is
+//      MSSIM_RC_HANDLE       'evictHandle' of the persistent object to be evicted is
 //                          not the same as the 'persistentHandle' argument
-//      TPM_RC_NV_HANDLE    'persistentHandle' is unavailable
-//      TPM_RC_NV_SPACE     no space in NV to make 'evictHandle' persistent
-//      TPM_RC_RANGE        'persistentHandle' is not in the range corresponding to
+//      MSSIM_RC_NV_HANDLE    'persistentHandle' is unavailable
+//      MSSIM_RC_NV_SPACE     no space in NV to make 'evictHandle' persistent
+//      MSSIM_RC_RANGE        'persistentHandle' is not in the range corresponding to
 //                          the hierarchy of 'evictObject'
-TPM_RC
-TPM2_EvictControl(EvictControl_In* in  // IN: input parameter list
+MSSIM_RC
+MSSIM2_EvictControl(EvictControl_In* in  // IN: input parameter list
 )
 {
-    TPM_RC  result;
+    MSSIM_RC  result;
     OBJECT* evictObject;
 
     // Input Validation
@@ -67,16 +67,16 @@ TPM2_EvictControl(EvictControl_In* in  // IN: input parameter list
     if(evictObject->attributes.temporary == SET
        || evictObject->attributes.stClear == SET
        || evictObject->attributes.publicOnly == SET)
-        return TPM_RCS_ATTRIBUTES + RC_EvictControl_objectHandle;
+        return MSSIM_RCS_ATTRIBUTES + RC_EvictControl_objectHandle;
 
     // If objectHandle refers to a persistent object, it should be the same as
     // input persistentHandle
     if(evictObject->attributes.evict == SET
        && evictObject->evictHandle != in->persistentHandle)
-        return TPM_RCS_HANDLE + RC_EvictControl_objectHandle;
+        return MSSIM_RCS_HANDLE + RC_EvictControl_objectHandle;
 
     // Additional authorization validation
-    if(in->auth == TPM_RH_PLATFORM)
+    if(in->auth == MSSIM_RH_PLATFORM)
     {
         // To make persistent
         if(evictObject->attributes.evict == CLEAR)
@@ -84,23 +84,23 @@ TPM2_EvictControl(EvictControl_In* in  // IN: input parameter list
             // PlatformAuth can not set evict object in storage or endorsement
             // hierarchy
             if(evictObject->attributes.ppsHierarchy == CLEAR)
-                return TPM_RCS_HIERARCHY + RC_EvictControl_objectHandle;
+                return MSSIM_RCS_HIERARCHY + RC_EvictControl_objectHandle;
             // Platform cannot use a handle outside of platform persistent range.
             if(!NvIsPlatformPersistentHandle(in->persistentHandle))
-                return TPM_RCS_RANGE + RC_EvictControl_persistentHandle;
+                return MSSIM_RCS_RANGE + RC_EvictControl_persistentHandle;
         }
         // PlatformAuth can delete any persistent object
     }
-    else if(in->auth == TPM_RH_OWNER)
+    else if(in->auth == MSSIM_RH_OWNER)
     {
         // OwnerAuth can not set or clear evict object in platform hierarchy
         if(evictObject->attributes.ppsHierarchy == SET)
-            return TPM_RCS_HIERARCHY + RC_EvictControl_objectHandle;
+            return MSSIM_RCS_HIERARCHY + RC_EvictControl_objectHandle;
 
         // Owner cannot use a handle outside of owner persistent range.
         if(evictObject->attributes.evict == CLEAR
            && !NvIsOwnerPersistentHandle(in->persistentHandle))
-            return TPM_RCS_RANGE + RC_EvictControl_persistentHandle;
+            return MSSIM_RCS_RANGE + RC_EvictControl_persistentHandle;
     }
     else
     {
@@ -114,8 +114,8 @@ TPM2_EvictControl(EvictControl_In* in  // IN: input parameter list
     {
         // Make object persistent
         if(NvFindHandle(in->persistentHandle) != 0)
-            return TPM_RC_NV_DEFINED;
-        // A TPM_RC_NV_HANDLE or TPM_RC_NV_SPACE error may be returned at this
+            return MSSIM_RC_NV_DEFINED;
+        // A MSSIM_RC_NV_HANDLE or MSSIM_RC_NV_SPACE error may be returned at this
         // point
         result = NvAddEvictObject(in->persistentHandle, evictObject);
     }

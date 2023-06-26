@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -49,8 +49,8 @@
 // of the instance data.
 //
 // All the data is instanced in Global.c.
-#if !defined _TPM_H_
-#  error "Should only be instanced in TPM.h"
+#if !defined _MSSIM_H_
+#  error "Should only be instanced in MSSIM.h"
 #endif
 
 //** Includes
@@ -83,24 +83,24 @@ _NORMAL_WARNING_LEVEL_
 //*** Size Types
 // These types are used to differentiate the two different size values used.
 //
-// NUMBYTES is used when a size is a number of bytes (usually a TPM2B)
+// NUMBYTES is used when a size is a number of bytes (usually a MSSIM2B)
 typedef UINT16 NUMBYTES;
 
 //*** Other Types
-// An AUTH_VALUE is a BYTE array containing a digest (TPMU_HA)
-typedef BYTE AUTH_VALUE[sizeof(TPMU_HA)];
+// An AUTH_VALUE is a BYTE array containing a digest (MSSIMU_HA)
+typedef BYTE AUTH_VALUE[sizeof(MSSIMU_HA)];
 
-// A TIME_INFO is a BYTE array that can contain a TPMS_TIME_INFO
-typedef BYTE TIME_INFO[sizeof(TPMS_TIME_INFO)];
+// A TIME_INFO is a BYTE array that can contain a MSSIMS_TIME_INFO
+typedef BYTE TIME_INFO[sizeof(MSSIMS_TIME_INFO)];
 
-// A NAME is a BYTE array that can contain a TPMU_NAME
-typedef BYTE NAME[sizeof(TPMU_NAME)];
+// A NAME is a BYTE array that can contain a MSSIMU_NAME
+typedef BYTE NAME[sizeof(MSSIMU_NAME)];
 
 // Definition for a PROOF value
-TPM2B_TYPE(PROOF, PROOF_SIZE);
+MSSIM2B_TYPE(PROOF, PROOF_SIZE);
 
 // Definition for a Primary Seed value
-TPM2B_TYPE(SEED, PRIMARY_SEED_SIZE);
+MSSIM2B_TYPE(SEED, PRIMARY_SEED_SIZE);
 
 // A CLOCK_NONCE is used to tag the time value in the authorization session and
 // in the ticket computation so that the ticket expires when there is a time
@@ -115,7 +115,7 @@ typedef UINT32 CLOCK_NONCE;
 
 //** Loaded Object Structures
 //*** Description
-// The structures in this section define the object layout as it exists in TPM
+// The structures in this section define the object layout as it exists in MSSIM
 // memory.
 //
 // Two types of objects are defined: an ordinary object such as a key, and a
@@ -124,7 +124,7 @@ typedef UINT32 CLOCK_NONCE;
 //*** OBJECT_ATTRIBUTES
 // An OBJECT_ATTRIBUTES structure contains the variable attributes of an object.
 // These properties are not part of the public properties but are used by the
-// TPM in managing the object. An OBJECT_ATTRIBUTES is used in the definition of
+// MSSIM in managing the object. An OBJECT_ATTRIBUTES is used in the definition of
 // the OBJECT data type.
 
 typedef struct
@@ -167,11 +167,11 @@ typedef struct
     unsigned derivation  : 1;  //16) SET when the key is a derivation
                                //        parent
     unsigned external : 1;     //17) SET when the object is loaded with
-                               //    TPM2_LoadExternal();
+                               //    MSSIM2_LoadExternal();
 } OBJECT_ATTRIBUTES;
 
 #  if ALG_RSA
-// There is an overload of the sensitive.rsa.t.size field of a TPMT_SENSITIVE when an
+// There is an overload of the sensitive.rsa.t.size field of a MSSIMT_SENSITIVE when an
 // RSA key is loaded. When the sensitive->sensitive contains an RSA key with all of
 // the CRT values, then the MSB of the size field will be set to indicate that the
 // buffer contains all 5 of the CRT private key values.
@@ -193,14 +193,14 @@ typedef struct OBJECT
     // The attributes field is required to be first followed by the publicArea.
     // This allows the overlay of the object structure and a sequence structure
     OBJECT_ATTRIBUTES attributes;     // object attributes
-    TPMT_PUBLIC       publicArea;     // public area of an object
-    TPMT_SENSITIVE    sensitive;      // sensitive area of an object
-    TPM2B_NAME        qualifiedName;  // object qualified name
-    TPMI_DH_OBJECT    evictHandle;    // if the object is an evict object,
+    MSSIMT_PUBLIC       publicArea;     // public area of an object
+    MSSIMT_SENSITIVE    sensitive;      // sensitive area of an object
+    MSSIM2B_NAME        qualifiedName;  // object qualified name
+    MSSIMI_DH_OBJECT    evictHandle;    // if the object is an evict object,
                                       // the original handle is kept here.
                                       // The 'working' handle will be the
                                       // handle of an object slot.
-    TPM2B_NAME name;                  // Name of the object name. Kept here
+    MSSIM2B_NAME name;                  // Name of the object name. Kept here
                                       // to avoid repeatedly computing it.
 } OBJECT;
 
@@ -216,12 +216,12 @@ typedef struct OBJECT
 typedef struct HASH_OBJECT
 {
     OBJECT_ATTRIBUTES attributes;        // The attributes of the HASH object
-    TPMI_ALG_PUBLIC   type;              // algorithm
-    TPMI_ALG_HASH     nameAlg;           // name algorithm
-    TPMA_OBJECT       objectAttributes;  // object attributes
+    MSSIMI_ALG_PUBLIC   type;              // algorithm
+    MSSIMI_ALG_HASH     nameAlg;           // name algorithm
+    MSSIMA_OBJECT       objectAttributes;  // object attributes
 
     // The data below is unique to a sequence object
-    TPM2B_AUTH auth;  // authorization for use of sequence
+    MSSIM2B_AUTH auth;  // authorization for use of sequence
     union
     {
         HASH_STATE hashState[HASH_COUNT];
@@ -299,12 +299,12 @@ typedef struct SESSION_ATTRIBUTES
                                      //    included in the computation of the
                                      //    HMAC key for the command and response
                                      //    computations. (was 'requestWasBound')
-    unsigned checkNvWritten : 1;     //12) SET if the TPMA_NV_WRITTEN attribute
+    unsigned checkNvWritten : 1;     //12) SET if the MSSIMA_NV_WRITTEN attribute
                                      //    needs to be checked when the policy is
                                      //    used for authorization for NV access.
                                      //    If this is SET for any other type, the
                                      //    policy will fail.
-    unsigned nvWrittenState : 1;     //13) SET if TPMA_NV_WRITTEN is required to
+    unsigned nvWrittenState : 1;     //13) SET if MSSIMA_NV_WRITTEN is required to
                                      //    be SET. Used when 'checkNvWritten' is
                                      //    SET
     unsigned isTemplateSet : 1;      //14) SET if the templateHash needs to be
@@ -317,7 +317,7 @@ typedef struct SESSION_ATTRIBUTES
 // associated contextID.
 //
 // Note: The contextID of a session is only relevant when the session context
-// is stored off the TPM.
+// is stored off the MSSIM.
 
 typedef struct SESSION
 {
@@ -336,29 +336,29 @@ typedef struct SESSION
                                     // does not match this value when the
                                     // timeout is used, then
                                     // then the command will fail.
-    TPM_CC        commandCode;      // command code (policy session)
-    TPM_ALG_ID    authHashAlg;      // session hash algorithm
-    TPMA_LOCALITY commandLocality;  // command locality (policy session)
-    TPMT_SYM_DEF  symmetric;        // session symmetric algorithm (if any)
-    TPM2B_AUTH    sessionKey;       // session secret value used for
+    MSSIM_CC        commandCode;      // command code (policy session)
+    MSSIM_ALG_ID    authHashAlg;      // session hash algorithm
+    MSSIMA_LOCALITY commandLocality;  // command locality (policy session)
+    MSSIMT_SYM_DEF  symmetric;        // session symmetric algorithm (if any)
+    MSSIM2B_AUTH    sessionKey;       // session secret value used for
                                     // this session
-    TPM2B_NONCE nonceTPM;           // last TPM-generated nonce for
+    MSSIM2B_NONCE nonceMSSIM;           // last MSSIM-generated nonce for
                                     // generating HMAC and encryption keys
     union
     {
-        TPM2B_NAME boundEntity;  // value used to track the entity to
+        MSSIM2B_NAME boundEntity;  // value used to track the entity to
                                  // which the session is bound
 
-        TPM2B_DIGEST cpHash;        // the required cpHash value for the
+        MSSIM2B_DIGEST cpHash;        // the required cpHash value for the
                                     // command being authorized
-        TPM2B_DIGEST nameHash;      // the required nameHash
-        TPM2B_DIGEST templateHash;  // the required template for creation
+        MSSIM2B_DIGEST nameHash;      // the required nameHash
+        MSSIM2B_DIGEST templateHash;  // the required template for creation
     } u1;
 
     union
     {
-        TPM2B_DIGEST auditDigest;   // audit session digest
-        TPM2B_DIGEST policyDigest;  // policyHash
+        MSSIM2B_DIGEST auditDigest;   // audit session digest
+        MSSIM2B_DIGEST policyDigest;  // policyHash
     } u2;                           // audit log and policyHash may
                                     // share space to save memory
 } SESSION;
@@ -377,7 +377,7 @@ typedef BYTE SESSION_BUF[sizeof(SESSION)];
 // The PCR_SAVE structure type contains the PCR data that are saved across power
 // cycles. Only the static PCR are required to be saved across power cycles. The
 // DRTM and resettable PCR are not saved. The number of static and resettable PCR
-// is determined by the platform-specific specification to which the TPM is built.
+// is determined by the platform-specific specification to which the MSSIM is built.
 
 #  define PCR_SAVE_SPACE(HASH, Hash) BYTE Hash[NUM_STATIC_PCR][HASH##_DIGEST_SIZE];
 
@@ -398,9 +398,9 @@ typedef struct PCR_SAVE
 // by policy.
 typedef struct PCR_POLICY
 {
-    TPMI_ALG_HASH hashAlg[NUM_POLICY_PCR_GROUP];
-    TPM2B_DIGEST  a;
-    TPM2B_DIGEST  policy[NUM_POLICY_PCR_GROUP];
+    MSSIMI_ALG_HASH hashAlg[NUM_POLICY_PCR_GROUP];
+    MSSIM2B_DIGEST  a;
+    MSSIM2B_DIGEST  policy[NUM_POLICY_PCR_GROUP];
 } PCR_POLICY;
 #  endif
 
@@ -409,12 +409,12 @@ typedef struct PCR_POLICY
 // by policy.
 typedef struct PCR_AUTH_VALUE
 {
-    TPM2B_DIGEST auth[NUM_AUTHVALUE_PCR_GROUP];
+    MSSIM2B_DIGEST auth[NUM_AUTHVALUE_PCR_GROUP];
 } PCR_AUTHVALUE;
 
 //**STARTUP_TYPE
 // This enumeration is the possible startup types. The type is determined
-// by the combination of TPM2_ShutDown and TPM2_Startup.
+// by the combination of MSSIM2_ShutDown and MSSIM2_Startup.
 typedef enum
 {
     SU_RESET,
@@ -430,8 +430,8 @@ typedef enum
 // In this implementation, all of the index is manipulated as a unit.
 typedef struct NV_INDEX
 {
-    TPMS_NV_PUBLIC publicArea;
-    TPM2B_AUTH     authValue;
+    MSSIMS_NV_PUBLIC publicArea;
+    MSSIM2B_AUTH     authValue;
 } NV_INDEX;
 
 //*** NV_REF
@@ -445,13 +445,13 @@ typedef UINT32 NV_REF;
 typedef BYTE*  NV_RAM_REF;
 //***NV_PIN
 // This structure deals with the possible endianess differences between the
-// canonical form of the TPMS_NV_PIN_COUNTER_PARAMETERS structure and the internal
+// canonical form of the MSSIMS_NV_PIN_COUNTER_PARAMETERS structure and the internal
 // value. The structures allow the data in a PIN index to be read as an 8-octet
 // value using NvReadUINT64Data(). That function will byte swap all the values on a
 // little endian system. This will put the bytes with the 4-octet values in the
 // correct order but will swap the pinLimit and pinCount values. When written, the
 // PIN index is simply handled as a normal index with the octets in canonical order.
-#  if BIG_ENDIAN_TPM
+#  if BIG_ENDIAN_MSSIM
 typedef struct
 {
     UINT32 pinCount;
@@ -502,29 +502,29 @@ EXTERN ALGORITHM_VECTOR g_toTest;
 // a macro.
 #  define g_rcIndexInitializer                                                  \
     {                                                                           \
-      TPM_RC_1, TPM_RC_2, TPM_RC_3, TPM_RC_4, TPM_RC_5, TPM_RC_6, TPM_RC_7,     \
-          TPM_RC_8, TPM_RC_9, TPM_RC_A, TPM_RC_B, TPM_RC_C, TPM_RC_D, TPM_RC_E, \
-          TPM_RC_F                                                              \
+      MSSIM_RC_1, MSSIM_RC_2, MSSIM_RC_3, MSSIM_RC_4, MSSIM_RC_5, MSSIM_RC_6, MSSIM_RC_7,     \
+          MSSIM_RC_8, MSSIM_RC_9, MSSIM_RC_A, MSSIM_RC_B, MSSIM_RC_C, MSSIM_RC_D, MSSIM_RC_E, \
+          MSSIM_RC_F                                                              \
     }
 EXTERN const UINT16 g_rcIndex[15] INITIALIZER(g_rcIndexInitializer);
 
 //*** g_exclusiveAuditSession
 // This location holds the session handle for the current exclusive audit
 // session. If there is no exclusive audit session, the location is set to
-// TPM_RH_UNASSIGNED.
-EXTERN TPM_HANDLE g_exclusiveAuditSession;
+// MSSIM_RH_UNASSIGNED.
+EXTERN MSSIM_HANDLE g_exclusiveAuditSession;
 
 //*** g_time
 // This is the value in which we keep the current command time. This is initialized
 // at the start of each command. The time is the accumulated time since the last
-// time that the TPM's timer was last powered up. Clock is the accumulated time
-// since the last time that the TPM was cleared. g_time is in mS.
+// time that the MSSIM's timer was last powered up. Clock is the accumulated time
+// since the last time that the MSSIM was cleared. g_time is in mS.
 EXTERN UINT64 g_time;
 
 //*** g_timeEpoch
 // This value contains the current clock Epoch. It changes when there is a clock
 // discontinuity. It may be necessary to place this in NV should the timer be able
-// to run across a power down of the TPM but not in all cases (e.g. dead battery).
+// to run across a power down of the MSSIM but not in all cases (e.g. dead battery).
 // If the nonce is placed in NV, it should go in gp because it should be changing
 // slowly.
 #  if CLOCK_STOPS
@@ -535,58 +535,58 @@ EXTERN CLOCK_NONCE g_timeEpoch;
 
 //*** g_phEnable
 // This is the platform hierarchy control and determines if the platform hierarchy
-// is available. This value is SET on each TPM2_Startup(). The default value is
+// is available. This value is SET on each MSSIM2_Startup(). The default value is
 // SET.
 EXTERN BOOL g_phEnable;
 
 //*** g_pcrReConfig
-// This value is SET if a TPM2_PCR_Allocate command successfully executed since
-// the last TPM2_Startup(). If so, then the next shutdown is required to be
+// This value is SET if a MSSIM2_PCR_Allocate command successfully executed since
+// the last MSSIM2_Startup(). If so, then the next shutdown is required to be
 // Shutdown(CLEAR).
 EXTERN BOOL g_pcrReConfig;
 
 //*** g_DRTMHandle
 // This location indicates the sequence object handle that holds the DRTM
-// sequence data. When not used, it is set to TPM_RH_UNASSIGNED. A sequence
-// DRTM sequence is started on either _TPM_Init or _TPM_Hash_Start.
-EXTERN TPMI_DH_OBJECT g_DRTMHandle;
+// sequence data. When not used, it is set to MSSIM_RH_UNASSIGNED. A sequence
+// DRTM sequence is started on either _MSSIM_Init or _MSSIM_Hash_Start.
+EXTERN MSSIMI_DH_OBJECT g_DRTMHandle;
 
 //*** g_DrtmPreStartup
-// This value indicates that an H-CRTM occurred after _TPM_Init but before
-// TPM2_Startup(). The define for PRE_STARTUP_FLAG is used to add the
+// This value indicates that an H-CRTM occurred after _MSSIM_Init but before
+// MSSIM2_Startup(). The define for PRE_STARTUP_FLAG is used to add the
 // g_DrtmPreStartup value to gp_orderlyState at shutdown. This hack is to avoid
 // adding another NV variable.
 EXTERN BOOL g_DrtmPreStartup;
 
 //*** g_StartupLocality3
-// This value indicates that a TPM2_Startup() occurred at locality 3. Otherwise, it
+// This value indicates that a MSSIM2_Startup() occurred at locality 3. Otherwise, it
 // at locality 0. The define for STARTUP_LOCALITY_3 is to
 // indicate that the startup was not at locality 0. This hack is to avoid
 // adding another NV variable.
 EXTERN BOOL g_StartupLocality3;
 
-//***TPM_SU_NONE
+//***MSSIM_SU_NONE
 // Part 2 defines the two shutdown/startup types that may be used in
-// TPM2_Shutdown() and TPM2_Starup(). This additional define is
-// used by the TPM to indicate that no shutdown was received.
+// MSSIM2_Shutdown() and MSSIM2_Starup(). This additional define is
+// used by the MSSIM to indicate that no shutdown was received.
 // NOTE: This is a reserved value.
 #  define SU_NONE_VALUE (0xFFFF)
-#  define TPM_SU_NONE   (TPM_SU)(SU_NONE_VALUE)
+#  define MSSIM_SU_NONE   (MSSIM_SU)(SU_NONE_VALUE)
 
-//*** TPM_SU_DA_USED
-// As with TPM_SU_NONE, this value is added to allow indication that the shutdown
+//*** MSSIM_SU_DA_USED
+// As with MSSIM_SU_NONE, this value is added to allow indication that the shutdown
 // was not orderly and that a DA=protected object was reference during the previous
 // cycle.
 #  define SU_DA_USED_VALUE (SU_NONE_VALUE - 1)
-#  define TPM_SU_DA_USED   (TPM_SU)(SU_DA_USED_VALUE)
+#  define MSSIM_SU_DA_USED   (MSSIM_SU)(SU_DA_USED_VALUE)
 
 //*** Startup Flags
 // These flags are included in gp.orderlyState. These are hacks and are being
 // used to avoid having to change the layout of gp. The PRE_STARTUP_FLAG indicates
-// that a _TPM_Hash_Start/_Data/_End sequence was received after _TPM_Init but
-// before TPM2_StartUp(). STARTUP_LOCALITY_3 indicates that the last TPM2_Startup()
+// that a _MSSIM_Hash_Start/_Data/_End sequence was received after _MSSIM_Init but
+// before MSSIM2_StartUp(). STARTUP_LOCALITY_3 indicates that the last MSSIM2_Startup()
 // was received at locality 3. These flags are only  relevant if after a
-// TPM2_Shutdown(STATE).
+// MSSIM2_Shutdown(STATE).
 #  define PRE_STARTUP_FLAG   0x8000
 #  define STARTUP_LOCALITY_3 0x4000
 
@@ -614,14 +614,14 @@ typedef BYTE UPDATE_TYPE;
 EXTERN UPDATE_TYPE g_updateNV;
 
 //*** g_powerWasLost
-// This flag is used to indicate if the power was lost. It is SET in _TPM__Init.
-// This flag is cleared by TPM2_Startup() after all power-lost activities are
+// This flag is used to indicate if the power was lost. It is SET in _MSSIM__Init.
+// This flag is cleared by MSSIM2_Startup() after all power-lost activities are
 // completed.
 // Note: When power is applied, this value can come up as anything. However,
 // _plat__WasPowerLost() will provide the proper indication in that case. So, when
 // power is actually lost, we get the correct answer. When power was not lost, but
-// the power-lost processing has not been completed before the next _TPM_Init(),
-// then the TPM still does the correct thing.
+// the power-lost processing has not been completed before the next _MSSIM_Init(),
+// then the MSSIM still does the correct thing.
 EXTERN BOOL g_powerWasLost;
 
 //*** g_clearOrderly
@@ -635,36 +635,36 @@ EXTERN BOOL g_powerWasLost;
 EXTERN BOOL g_clearOrderly;
 
 //*** g_prevOrderlyState
-// This location indicates how the TPM was shut down before the most recent
-// TPM2_Startup(). This value, along with the startup type, determines if
-// the TPM should do a TPM Reset, TPM Restart, or TPM Resume.
-EXTERN TPM_SU g_prevOrderlyState;
+// This location indicates how the MSSIM was shut down before the most recent
+// MSSIM2_Startup(). This value, along with the startup type, determines if
+// the MSSIM should do a MSSIM Reset, MSSIM Restart, or MSSIM Resume.
+EXTERN MSSIM_SU g_prevOrderlyState;
 
 //*** g_nvOk
 // This value indicates if the NV integrity check was successful or not. If not and
-// the failure was severe, then the TPM would have been put into failure mode after
+// the failure was severe, then the MSSIM would have been put into failure mode after
 // it had been re-manufactured. If the NV failure was in the area where the state-save
 // data is kept, then this variable will have a value of FALSE indicating that
-// a TPM2_Startup(CLEAR) is required.
+// a MSSIM2_Startup(CLEAR) is required.
 EXTERN BOOL g_nvOk;
 // NV availability is sampled as the start of each command and stored here
 // so that its value remains consistent during the command execution
-EXTERN TPM_RC g_NvStatus;
+EXTERN MSSIM_RC g_NvStatus;
 
 //*** g_platformUnique
-// This location contains the unique value(s) used to identify the TPM. It is
-// loaded on every _TPM2_Startup()
+// This location contains the unique value(s) used to identify the MSSIM. It is
+// loaded on every _MSSIM2_Startup()
 // The first value is used to seed the RNG. The second value is used as a vendor
 // authValue. The value used by the RNG would be the value derived from the
 // chip unique value (such as fused) with a dependency on the authorities of the
-// code in the TPM boot path. The second would be derived from the chip unique value
+// code in the MSSIM boot path. The second would be derived from the chip unique value
 // with a dependency on the details of the code in the boot path. That is, the
 // first value depends on the various signers of the code and the second depends on
-// what was signed. The TPM vendor should not be able to know the first value but
+// what was signed. The MSSIM vendor should not be able to know the first value but
 // they are expected to know the second.
-EXTERN TPM2B_AUTH g_platformUniqueAuthorities;  // Reserved for RNG
+EXTERN MSSIM2B_AUTH g_platformUniqueAuthorities;  // Reserved for RNG
 
-EXTERN TPM2B_AUTH g_platformUniqueDetails;  // referenced by VENDOR_PERMANENT
+EXTERN MSSIM2B_AUTH g_platformUniqueDetails;  // referenced by VENDOR_PERMANENT
 
 //*********************************************************************************
 //*********************************************************************************
@@ -680,8 +680,8 @@ EXTERN TPM2B_AUTH g_platformUniqueDetails;  // referenced by VENDOR_PERMANENT
 //*** PERSISTENT_DATA
 //*********************************************************************************
 // This structure holds the persistent values that only change as a consequence
-// of a specific Protected Capability and are not affected by TPM power events
-// (TPM2_Startup() or TPM2_Shutdown().
+// of a specific Protected Capability and are not affected by MSSIM power events
+// (MSSIM2_Startup() or MSSIM2_Shutdown().
 typedef struct
 {
     //*********************************************************************************
@@ -689,45 +689,45 @@ typedef struct
     //*********************************************************************************
     // The values in this section are related to the hierarchies.
 
-    BOOL disableClear;  // TRUE if TPM2_Clear() using
+    BOOL disableClear;  // TRUE if MSSIM2_Clear() using
                         // lockoutAuth is disabled
 
     // Hierarchy authPolicies
-    TPMI_ALG_HASH ownerAlg;
-    TPMI_ALG_HASH endorsementAlg;
-    TPMI_ALG_HASH lockoutAlg;
-    TPM2B_DIGEST  ownerPolicy;
-    TPM2B_DIGEST  endorsementPolicy;
-    TPM2B_DIGEST  lockoutPolicy;
+    MSSIMI_ALG_HASH ownerAlg;
+    MSSIMI_ALG_HASH endorsementAlg;
+    MSSIMI_ALG_HASH lockoutAlg;
+    MSSIM2B_DIGEST  ownerPolicy;
+    MSSIM2B_DIGEST  endorsementPolicy;
+    MSSIM2B_DIGEST  lockoutPolicy;
 
     // Hierarchy authValues
-    TPM2B_AUTH ownerAuth;
-    TPM2B_AUTH endorsementAuth;
-    TPM2B_AUTH lockoutAuth;
+    MSSIM2B_AUTH ownerAuth;
+    MSSIM2B_AUTH endorsementAuth;
+    MSSIM2B_AUTH lockoutAuth;
 
     // Primary Seeds
-    TPM2B_SEED EPSeed;
-    TPM2B_SEED SPSeed;
-    TPM2B_SEED PPSeed;
+    MSSIM2B_SEED EPSeed;
+    MSSIM2B_SEED SPSeed;
+    MSSIM2B_SEED PPSeed;
     // Note there is a nullSeed in the state_reset memory.
 
     // Hierarchy proofs
-    TPM2B_PROOF phProof;
-    TPM2B_PROOF shProof;
-    TPM2B_PROOF ehProof;
+    MSSIM2B_PROOF phProof;
+    MSSIM2B_PROOF shProof;
+    MSSIM2B_PROOF ehProof;
     // Note there is a nullProof in the state_reset memory.
 
     //*********************************************************************************
     //          Reset Events
     //*********************************************************************************
-    // A count that increments at each TPM reset and never get reset during the life
-    // time of TPM.  The value of this counter is initialized to 1 during TPM
-    // manufacture process. It is used to invalidate all saved contexts after a TPM
+    // A count that increments at each MSSIM reset and never get reset during the life
+    // time of MSSIM.  The value of this counter is initialized to 1 during MSSIM
+    // manufacture process. It is used to invalidate all saved contexts after a MSSIM
     // Reset.
     UINT64 totalResetCount;
 
-    // This counter increments on each TPM Reset. The counter is reset by
-    // TPM2_Clear().
+    // This counter increments on each MSSIM Reset. The counter is reset by
+    // MSSIM2_Clear().
     UINT32 resetCount;
 
 //*********************************************************************************
@@ -745,7 +745,7 @@ typedef struct
     // list of PCR allocations for each implemented algorithm. If no PCR are
     // allocated for an algorithm, a list entry still exists but the bit map
     // will contain no SET bits.
-    TPML_PCR_SELECTION pcrAllocated;
+    MSSIML_PCR_SELECTION pcrAllocated;
 
     //*********************************************************************************
     //          Physical Presence
@@ -753,9 +753,9 @@ typedef struct
     // The PP_LIST type contains a bit map of the commands that require physical
     // to be asserted when the authorization is evaluated. Physical presence will be
     // checked if the corresponding bit in the array is SET and if the authorization
-    // handle is TPM_RH_PLATFORM.
+    // handle is MSSIM_RH_PLATFORM.
     //
-    // These bits may be changed with TPM2_PP_Commands().
+    // These bits may be changed with MSSIM2_PP_Commands().
     BYTE ppList[(COMMAND_COUNT + 7) / 8];
 
     //*********************************************************************************
@@ -766,7 +766,7 @@ typedef struct
                          // authorization failures
 
     UINT32 maxTries;  // number of unexpired authorization
-                      // failures before the TPM is in
+                      // failures before the MSSIM is in
                       // lockout
 
     UINT32 recoveryTime;  // time between authorization failures
@@ -783,13 +783,13 @@ typedef struct
     //            Orderly State
     //*****************************************************************************
     // The orderly state for current cycle
-    TPM_SU orderlyState;
+    MSSIM_SU orderlyState;
 
     //*****************************************************************************
     //           Command audit values.
     //*****************************************************************************
     BYTE          auditCommands[((COMMAND_COUNT + 1) + 7) / 8];
-    TPMI_ALG_HASH auditHashAlg;
+    MSSIMI_ALG_HASH auditHashAlg;
     UINT64        auditCounter;
 
     //*****************************************************************************
@@ -797,7 +797,7 @@ typedef struct
     //*****************************************************************************
     //
     // The 'algorithmSet' value indicates the collection of algorithms that are
-    // currently in used on the TPM.  The interpretation of value is vendor dependent.
+    // currently in used on the MSSIM.  The interpretation of value is vendor dependent.
     UINT32 algorithmSet;
 
     //*****************************************************************************
@@ -805,7 +805,7 @@ typedef struct
     //*****************************************************************************
     // The firmwareV1 and firmwareV2 values are instanced in TimeStamp.c. This is
     // a scheme used in development to allow determination of the linker build time
-    // of the TPM. An actual implementation would implement these values in a way that
+    // of the MSSIM. An actual implementation would implement these values in a way that
     // is consistent with vendor needs. The values are maintained in RAM for simplified
     // access with a master version in NV.  These values are modified in a
     // vendor-specific way.
@@ -824,7 +824,7 @@ typedef struct
 //*****************************************************************************
 // timeEpoch contains a nonce that has a vendor=specific size (should not be
 // less than 8 bytes. This nonce changes when the clock epoch changes. The clock
-// epoch changes when there is a discontinuity in the timing of the TPM.
+// epoch changes when there is a discontinuity in the timing of the MSSIM.
 #  if !CLOCK_STOPS
     CLOCK_NONCE timeEpoch;
 #  endif
@@ -838,7 +838,7 @@ EXTERN PERSISTENT_DATA gp;
 //*** ORDERLY_DATA
 //*********************************************************************************
 //*********************************************************************************
-// The data in this structure is saved to NV on each TPM2_Shutdown().
+// The data in this structure is saved to NV on each MSSIM2_Shutdown().
 typedef struct orderly_data
 {
     //*****************************************************************************
@@ -847,13 +847,13 @@ typedef struct orderly_data
 
     // Clock has two parts. One is the state save part and one is the NV part. The
     // state save version is updated on each command. When the clock rolls over, the
-    // NV version is updated. When the TPM starts up, if the TPM was shutdown in and
+    // NV version is updated. When the MSSIM starts up, if the MSSIM was shutdown in and
     // orderly way, then the sClock value is used to initialize the clock. If the
-    // TPM shutdown was not orderly, then the persistent value is used and the safe
+    // MSSIM shutdown was not orderly, then the persistent value is used and the safe
     // attribute is clear.
 
     UINT64      clock;      // The orderly version of clock
-    TPMI_YES_NO clockSafe;  // Indicates if the clock value is
+    MSSIMI_YES_NO clockSafe;  // Indicates if the clock value is
                             // safe.
 
     // In many implementations, the quality of the entropy available is not that
@@ -865,7 +865,7 @@ typedef struct orderly_data
     DRBG_STATE drbgState;
 
 // These values allow the accumulation of self-healing time across orderly shutdown
-// of the TPM.
+// of the MSSIM.
 #  if ACCUMULATE_SELF_HEAL_TIMER
     UINT64 selfHealTimer;  // current value of s_selfHealTimer
     UINT64 lockoutTimer;   // current value of s_lockoutTimer
@@ -900,7 +900,7 @@ EXTERN ORDERLY_DATA go;
 // This structure contains the data that is saved on Shutdown(STATE)
 // and restored on Startup(STATE).  The values are set to their default
 // settings on any Startup(Clear). In other words, the data is only persistent
-// across TPM Resume.
+// across MSSIM Resume.
 //
 // If the comments associated with a parameter indicate a default reset value, the
 // value is applied on each Startup(CLEAR).
@@ -913,9 +913,9 @@ typedef struct state_clear_data
     BOOL          shEnable;        // default reset is SET
     BOOL          ehEnable;        // default reset is SET
     BOOL          phEnableNV;      // default reset is SET
-    TPMI_ALG_HASH platformAlg;     // default reset is TPM_ALG_NULL
-    TPM2B_DIGEST  platformPolicy;  // default reset is an Empty Buffer
-    TPM2B_AUTH    platformAuth;    // default reset is an Empty Buffer
+    MSSIMI_ALG_HASH platformAlg;     // default reset is MSSIM_ALG_NULL
+    MSSIM2B_DIGEST  platformPolicy;  // default reset is an Empty Buffer
+    MSSIM2B_AUTH    platformAuth;    // default reset is an Empty Buffer
 
     //*****************************************************************************
     //           PCR
@@ -933,7 +933,7 @@ typedef struct state_clear_data
 //*****************************************************************************
 //           ACT
 //*****************************************************************************
-#  define DefineActPolicySpace(N) TPMT_HA act_##N;
+#  define DefineActPolicySpace(N) MSSIMT_HA act_##N;
     FOR_EACH_ACT(DefineActPolicySpace)
 
 } STATE_CLEAR_DATA;
@@ -946,34 +946,34 @@ EXTERN STATE_CLEAR_DATA gc;
 //*********************************************************************************
 //*********************************************************************************
 // This structure contains data is that is saved on Shutdown(STATE) and restored on
-// the subsequent Startup(ANY). That is, the data is preserved across TPM Resume
-// and TPM Restart.
+// the subsequent Startup(ANY). That is, the data is preserved across MSSIM Resume
+// and MSSIM Restart.
 //
 // If a default value is specified in the comments this value is applied on
-// TPM Reset.
+// MSSIM Reset.
 
 typedef struct state_reset_data
 {
     //*****************************************************************************
     //          Hierarchy Control
     //*****************************************************************************
-    TPM2B_PROOF nullProof;  // The proof value associated with
-                            // the TPM_RH_NULL hierarchy. The
+    MSSIM2B_PROOF nullProof;  // The proof value associated with
+                            // the MSSIM_RH_NULL hierarchy. The
                             // default reset value is from the RNG.
 
-    TPM2B_SEED nullSeed;  // The seed value for the TPM_RN_NULL
+    MSSIM2B_SEED nullSeed;  // The seed value for the MSSIM_RN_NULL
                           // hierarchy. The default reset value
                           // is from the RNG.
 
     //*****************************************************************************
     //           Context
     //*****************************************************************************
-    // The 'clearCount' counter is incremented each time the TPM successfully executes
-    // a TPM Resume. The counter is included in each saved context that has 'stClear'
+    // The 'clearCount' counter is incremented each time the MSSIM successfully executes
+    // a MSSIM Resume. The counter is included in each saved context that has 'stClear'
     // SET (including descendants of keys that have 'stClear' SET). This prevents these
-    // objects from being loaded after a TPM Resume.
-    // If 'clearCount' is at its maximum value when the TPM receives a Shutdown(STATE),
-    // the TPM will return TPM_RC_RANGE and the TPM will only accept Shutdown(CLEAR).
+    // objects from being loaded after a MSSIM Resume.
+    // If 'clearCount' is at its maximum value when the MSSIM receives a Shutdown(STATE),
+    // the MSSIM will return MSSIM_RC_RANGE and the MSSIM will only accept Shutdown(CLEAR).
     UINT32 clearCount;  // The default reset value is 0.
 
     UINT64 objectContextID;  // This is the context ID for a saved
@@ -994,28 +994,28 @@ typedef struct state_reset_data
     //           Command Audit
     //*****************************************************************************
     // When an audited command completes, ExecuteCommand() checks the return
-    // value.  If it is TPM_RC_SUCCESS, and the command is an audited command, the
-    // TPM will extend the cpHash and rpHash for the command to this value. If this
+    // value.  If it is MSSIM_RC_SUCCESS, and the command is an audited command, the
+    // MSSIM will extend the cpHash and rpHash for the command to this value. If this
     // digest was the Zero Digest before the cpHash was extended, the audit counter
     // is incremented.
 
-    TPM2B_DIGEST commandAuditDigest;  // This value is set to an Empty Digest
-                                      // by TPM2_GetCommandAuditDigest() or a
-                                      // TPM Reset.
+    MSSIM2B_DIGEST commandAuditDigest;  // This value is set to an Empty Digest
+                                      // by MSSIM2_GetCommandAuditDigest() or a
+                                      // MSSIM Reset.
 
     //*****************************************************************************
     //           Boot counter
     //*****************************************************************************
 
-    UINT32 restartCount;  // This counter counts TPM Restarts.
+    UINT32 restartCount;  // This counter counts MSSIM Restarts.
                           // The default reset value is 0.
 
     //*********************************************************************************
     //            PCR
     //*********************************************************************************
     // This counter increments whenever the PCR are updated. This counter is preserved
-    // across TPM Resume even though the PCR are not preserved. This is because
-    // sessions remain active across TPM Restart and the count value in the session
+    // across MSSIM Resume even though the PCR are not preserved. This is because
+    // sessions remain active across MSSIM Restart and the count value in the session
     // is compared to this counter so this counter must have values that are unique
     // as long as the sessions are active.
     // NOTE: A platform-specific specification may designate that certain PCR changes
@@ -1028,11 +1028,11 @@ typedef struct state_reset_data
     //         ECDAA
     //*****************************************************************************
     UINT64 commitCounter;  // This counter increments each time
-                           // TPM2_Commit() returns
-                           // TPM_RC_SUCCESS. The default reset
+                           // MSSIM2_Commit() returns
+                           // MSSIM_RC_SUCCESS. The default reset
                            // value is 0.
 
-    TPM2B_NONCE commitNonce;  // This random value is used to compute
+    MSSIM2B_NONCE commitNonce;  // This random value is used to compute
                               // the commit values. The default reset
                               // value is from the RNG.
 
@@ -1096,17 +1096,17 @@ typedef struct _COMMAND_FLAGS_
 // The following macros are used to define the space for the CP and RP hashes. Space,
 // is provided for each implemented hash algorithm because it is not known what the
 // caller may use.
-#  define CP_HASH(HASH, Hash) TPM2B_##HASH##_DIGEST Hash##CpHash;
-#  define RP_HASH(HASH, Hash) TPM2B_##HASH##_DIGEST Hash##RpHash;
+#  define CP_HASH(HASH, Hash) MSSIM2B_##HASH##_DIGEST Hash##CpHash;
+#  define RP_HASH(HASH, Hash) MSSIM2B_##HASH##_DIGEST Hash##RpHash;
 
 typedef struct COMMAND
 {
-    TPM_ST        tag;                   // the parsed command tag
-    TPM_CC        code;                  // the parsed command code
+    MSSIM_ST        tag;                   // the parsed command tag
+    MSSIM_CC        code;                  // the parsed command code
     COMMAND_INDEX index;                 // the computed command index
     UINT32        handleNum;             // the number of entity handles in the
                                          //   handle area of the command
-    TPM_HANDLE handles[MAX_HANDLE_NUM];  // the parsed handle values
+    MSSIM_HANDLE handles[MAX_HANDLE_NUM];  // the parsed handle values
     UINT32     sessionNum;               // the number of sessions found
     INT32      parameterSize;            // starts out with the parsed command size
                                          // and is reduced and values are
@@ -1138,7 +1138,7 @@ typedef struct COMMAND
         }                           \
       }                             \
     }
-#  define TPM2B_STRING(name, value)                                              \
+#  define MSSIM2B_STRING(name, value)                                              \
     typedef union name##_                                                        \
     {                                                                            \
       struct                                                                     \
@@ -1146,25 +1146,25 @@ typedef struct COMMAND
         UINT16 size;                                                             \
         BYTE   buffer[sizeof(value)];                                            \
       } t;                                                                       \
-      TPM2B b;                                                                   \
-    } TPM2B_##name##_;                                                           \
-    EXTERN const TPM2B_##name##_ name##_ INITIALIZER(STRING_INITIALIZER(value)); \
-    EXTERN const TPM2B* name             INITIALIZER(&name##_.b)
+      MSSIM2B b;                                                                   \
+    } MSSIM2B_##name##_;                                                           \
+    EXTERN const MSSIM2B_##name##_ name##_ INITIALIZER(STRING_INITIALIZER(value)); \
+    EXTERN const MSSIM2B* name             INITIALIZER(&name##_.b)
 
-TPM2B_STRING(PRIMARY_OBJECT_CREATION, "Primary Object Creation");
-TPM2B_STRING(CFB_KEY, "CFB");
-TPM2B_STRING(CONTEXT_KEY, "CONTEXT");
-TPM2B_STRING(INTEGRITY_KEY, "INTEGRITY");
-TPM2B_STRING(SECRET_KEY, "SECRET");
-TPM2B_STRING(SESSION_KEY, "ATH");
-TPM2B_STRING(STORAGE_KEY, "STORAGE");
-TPM2B_STRING(XOR_KEY, "XOR");
-TPM2B_STRING(COMMIT_STRING, "ECDAA Commit");
-TPM2B_STRING(DUPLICATE_STRING, "DUPLICATE");
-TPM2B_STRING(IDENTITY_STRING, "IDENTITY");
-TPM2B_STRING(OBFUSCATE_STRING, "OBFUSCATE");
+MSSIM2B_STRING(PRIMARY_OBJECT_CREATION, "Primary Object Creation");
+MSSIM2B_STRING(CFB_KEY, "CFB");
+MSSIM2B_STRING(CONTEXT_KEY, "CONTEXT");
+MSSIM2B_STRING(INTEGRITY_KEY, "INTEGRITY");
+MSSIM2B_STRING(SECRET_KEY, "SECRET");
+MSSIM2B_STRING(SESSION_KEY, "ATH");
+MSSIM2B_STRING(STORAGE_KEY, "STORAGE");
+MSSIM2B_STRING(XOR_KEY, "XOR");
+MSSIM2B_STRING(COMMIT_STRING, "ECDAA Commit");
+MSSIM2B_STRING(DUPLICATE_STRING, "DUPLICATE");
+MSSIM2B_STRING(IDENTITY_STRING, "IDENTITY");
+MSSIM2B_STRING(OBFUSCATE_STRING, "OBFUSCATE");
 #  if SELF_TEST
-TPM2B_STRING(OAEP_TEST_STRING, "OAEP Test Value");
+MSSIM2B_STRING(OAEP_TEST_STRING, "OAEP Test Value");
 #  endif  // SELF_TEST
 
 //*****************************************************************************
@@ -1178,7 +1178,7 @@ EXTERN CRYPTO_SELF_TEST_STATE g_cryptoSelfTestState;
 //*****************************************************************************
 EXTERN BOOL g_manufactured INITIALIZER(FALSE);
 
-// This value indicates if a TPM2_Startup commands has been
+// This value indicates if a MSSIM2_Startup commands has been
 // receive since the power on event.  This flag is maintained in power
 // simulation module because this is the only place that may reliably set this
 // flag to FALSE.
@@ -1196,21 +1196,21 @@ EXTERN BOOL g_initialized;
 // the order of sessions in the session area of the command.
 //
 // Array of the authorization session handles
-EXTERN TPM_HANDLE s_sessionHandles[MAX_SESSION_NUM];
+EXTERN MSSIM_HANDLE s_sessionHandles[MAX_SESSION_NUM];
 
 // Array of authorization session attributes
-EXTERN TPMA_SESSION s_attributes[MAX_SESSION_NUM];
+EXTERN MSSIMA_SESSION s_attributes[MAX_SESSION_NUM];
 
 // Array of handles authorized by the corresponding authorization sessions;
-// and if none, then TPM_RH_UNASSIGNED value is used
-EXTERN TPM_HANDLE s_associatedHandles[MAX_SESSION_NUM];
+// and if none, then MSSIM_RH_UNASSIGNED value is used
+EXTERN MSSIM_HANDLE s_associatedHandles[MAX_SESSION_NUM];
 
 // Array of nonces provided by the caller for the corresponding sessions
-EXTERN TPM2B_NONCE s_nonceCaller[MAX_SESSION_NUM];
+EXTERN MSSIM2B_NONCE s_nonceCaller[MAX_SESSION_NUM];
 
 // Array of authorization values (HMAC's or passwords) for the corresponding
 // sessions
-EXTERN TPM2B_AUTH s_inputAuthValues[MAX_SESSION_NUM];
+EXTERN MSSIM2B_AUTH s_inputAuthValues[MAX_SESSION_NUM];
 
 // Array of pointers to the SESSION structures for the sessions in a command
 EXTERN SESSION* s_usedSessions[MAX_SESSION_NUM];
@@ -1229,7 +1229,7 @@ EXTERN UINT32 s_auditSessionIndex;
 
 // The cpHash for command audit
 #    if CC_GetCommandAuditDigest
-EXTERN TPM2B_DIGEST s_cpHashForCommandAudit;
+EXTERN MSSIM2B_DIGEST s_cpHashForCommandAudit;
 #    endif
 
 // Flag indicating if NV update is pending for the lockOutAuthEnabled or
@@ -1279,7 +1279,7 @@ EXTERN UINT64 s_maxCounter;
 // that action code runs, s_lastNvIndex will contain the index header information.
 // It will have been loaded when the handles were verified.
 // NOTE: An NV index handle can appear in many commands that do not operate on the
-// NV data (e.g. TPM2_StartAuthSession). However, only one NV Index at a time is
+// NV data (e.g. MSSIM2_StartAuthSession). However, only one NV Index at a time is
 // ever directly referenced by any command. If that changes, then the NV Index
 // caching needs to be changed to accommodate that. Currently, the code will verify
 // that only one NV Index is referenced by the handles of the command.
@@ -1371,19 +1371,19 @@ EXTERN UINT32 s_actionIoAllocation;   // number of UIN64 allocated for the
 #  endif                              // IO_BUFFER_C
 
 //*****************************************************************************
-//*** From TPMFail.c
+//*** From MSSIMFail.c
 //*****************************************************************************
 // This value holds the address of the string containing the name of the function
 // in which the failure occurred. This address value is not useful for anything
 // other than helping the vendor to know in which file the failure  occurred.
-EXTERN BOOL g_inFailureMode;  // Indicates that the TPM is in failure mode
+EXTERN BOOL g_inFailureMode;  // Indicates that the MSSIM is in failure mode
 #  if SIMULATION
 EXTERN BOOL g_forceFailureMode;  // flag to force failure mode during test
 #  endif
 
 typedef void(FailFunction)(const char* function, int line, int code);
 
-#  if defined TPM_FAIL_C || defined GLOBAL_C
+#  if defined MSSIM_FAIL_C || defined GLOBAL_C
 EXTERN UINT32 s_failFunction;
 EXTERN UINT32 s_failLine;         // the line in the file at which
                                   // the error was signaled
@@ -1391,17 +1391,17 @@ EXTERN UINT32        s_failCode;  // the error code used
 
 EXTERN FailFunction* LibFailCallback;
 
-#  endif  // TPM_FAIL_C
+#  endif  // MSSIM_FAIL_C
 
 //*****************************************************************************
 //*** From ACT_spt.c
 //*****************************************************************************
 // This value is used to indicate if an ACT has been updated since the last
-// TPM2_Startup() (one bit for each ACT). If the ACT is not updated
-// (TPM2_ACT_SetTimeout()) after a startup, then on each TPM2_Shutdown() the TPM will
+// MSSIM2_Startup() (one bit for each ACT). If the ACT is not updated
+// (MSSIM2_ACT_SetTimeout()) after a startup, then on each MSSIM2_Shutdown() the MSSIM will
 // save 1/2 of the current timer value. This prevents an attack on the ACT by saving
-// the counter and then running for a long period of time before doing a TPM Restart.
-// A quick TPM2_Shutdown() after each
+// the counter and then running for a long period of time before doing a MSSIM Restart.
+// A quick MSSIM2_Shutdown() after each
 EXTERN UINT16 s_ActUpdated;
 
 //*****************************************************************************
@@ -1409,7 +1409,7 @@ EXTERN UINT16 s_ActUpdated;
 //*****************************************************************************
 // This array is instanced in CommandCodeAttributes.c when it includes
 // CommandCodeAttributes.h. Don't change the extern to EXTERN.
-extern const TPMA_CC            s_ccAttr[];
+extern const MSSIMA_CC            s_ccAttr[];
 extern const COMMAND_ATTRIBUTES s_commandAttributes[];
 
 #endif  // GLOBAL_H

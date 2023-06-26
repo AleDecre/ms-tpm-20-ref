@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,26 +45,26 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT parentHandle;
-    TPM2B_PRIVATE  inPrivate;
-    TPM2B_PUBLIC   inPublic;
+    MSSIMI_DH_OBJECT parentHandle;
+    MSSIM2B_PRIVATE  inPrivate;
+    MSSIM2B_PUBLIC   inPublic;
 } Load_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM_HANDLE objectHandle;
-    TPM2B_NAME name;
+    MSSIM_HANDLE objectHandle;
+    MSSIM2B_NAME name;
 } Load_Out;
 
 // Response code modifiers
-#    define RC_Load_parentHandle (TPM_RC_H + TPM_RC_1)
-#    define RC_Load_inPrivate    (TPM_RC_P + TPM_RC_1)
-#    define RC_Load_inPublic     (TPM_RC_P + TPM_RC_2)
+#    define RC_Load_parentHandle (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_Load_inPrivate    (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_Load_inPublic     (MSSIM_RC_P + MSSIM_RC_2)
 
 // Function prototype
-TPM_RC
-TPM2_Load(Load_In* in, Load_Out* out);
+MSSIM_RC
+MSSIM2_Load(Load_In* in, Load_Out* out);
 
 #  endif  // _Load_FP_H_
 #endif    // CC_Load

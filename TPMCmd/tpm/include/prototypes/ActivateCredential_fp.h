@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,27 +45,27 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT         activateHandle;
-    TPMI_DH_OBJECT         keyHandle;
-    TPM2B_ID_OBJECT        credentialBlob;
-    TPM2B_ENCRYPTED_SECRET secret;
+    MSSIMI_DH_OBJECT         activateHandle;
+    MSSIMI_DH_OBJECT         keyHandle;
+    MSSIM2B_ID_OBJECT        credentialBlob;
+    MSSIM2B_ENCRYPTED_SECRET secret;
 } ActivateCredential_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_DIGEST certInfo;
+    MSSIM2B_DIGEST certInfo;
 } ActivateCredential_Out;
 
 // Response code modifiers
-#    define RC_ActivateCredential_activateHandle (TPM_RC_H + TPM_RC_1)
-#    define RC_ActivateCredential_keyHandle      (TPM_RC_H + TPM_RC_2)
-#    define RC_ActivateCredential_credentialBlob (TPM_RC_P + TPM_RC_1)
-#    define RC_ActivateCredential_secret         (TPM_RC_P + TPM_RC_2)
+#    define RC_ActivateCredential_activateHandle (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_ActivateCredential_keyHandle      (MSSIM_RC_H + MSSIM_RC_2)
+#    define RC_ActivateCredential_credentialBlob (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_ActivateCredential_secret         (MSSIM_RC_P + MSSIM_RC_2)
 
 // Function prototype
-TPM_RC
-TPM2_ActivateCredential(ActivateCredential_In* in, ActivateCredential_Out* out);
+MSSIM_RC
+MSSIM2_ActivateCredential(ActivateCredential_In* in, ActivateCredential_Out* out);
 
 #  endif  // _Activate_Credential_FP_H_
 #endif    // CC_ActivateCredential

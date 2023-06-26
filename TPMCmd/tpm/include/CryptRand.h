@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -43,7 +43,7 @@
 //** DRBG Structures and Defines
 
 // Values and structures for the random number generator. These values are defined
-// in this header file so that the size of the RNG state can be known to TPM.lib.
+// in this header file so that the size of the RNG state can be known to MSSIM.lib.
 // This allows the allocation of some space in NV memory for the state to
 // be stored on an orderly shutdown.
 
@@ -54,7 +54,7 @@
 
 #define DRBG_KEY_SIZE_BITS AES_MAX_KEY_SIZE_BITS
 #define DRBG_IV_SIZE_BITS  (AES_MAX_BLOCK_SIZE * 8)
-#define DRBG_ALGORITHM     TPM_ALG_AES
+#define DRBG_ALGORITHM     MSSIM_ALG_AES
 
 typedef tpmKeyScheduleAES DRBG_KEY_SCHEDULE;
 #define DRBG_ENCRYPT_SETUP(key, keySizeInBits, schedule) \
@@ -135,7 +135,7 @@ typedef struct
     UINT64    reseedCounter;
     UINT32    magic;
     DRBG_SEED seed;          // contains the key and IV for the counter mode DRBG
-    UINT32    lastValue[4];  // used when the TPM does continuous self-test
+    UINT32    lastValue[4];  // used when the MSSIM does continuous self-test
                              // for FIPS compliance of DRBG
 } DRBG_STATE, *pDRBG_STATE;
 #define DRBG_MAGIC ((UINT32)0x47425244)  // "DRBG" backwards so that it displays
@@ -145,13 +145,13 @@ typedef struct KDF_STATE
     UINT64       counter;
     UINT32       magic;
     UINT32       limit;
-    TPM2B*       seed;
-    const TPM2B* label;
-    TPM2B*       context;
-    TPM_ALG_ID   hash;
-    TPM_ALG_ID   kdf;
+    MSSIM2B*       seed;
+    const MSSIM2B* label;
+    MSSIM2B*       context;
+    MSSIM_ALG_ID   hash;
+    MSSIM_ALG_ID   kdf;
     UINT16       digestSize;
-    TPM2B_DIGEST residual;
+    MSSIM2B_DIGEST residual;
 } KDF_STATE, *pKDR_STATE;
 #define KDF_MAGIC ((UINT32)0x4048444a)  // "KDF " backwards
 

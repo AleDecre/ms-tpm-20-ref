@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -32,10 +32,10 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-// Root header file for building any TPM.lib code
+// Root header file for building any MSSIM.lib code
 
-#ifndef _TPM_H_
-#define _TPM_H_
+#ifndef _MSSIM_H_
+#define _MSSIM_H_
 
 #include "TpmBuildSwitches.h"
 #include "BaseTypes.h"
@@ -49,7 +49,7 @@
                                // that file depend on the structures used by the
                                // cryptographic libraries.
 #include "GpMacros.h"          // Define additional macros
-#include "Global.h"            // Define other TPM types
+#include "Global.h"            // Define other MSSIM types
 #include "InternalRoutines.h"  // Function prototypes
 
-#endif  // _TPM_H_
+#endif  // _MSSIM_H_

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,19 +45,19 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_RH_PLATFORM auth;
-    TPML_CC          setList;
-    TPML_CC          clearList;
+    MSSIMI_RH_PLATFORM auth;
+    MSSIML_CC          setList;
+    MSSIML_CC          clearList;
 } PP_Commands_In;
 
 // Response code modifiers
-#    define RC_PP_Commands_auth      (TPM_RC_H + TPM_RC_1)
-#    define RC_PP_Commands_setList   (TPM_RC_P + TPM_RC_1)
-#    define RC_PP_Commands_clearList (TPM_RC_P + TPM_RC_2)
+#    define RC_PP_Commands_auth      (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_PP_Commands_setList   (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_PP_Commands_clearList (MSSIM_RC_P + MSSIM_RC_2)
 
 // Function prototype
-TPM_RC
-TPM2_PP_Commands(PP_Commands_In* in);
+MSSIM_RC
+MSSIM2_PP_Commands(PP_Commands_In* in);
 
 #  endif  // _PP_Commands_FP_H_
 #endif    // CC_PP_Commands

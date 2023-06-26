@@ -1,5 +1,5 @@
 
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -35,7 +35,7 @@
  */
 //** Description
 //
-// This file contains the socket interface to a TPM simulator.
+// This file contains the socket interface to a MSSIM simulator.
 //
 //** Includes, Locals, Defines and Function Prototypes
 #include "TpmBuildSwitches.h"
@@ -75,7 +75,7 @@ typedef int SOCKET;
 #include "Simulator_fp.h"
 #include "Platform_fp.h"
 
-// To access key cache control in TPM
+// To access key cache control in MSSIM
 void RsaKeyCacheControl(int state);
 
 #ifndef __IGNORE_STATE__
@@ -162,60 +162,60 @@ bool PlatformServer(SOCKET s)
         Command = ntohl(Command);
         switch(Command)
         {
-            case TPM_SIGNAL_POWER_ON:
+            case MSSIM_SIGNAL_POWER_ON:
                 _rpc__Signal_PowerOn(false);
                 break;
-            case TPM_SIGNAL_POWER_OFF:
+            case MSSIM_SIGNAL_POWER_OFF:
                 _rpc__Signal_PowerOff();
                 break;
-            case TPM_SIGNAL_RESET:
+            case MSSIM_SIGNAL_RESET:
                 _rpc__Signal_PowerOn(true);
                 break;
-            case TPM_SIGNAL_RESTART:
+            case MSSIM_SIGNAL_RESTART:
                 _rpc__Signal_Restart();
                 break;
-            case TPM_SIGNAL_PHYS_PRES_ON:
+            case MSSIM_SIGNAL_PHYS_PRES_ON:
                 _rpc__Signal_PhysicalPresenceOn();
                 break;
-            case TPM_SIGNAL_PHYS_PRES_OFF:
+            case MSSIM_SIGNAL_PHYS_PRES_OFF:
                 _rpc__Signal_PhysicalPresenceOff();
                 break;
-            case TPM_SIGNAL_CANCEL_ON:
+            case MSSIM_SIGNAL_CANCEL_ON:
                 _rpc__Signal_CancelOn();
                 break;
-            case TPM_SIGNAL_CANCEL_OFF:
+            case MSSIM_SIGNAL_CANCEL_OFF:
                 _rpc__Signal_CancelOff();
                 break;
-            case TPM_SIGNAL_NV_ON:
+            case MSSIM_SIGNAL_NV_ON:
                 _rpc__Signal_NvOn();
                 break;
-            case TPM_SIGNAL_NV_OFF:
+            case MSSIM_SIGNAL_NV_OFF:
                 _rpc__Signal_NvOff();
                 break;
-            case TPM_SIGNAL_KEY_CACHE_ON:
+            case MSSIM_SIGNAL_KEY_CACHE_ON:
                 _rpc__RsaKeyCacheControl(true);
                 break;
-            case TPM_SIGNAL_KEY_CACHE_OFF:
+            case MSSIM_SIGNAL_KEY_CACHE_OFF:
                 _rpc__RsaKeyCacheControl(false);
                 break;
-            case TPM_SESSION_END:
+            case MSSIM_SESSION_END:
                 // Client signaled end-of-session
                 TpmEndSimulation();
                 return true;
-            case TPM_STOP:
+            case MSSIM_STOP:
                 // Client requested the simulator to exit
                 return false;
-            case TPM_TEST_FAILURE_MODE:
+            case MSSIM_TEST_FAILURE_MODE:
                 _rpc__ForceFailureMode();
                 break;
-            case TPM_GET_COMMAND_RESPONSE_SIZES:
+            case MSSIM_GET_COMMAND_RESPONSE_SIZES:
                 OK = WriteVarBytes(
                     s, (char*)&CommandResponseSizes, sizeof(CommandResponseSizes));
                 memset(&CommandResponseSizes, 0, sizeof(CommandResponseSizes));
                 if(!OK)
                     return true;
                 break;
-            case TPM_ACT_GET_SIGNALED:
+            case MSSIM_ACT_GET_SIGNALED:
             {
                 uint32_t actHandle;
                 OK = ReadUINT32(s, &actHandle);
@@ -332,11 +332,11 @@ int RegularCommandService(int PortNumber)
         return res;
     }
     // Loop accepting connections one-by-one until we are killed or asked to stop
-    // Note the TPM command service is single-threaded so we don't listen for
+    // Note the MSSIM command service is single-threaded so we don't listen for
     // a new connection until the prior connection drops.
     do
     {
-        printf("TPM command server listening on port %d\n", PortNumber);
+        printf("MSSIM command server listening on port %d\n", PortNumber);
 
         // blocking accept
         length       = sizeof(HerAddress);
@@ -416,7 +416,7 @@ static int ActTimeService(void)
         int    ThreadId;
         //
         printf("Starting ACT thread...\n");
-        //  Don't allow ticks to be processed before TPM is manufactured.
+        //  Don't allow ticks to be processed before MSSIM is manufactured.
         _plat__ACT_EnableTicks(false);
 
         // Create service thread for ACT internal timer
@@ -475,7 +475,7 @@ int StartTcpServer(int PortNumber)
         printf("PlatformSignalService failed\n");
         return res;
     }
-    // Start Regular/DRTM TPM command service
+    // Start Regular/DRTM MSSIM command service
     res = RegularCommandService(PortNumber);
     if(res != 0)
     {
@@ -603,7 +603,7 @@ bool WriteVarBytes(SOCKET s, char* buffer, int BytesToSend)
 }
 
 //*** TpmServer()
-// Processing incoming TPM command requests using the protocol / interface
+// Processing incoming MSSIM command requests using the protocol / interface
 // defined above.
 bool TpmServer(SOCKET s)
 {
@@ -627,13 +627,13 @@ bool TpmServer(SOCKET s)
         Command = ntohl(Command);
         switch(Command)
         {
-            case TPM_SIGNAL_HASH_START:
+            case MSSIM_SIGNAL_HASH_START:
                 _rpc__Signal_Hash_Start();
                 break;
-            case TPM_SIGNAL_HASH_END:
+            case MSSIM_SIGNAL_HASH_END:
                 _rpc__Signal_HashEnd();
                 break;
-            case TPM_SIGNAL_HASH_DATA:
+            case MSSIM_SIGNAL_HASH_DATA:
                 OK = ReadVarBytes(s, InputBuffer, &length, MAX_BUFFER);
                 if(!OK)
                     return true;
@@ -641,7 +641,7 @@ bool TpmServer(SOCKET s)
                 InBuffer.BufferSize = length;
                 _rpc__Signal_Hash_Data(InBuffer);
                 break;
-            case TPM_SEND_COMMAND:
+            case MSSIM_SEND_COMMAND:
                 OK = ReadBytes(s, (char*)&locality, 1);
                 if(!OK)
                     return true;
@@ -675,7 +675,7 @@ bool TpmServer(SOCKET s)
                 if(!OK)
                     return true;
                 break;
-            case TPM_REMOTE_HANDSHAKE:
+            case MSSIM_REMOTE_HANDSHAKE:
                 OK = ReadBytes(s, (char*)&clientVersion, 4);
                 if(!OK)
                     return true;
@@ -688,20 +688,20 @@ bool TpmServer(SOCKET s)
                 OK &= WriteUINT32(
                     s, tpmInRawMode | tpmPlatformAvailable | tpmSupportsPP);
                 break;
-            case TPM_SET_ALTERNATIVE_RESULT:
+            case MSSIM_SET_ALTERNATIVE_RESULT:
                 OK = ReadBytes(s, (char*)&result, 4);
                 if(!OK)
                     return true;
                 // Alternative result is not applicable to the simulator.
                 break;
-            case TPM_SESSION_END:
+            case MSSIM_SESSION_END:
                 // Client signaled end-of-session
                 return true;
-            case TPM_STOP:
+            case MSSIM_STOP:
                 // Client requested the simulator to exit
                 return false;
             default:
-                printf("Unrecognized TPM interface command %d\n", (int)Command);
+                printf("Unrecognized MSSIM interface command %d\n", (int)Command);
                 return true;
         }
         OK = WriteUINT32(s, 0);

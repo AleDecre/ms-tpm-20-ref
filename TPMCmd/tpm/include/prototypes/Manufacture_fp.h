@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,30 +40,30 @@
 #ifndef _MANUFACTURE_FP_H_
 #define _MANUFACTURE_FP_H_
 
-//*** TPM_Manufacture()
-// This function initializes the TPM values in preparation for the TPM's first
-// use. This function will fail if previously called. The TPM can be re-manufactured
-// by calling TPM_Teardown() first and then calling this function again.
+//*** MSSIM_Manufacture()
+// This function initializes the MSSIM values in preparation for the MSSIM's first
+// use. This function will fail if previously called. The MSSIM can be re-manufactured
+// by calling MSSIM_Teardown() first and then calling this function again.
 //  Return Type: int
 //      -1          failure
 //      0           success
 //      1           manufacturing process previously performed
-LIB_EXPORT int TPM_Manufacture(
+LIB_EXPORT int MSSIM_Manufacture(
     int firstTime  // IN: indicates if this is the first call from
                    //     main()
 );
 
-//*** TPM_TearDown()
-// This function prepares the TPM for re-manufacture. It should not be implemented
-// in anything other than a simulated TPM.
+//*** MSSIM_TearDown()
+// This function prepares the MSSIM for re-manufacture. It should not be implemented
+// in anything other than a simulated MSSIM.
 //
 // In this implementation, all that is needs is to stop the cryptographic units
-// and set a flag to indicate that the TPM can be re-manufactured. This should
+// and set a flag to indicate that the MSSIM can be re-manufactured. This should
 // be all that is necessary to start the manufacturing process again.
 //  Return Type: int
 //      0        success
-//      1        TPM not previously manufactured
-LIB_EXPORT int TPM_TearDown(void);
+//      1        MSSIM not previously manufactured
+LIB_EXPORT int MSSIM_TearDown(void);
 
 //*** TpmEndSimulation()
 // This function is called at the end of the simulation run. It is used to provoke

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,19 +40,19 @@
 #ifndef _PROPERTY_CAP_FP_H_
 #define _PROPERTY_CAP_FP_H_
 
-//*** TPMCapGetProperties()
-// This function is used to get the TPM_PT values. The search of properties will
+//*** MSSIMCapGetProperties()
+// This function is used to get the MSSIM_PT values. The search of properties will
 // start at 'property' and continue until 'propertyList' has as many values as
 // will fit, or the last property has been reported, or the list has as many
 // values as requested in 'count'.
-//  Return Type: TPMI_YES_NO
+//  Return Type: MSSIMI_YES_NO
 //  YES        more properties are available
 //  NO         no more properties to be reported
-TPMI_YES_NO
-TPMCapGetProperties(TPM_PT property,  // IN: the starting TPM property
+MSSIMI_YES_NO
+MSSIMCapGetProperties(MSSIM_PT property,  // IN: the starting MSSIM property
                     UINT32 count,     // IN: maximum number of returned
                                       //     properties
-                    TPML_TAGGED_TPM_PROPERTY* propertyList  // OUT: property list
+                    MSSIML_TAGGED_MSSIM_PROPERTY* propertyList  // OUT: property list
 );
 
 #endif  // _PROPERTY_CAP_FP_H_

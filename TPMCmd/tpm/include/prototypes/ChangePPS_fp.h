@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,15 +45,15 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_RH_PLATFORM authHandle;
+    MSSIMI_RH_PLATFORM authHandle;
 } ChangePPS_In;
 
 // Response code modifiers
-#    define RC_ChangePPS_authHandle (TPM_RC_H + TPM_RC_1)
+#    define RC_ChangePPS_authHandle (MSSIM_RC_H + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_ChangePPS(ChangePPS_In* in);
+MSSIM_RC
+MSSIM2_ChangePPS(ChangePPS_In* in);
 
 #  endif  // _Change_PPS_FP_H_
 #endif    // CC_ChangePPS

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -44,57 +44,57 @@
 //** Functions
 //*** EntityGetLoadStatus()
 // This function will check that all the handles access loaded entities.
-//  Return Type: TPM_RC
-//      TPM_RC_HANDLE           handle type does not match
-//      TPM_RC_REFERENCE_Hx     entity is not present
-//      TPM_RC_HIERARCHY        entity belongs to a disabled hierarchy
-//      TPM_RC_OBJECT_MEMORY    handle is an evict object but there is no
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_HANDLE           handle type does not match
+//      MSSIM_RC_REFERENCE_Hx     entity is not present
+//      MSSIM_RC_HIERARCHY        entity belongs to a disabled hierarchy
+//      MSSIM_RC_OBJECT_MEMORY    handle is an evict object but there is no
 //                               space to load it to RAM
-TPM_RC
+MSSIM_RC
 EntityGetLoadStatus(COMMAND* command  // IN/OUT: command parsing structure
 )
 {
     UINT32 i;
-    TPM_RC result = TPM_RC_SUCCESS;
+    MSSIM_RC result = MSSIM_RC_SUCCESS;
     //
     for(i = 0; i < command->handleNum; i++)
     {
-        TPM_HANDLE handle = command->handles[i];
+        MSSIM_HANDLE handle = command->handles[i];
         switch(HandleGetType(handle))
         {
             // For handles associated with hierarchies, the entity is present
             // only if the associated enable is SET.
-            case TPM_HT_PERMANENT:
+            case MSSIM_HT_PERMANENT:
                 switch(handle)
                 {
-                    case TPM_RH_OWNER:
+                    case MSSIM_RH_OWNER:
                         if(!gc.shEnable)
-                            result = TPM_RC_HIERARCHY;
+                            result = MSSIM_RC_HIERARCHY;
                         break;
 
 #ifdef VENDOR_PERMANENT
                     case VENDOR_PERMANENT:
 #endif
-                    case TPM_RH_ENDORSEMENT:
+                    case MSSIM_RH_ENDORSEMENT:
                         if(!gc.ehEnable)
-                            result = TPM_RC_HIERARCHY;
+                            result = MSSIM_RC_HIERARCHY;
                         break;
-                    case TPM_RH_PLATFORM:
+                    case MSSIM_RH_PLATFORM:
                         if(!g_phEnable)
-                            result = TPM_RC_HIERARCHY;
+                            result = MSSIM_RC_HIERARCHY;
                         break;
                         // null handle, PW session handle and lockout
                         // handle are always available
-                    case TPM_RH_NULL:
-                    case TPM_RS_PW:
+                    case MSSIM_RH_NULL:
+                    case MSSIM_RS_PW:
                         // Need to be careful for lockout. Lockout is always available
                         // for policy checks but not always available when authValue
                         // is being checked.
-                    case TPM_RH_LOCKOUT:
+                    case MSSIM_RH_LOCKOUT:
                         // Rather than have #ifdefs all over the code,
-                        // CASE_ACT_HANDLE is defined in ACT.h. It is 'case TPM_RH_ACT_x:'
+                        // CASE_ACT_HANDLE is defined in ACT.h. It is 'case MSSIM_RH_ACT_x:'
                         // FOR_EACH_ACT(CASE_ACT_HANDLE) creates a simple
-                        // case TPM_RH_ACT_x: // for each of the implemented ACT.
+                        // case MSSIM_RH_ACT_x: // for each of the implemented ACT.
                         FOR_EACH_ACT(CASE_ACT_HANDLE)
                         break;
                     default:
@@ -102,32 +102,32 @@ EntityGetLoadStatus(COMMAND* command  // IN/OUT: command parsing structure
                         // then test for it here. Since this implementation does
                         // not have any, this implementation returns the same failure
                         // that unmarshaling of a bad handle would produce.
-                        if(((TPM_RH)handle >= TPM_RH_AUTH_00)
-                           && ((TPM_RH)handle <= TPM_RH_AUTH_FF))
+                        if(((MSSIM_RH)handle >= MSSIM_RH_AUTH_00)
+                           && ((MSSIM_RH)handle <= MSSIM_RH_AUTH_FF))
                             // if the implementation has a manufacturer-specific value
-                            result = TPM_RC_VALUE;
+                            result = MSSIM_RC_VALUE;
                         else
                             // The handle is in the range of reserved handles but is
-                            // not implemented in this TPM.
-                            result = TPM_RC_VALUE;
+                            // not implemented in this MSSIM.
+                            result = MSSIM_RC_VALUE;
                         break;
                 }
                 break;
-            case TPM_HT_TRANSIENT:
+            case MSSIM_HT_TRANSIENT:
                 // For a transient object, check if the handle is associated
                 // with a loaded object.
                 if(!IsObjectPresent(handle))
-                    result = TPM_RC_REFERENCE_H0;
+                    result = MSSIM_RC_REFERENCE_H0;
                 break;
-            case TPM_HT_PERSISTENT:
+            case MSSIM_HT_PERSISTENT:
                 // Persistent object
                 // Copy the persistent object to RAM and replace the handle with the
-                // handle of the assigned slot.  A TPM_RC_OBJECT_MEMORY,
-                // TPM_RC_HIERARCHY or TPM_RC_REFERENCE_H0 error may be returned by
+                // handle of the assigned slot.  A MSSIM_RC_OBJECT_MEMORY,
+                // MSSIM_RC_HIERARCHY or MSSIM_RC_REFERENCE_H0 error may be returned by
                 // ObjectLoadEvict()
                 result = ObjectLoadEvict(&command->handles[i], command->index);
                 break;
-            case TPM_HT_HMAC_SESSION:
+            case MSSIM_HT_HMAC_SESSION:
                 // For an HMAC session, see if the session is loaded
                 // and if the session in the session slot is actually
                 // an HMAC session.
@@ -137,12 +137,12 @@ EntityGetLoadStatus(COMMAND* command  // IN/OUT: command parsing structure
                     session = SessionGet(handle);
                     // Check if the session is a HMAC session
                     if(session->attributes.isPolicy == SET)
-                        result = TPM_RC_HANDLE;
+                        result = MSSIM_RC_HANDLE;
                 }
                 else
-                    result = TPM_RC_REFERENCE_H0;
+                    result = MSSIM_RC_REFERENCE_H0;
                 break;
-            case TPM_HT_POLICY_SESSION:
+            case MSSIM_HT_POLICY_SESSION:
                 // For a policy session, see if the session is loaded
                 // and if the session in the session slot is actually
                 // a policy session.
@@ -152,23 +152,23 @@ EntityGetLoadStatus(COMMAND* command  // IN/OUT: command parsing structure
                     session = SessionGet(handle);
                     // Check if the session is a policy session
                     if(session->attributes.isPolicy == CLEAR)
-                        result = TPM_RC_HANDLE;
+                        result = MSSIM_RC_HANDLE;
                 }
                 else
-                    result = TPM_RC_REFERENCE_H0;
+                    result = MSSIM_RC_REFERENCE_H0;
                 break;
-            case TPM_HT_NV_INDEX:
-                // For an NV Index, use the TPM-specific routine
+            case MSSIM_HT_NV_INDEX:
+                // For an NV Index, use the MSSIM-specific routine
                 // to search the IN Index space.
                 result = NvIndexIsAccessible(handle);
                 break;
-            case TPM_HT_PCR:
+            case MSSIM_HT_PCR:
                 // Any PCR handle that is unmarshaled successfully referenced
                 // a PCR that is defined.
                 break;
 #if CC_AC_Send
-            case TPM_HT_AC:
-                // Use the TPM-specific routine to search for the AC
+            case MSSIM_HT_AC:
+                // Use the MSSIM-specific routine to search for the AC
                 result = AcIsAccessible(handle);
                 break;
 #endif
@@ -177,12 +177,12 @@ EntityGetLoadStatus(COMMAND* command  // IN/OUT: command parsing structure
                 FAIL(FATAL_ERROR_INTERNAL);
                 break;
         }
-        if(result != TPM_RC_SUCCESS)
+        if(result != MSSIM_RC_SUCCESS)
         {
-            if(result == TPM_RC_REFERENCE_H0)
+            if(result == MSSIM_RC_REFERENCE_H0)
                 result = result + i;
             else
-                result = RcSafeAddToResult(result, TPM_RC_H + g_rcIndex[i]);
+                result = RcSafeAddToResult(result, MSSIM_RC_H + g_rcIndex[i]);
             break;
         }
     }
@@ -200,40 +200,40 @@ EntityGetLoadStatus(COMMAND* command  // IN/OUT: command parsing structure
 // Return Type: UINT16
 //      count           number of bytes in the authValue with 0's stripped
 UINT16
-EntityGetAuthValue(TPMI_DH_ENTITY handle,  // IN: handle of entity
-                   TPM2B_AUTH*    auth     // OUT: authValue of the entity
+EntityGetAuthValue(MSSIMI_DH_ENTITY handle,  // IN: handle of entity
+                   MSSIM2B_AUTH*    auth     // OUT: authValue of the entity
 )
 {
-    TPM2B_AUTH* pAuth = NULL;
+    MSSIM2B_AUTH* pAuth = NULL;
 
     auth->t.size      = 0;
 
     switch(HandleGetType(handle))
     {
-        case TPM_HT_PERMANENT:
+        case MSSIM_HT_PERMANENT:
         {
             switch(handle)
             {
-                case TPM_RH_OWNER:
-                    // ownerAuth for TPM_RH_OWNER
+                case MSSIM_RH_OWNER:
+                    // ownerAuth for MSSIM_RH_OWNER
                     pAuth = &gp.ownerAuth;
                     break;
-                case TPM_RH_ENDORSEMENT:
-                    // endorsementAuth for TPM_RH_ENDORSEMENT
+                case MSSIM_RH_ENDORSEMENT:
+                    // endorsementAuth for MSSIM_RH_ENDORSEMENT
                     pAuth = &gp.endorsementAuth;
                     break;
                     // The ACT use platformAuth for auth
                     FOR_EACH_ACT(CASE_ACT_HANDLE)
-                case TPM_RH_PLATFORM:
-                    // platformAuth for TPM_RH_PLATFORM
+                case MSSIM_RH_PLATFORM:
+                    // platformAuth for MSSIM_RH_PLATFORM
                     pAuth = &gc.platformAuth;
                     break;
-                case TPM_RH_LOCKOUT:
-                    // lockoutAuth for TPM_RH_LOCKOUT
+                case MSSIM_RH_LOCKOUT:
+                    // lockoutAuth for MSSIM_RH_LOCKOUT
                     pAuth = &gp.lockoutAuth;
                     break;
-                case TPM_RH_NULL:
-                    // nullAuth for TPM_RH_NULL. Return 0 directly here
+                case MSSIM_RH_NULL:
+                    // nullAuth for MSSIM_RH_NULL. Return 0 directly here
                     return 0;
                     break;
 #ifdef VENDOR_PERMANENT
@@ -249,7 +249,7 @@ EntityGetAuthValue(TPMI_DH_ENTITY handle,  // IN: handle of entity
             }
             break;
         }
-        case TPM_HT_TRANSIENT:
+        case MSSIM_HT_TRANSIENT:
             // authValue for an object
             // A persistent object would have been copied into RAM
             // and would have an transient object handle here.
@@ -272,7 +272,7 @@ EntityGetAuthValue(TPMI_DH_ENTITY handle,  // IN: handle of entity
                 }
             }
             break;
-        case TPM_HT_NV_INDEX:
+        case MSSIM_HT_NV_INDEX:
             // authValue for an NV index
             {
                 NV_INDEX* nvIndex = NvGetIndexInfo(handle, NULL);
@@ -280,7 +280,7 @@ EntityGetAuthValue(TPMI_DH_ENTITY handle,  // IN: handle of entity
                 pAuth = &nvIndex->authValue;
             }
             break;
-        case TPM_HT_PCR:
+        case MSSIM_HT_PCR:
             // authValue for PCR
             pAuth = PCRGetAuthValue(handle);
             break;
@@ -291,7 +291,7 @@ EntityGetAuthValue(TPMI_DH_ENTITY handle,  // IN: handle of entity
             break;
     }
     // Copy the authValue
-    MemoryCopy2B((TPM2B*)auth, (TPM2B*)pAuth, sizeof(auth->t.buffer));
+    MemoryCopy2B((MSSIM2B*)auth, (MSSIM2B*)pAuth, sizeof(auth->t.buffer));
     MemoryRemoveTrailingZeros(auth);
     return auth->t.size;
 }
@@ -306,52 +306,52 @@ EntityGetAuthValue(TPMI_DH_ENTITY handle,  // IN: handle of entity
 // This function copies the authorization policy of the entity to 'authPolicy'.
 //
 //  The return value is the hash algorithm for the policy.
-TPMI_ALG_HASH
-EntityGetAuthPolicy(TPMI_DH_ENTITY handle,     // IN: handle of entity
-                    TPM2B_DIGEST*  authPolicy  // OUT: authPolicy of the entity
+MSSIMI_ALG_HASH
+EntityGetAuthPolicy(MSSIMI_DH_ENTITY handle,     // IN: handle of entity
+                    MSSIM2B_DIGEST*  authPolicy  // OUT: authPolicy of the entity
 )
 {
-    TPMI_ALG_HASH hashAlg = TPM_ALG_NULL;
+    MSSIMI_ALG_HASH hashAlg = MSSIM_ALG_NULL;
     authPolicy->t.size    = 0;
 
     switch(HandleGetType(handle))
     {
-        case TPM_HT_PERMANENT:
+        case MSSIM_HT_PERMANENT:
             switch(handle)
             {
-                case TPM_RH_OWNER:
-                    // ownerPolicy for TPM_RH_OWNER
+                case MSSIM_RH_OWNER:
+                    // ownerPolicy for MSSIM_RH_OWNER
                     *authPolicy = gp.ownerPolicy;
                     hashAlg     = gp.ownerAlg;
                     break;
-                case TPM_RH_ENDORSEMENT:
-                    // endorsementPolicy for TPM_RH_ENDORSEMENT
+                case MSSIM_RH_ENDORSEMENT:
+                    // endorsementPolicy for MSSIM_RH_ENDORSEMENT
                     *authPolicy = gp.endorsementPolicy;
                     hashAlg     = gp.endorsementAlg;
                     break;
-                case TPM_RH_PLATFORM:
-                    // platformPolicy for TPM_RH_PLATFORM
+                case MSSIM_RH_PLATFORM:
+                    // platformPolicy for MSSIM_RH_PLATFORM
                     *authPolicy = gc.platformPolicy;
                     hashAlg     = gc.platformAlg;
                     break;
-                case TPM_RH_LOCKOUT:
-                    // lockoutPolicy for TPM_RH_LOCKOUT
+                case MSSIM_RH_LOCKOUT:
+                    // lockoutPolicy for MSSIM_RH_LOCKOUT
                     *authPolicy = gp.lockoutPolicy;
                     hashAlg     = gp.lockoutAlg;
                     break;
 #define ACT_GET_POLICY(N)                \
-  case TPM_RH_ACT_##N:                   \
+  case MSSIM_RH_ACT_##N:                   \
     *authPolicy = go.ACT_##N.authPolicy; \
     hashAlg     = go.ACT_##N.hashAlg;    \
     break;
                     // Get the policy for each implemented ACT
                     FOR_EACH_ACT(ACT_GET_POLICY)
                 default:
-                    hashAlg = TPM_ALG_ERROR;
+                    hashAlg = MSSIM_ALG_ERROR;
                     break;
             }
             break;
-        case TPM_HT_TRANSIENT:
+        case MSSIM_HT_TRANSIENT:
             // authPolicy for an object
             {
                 OBJECT* object = HandleToObject(handle);
@@ -359,7 +359,7 @@ EntityGetAuthPolicy(TPMI_DH_ENTITY handle,     // IN: handle of entity
                 hashAlg        = object->publicArea.nameAlg;
             }
             break;
-        case TPM_HT_NV_INDEX:
+        case MSSIM_HT_NV_INDEX:
             // authPolicy for a NV index
             {
                 NV_INDEX* nvIndex = NvGetIndexInfo(handle, NULL);
@@ -368,7 +368,7 @@ EntityGetAuthPolicy(TPMI_DH_ENTITY handle,     // IN: handle of entity
                 hashAlg     = nvIndex->publicArea.nameAlg;
             }
             break;
-        case TPM_HT_PCR:
+        case MSSIM_HT_PCR:
             // authPolicy for a PCR
             hashAlg = PCRGetAuthPolicy(handle, authPolicy);
             break;
@@ -382,30 +382,30 @@ EntityGetAuthPolicy(TPMI_DH_ENTITY handle,     // IN: handle of entity
 
 //*** EntityGetName()
 // This function returns the Name associated with a handle.
-TPM2B_NAME* EntityGetName(TPMI_DH_ENTITY handle,  // IN: handle of entity
-                          TPM2B_NAME*    name     // OUT: name of entity
+MSSIM2B_NAME* EntityGetName(MSSIMI_DH_ENTITY handle,  // IN: handle of entity
+                          MSSIM2B_NAME*    name     // OUT: name of entity
 )
 {
     switch(HandleGetType(handle))
     {
-        case TPM_HT_TRANSIENT:
+        case MSSIM_HT_TRANSIENT:
         {
             // Name for an object
             OBJECT* object = HandleToObject(handle);
             // an object with no nameAlg has no name
-            if(object->publicArea.nameAlg == TPM_ALG_NULL)
+            if(object->publicArea.nameAlg == MSSIM_ALG_NULL)
                 name->b.size = 0;
             else
                 *name = object->name;
             break;
         }
-        case TPM_HT_NV_INDEX:
+        case MSSIM_HT_NV_INDEX:
             // Name for a NV index
             NvGetNameByIndexHandle(handle, name);
             break;
         default:
             // For all other types, the handle is the Name
-            name->t.size = sizeof(TPM_HANDLE);
+            name->t.size = sizeof(MSSIM_HANDLE);
             UINT32_TO_BYTE_ARRAY(handle, name->t.name);
             break;
     }
@@ -415,34 +415,34 @@ TPM2B_NAME* EntityGetName(TPMI_DH_ENTITY handle,  // IN: handle of entity
 //*** EntityGetHierarchy()
 // This function returns the hierarchy handle associated with an entity.
 // a) A handle that is a hierarchy handle is associated with itself.
-// b) An NV index belongs to TPM_RH_PLATFORM if TPMA_NV_PLATFORMCREATE,
-//    is SET, otherwise it belongs to TPM_RH_OWNER
+// b) An NV index belongs to MSSIM_RH_PLATFORM if MSSIMA_NV_PLATFORMCREATE,
+//    is SET, otherwise it belongs to MSSIM_RH_OWNER
 // c) An object handle belongs to its hierarchy.
-TPMI_RH_HIERARCHY
-EntityGetHierarchy(TPMI_DH_ENTITY handle  // IN :handle of entity
+MSSIMI_RH_HIERARCHY
+EntityGetHierarchy(MSSIMI_DH_ENTITY handle  // IN :handle of entity
 )
 {
-    TPMI_RH_HIERARCHY hierarchy = TPM_RH_NULL;
+    MSSIMI_RH_HIERARCHY hierarchy = MSSIM_RH_NULL;
 
     switch(HandleGetType(handle))
     {
-        case TPM_HT_PERMANENT:
+        case MSSIM_HT_PERMANENT:
             // hierarchy for a permanent handle
             switch(handle)
             {
-                case TPM_RH_PLATFORM:
-                case TPM_RH_ENDORSEMENT:
-                case TPM_RH_NULL:
+                case MSSIM_RH_PLATFORM:
+                case MSSIM_RH_ENDORSEMENT:
+                case MSSIM_RH_NULL:
                     hierarchy = handle;
                     break;
                 // all other permanent handles are associated with the owner
-                // hierarchy. (should only be TPM_RH_OWNER and TPM_RH_LOCKOUT)
+                // hierarchy. (should only be MSSIM_RH_OWNER and MSSIM_RH_LOCKOUT)
                 default:
-                    hierarchy = TPM_RH_OWNER;
+                    hierarchy = MSSIM_RH_OWNER;
                     break;
             }
             break;
-        case TPM_HT_NV_INDEX:
+        case MSSIM_HT_NV_INDEX:
             // hierarchy for NV index
             {
                 NV_INDEX* nvIndex = NvGetIndexInfo(handle, NULL);
@@ -452,33 +452,33 @@ EntityGetHierarchy(TPMI_DH_ENTITY handle  // IN :handle of entity
                 // considered to be in the platform hierarchy, otherwise it
                 // is in the owner hierarchy.
                 if(IS_ATTRIBUTE(
-                       nvIndex->publicArea.attributes, TPMA_NV, PLATFORMCREATE))
-                    hierarchy = TPM_RH_PLATFORM;
+                       nvIndex->publicArea.attributes, MSSIMA_NV, PLATFORMCREATE))
+                    hierarchy = MSSIM_RH_PLATFORM;
                 else
-                    hierarchy = TPM_RH_OWNER;
+                    hierarchy = MSSIM_RH_OWNER;
             }
             break;
-        case TPM_HT_TRANSIENT:
+        case MSSIM_HT_TRANSIENT:
             // hierarchy for an object
             {
                 OBJECT* object;
                 object = HandleToObject(handle);
                 if(object->attributes.ppsHierarchy)
                 {
-                    hierarchy = TPM_RH_PLATFORM;
+                    hierarchy = MSSIM_RH_PLATFORM;
                 }
                 else if(object->attributes.epsHierarchy)
                 {
-                    hierarchy = TPM_RH_ENDORSEMENT;
+                    hierarchy = MSSIM_RH_ENDORSEMENT;
                 }
                 else if(object->attributes.spsHierarchy)
                 {
-                    hierarchy = TPM_RH_OWNER;
+                    hierarchy = MSSIM_RH_OWNER;
                 }
             }
             break;
-        case TPM_HT_PCR:
-            hierarchy = TPM_RH_OWNER;
+        case MSSIM_HT_PCR:
+            hierarchy = MSSIM_RH_OWNER;
             break;
         default:
             FAIL(FATAL_ERROR_INTERNAL);

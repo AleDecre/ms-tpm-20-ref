@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,8 +40,8 @@
 /*(See part 3 specification)
 // change the lockout parameters
 */
-TPM_RC
-TPM2_DictionaryAttackParameters(
+MSSIM_RC
+MSSIM2_DictionaryAttackParameters(
     DictionaryAttackParameters_In* in  // IN: input parameter list
 )
 {
@@ -58,7 +58,7 @@ TPM2_DictionaryAttackParameters(
 #  if 0  // Errata eliminates this code
     // This functionality has been disabled. The preferred implementation is now
     // to leave failedTries unchanged when the parameters are changed. This could
-    // have the effect of putting the TPM into DA lockout if in->newMaxTries is
+    // have the effect of putting the MSSIM into DA lockout if in->newMaxTries is
     // not greater than the current value of gp.failedTries.
     // Set failed tries to 0
     gp.failedTries = 0;
@@ -70,7 +70,7 @@ TPM2_DictionaryAttackParameters(
     NV_SYNC_PERSISTENT(recoveryTime);
     NV_SYNC_PERSISTENT(lockoutRecovery);
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_DictionaryAttackParameters

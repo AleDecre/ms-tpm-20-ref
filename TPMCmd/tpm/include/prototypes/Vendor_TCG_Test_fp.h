@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,21 +45,21 @@
 // Input structure definition
 typedef struct
 {
-    TPM2B_DATA inputData;
+    MSSIM2B_DATA inputData;
 } Vendor_TCG_Test_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_DATA outputData;
+    MSSIM2B_DATA outputData;
 } Vendor_TCG_Test_Out;
 
 // Response code modifiers
-#    define RC_Vendor_TCG_Test_inputData (TPM_RC_P + TPM_RC_1)
+#    define RC_Vendor_TCG_Test_inputData (MSSIM_RC_P + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_Vendor_TCG_Test(Vendor_TCG_Test_In* in, Vendor_TCG_Test_Out* out);
+MSSIM_RC
+MSSIM2_Vendor_TCG_Test(Vendor_TCG_Test_In* in, Vendor_TCG_Test_Out* out);
 
 #  endif  // _Vendor_TCG_Test_FP_H_
 #endif    // CC_Vendor_TCG_Test

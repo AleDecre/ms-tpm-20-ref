@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,30 +45,30 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT       signHandle;
-    TPM2B_ECC_POINT      P1;
-    TPM2B_SENSITIVE_DATA s2;
-    TPM2B_ECC_PARAMETER  y2;
+    MSSIMI_DH_OBJECT       signHandle;
+    MSSIM2B_ECC_POINT      P1;
+    MSSIM2B_SENSITIVE_DATA s2;
+    MSSIM2B_ECC_PARAMETER  y2;
 } Commit_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_ECC_POINT K;
-    TPM2B_ECC_POINT L;
-    TPM2B_ECC_POINT E;
+    MSSIM2B_ECC_POINT K;
+    MSSIM2B_ECC_POINT L;
+    MSSIM2B_ECC_POINT E;
     UINT16          counter;
 } Commit_Out;
 
 // Response code modifiers
-#    define RC_Commit_signHandle (TPM_RC_H + TPM_RC_1)
-#    define RC_Commit_P1         (TPM_RC_P + TPM_RC_1)
-#    define RC_Commit_s2         (TPM_RC_P + TPM_RC_2)
-#    define RC_Commit_y2         (TPM_RC_P + TPM_RC_3)
+#    define RC_Commit_signHandle (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_Commit_P1         (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_Commit_s2         (MSSIM_RC_P + MSSIM_RC_2)
+#    define RC_Commit_y2         (MSSIM_RC_P + MSSIM_RC_3)
 
 // Function prototype
-TPM_RC
-TPM2_Commit(Commit_In* in, Commit_Out* out);
+MSSIM_RC
+MSSIM2_Commit(Commit_In* in, Commit_Out* out);
 
 #  endif  // _Commit_FP_H_
 #endif    // CC_Commit

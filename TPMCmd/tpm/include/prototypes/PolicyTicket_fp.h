@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,25 +45,25 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_SH_POLICY policySession;
-    TPM2B_TIMEOUT  timeout;
-    TPM2B_DIGEST   cpHashA;
-    TPM2B_NONCE    policyRef;
-    TPM2B_NAME     authName;
-    TPMT_TK_AUTH   ticket;
+    MSSIMI_SH_POLICY policySession;
+    MSSIM2B_TIMEOUT  timeout;
+    MSSIM2B_DIGEST   cpHashA;
+    MSSIM2B_NONCE    policyRef;
+    MSSIM2B_NAME     authName;
+    MSSIMT_TK_AUTH   ticket;
 } PolicyTicket_In;
 
 // Response code modifiers
-#    define RC_PolicyTicket_policySession (TPM_RC_H + TPM_RC_1)
-#    define RC_PolicyTicket_timeout       (TPM_RC_P + TPM_RC_1)
-#    define RC_PolicyTicket_cpHashA       (TPM_RC_P + TPM_RC_2)
-#    define RC_PolicyTicket_policyRef     (TPM_RC_P + TPM_RC_3)
-#    define RC_PolicyTicket_authName      (TPM_RC_P + TPM_RC_4)
-#    define RC_PolicyTicket_ticket        (TPM_RC_P + TPM_RC_5)
+#    define RC_PolicyTicket_policySession (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_PolicyTicket_timeout       (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_PolicyTicket_cpHashA       (MSSIM_RC_P + MSSIM_RC_2)
+#    define RC_PolicyTicket_policyRef     (MSSIM_RC_P + MSSIM_RC_3)
+#    define RC_PolicyTicket_authName      (MSSIM_RC_P + MSSIM_RC_4)
+#    define RC_PolicyTicket_ticket        (MSSIM_RC_P + MSSIM_RC_5)
 
 // Function prototype
-TPM_RC
-TPM2_PolicyTicket(PolicyTicket_In* in);
+MSSIM_RC
+MSSIM2_PolicyTicket(PolicyTicket_In* in);
 
 #  endif  // _Policy_Ticket_FP_H_
 #endif    // CC_PolicyTicket

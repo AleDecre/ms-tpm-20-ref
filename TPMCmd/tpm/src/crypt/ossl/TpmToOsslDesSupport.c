@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -63,7 +63,7 @@ void TDES_set_encrypt_key(
 }
 
 //*** TDES_encyrpt()
-// The TPM code uses one key schedule. For TDES, the schedule contains three
+// The MSSIM code uses one key schedule. For TDES, the schedule contains three
 // schedules. OpenSSL wants the schedules referenced separately. This function
 // does that.
 void TDES_encrypt(const BYTE* in, BYTE* out, tpmKeyScheduleTDES* ks)
@@ -73,7 +73,7 @@ void TDES_encrypt(const BYTE* in, BYTE* out, tpmKeyScheduleTDES* ks)
 }
 
 //*** TDES_decrypt()
-// As with TDES_encypt() this function bridges between the TPM single schedule
+// As with TDES_encypt() this function bridges between the MSSIM single schedule
 // model and the OpenSSL three schedule model.
 void TDES_decrypt(const BYTE* in, BYTE* out, tpmKeyScheduleTDES* ks)
 {

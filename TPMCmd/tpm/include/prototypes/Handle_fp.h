@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -42,42 +42,42 @@
 
 //*** HandleGetType()
 // This function returns the type of a handle which is the MSO of the handle.
-TPM_HT
-HandleGetType(TPM_HANDLE handle  // IN: a handle to be checked
+MSSIM_HT
+HandleGetType(MSSIM_HANDLE handle  // IN: a handle to be checked
 );
 
 //*** NextPermanentHandle()
 // This function returns the permanent handle that is equal to the input value or
 // is the next higher value. If there is no handle with the input value and there
 // is no next higher value, it returns 0:
-TPM_HANDLE
-NextPermanentHandle(TPM_HANDLE inHandle  // IN: the handle to check
+MSSIM_HANDLE
+NextPermanentHandle(MSSIM_HANDLE inHandle  // IN: the handle to check
 );
 
 //*** PermanentCapGetHandles()
 // This function returns a list of the permanent handles of PCR, started from
 // 'handle'. If 'handle' is larger than the largest permanent handle, an empty list
 // will be returned with 'more' set to NO.
-//  Return Type: TPMI_YES_NO
+//  Return Type: MSSIMI_YES_NO
 //      YES         if there are more handles available
 //      NO          all the available handles has been returned
-TPMI_YES_NO
-PermanentCapGetHandles(TPM_HANDLE   handle,     // IN: start handle
+MSSIMI_YES_NO
+PermanentCapGetHandles(MSSIM_HANDLE   handle,     // IN: start handle
                        UINT32       count,      // IN: count of returned handles
-                       TPML_HANDLE* handleList  // OUT: list of handle
+                       MSSIML_HANDLE* handleList  // OUT: list of handle
 );
 
 //*** PermanentHandleGetPolicy()
 // This function returns a list of the permanent handles of PCR, started from
 // 'handle'. If 'handle' is larger than the largest permanent handle, an empty list
 // will be returned with 'more' set to NO.
-//  Return Type: TPMI_YES_NO
+//  Return Type: MSSIMI_YES_NO
 //      YES         if there are more handles available
 //      NO          all the available handles has been returned
-TPMI_YES_NO
-PermanentHandleGetPolicy(TPM_HANDLE handle,  // IN: start handle
+MSSIMI_YES_NO
+PermanentHandleGetPolicy(MSSIM_HANDLE handle,  // IN: start handle
                          UINT32     count,   // IN: max count of returned handles
-                         TPML_TAGGED_POLICY* policyList  // OUT: list of handle
+                         MSSIML_TAGGED_POLICY* policyList  // OUT: list of handle
 );
 
 #endif  // _HANDLE_FP_H_

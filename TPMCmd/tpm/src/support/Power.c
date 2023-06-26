@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -35,7 +35,7 @@
 //** Description
 
 // This file contains functions that receive the simulated power state
-// transitions of the TPM.
+// transitions of the MSSIM.
 
 //** Includes and Data Definitions
 #define POWER_C
@@ -43,31 +43,31 @@
 
 //** Functions
 
-//*** TPMInit()
+//*** MSSIMInit()
 // This function is used to process a power on event.
-void TPMInit(void)
+void MSSIMInit(void)
 {
     // Set state as not initialized. This means that Startup is required
     g_initialized = FALSE;
     return;
 }
 
-//*** TPMRegisterStartup()
-// This function registers the fact that the TPM has been initialized
-// (a TPM2_Startup() has completed successfully).
-BOOL TPMRegisterStartup(void)
+//*** MSSIMRegisterStartup()
+// This function registers the fact that the MSSIM has been initialized
+// (a MSSIM2_Startup() has completed successfully).
+BOOL MSSIMRegisterStartup(void)
 {
     g_initialized = TRUE;
     return TRUE;
 }
 
-//*** TPMIsStarted()
-// Indicates if the TPM has been initialized (a TPM2_Startup() has completed
-// successfully after a _TPM_Init).
+//*** MSSIMIsStarted()
+// Indicates if the MSSIM has been initialized (a MSSIM2_Startup() has completed
+// successfully after a _MSSIM_Init).
 //  Return Type: BOOL
-//      TRUE(1)         TPM has been initialized
-//      FALSE(0)        TPM has not been initialized
-BOOL TPMIsStarted(void)
+//      TRUE(1)         MSSIM has been initialized
+//      FALSE(0)        MSSIM has not been initialized
+BOOL MSSIMIsStarted(void)
 {
     return g_initialized;
 }

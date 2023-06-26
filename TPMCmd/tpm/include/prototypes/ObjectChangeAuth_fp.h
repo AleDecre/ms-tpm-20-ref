@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,25 +45,25 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT objectHandle;
-    TPMI_DH_OBJECT parentHandle;
-    TPM2B_AUTH     newAuth;
+    MSSIMI_DH_OBJECT objectHandle;
+    MSSIMI_DH_OBJECT parentHandle;
+    MSSIM2B_AUTH     newAuth;
 } ObjectChangeAuth_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_PRIVATE outPrivate;
+    MSSIM2B_PRIVATE outPrivate;
 } ObjectChangeAuth_Out;
 
 // Response code modifiers
-#    define RC_ObjectChangeAuth_objectHandle (TPM_RC_H + TPM_RC_1)
-#    define RC_ObjectChangeAuth_parentHandle (TPM_RC_H + TPM_RC_2)
-#    define RC_ObjectChangeAuth_newAuth      (TPM_RC_P + TPM_RC_1)
+#    define RC_ObjectChangeAuth_objectHandle (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_ObjectChangeAuth_parentHandle (MSSIM_RC_H + MSSIM_RC_2)
+#    define RC_ObjectChangeAuth_newAuth      (MSSIM_RC_P + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_ObjectChangeAuth(ObjectChangeAuth_In* in, ObjectChangeAuth_Out* out);
+MSSIM_RC
+MSSIM2_ObjectChangeAuth(ObjectChangeAuth_In* in, ObjectChangeAuth_Out* out);
 
 #  endif  // _Object_Change_Auth_FP_H_
 #endif    // CC_ObjectChangeAuth

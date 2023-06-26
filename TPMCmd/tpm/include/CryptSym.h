@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -35,7 +35,7 @@
 //** Introduction
 //
 // This file contains the implementation of the symmetric block cipher modes
-// allowed for a TPM. These functions only use the single block encryption functions
+// allowed for a MSSIM. These functions only use the single block encryption functions
 // of the selected symmetric cryptographic library.
 
 //** Includes, Defines, and Typedefs
@@ -103,12 +103,12 @@ typedef union tpmCryptKeySchedule_t
 // set the key schedule to be used for the call.
 
 #define ENCRYPT_CASE(ALG, alg)                                        \
-  case TPM_ALG_##ALG:                                                 \
+  case MSSIM_ALG_##ALG:                                                 \
     TpmCryptSetEncryptKey##ALG(key, keySizeInBits, &keySchedule.alg); \
     encrypt = (TpmCryptSetSymKeyCall_t)TpmCryptEncrypt##ALG;          \
     break;
 #define DECRYPT_CASE(ALG, alg)                                        \
-  case TPM_ALG_##ALG:                                                 \
+  case MSSIM_ALG_##ALG:                                                 \
     TpmCryptSetDecryptKey##ALG(key, keySizeInBits, &keySchedule.alg); \
     decrypt = (TpmCryptSetSymKeyCall_t)TpmCryptDecrypt##ALG;          \
     break;

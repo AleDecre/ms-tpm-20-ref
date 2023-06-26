@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,21 +45,21 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_RH_NV_AUTH     authHandle;
-    TPMI_RH_NV_INDEX    nvIndex;
-    TPM2B_MAX_NV_BUFFER data;
+    MSSIMI_RH_NV_AUTH     authHandle;
+    MSSIMI_RH_NV_INDEX    nvIndex;
+    MSSIM2B_MAX_NV_BUFFER data;
     UINT16              offset;
 } NV_Write_In;
 
 // Response code modifiers
-#    define RC_NV_Write_authHandle (TPM_RC_H + TPM_RC_1)
-#    define RC_NV_Write_nvIndex    (TPM_RC_H + TPM_RC_2)
-#    define RC_NV_Write_data       (TPM_RC_P + TPM_RC_1)
-#    define RC_NV_Write_offset     (TPM_RC_P + TPM_RC_2)
+#    define RC_NV_Write_authHandle (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_NV_Write_nvIndex    (MSSIM_RC_H + MSSIM_RC_2)
+#    define RC_NV_Write_data       (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_NV_Write_offset     (MSSIM_RC_P + MSSIM_RC_2)
 
 // Function prototype
-TPM_RC
-TPM2_NV_Write(NV_Write_In* in);
+MSSIM_RC
+MSSIM2_NV_Write(NV_Write_In* in);
 
 #  endif  // _NV_Write_FP_H_
 #endif    // CC_NV_Write

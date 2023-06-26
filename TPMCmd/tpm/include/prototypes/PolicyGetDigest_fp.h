@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,21 +45,21 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_SH_POLICY policySession;
+    MSSIMI_SH_POLICY policySession;
 } PolicyGetDigest_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_DIGEST policyDigest;
+    MSSIM2B_DIGEST policyDigest;
 } PolicyGetDigest_Out;
 
 // Response code modifiers
-#    define RC_PolicyGetDigest_policySession (TPM_RC_H + TPM_RC_1)
+#    define RC_PolicyGetDigest_policySession (MSSIM_RC_H + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_PolicyGetDigest(PolicyGetDigest_In* in, PolicyGetDigest_Out* out);
+MSSIM_RC
+MSSIM2_PolicyGetDigest(PolicyGetDigest_In* in, PolicyGetDigest_Out* out);
 
 #  endif  // _Policy_Get_Digest_FP_H_
 #endif    // CC_PolicyGetDigest

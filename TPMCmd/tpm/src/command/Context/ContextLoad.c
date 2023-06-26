@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -44,33 +44,33 @@
 // Load context
 */
 
-//  Return Type: TPM_RC
-//      TPM_RC_CONTEXT_GAP          there is only one available slot and this is not
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_CONTEXT_GAP          there is only one available slot and this is not
 //                                  the oldest saved session context
-//      TPM_RC_HANDLE               'context.savedHandle' does not reference a saved
+//      MSSIM_RC_HANDLE               'context.savedHandle' does not reference a saved
 //                                  session
-//      TPM_RC_HIERARCHY            'context.hierarchy' is disabled
-//      TPM_RC_INTEGRITY            'context' integrity check fail
-//      TPM_RC_OBJECT_MEMORY        no free slot for an object
-//      TPM_RC_SESSION_MEMORY       no free session slots
-//      TPM_RC_SIZE                 incorrect context blob size
-TPM_RC
-TPM2_ContextLoad(ContextLoad_In*  in,  // IN: input parameter list
+//      MSSIM_RC_HIERARCHY            'context.hierarchy' is disabled
+//      MSSIM_RC_INTEGRITY            'context' integrity check fail
+//      MSSIM_RC_OBJECT_MEMORY        no free slot for an object
+//      MSSIM_RC_SESSION_MEMORY       no free session slots
+//      MSSIM_RC_SIZE                 incorrect context blob size
+MSSIM_RC
+MSSIM2_ContextLoad(ContextLoad_In*  in,  // IN: input parameter list
                  ContextLoad_Out* out  // OUT: output parameter list
 )
 {
-    TPM_RC        result;
-    TPM2B_DIGEST  integrityToCompare;
-    TPM2B_DIGEST  integrity;
+    MSSIM_RC        result;
+    MSSIM2B_DIGEST  integrityToCompare;
+    MSSIM2B_DIGEST  integrity;
     BYTE*         buffer;  // defined to save some typing
     INT32         size;    // defined to save some typing
-    TPM_HT        handleType;
-    TPM2B_SYM_KEY symKey;
-    TPM2B_IV      iv;
+    MSSIM_HT        handleType;
+    MSSIM2B_SYM_KEY symKey;
+    MSSIM2B_IV      iv;
 
     // Input Validation
 
-    // See discussion about the context format in TPM2_ContextSave Detailed Actions
+    // See discussion about the context format in MSSIM2_ContextSave Detailed Actions
 
     // IF this is a session context, make sure that the sequence number is
     // consistent with the version in the slot
@@ -81,20 +81,20 @@ TPM2_ContextLoad(ContextLoad_In*  in,  // IN: input parameter list
     // Get integrity from context blob
     buffer = in->context.contextBlob.t.buffer;
     size   = (INT32)in->context.contextBlob.t.size;
-    result = TPM2B_DIGEST_Unmarshal(&integrity, &buffer, &size);
-    if(result != TPM_RC_SUCCESS)
+    result = MSSIM2B_DIGEST_Unmarshal(&integrity, &buffer, &size);
+    if(result != MSSIM_RC_SUCCESS)
         return result;
 
     // the size of the integrity value has to match the size of digest produced
     // by the integrity hash
     if(integrity.t.size != CryptHashGetDigestSize(CONTEXT_INTEGRITY_HASH_ALG))
-        return TPM_RCS_SIZE + RC_ContextLoad_context;
+        return MSSIM_RCS_SIZE + RC_ContextLoad_context;
 
     // Make sure that the context blob has enough space for the fingerprint. This
     // is elastic pants to go with the belt and suspenders we already have to make
     // sure that the context is complete and untampered.
     if((unsigned)size < sizeof(in->context.sequence))
-        return TPM_RCS_SIZE + RC_ContextLoad_context;
+        return MSSIM_RCS_SIZE + RC_ContextLoad_context;
 
     // After unmarshaling the integrity value, 'buffer' is pointing at the first
     // byte of the integrity protected and encrypted buffer and 'size' is the number
@@ -105,7 +105,7 @@ TPM2_ContextLoad(ContextLoad_In*  in,  // IN: input parameter list
 
     // Compare integrity
     if(!MemoryEqual2B(&integrity.b, &integrityToCompare.b))
-        return TPM_RCS_INTEGRITY + RC_ContextLoad_context;
+        return MSSIM_RCS_INTEGRITY + RC_ContextLoad_context;
     // Compute context encryption key
     ComputeContextProtectionKey(&in->context, &symKey, &iv);
 
@@ -115,11 +115,11 @@ TPM2_ContextLoad(ContextLoad_In*  in,  // IN: input parameter list
                           CONTEXT_ENCRYPT_KEY_BITS,
                           symKey.t.buffer,
                           &iv,
-                          TPM_ALG_CFB,
+                          MSSIM_ALG_CFB,
                           size,
                           buffer);
     // See if the fingerprint value matches. If not, it is symptomatic of either
-    // a broken TPM or that the TPM is under attack so go into failure mode.
+    // a broken MSSIM or that the MSSIM is under attack so go into failure mode.
     if(!MemoryEqual(buffer, &in->context.sequence, sizeof(in->context.sequence)))
         FAIL(FATAL_ERROR_INTERNAL);
 
@@ -132,7 +132,7 @@ TPM2_ContextLoad(ContextLoad_In*  in,  // IN: input parameter list
     // Perform object or session specific input check
     switch(handleType)
     {
-        case TPM_HT_TRANSIENT:
+        case MSSIM_HT_TRANSIENT:
         {
             OBJECT* outObject;
 
@@ -145,18 +145,18 @@ TPM2_ContextLoad(ContextLoad_In*  in,  // IN: input parameter list
             // If hierarchy is disabled, no object context can be loaded in this
             // hierarchy
             if(!HierarchyIsEnabled(in->context.hierarchy))
-                return TPM_RCS_HIERARCHY + RC_ContextLoad_context;
+                return MSSIM_RCS_HIERARCHY + RC_ContextLoad_context;
 
             // Restore object. If there is no empty space, indicate as much
             outObject =
                 ObjectContextLoad((ANY_OBJECT_BUFFER*)buffer, &out->loadedHandle);
             if(outObject == NULL)
-                return TPM_RC_OBJECT_MEMORY;
+                return MSSIM_RC_OBJECT_MEMORY;
 
             break;
         }
-        case TPM_HT_POLICY_SESSION:
-        case TPM_HT_HMAC_SESSION:
+        case MSSIM_HT_POLICY_SESSION:
+        case MSSIM_HT_HMAC_SESSION:
         {
             if(size != sizeof(SESSION))
                 FAIL(FATAL_ERROR_INTERNAL);
@@ -169,13 +169,13 @@ TPM2_ContextLoad(ContextLoad_In*  in,  // IN: input parameter list
             // Check if input handle points to a valid saved session and that the
             // sequence number makes sense
             if(!SequenceNumberForSavedContextIsValid(&in->context))
-                return TPM_RCS_HANDLE + RC_ContextLoad_context;
+                return MSSIM_RCS_HANDLE + RC_ContextLoad_context;
 
-            // Restore session.  A TPM_RC_SESSION_MEMORY, TPM_RC_CONTEXT_GAP error
+            // Restore session.  A MSSIM_RC_SESSION_MEMORY, MSSIM_RC_CONTEXT_GAP error
             // may be returned at this point
             result =
                 SessionContextLoad((SESSION_BUF*)buffer, &in->context.savedHandle);
-            if(result != TPM_RC_SUCCESS)
+            if(result != MSSIM_RC_SUCCESS)
                 return result;
 
             out->loadedHandle = in->context.savedHandle;
@@ -193,7 +193,7 @@ TPM2_ContextLoad(ContextLoad_In*  in,  // IN: input parameter list
             break;
     }
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_ContextLoad

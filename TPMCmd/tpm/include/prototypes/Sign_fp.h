@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,27 +45,27 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT    keyHandle;
-    TPM2B_DIGEST      digest;
-    TPMT_SIG_SCHEME   inScheme;
-    TPMT_TK_HASHCHECK validation;
+    MSSIMI_DH_OBJECT    keyHandle;
+    MSSIM2B_DIGEST      digest;
+    MSSIMT_SIG_SCHEME   inScheme;
+    MSSIMT_TK_HASHCHECK validation;
 } Sign_In;
 
 // Output structure definition
 typedef struct
 {
-    TPMT_SIGNATURE signature;
+    MSSIMT_SIGNATURE signature;
 } Sign_Out;
 
 // Response code modifiers
-#    define RC_Sign_keyHandle  (TPM_RC_H + TPM_RC_1)
-#    define RC_Sign_digest     (TPM_RC_P + TPM_RC_1)
-#    define RC_Sign_inScheme   (TPM_RC_P + TPM_RC_2)
-#    define RC_Sign_validation (TPM_RC_P + TPM_RC_3)
+#    define RC_Sign_keyHandle  (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_Sign_digest     (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_Sign_inScheme   (MSSIM_RC_P + MSSIM_RC_2)
+#    define RC_Sign_validation (MSSIM_RC_P + MSSIM_RC_3)
 
 // Function prototype
-TPM_RC
-TPM2_Sign(Sign_In* in, Sign_Out* out);
+MSSIM_RC
+MSSIM2_Sign(Sign_In* in, Sign_Out* out);
 
 #  endif  // _Sign_FP_H_
 #endif    // CC_Sign

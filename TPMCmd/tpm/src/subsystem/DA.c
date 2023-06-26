@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -49,7 +49,7 @@
 // This function should not be called outside of a manufacturing or simulation
 // environment.
 //
-// The DA parameters will be restored to these initial values by TPM2_Clear().
+// The DA parameters will be restored to these initial values by MSSIM2_Clear().
 void DAPreInstall_Init(void)
 {
     gp.failedTries        = 0;
@@ -69,10 +69,10 @@ void DAPreInstall_Init(void)
 }
 
 //*** DAStartup()
-// This function is called  by TPM2_Startup() to initialize the DA parameters.
+// This function is called  by MSSIM2_Startup() to initialize the DA parameters.
 // In the case of Startup(CLEAR), use of lockoutAuth will be enabled if the
 // lockout recovery time is 0. Otherwise, lockoutAuth will not be enabled until
-// the TPM has been continuously powered for the lockoutRecovery time.
+// the MSSIM has been continuously powered for the lockoutRecovery time.
 //
 // This function requires that NV be available and not rate limiting.
 BOOL DAStartup(STARTUP_TYPE type  // IN: startup type
@@ -127,7 +127,7 @@ BOOL DAStartup(STARTUP_TYPE type  // IN: startup type
         // Record the change to NV
         NV_SYNC_PERSISTENT(failedTries);
     }
-    // Before Startup, the TPM will not do clock updates. At startup, need to
+    // Before Startup, the MSSIM will not do clock updates. At startup, need to
     // do a time update which will do the DA update.
     TimeUpdate();
 
@@ -139,11 +139,11 @@ BOOL DAStartup(STARTUP_TYPE type  // IN: startup type
 // that is subject to dictionary-attack protection. When a DA failure is
 // triggered, register the failure by resetting the relevant self-healing
 // timer to the current time.
-void DARegisterFailure(TPM_HANDLE handle  // IN: handle for failure
+void DARegisterFailure(MSSIM_HANDLE handle  // IN: handle for failure
 )
 {
     // Reset the timer associated with lockout if the handle is the lockoutAuth.
-    if(handle == TPM_RH_LOCKOUT)
+    if(handle == MSSIM_RH_LOCKOUT)
         s_lockoutTimer = g_time;
     else
         s_selfHealTimer = g_time;

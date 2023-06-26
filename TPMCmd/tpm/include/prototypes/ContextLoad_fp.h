@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,21 +45,21 @@
 // Input structure definition
 typedef struct
 {
-    TPMS_CONTEXT context;
+    MSSIMS_CONTEXT context;
 } ContextLoad_In;
 
 // Output structure definition
 typedef struct
 {
-    TPMI_DH_CONTEXT loadedHandle;
+    MSSIMI_DH_CONTEXT loadedHandle;
 } ContextLoad_Out;
 
 // Response code modifiers
-#    define RC_ContextLoad_context (TPM_RC_P + TPM_RC_1)
+#    define RC_ContextLoad_context (MSSIM_RC_P + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_ContextLoad(ContextLoad_In* in, ContextLoad_Out* out);
+MSSIM_RC
+MSSIM2_ContextLoad(ContextLoad_In* in, ContextLoad_Out* out);
 
 #  endif  // _Context_Load_FP_H_
 #endif    // CC_ContextLoad

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -47,11 +47,11 @@
 LIB_EXPORT bigNum BnFromBytes(bigNum bn, const BYTE* bytes, NUMBYTES nBytes);
 
 //*** BnFrom2B()
-// Convert an TPM2B to a BIG_NUM.
+// Convert an MSSIM2B to a BIG_NUM.
 // If the input value does not exist, or the output does not exist, or the input
 // will not fit into the output the function returns NULL
 LIB_EXPORT bigNum BnFrom2B(bigNum       bn,  // OUT:
-                           const TPM2B* a2B  // IN: number to convert
+                           const MSSIM2B* a2B  // IN: number to convert
 );
 
 //*** BnFromHex()
@@ -79,13 +79,13 @@ LIB_EXPORT BOOL BnToBytes(bigConst  bn,
 );
 
 //*** BnTo2B()
-// Function to convert a BIG_NUM to TPM2B.
-// The TPM2B size is set to the requested 'size' which may require padding.
+// Function to convert a BIG_NUM to MSSIM2B.
+// The MSSIM2B size is set to the requested 'size' which may require padding.
 // If 'size' is non-zero and less than required by the value in 'bn' then an error
-// is returned. If 'size' is zero, then the TPM2B is assumed to be large enough
+// is returned. If 'size' is zero, then the MSSIM2B is assumed to be large enough
 // for the data and a2b->size will be adjusted accordingly.
 LIB_EXPORT BOOL BnTo2B(bigConst bn,   // IN:
-                       TPM2B*   a2B,  // OUT:
+                       MSSIM2B*   a2B,  // OUT:
                        NUMBYTES size  // IN: the desired size
 );
 #if ALG_ECC
@@ -96,16 +96,16 @@ LIB_EXPORT BOOL BnTo2B(bigConst bn,   // IN:
 // to be the size of the modulus.  They are in modular form.
 LIB_EXPORT bn_point_t* BnPointFrom2B(
     bigPoint        ecP,  // OUT: the preallocated point structure
-    TPMS_ECC_POINT* p     // IN: the number to convert
+    MSSIMS_ECC_POINT* p     // IN: the number to convert
 );
 
 //*** BnPointTo2B()
-// This function converts a BIG_POINT into a TPMS_ECC_POINT. A TPMS_ECC_POINT
-// contains two TPM2B_ECC_PARAMETER values. The maximum size of the parameters
+// This function converts a BIG_POINT into a MSSIMS_ECC_POINT. A MSSIMS_ECC_POINT
+// contains two MSSIM2B_ECC_PARAMETER values. The maximum size of the parameters
 // is dependent on the maximum EC key size used in an implementation.
-// The presumption is that the TPMS_ECC_POINT is large enough to hold 2 TPM2B
+// The presumption is that the MSSIMS_ECC_POINT is large enough to hold 2 MSSIM2B
 // values, each as large as a MAX_ECC_PARAMETER_BYTES
-LIB_EXPORT BOOL BnPointTo2B(TPMS_ECC_POINT* p,    // OUT: the converted 2B structure
+LIB_EXPORT BOOL BnPointTo2B(MSSIMS_ECC_POINT* p,    // OUT: the converted 2B structure
                             bigPoint        ecP,  // IN: the values to be converted
                             bigCurve        E  // IN: curve descriptor for the point
 );

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -35,16 +35,16 @@
 #ifndef _CAPABILITIES_H
 #define _CAPABILITIES_H
 
-#define MAX_CAP_DATA        (MAX_CAP_BUFFER - sizeof(TPM_CAP) - sizeof(UINT32))
-#define MAX_CAP_ALGS        (MAX_CAP_DATA / sizeof(TPMS_ALG_PROPERTY))
-#define MAX_CAP_HANDLES     (MAX_CAP_DATA / sizeof(TPM_HANDLE))
-#define MAX_CAP_CC          (MAX_CAP_DATA / sizeof(TPM_CC))
-#define MAX_TPM_PROPERTIES  (MAX_CAP_DATA / sizeof(TPMS_TAGGED_PROPERTY))
-#define MAX_PCR_PROPERTIES  (MAX_CAP_DATA / sizeof(TPMS_TAGGED_PCR_SELECT))
-#define MAX_ECC_CURVES      (MAX_CAP_DATA / sizeof(TPM_ECC_CURVE))
-#define MAX_TAGGED_POLICIES (MAX_CAP_DATA / sizeof(TPMS_TAGGED_POLICY))
-#define MAX_ACT_DATA        (MAX_CAP_DATA / sizeof(TPMS_ACT_DATA))
+#define MAX_CAP_DATA        (MAX_CAP_BUFFER - sizeof(MSSIM_CAP) - sizeof(UINT32))
+#define MAX_CAP_ALGS        (MAX_CAP_DATA / sizeof(MSSIMS_ALG_PROPERTY))
+#define MAX_CAP_HANDLES     (MAX_CAP_DATA / sizeof(MSSIM_HANDLE))
+#define MAX_CAP_CC          (MAX_CAP_DATA / sizeof(MSSIM_CC))
+#define MAX_MSSIM_PROPERTIES  (MAX_CAP_DATA / sizeof(MSSIMS_TAGGED_PROPERTY))
+#define MAX_PCR_PROPERTIES  (MAX_CAP_DATA / sizeof(MSSIMS_TAGGED_PCR_SELECT))
+#define MAX_ECC_CURVES      (MAX_CAP_DATA / sizeof(MSSIM_ECC_CURVE))
+#define MAX_TAGGED_POLICIES (MAX_CAP_DATA / sizeof(MSSIMS_TAGGED_POLICY))
+#define MAX_ACT_DATA        (MAX_CAP_DATA / sizeof(MSSIMS_ACT_DATA))
 
-#define MAX_AC_CAPABILITIES (MAX_CAP_DATA / sizeof(TPMS_AC_OUTPUT))
+#define MAX_AC_CAPABILITIES (MAX_CAP_DATA / sizeof(MSSIMS_AC_OUTPUT))
 
 #endif

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -35,7 +35,7 @@
 #ifndef _MSBN_DRBG_TEST_VECTORS_H
 #define _MSBN_DRBG_TEST_VECTORS_H
 
-//#if DRBG_ALGORITHM == TPM_ALG_AES && DRBG_KEY_BITS == 256
+//#if DRBG_ALGORITHM == MSSIM_ALG_AES && DRBG_KEY_BITS == 256
 #if DRBG_KEY_SIZE_BITS == 256
 
 /*(NIST test vector)

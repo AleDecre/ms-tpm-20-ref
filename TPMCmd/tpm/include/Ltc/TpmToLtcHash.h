@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -54,7 +54,7 @@
 //***************************************************************
 //******** Linking to the TomCrypt HASH code ********************
 //***************************************************************
-// These defines need to be known in all parts of the TPM so that the structure
+// These defines need to be known in all parts of the MSSIM so that the structure
 // sizes can be properly computed when needed.
 #define tpmHashStateSHA1_t   struct sha1_state
 #define tpmHashStateSHA256_t struct sha256_state

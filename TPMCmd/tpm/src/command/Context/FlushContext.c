@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,10 +40,10 @@
 /*(See part 3 specification)
 // Flush a specific object or session
 */
-//  Return Type: TPM_RC
-//      TPM_RC_HANDLE      'flushHandle' does not reference a loaded object or session
-TPM_RC
-TPM2_FlushContext(FlushContext_In* in  // IN: input parameter list
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_HANDLE      'flushHandle' does not reference a loaded object or session
+MSSIM_RC
+MSSIM2_FlushContext(FlushContext_In* in  // IN: input parameter list
 )
 {
     // Internal Data Update
@@ -51,21 +51,21 @@ TPM2_FlushContext(FlushContext_In* in  // IN: input parameter list
     // Call object or session specific routine to flush
     switch(HandleGetType(in->flushHandle))
     {
-        case TPM_HT_TRANSIENT:
+        case MSSIM_HT_TRANSIENT:
             if(!IsObjectPresent(in->flushHandle))
-                return TPM_RCS_HANDLE + RC_FlushContext_flushHandle;
+                return MSSIM_RCS_HANDLE + RC_FlushContext_flushHandle;
             // Flush object
             FlushObject(in->flushHandle);
             break;
-        case TPM_HT_HMAC_SESSION:
-        case TPM_HT_POLICY_SESSION:
+        case MSSIM_HT_HMAC_SESSION:
+        case MSSIM_HT_POLICY_SESSION:
             if(!SessionIsLoaded(in->flushHandle) && !SessionIsSaved(in->flushHandle))
-                return TPM_RCS_HANDLE + RC_FlushContext_flushHandle;
+                return MSSIM_RCS_HANDLE + RC_FlushContext_flushHandle;
 
             // If the session to be flushed is the exclusive audit session, then
             // indicate that there is no exclusive audit session any longer.
             if(in->flushHandle == g_exclusiveAuditSession)
-                g_exclusiveAuditSession = TPM_RH_UNASSIGNED;
+                g_exclusiveAuditSession = MSSIM_RH_UNASSIGNED;
 
             // Flush session
             SessionFlush(in->flushHandle);
@@ -77,7 +77,7 @@ TPM2_FlushContext(FlushContext_In* in  // IN: input parameter list
             break;
     }
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_FlushContext

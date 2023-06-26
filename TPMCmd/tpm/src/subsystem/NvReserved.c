@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -35,7 +35,7 @@
 //** Introduction
 
 // The NV memory is divided into two areas: dynamic space for user defined NV
-// Indices and evict objects, and reserved space for TPM persistent and state save
+// Indices and evict objects, and reserved space for MSSIM persistent and state save
 // data.
 //
 // The entries in dynamic space are a linked list of entries. Each entry has, as its
@@ -69,7 +69,7 @@
 // RAM data is copied to NV backing store so that the image in the backing store
 // matches the layout of RAM. In normal operation. The RAM data is also copied on
 // any orderly shutdown. In normal operation, the only other reason for writing
-// to the backing store for RAM is when a counter is first written (TPMA_NV_WRITTEN
+// to the backing store for RAM is when a counter is first written (MSSIMA_NV_WRITTEN
 // changes from CLEAR to SET) or when a counter "rolls over."
 //
 // Static space contains items that are individually modifiable. The values are in
@@ -108,11 +108,11 @@ void NvCheckState(void)
     //
     func_return = _plat__IsNvAvailable();
     if(func_return == 0)
-        g_NvStatus = TPM_RC_SUCCESS;
+        g_NvStatus = MSSIM_RC_SUCCESS;
     else if(func_return == 1)
-        g_NvStatus = TPM_RC_NV_UNAVAILABLE;
+        g_NvStatus = MSSIM_RC_NV_UNAVAILABLE;
     else
-        g_NvStatus = TPM_RC_NV_RATE;
+        g_NvStatus = MSSIM_RC_NV_RATE;
     return;
 }
 
@@ -124,11 +124,11 @@ BOOL NvCommit(void)
 }
 
 //*** NvPowerOn()
-//  This function is called at _TPM_Init to initialize the NV environment.
+//  This function is called at _MSSIM_Init to initialize the NV environment.
 //  Return Type: BOOL
 //      TRUE(1)         all NV was initialized
 //      FALSE(0)        the NV containing saved state had an error and
-//                      TPM2_Startup(CLEAR) is required
+//                      MSSIM2_Startup(CLEAR) is required
 BOOL NvPowerOn(void)
 {
     int nvError = 0;
@@ -186,7 +186,7 @@ void NvRead(void*  outBuffer,  // OUT: buffer to receive data
 
 //*** NvWrite()
 // This function is used to post reserved data for writing to NV memory. Before
-// the TPM completes the operation, the value will be written.
+// the MSSIM completes the operation, the value will be written.
 BOOL NvWrite(UINT32 nvOffset,  // IN: location in NV to receive data
              UINT32 size,      // IN: size of the data to move
              void*  inBuffer   // IN: location containing data to write

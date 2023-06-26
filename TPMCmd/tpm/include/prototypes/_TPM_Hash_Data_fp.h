@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -37,12 +37,12 @@
  *  Date: Mar 28, 2019  Time: 08:25:19PM
  */
 
-#ifndef __TPM_HASH_DATA_FP_H_
-#define __TPM_HASH_DATA_FP_H_
+#ifndef __MSSIM_HASH_DATA_FP_H_
+#define __MSSIM_HASH_DATA_FP_H_
 
-// This function is called to process a _TPM_Hash_Data indication.
-LIB_EXPORT void _TPM_Hash_Data(uint32_t dataSize,   // IN: size of data to be extend
+// This function is called to process a _MSSIM_Hash_Data indication.
+LIB_EXPORT void _MSSIM_Hash_Data(uint32_t dataSize,   // IN: size of data to be extend
                                unsigned char* data  // IN: data buffer
 );
 
-#endif  // __TPM_HASH_DATA_FP_H_
+#endif  // __MSSIM_HASH_DATA_FP_H_

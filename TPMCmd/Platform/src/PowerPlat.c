@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -53,13 +53,13 @@ LIB_EXPORT int _plat__Signal_PowerOn(void)
 }
 
 //*** _plat__WasPowerLost()
-// Test whether power was lost before a _TPM_Init.
+// Test whether power was lost before a _MSSIM_Init.
 //
 // This function will clear the "hardware" indication of power loss before return.
-// This means that there can only be one spot in the TPM code where this value
+// This means that there can only be one spot in the MSSIM code where this value
 // gets read. This method is used here as it is the most difficult to manage in the
-// TPM code and, if the hardware actually works this way, it is hard to make it
-// look like anything else. So, the burden is placed on the TPM code rather than the
+// MSSIM code and, if the hardware actually works this way, it is hard to make it
+// look like anything else. So, the burden is placed on the MSSIM code rather than the
 // platform code
 //  Return Type: int
 //      TRUE(1)         power was lost
@@ -72,7 +72,7 @@ LIB_EXPORT int _plat__WasPowerLost(void)
 }
 
 //*** _plat_Signal_Reset()
-// This a TPM reset without a power loss.
+// This a MSSIM reset without a power loss.
 LIB_EXPORT int _plat__Signal_Reset(void)
 {
     // Initialize locality
@@ -81,7 +81,7 @@ LIB_EXPORT int _plat__Signal_Reset(void)
     // Command cancel
     s_isCanceled = FALSE;
 
-    _TPM_Init("Init on powerOn/reset...\n");
+    _MSSIM_Init("Init on powerOn/reset...\n");
 
     // if we are doing reset but did not have a power failure, then we should
     // not need to reload NV ...

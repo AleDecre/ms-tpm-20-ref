@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,15 +45,15 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_RH_LOCKOUT lockHandle;
+    MSSIMI_RH_LOCKOUT lockHandle;
 } DictionaryAttackLockReset_In;
 
 // Response code modifiers
-#    define RC_DictionaryAttackLockReset_lockHandle (TPM_RC_H + TPM_RC_1)
+#    define RC_DictionaryAttackLockReset_lockHandle (MSSIM_RC_H + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_DictionaryAttackLockReset(DictionaryAttackLockReset_In* in);
+MSSIM_RC
+MSSIM2_DictionaryAttackLockReset(DictionaryAttackLockReset_In* in);
 
 #  endif  // _Dictionary_Attack_Lock_Reset_FP_H_
 #endif    // CC_DictionaryAttackLockReset

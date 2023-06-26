@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -139,7 +139,7 @@ static P_ACT_DATA ActGetDataPointer(uint32_t act)
 
 //*** _plat__ACT_GetImplemented()
 // This function tests to see if an ACT is implemented. It is a belt and suspenders
-// function because the TPM should not be calling to manipulate an ACT that is not
+// function because the MSSIM should not be calling to manipulate an ACT that is not
 // implemented. However, this could help the simulator code which doesn't necessarily
 // know if an ACT is implemented or not.
 LIB_EXPORT int _plat__ACT_GetImplemented(uint32_t act)
@@ -220,8 +220,8 @@ LIB_EXPORT int _plat__ACT_UpdateCounter(uint32_t act,      // IN: ACT to update
 
 //***_plat__ACT_EnableTicks()
 // This enables and disables the processing of the once-per-second ticks. This should
-// be turned off ('enable' = FALSE) by _TPM_Init and turned on ('enable' = TRUE) by
-// TPM2_Startup() after all the initializations have completed.
+// be turned off ('enable' = FALSE) by _MSSIM_Init and turned on ('enable' = TRUE) by
+// MSSIM2_Startup() after all the initializations have completed.
 LIB_EXPORT void _plat__ACT_EnableTicks(int enable)
 {
     actTicksAllowed = enable;
@@ -263,7 +263,7 @@ static void ActDecrement(P_ACT_DATA actData)
 
 //*** _plat__ACT_Tick()
 // This processes the once-per-second clock tick from the hardware. This is set up
-// for the simulator to use the control interface to send ticks to the TPM. These
+// for the simulator to use the control interface to send ticks to the MSSIM. These
 // ticks do not have to be on a per second basis. They can be as slow or as fast as
 // desired so that the simulation can be tested.
 LIB_EXPORT void _plat__ACT_Tick(void)

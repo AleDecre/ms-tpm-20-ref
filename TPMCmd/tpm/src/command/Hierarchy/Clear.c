@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,17 +40,17 @@
 /*(See part 3 specification)
 // Clear owner
 */
-//  Return Type: TPM_RC
-//      TPM_RC_DISABLED             Clear command has been disabled
-TPM_RC
-TPM2_Clear(Clear_In* in  // IN: input parameter list
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_DISABLED             Clear command has been disabled
+MSSIM_RC
+MSSIM2_Clear(Clear_In* in  // IN: input parameter list
 )
 {
     // Input parameter is not reference in command action
     NOT_REFERENCED(in);
 
     // The command needs NV update.  Check if NV is available.
-    // A TPM_RC_NV_UNAVAILABLE or TPM_RC_NV_RATE error may be returned at
+    // A MSSIM_RC_NV_UNAVAILABLE or MSSIM_RC_NV_RATE error may be returned at
     // this point
     RETURN_IF_NV_IS_NOT_AVAILABLE;
 
@@ -58,7 +58,7 @@ TPM2_Clear(Clear_In* in  // IN: input parameter list
 
     // If Clear command is disabled, return an error
     if(gp.disableClear)
-        return TPM_RC_DISABLED;
+        return MSSIM_RC_DISABLED;
 
     // Internal Data Update
 
@@ -78,18 +78,18 @@ TPM2_Clear(Clear_In* in  // IN: input parameter list
     MemorySet(&gp.lockoutAuth, 0, sizeof(gp.lockoutAuth));
 
     // Set storage, endorsement, and lockout authPolicy to null
-    gp.ownerAlg = gp.endorsementAlg = gp.lockoutAlg = TPM_ALG_NULL;
+    gp.ownerAlg = gp.endorsementAlg = gp.lockoutAlg = MSSIM_ALG_NULL;
     MemorySet(&gp.ownerPolicy, 0, sizeof(gp.ownerPolicy));
     MemorySet(&gp.endorsementPolicy, 0, sizeof(gp.endorsementPolicy));
     MemorySet(&gp.lockoutPolicy, 0, sizeof(gp.lockoutPolicy));
 
     // Flush loaded object in storage and endorsement hierarchy
-    ObjectFlushHierarchy(TPM_RH_OWNER);
-    ObjectFlushHierarchy(TPM_RH_ENDORSEMENT);
+    ObjectFlushHierarchy(MSSIM_RH_OWNER);
+    ObjectFlushHierarchy(MSSIM_RH_ENDORSEMENT);
 
     // Flush owner and endorsement object and owner index in NV
-    NvFlushHierarchy(TPM_RH_OWNER);
-    NvFlushHierarchy(TPM_RH_ENDORSEMENT);
+    NvFlushHierarchy(MSSIM_RH_OWNER);
+    NvFlushHierarchy(MSSIM_RH_ENDORSEMENT);
 
     // Initialize dictionary attack parameters
     DAPreInstall_Init();
@@ -117,7 +117,7 @@ TPM2_Clear(Clear_In* in  // IN: input parameter list
     // orderly state should be cleared because of the update to state clear data
     g_clearOrderly = TRUE;
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_Clear

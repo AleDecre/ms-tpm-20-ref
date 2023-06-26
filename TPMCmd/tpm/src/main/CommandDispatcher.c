@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -39,18 +39,18 @@
 
 #if TABLE_DRIVEN_DISPATCH || TABLE_DRIVEN_MARSHAL
 
-typedef TPM_RC(NoFlagFunction)(void* target, BYTE** buffer, INT32* size);
-typedef TPM_RC(FlagFunction)(void* target, BYTE** buffer, INT32* size, BOOL flag);
+typedef MSSIM_RC(NoFlagFunction)(void* target, BYTE** buffer, INT32* size);
+typedef MSSIM_RC(FlagFunction)(void* target, BYTE** buffer, INT32* size, BOOL flag);
 
 typedef FlagFunction* UNMARSHAL_t;
 
 typedef INT16(MarshalFunction)(void* source, BYTE** buffer, INT32* size);
 typedef MarshalFunction* MARSHAL_t;
 
-typedef TPM_RC(COMMAND_NO_ARGS)(void);
-typedef TPM_RC(COMMAND_IN_ARG)(void* in);
-typedef TPM_RC(COMMAND_OUT_ARG)(void* out);
-typedef TPM_RC(COMMAND_INOUT_ARG)(void* in, void* out);
+typedef MSSIM_RC(COMMAND_NO_ARGS)(void);
+typedef MSSIM_RC(COMMAND_IN_ARG)(void* in);
+typedef MSSIM_RC(COMMAND_OUT_ARG)(void* out);
+typedef MSSIM_RC(COMMAND_INOUT_ARG)(void* in, void* out);
 
 typedef union COMMAND_t
 {
@@ -131,7 +131,7 @@ typedef struct COMMAND_DESCRIPTOR_t
 #  define _COMMAND_TABLE_DISPATCH_
 #  include "CommandDispatchData.h"
 
-#  define TEST_COMMAND TPM_CC_Startup
+#  define TEST_COMMAND MSSIM_CC_Startup
 
 #  define NEW_CC
 
@@ -145,10 +145,10 @@ typedef struct COMMAND_DESCRIPTOR_t
 
 //** ParseHandleBuffer()
 // This is the table-driven version of the handle buffer unmarshaling code
-TPM_RC
+MSSIM_RC
 ParseHandleBuffer(COMMAND* command)
 {
-    TPM_RC result;
+    MSSIM_RC result;
 #if TABLE_DRIVEN_DISPATCH || TABLE_DRIVEN_MARSHAL
     COMMAND_DESCRIPTOR_t* desc;
     BYTE*                 types;
@@ -214,15 +214,15 @@ ParseHandleBuffer(COMMAND* command)
         // We do this first so that the match for the handle offset of the
         // response code works correctly.
         command->handleNum += 1;
-        if(result != TPM_RC_SUCCESS)
+        if(result != MSSIM_RC_SUCCESS)
             // if the unmarshaling failed, return the response code with the
             // handle indication set
-            return result + TPM_RC_H + (command->handleNum * TPM_RC_1);
+            return result + MSSIM_RC_H + (command->handleNum * MSSIM_RC_1);
     }
 #else
     BYTE**      handleBufferStart   = &command->parameterBuffer;
     INT32*      bufferRemainingSize = &command->parameterSize;
-    TPM_HANDLE* handles             = &command->handles[0];
+    MSSIM_HANDLE* handles             = &command->handles[0];
     UINT32*     handleCount         = &command->handleNum;
     *handleCount                    = 0;
     switch(command->code)
@@ -234,23 +234,23 @@ ParseHandleBuffer(COMMAND* command)
             break;
     }
 #endif
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 //** CommandDispatcher()
 // Function to unmarshal the command parameters, call the selected action code, and
 // marshal the response parameters.
-TPM_RC
+MSSIM_RC
 CommandDispatcher(COMMAND* command)
 {
 #if !TABLE_DRIVEN_DISPATCH || TABLE_DRIVEN_MARSHAL
-    TPM_RC      result;
+    MSSIM_RC      result;
     BYTE**      paramBuffer     = &command->parameterBuffer;
     INT32*      paramBufferSize = &command->parameterSize;
     BYTE**      responseBuffer  = &command->responseBuffer;
     INT32*      respParmSize    = &command->parameterSize;
     INT32       rSize;
-    TPM_HANDLE* handles = &command->handles[0];
+    MSSIM_HANDLE* handles = &command->handles[0];
     //
     command->handleNum = 0;           // The command-specific code knows how
                                       // many handles there are. This is for
@@ -280,12 +280,12 @@ Exit:
     INT32                 maxOutSize;
     BYTE*                 commandOut;
     COMMAND_t             cmd;
-    TPM_HANDLE*           handles;
+    MSSIM_HANDLE*           handles;
     UINT32                hasInParameters  = 0;
     BOOL                  hasOutParameters = FALSE;
     UINT32                pNum             = 0;
     BYTE                  dType;  // dispatch type
-    TPM_RC                result;
+    MSSIM_RC                result;
     //
     // Get the address of the descriptor for this command
     pAssert(
@@ -320,13 +320,13 @@ Exit:
     {
         // 'offset' was initialized to zero so the first unmarshaling will always
         // be to the start of the data structure
-        *(TPM_HANDLE*)&(commandIn[offset]) = *handles++;
+        *(MSSIM_HANDLE*)&(commandIn[offset]) = *handles++;
         // This check is used so that we don't have to add an additional offset
         // value to the offsets list to correspond to the stop value in the
         // command parameter list.
         if(*types != 0xFF)
             offset = *offsets++;
-        //        maxInSize -= sizeof(TPM_HANDLE);
+        //        maxInSize -= sizeof(MSSIM_HANDLE);
         hasInParameters++;
     }
     // Exit loop with type containing the last value read from types
@@ -365,9 +365,9 @@ Exit:
                        (type & 0x80) != 0);
         }
 #  endif
-        if(result != TPM_RC_SUCCESS)
+        if(result != MSSIM_RC_SUCCESS)
         {
-            result += TPM_RC_P + (TPM_RC_1 * pNum);
+            result += MSSIM_RC_P + (MSSIM_RC_1 * pNum);
             goto Exit;
         }
         // This check is used so that we don't have to add an additional offset
@@ -380,7 +380,7 @@ Exit:
     // Should have used all the bytes in the input
     if(command->parameterSize != 0)
     {
-        result = TPM_RC_SIZE;
+        result = MSSIM_RC_SIZE;
         goto Exit;
     }
 
@@ -407,7 +407,7 @@ Exit:
         else
             result = cmd.noArgs();
     }
-    if(result != TPM_RC_SUCCESS)
+    if(result != MSSIM_RC_SUCCESS)
         goto Exit;
 
     // Offset in the marshaled output structure
@@ -421,10 +421,10 @@ Exit:
     type = *types++;
     if((dType = (type & 0x7F)) < RESPONSE_PARAMETER_FIRST_TYPE)
     {
-        // The out->handle value was referenced as TPM_HANDLE in the
+        // The out->handle value was referenced as MSSIM_HANDLE in the
         // action code so it has to be properly aligned.
         command->handles[command->handleNum++] =
-            *((TPM_HANDLE*)&(commandOut[offset]));
+            *((MSSIM_HANDLE*)&(commandOut[offset]));
         maxOutSize -= sizeof(UINT32);
         type   = *types++;
         offset = *offsets++;
@@ -449,7 +449,7 @@ Exit:
 #  endif
         offset = *offsets++;
     }
-    result = (maxOutSize < 0) ? TPM_RC_FAILURE : TPM_RC_SUCCESS;
+    result = (maxOutSize < 0) ? MSSIM_RC_FAILURE : MSSIM_RC_SUCCESS;
 Exit:
     MemoryIoBufferZero();
     return result;

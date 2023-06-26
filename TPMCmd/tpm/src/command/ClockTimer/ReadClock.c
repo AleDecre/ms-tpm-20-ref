@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -38,10 +38,10 @@
 #if CC_ReadClock  // Conditional expansion of this file
 
 /*(See part 3 specification)
-// read the current TPMS_TIMER_INFO structure settings
+// read the current MSSIMS_TIMER_INFO structure settings
 */
-TPM_RC
-TPM2_ReadClock(ReadClock_Out* out  // OUT: output parameter list
+MSSIM_RC
+MSSIM2_ReadClock(ReadClock_Out* out  // OUT: output parameter list
 )
 {
     // Command Output
@@ -49,7 +49,7 @@ TPM2_ReadClock(ReadClock_Out* out  // OUT: output parameter list
     out->currentTime.time = g_time;
     TimeFillInfo(&out->currentTime.clockInfo);
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_ReadClock

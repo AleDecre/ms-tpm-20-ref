@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -42,20 +42,20 @@
 
 #if CC_EncryptDecrypt2
 
-//  Return Type: TPM_RC
-//      TPM_RC_KEY          is not a symmetric decryption key with both
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_KEY          is not a symmetric decryption key with both
 //                          public and private portions loaded
-//      TPM_RC_SIZE         'IvIn' size is incompatible with the block cipher mode;
+//      MSSIM_RC_SIZE         'IvIn' size is incompatible with the block cipher mode;
 //                          or 'inData' size is not an even multiple of the block
 //                          size for CBC or ECB mode
-//      TPM_RC_VALUE        'keyHandle' is restricted and the argument 'mode' does
+//      MSSIM_RC_VALUE        'keyHandle' is restricted and the argument 'mode' does
 //                          not match the key's mode
-TPM_RC
-EncryptDecryptShared(TPMI_DH_OBJECT      keyHandleIn,
-                     TPMI_YES_NO         decryptIn,
-                     TPMI_ALG_SYM_MODE   modeIn,
-                     TPM2B_IV*           ivIn,
-                     TPM2B_MAX_BUFFER*   inData,
+MSSIM_RC
+EncryptDecryptShared(MSSIMI_DH_OBJECT      keyHandleIn,
+                     MSSIMI_YES_NO         decryptIn,
+                     MSSIMI_ALG_SYM_MODE   modeIn,
+                     MSSIM2B_IV*           ivIn,
+                     MSSIM2B_MAX_BUFFER*   inData,
                      EncryptDecrypt_Out* out);
 #endif  // CC_EncryptDecrypt
 

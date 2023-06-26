@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,8 +40,8 @@
 /*(See part 3 specification)
 // Set global write lock for NV index
 */
-TPM_RC
-TPM2_NV_GlobalWriteLock(NV_GlobalWriteLock_In* in  // IN: input parameter list
+MSSIM_RC
+MSSIM2_NV_GlobalWriteLock(NV_GlobalWriteLock_In* in  // IN: input parameter list
 )
 {
     // Input parameter (the authorization handle) is not reference in command action.

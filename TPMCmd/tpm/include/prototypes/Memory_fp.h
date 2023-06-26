@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -58,35 +58,35 @@ BOOL MemoryEqual(const void*  buffer1,  // IN: compare buffer1
 );
 
 //*** MemoryCopy2B()
-// This function copies a TPM2B. This can be used when the TPM2B types are
+// This function copies a MSSIM2B. This can be used when the MSSIM2B types are
 // the same or different.
 //
-// This function returns the number of octets in the data buffer of the TPM2B.
-LIB_EXPORT INT16 MemoryCopy2B(TPM2B*       dest,    // OUT: receiving TPM2B
-                              const TPM2B* source,  // IN: source TPM2B
+// This function returns the number of octets in the data buffer of the MSSIM2B.
+LIB_EXPORT INT16 MemoryCopy2B(MSSIM2B*       dest,    // OUT: receiving MSSIM2B
+                              const MSSIM2B* source,  // IN: source MSSIM2B
                               unsigned int dSize  // IN: size of the receiving buffer
 );
 
 //*** MemoryConcat2B()
-// This function will concatenate the buffer contents of a TPM2B to an
-// the buffer contents of another TPM2B and adjust the size accordingly
+// This function will concatenate the buffer contents of a MSSIM2B to an
+// the buffer contents of another MSSIM2B and adjust the size accordingly
 //      ('a' := ('a' | 'b')).
 void MemoryConcat2B(
-    TPM2B*       aInOut,   // IN/OUT: destination 2B
-    TPM2B*       bIn,      // IN: second 2B
+    MSSIM2B*       aInOut,   // IN/OUT: destination 2B
+    MSSIM2B*       bIn,      // IN: second 2B
     unsigned int aMaxSize  // IN: The size of aInOut.buffer (max values for
                            //     aInOut.size)
 );
 
 //*** MemoryEqual2B()
-// This function will compare two TPM2B structures. To be equal, they
+// This function will compare two MSSIM2B structures. To be equal, they
 // need to be the same size and the buffer contexts need to be the same
 // in all octets.
 //  Return Type: BOOL
 //      TRUE(1)         size and buffer contents are the same
 //      FALSE(0)        size or buffer contents are not the same
-BOOL MemoryEqual2B(const TPM2B* aIn,  // IN: compare value
-                   const TPM2B* bIn   // IN: compare value
+BOOL MemoryEqual2B(const MSSIM2B* aIn,  // IN: compare value
+                   const MSSIM2B* bIn   // IN: compare value
 );
 
 //*** MemorySet()
@@ -99,8 +99,8 @@ BOOL MemoryEqual2B(const TPM2B* aIn,  // IN: compare value
 void MemorySet(void* dest, int value, size_t size);
 
 //*** MemoryPad2B()
-// Function to pad a TPM2B with zeros and adjust the size.
-void MemoryPad2B(TPM2B* b, UINT16 newSize);
+// Function to pad a MSSIM2B with zeros and adjust the size.
+void MemoryPad2B(MSSIM2B* b, UINT16 newSize);
 
 //*** Uint16ToByteArray()
 // Function to write an integer to a byte array

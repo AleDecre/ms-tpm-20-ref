@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,17 +45,17 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_SH_POLICY policySession;
-    TPMI_YES_NO    writtenSet;
+    MSSIMI_SH_POLICY policySession;
+    MSSIMI_YES_NO    writtenSet;
 } PolicyNvWritten_In;
 
 // Response code modifiers
-#    define RC_PolicyNvWritten_policySession (TPM_RC_H + TPM_RC_1)
-#    define RC_PolicyNvWritten_writtenSet    (TPM_RC_P + TPM_RC_1)
+#    define RC_PolicyNvWritten_policySession (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_PolicyNvWritten_writtenSet    (MSSIM_RC_P + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_PolicyNvWritten(PolicyNvWritten_In* in);
+MSSIM_RC
+MSSIM2_PolicyNvWritten(PolicyNvWritten_In* in);
 
 #  endif  // _Policy_Nv_Written_FP_H_
 #endif    // CC_PolicyNvWritten

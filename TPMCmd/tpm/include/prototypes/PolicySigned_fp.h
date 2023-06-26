@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,34 +45,34 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT authObject;
-    TPMI_SH_POLICY policySession;
-    TPM2B_NONCE    nonceTPM;
-    TPM2B_DIGEST   cpHashA;
-    TPM2B_NONCE    policyRef;
+    MSSIMI_DH_OBJECT authObject;
+    MSSIMI_SH_POLICY policySession;
+    MSSIM2B_NONCE    nonceMSSIM;
+    MSSIM2B_DIGEST   cpHashA;
+    MSSIM2B_NONCE    policyRef;
     INT32          expiration;
-    TPMT_SIGNATURE auth;
+    MSSIMT_SIGNATURE auth;
 } PolicySigned_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_TIMEOUT timeout;
-    TPMT_TK_AUTH  policyTicket;
+    MSSIM2B_TIMEOUT timeout;
+    MSSIMT_TK_AUTH  policyTicket;
 } PolicySigned_Out;
 
 // Response code modifiers
-#    define RC_PolicySigned_authObject    (TPM_RC_H + TPM_RC_1)
-#    define RC_PolicySigned_policySession (TPM_RC_H + TPM_RC_2)
-#    define RC_PolicySigned_nonceTPM      (TPM_RC_P + TPM_RC_1)
-#    define RC_PolicySigned_cpHashA       (TPM_RC_P + TPM_RC_2)
-#    define RC_PolicySigned_policyRef     (TPM_RC_P + TPM_RC_3)
-#    define RC_PolicySigned_expiration    (TPM_RC_P + TPM_RC_4)
-#    define RC_PolicySigned_auth          (TPM_RC_P + TPM_RC_5)
+#    define RC_PolicySigned_authObject    (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_PolicySigned_policySession (MSSIM_RC_H + MSSIM_RC_2)
+#    define RC_PolicySigned_nonceMSSIM      (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_PolicySigned_cpHashA       (MSSIM_RC_P + MSSIM_RC_2)
+#    define RC_PolicySigned_policyRef     (MSSIM_RC_P + MSSIM_RC_3)
+#    define RC_PolicySigned_expiration    (MSSIM_RC_P + MSSIM_RC_4)
+#    define RC_PolicySigned_auth          (MSSIM_RC_P + MSSIM_RC_5)
 
 // Function prototype
-TPM_RC
-TPM2_PolicySigned(PolicySigned_In* in, PolicySigned_Out* out);
+MSSIM_RC
+MSSIM2_PolicySigned(PolicySigned_In* in, PolicySigned_Out* out);
 
 #  endif  // _Policy_Signed_FP_H_
 #endif    // CC_PolicySigned

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -36,8 +36,8 @@
 #include "_TPM_Init_fp.h"
 #include <stdio.h>
 
-// This function is used to process a _TPM_Init indication.
-LIB_EXPORT void _TPM_Init(char* test)
+// This function is used to process a _MSSIM_Init indication.
+LIB_EXPORT void _MSSIM_Init(char* test)
 {
     printf("%s", test);
     g_powerWasLost = g_powerWasLost | _plat__WasPowerLost();
@@ -63,10 +63,10 @@ LIB_EXPORT void _TPM_Init(char* test)
     _plat__ACT_EnableTicks(FALSE);
 
     // Set initialization state
-    TPMInit();
+    MSSIMInit();
 
     // Set g_DRTMHandle as unassigned
-    g_DRTMHandle = TPM_RH_UNASSIGNED;
+    g_DRTMHandle = MSSIM_RH_UNASSIGNED;
 
     // No H-CRTM, yet.
     g_DrtmPreStartup = FALSE;

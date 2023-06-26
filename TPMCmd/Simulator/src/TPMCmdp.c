@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -35,8 +35,8 @@
 //** Description
 // This file contains the functions that process the commands received on the
 // control port or the command port of the simulator. The control port is used
-// to allow simulation of hardware events (such as, _TPM_Hash_Start) to test
-// the simulated TPM's reaction to those events. This improves code coverage
+// to allow simulation of hardware events (such as, _MSSIM_Hash_Start) to test
+// the simulated MSSIM's reaction to those events. This improves code coverage
 // of the testing.
 
 //** Includes and Data Definitions
@@ -73,10 +73,10 @@ static bool s_isPowerOn = false;
 
 //*** Signal_PowerOn()
 // This function processes a power-on indication. Among other things, it
-// calls the _TPM_Init() handler.
+// calls the _MSSIM_Init() handler.
 void _rpc__Signal_PowerOn(bool isReset)
 {
-    // if power is on and this is not a call to do TPM reset then return
+    // if power is on and this is not a call to do MSSIM reset then return
     if(s_isPowerOn && !isReset)
         return;
     // If this is a reset but power is not on, then return
@@ -85,7 +85,7 @@ void _rpc__Signal_PowerOn(bool isReset)
     // Unless this is just a reset, pass power on signal to platform
     if(!isReset)
         _plat__Signal_PowerOn();
-    // Power on and reset both lead to _TPM_Init()
+    // Power on and reset both lead to _MSSIM_Init()
     _plat__Signal_Reset();
 
     // Set state as power on
@@ -103,7 +103,7 @@ void _rpc__Signal_Restart(void)
 //***Signal_PowerOff()
 // This function processes the power off indication. Its primary function is
 // to set a flag indicating that the next power on indication should cause
-// _TPM_Init() to be called.
+// _MSSIM_Init() to be called.
 void _rpc__Signal_PowerOff(void)
 {
     if(s_isPowerOn)
@@ -116,9 +116,9 @@ void _rpc__Signal_PowerOff(void)
 }
 
 //*** _rpc__ForceFailureMode()
-// This function is used to debug the Failure Mode logic of the TPM. It will set
-// a flag in the TPM code such that the next call to TPM2_SelfTest() will result
-// in a failure, putting the TPM into Failure Mode.
+// This function is used to debug the Failure Mode logic of the MSSIM. It will set
+// a flag in the MSSIM code such that the next call to MSSIM2_SelfTest() will result
+// in a failure, putting the MSSIM into Failure Mode.
 void _rpc__ForceFailureMode(void)
 {
 #if SIMULATION
@@ -131,7 +131,7 @@ void _rpc__ForceFailureMode(void)
 // This function is called to simulate activation of the physical presence "pin".
 void _rpc__Signal_PhysicalPresenceOn(void)
 {
-    // If TPM power is on...
+    // If MSSIM power is on...
     if(s_isPowerOn)
         // ... pass physical presence on to platform
         _plat__Signal_PhysicalPresenceOn();
@@ -142,7 +142,7 @@ void _rpc__Signal_PhysicalPresenceOn(void)
 // This function is called to simulate deactivation of the physical presence "pin".
 void _rpc__Signal_PhysicalPresenceOff(void)
 {
-    // If TPM is power on...
+    // If MSSIM is power on...
     if(s_isPowerOn)
         // ... pass physical presence off to platform
         _plat__Signal_PhysicalPresenceOff();
@@ -150,46 +150,46 @@ void _rpc__Signal_PhysicalPresenceOff(void)
 }
 
 //*** _rpc__Signal_Hash_Start()
-// This function is called to simulate a _TPM_Hash_Start event. It will call
+// This function is called to simulate a _MSSIM_Hash_Start event. It will call
 //
 void _rpc__Signal_Hash_Start(void)
 {
-    // If TPM power is on...
+    // If MSSIM power is on...
     if(s_isPowerOn)
-        // ... pass _TPM_Hash_Start signal to TPM
-        _TPM_Hash_Start();
+        // ... pass _MSSIM_Hash_Start signal to MSSIM
+        _MSSIM_Hash_Start();
     return;
 }
 
 //*** _rpc__Signal_Hash_Data()
-// This function is called to simulate a _TPM_Hash_Data event.
+// This function is called to simulate a _MSSIM_Hash_Data event.
 void _rpc__Signal_Hash_Data(_IN_BUFFER input)
 {
-    // If TPM power is on...
+    // If MSSIM power is on...
     if(s_isPowerOn)
-        // ... pass _TPM_Hash_Data signal to TPM
-        _TPM_Hash_Data(input.BufferSize, input.Buffer);
+        // ... pass _MSSIM_Hash_Data signal to MSSIM
+        _MSSIM_Hash_Data(input.BufferSize, input.Buffer);
     return;
 }
 
 //*** _rpc__Signal_HashEnd()
-// This function is called to simulate a _TPM_Hash_End event.
+// This function is called to simulate a _MSSIM_Hash_End event.
 void _rpc__Signal_HashEnd(void)
 {
-    // If TPM power is on...
+    // If MSSIM power is on...
     if(s_isPowerOn)
-        // ... pass _TPM_HashEnd signal to TPM
-        _TPM_Hash_End();
+        // ... pass _MSSIM_HashEnd signal to MSSIM
+        _MSSIM_Hash_End();
     return;
 }
 
 //*** _rpc__Send_Command()
-// This is the interface to the TPM code.
+// This is the interface to the MSSIM code.
 //  Return Type: void
 void _rpc__Send_Command(
     unsigned char locality, _IN_BUFFER request, _OUT_BUFFER* response)
 {
-    // If TPM is power off, reject any commands.
+    // If MSSIM is power off, reject any commands.
     if(!s_isPowerOn)
     {
         response->BufferSize = 0;
@@ -207,10 +207,10 @@ void _rpc__Send_Command(
 // This function is used to turn on the indication to cancel a command in process.
 // An executing command is not interrupted. The command code may periodically check
 // this indication to see if it should abort the current command processing and
-// returned TPM_RC_CANCELLED.
+// returned MSSIM_RC_CANCELLED.
 void _rpc__Signal_CancelOn(void)
 {
-    // If TPM power is on...
+    // If MSSIM power is on...
     if(s_isPowerOn)
         // ... set the platform canceling flag.
         _plat__SetCancel();
@@ -221,7 +221,7 @@ void _rpc__Signal_CancelOn(void)
 // This function is used to turn off the indication to cancel a command in process.
 void _rpc__Signal_CancelOff(void)
 {
-    // If TPM power is on...
+    // If MSSIM power is on...
     if(s_isPowerOn)
         // ... set the platform canceling flag.
         _plat__ClearCancel();
@@ -229,12 +229,12 @@ void _rpc__Signal_CancelOff(void)
 }
 
 //*** _rpc__Signal_NvOn()
-// In a system where the NV memory used by the TPM is not within the TPM, the
+// In a system where the NV memory used by the MSSIM is not within the MSSIM, the
 // NV may not always be available. This function turns on the indicator that
 // indicates that NV is available.
 void _rpc__Signal_NvOn(void)
 {
-    // If TPM power is on...
+    // If MSSIM power is on...
     if(s_isPowerOn)
         // ... make the NV available
         _plat__SetNvAvail();
@@ -246,7 +246,7 @@ void _rpc__Signal_NvOn(void)
 // longer available.
 void _rpc__Signal_NvOff(void)
 {
-    // If TPM power is on...
+    // If MSSIM power is on...
     if(s_isPowerOn)
         // ... make NV not available
         _plat__ClearNvAvail();
@@ -268,15 +268,15 @@ void _rpc__RsaKeyCacheControl(int state)
     return;
 }
 
-#define TPM_RH_ACT_0 0x40000110
+#define MSSIM_RH_ACT_0 0x40000110
 
 //*** _rpc__ACT_GetSignaled()
 // This function is used to count the ACT second tick.
 bool _rpc__ACT_GetSignaled(uint32_t actHandle)
 {
-    // If TPM power is on...
+    // If MSSIM power is on...
     if(s_isPowerOn)
         // ... query the platform
-        return _plat__ACT_GetSignaled(actHandle - TPM_RH_ACT_0);
+        return _plat__ACT_GetSignaled(actHandle - MSSIM_RH_ACT_0);
     return false;
 }

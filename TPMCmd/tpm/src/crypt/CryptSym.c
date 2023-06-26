@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -35,7 +35,7 @@
 //** Introduction
 //
 // This file contains the implementation of the symmetric block cipher modes
-// allowed for a TPM. These functions only use the single block encryption functions
+// allowed for a MSSIM. These functions only use the single block encryption functions
 // of the selected symmetric crypto library.
 
 //** Includes, Defines, and Typedefs
@@ -53,14 +53,14 @@ FOR_EACH_SYM(KEY_BLOCK_SIZES)
 //** Initialization and Data Access Functions
 //
 //*** CryptSymInit()
-// This function is called to do _TPM_Init processing
+// This function is called to do _MSSIM_Init processing
 BOOL CryptSymInit(void)
 {
     return TRUE;
 }
 
 //*** CryptSymStartup()
-// This function is called to do TPM2_Startup() processing
+// This function is called to do MSSIM2_Startup() processing
 BOOL CryptSymStartup(void)
 {
     return TRUE;
@@ -68,7 +68,7 @@ BOOL CryptSymStartup(void)
 
 //*** CryptGetSymmetricBlockSize()
 // This function returns the block size of the algorithm. The table of bit sizes has
-// an entry for each allowed key size. The entry for a key size is 0 if the TPM does
+// an entry for each allowed key size. The entry for a key size is 0 if the MSSIM does
 // not implement that key size. The key size table is delimited with a negative number
 // (-1). After the delimiter is a list of block sizes with each entry corresponding
 // to the key bit size. For most symmetric algorithms, the block size is the same
@@ -77,20 +77,20 @@ BOOL CryptSymStartup(void)
 //   <= 0     cipher not supported
 //   > 0      the cipher block size in bytes
 LIB_EXPORT INT16 CryptGetSymmetricBlockSize(
-    TPM_ALG_ID symmetricAlg,  // IN: the symmetric algorithm
+    MSSIM_ALG_ID symmetricAlg,  // IN: the symmetric algorithm
     UINT16     keySizeInBits  // IN: the key size
 )
 {
     const INT16* sizes;
     INT16        i;
 #define ALG_CASE(SYM, sym)      \
-  case TPM_ALG_##SYM:           \
+  case MSSIM_ALG_##SYM:           \
     sizes = sym##KeyBlockSizes; \
     break
     switch(symmetricAlg)
     {
 #define GET_KEY_BLOCK_POINTER(SYM, sym) \
-  case TPM_ALG_##SYM:                   \
+  case MSSIM_ALG_##SYM:                   \
     sizes = sym##KeyBlockSizes;         \
     break;
         // Get the pointer to the block size array
@@ -119,18 +119,18 @@ LIB_EXPORT INT16 CryptGetSymmetricBlockSize(
 
 //** Symmetric Encryption
 // This function performs symmetric encryption based on the mode.
-//  Return Type: TPM_RC
-//      TPM_RC_SIZE         'dSize' is not a multiple of the block size for an
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_SIZE         'dSize' is not a multiple of the block size for an
 //                          algorithm that requires it
-//      TPM_RC_FAILURE      Fatal error
-LIB_EXPORT TPM_RC CryptSymmetricEncrypt(
+//      MSSIM_RC_FAILURE      Fatal error
+LIB_EXPORT MSSIM_RC CryptSymmetricEncrypt(
     BYTE*       dOut,           // OUT:
-    TPM_ALG_ID  algorithm,      // IN: the symmetric algorithm
+    MSSIM_ALG_ID  algorithm,      // IN: the symmetric algorithm
     UINT16      keySizeInBits,  // IN: key size in bits
     const BYTE* key,            // IN: key buffer. The size of this buffer
                                 //     in bytes is (keySizeInBits + 7) / 8
-    TPM2B_IV*  ivInOut,         // IN/OUT: IV for decryption.
-    TPM_ALG_ID mode,            // IN: Mode to use
+    MSSIM2B_IV*  ivInOut,         // IN/OUT: IV for decryption.
+    MSSIM_ALG_ID mode,            // IN: Mode to use
     INT32      dSize,           // IN: data size (may need to be a
                                 //     multiple of the blockSize)
     const BYTE* dIn             // IN: data buffer
@@ -148,16 +148,16 @@ LIB_EXPORT TPM_RC CryptSymmetricEncrypt(
     //
     pAssert(dOut != NULL && key != NULL && dIn != NULL);
     if(dSize == 0)
-        return TPM_RC_SUCCESS;
+        return MSSIM_RC_SUCCESS;
 
     TEST(algorithm);
     blockSize = CryptGetSymmetricBlockSize(algorithm, keySizeInBits);
     if(blockSize == 0)
-        return TPM_RC_FAILURE;
+        return MSSIM_RC_FAILURE;
     // If the iv is provided, then it is expected to be block sized. In some cases,
     // the caller is providing an array of 0's that is equal to [MAX_SYM_BLOCK_SIZE]
     // with no knowledge of the actual block size. This function will set it.
-    if((ivInOut != NULL) && (mode != TPM_ALG_ECB))
+    if((ivInOut != NULL) && (mode != MSSIM_ALG_ECB))
     {
         ivInOut->t.size = blockSize;
         iv              = ivInOut->t.buffer;
@@ -172,12 +172,12 @@ LIB_EXPORT TPM_RC CryptSymmetricEncrypt(
         FOR_EACH_SYM(ENCRYPT_CASE)
 
         default:
-            return TPM_RC_SYMMETRIC;
+            return MSSIM_RC_SYMMETRIC;
     }
     switch(mode)
     {
 #if ALG_CTR
-        case TPM_ALG_CTR:
+        case MSSIM_ALG_CTR:
             for(; dSize > 0; dSize -= blockSize)
             {
                 // Encrypt the current value of the IV(counter)
@@ -195,7 +195,7 @@ LIB_EXPORT TPM_RC CryptSymmetricEncrypt(
             break;
 #endif
 #if ALG_OFB
-        case TPM_ALG_OFB:
+        case MSSIM_ALG_OFB:
             // This is written so that dIn and dOut may be the same
             for(; dSize > 0; dSize -= blockSize)
             {
@@ -210,11 +210,11 @@ LIB_EXPORT TPM_RC CryptSymmetricEncrypt(
             break;
 #endif
 #if ALG_CBC
-        case TPM_ALG_CBC:
+        case MSSIM_ALG_CBC:
             // For CBC the data size must be an even multiple of the
             // cipher block size
             if((dSize % blockSize) != 0)
-                return TPM_RC_SIZE;
+                return MSSIM_RC_SIZE;
             // XOR the data block into the IV, encrypt the IV into the IV
             // and then copy the IV to the output
             for(; dSize > 0; dSize -= blockSize)
@@ -230,7 +230,7 @@ LIB_EXPORT TPM_RC CryptSymmetricEncrypt(
             break;
 #endif
         // CFB is not optional
-        case TPM_ALG_CFB:
+        case MSSIM_ALG_CFB:
             // Encrypt the IV into the IV, XOR in the data, and copy to output
             for(; dSize > 0; dSize -= blockSize)
             {
@@ -250,11 +250,11 @@ LIB_EXPORT TPM_RC CryptSymmetricEncrypt(
                 *pIv++ = 0;
             break;
 #if ALG_ECB
-        case TPM_ALG_ECB:
+        case MSSIM_ALG_ECB:
             // For ECB the data size must be an even multiple of the
             // cipher block size
             if((dSize % blockSize) != 0)
-                return TPM_RC_SIZE;
+                return MSSIM_RC_SIZE;
             // Encrypt the input block to the output block
             for(; dSize > 0; dSize -= blockSize)
             {
@@ -265,25 +265,25 @@ LIB_EXPORT TPM_RC CryptSymmetricEncrypt(
             break;
 #endif
         default:
-            return TPM_RC_FAILURE;
+            return MSSIM_RC_FAILURE;
     }
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 //*** CryptSymmetricDecrypt()
 // This function performs symmetric decryption based on the mode.
-//  Return Type: TPM_RC
-//      TPM_RC_FAILURE      A fatal error
-//      TPM_RCS_SIZE        'dSize' is not a multiple of the block size for an
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_FAILURE      A fatal error
+//      MSSIM_RCS_SIZE        'dSize' is not a multiple of the block size for an
 //                          algorithm that requires it
-LIB_EXPORT TPM_RC CryptSymmetricDecrypt(
+LIB_EXPORT MSSIM_RC CryptSymmetricDecrypt(
     BYTE*       dOut,           // OUT: decrypted data
-    TPM_ALG_ID  algorithm,      // IN: the symmetric algorithm
+    MSSIM_ALG_ID  algorithm,      // IN: the symmetric algorithm
     UINT16      keySizeInBits,  // IN: key size in bits
     const BYTE* key,            // IN: key buffer. The size of this buffer
                                 //     in bytes is (keySizeInBits + 7) / 8
-    TPM2B_IV*  ivInOut,         // IN/OUT: IV for decryption.
-    TPM_ALG_ID mode,            // IN: Mode to use
+    MSSIM2B_IV*  ivInOut,         // IN/OUT: IV for decryption.
+    MSSIM_ALG_ID mode,            // IN: Mode to use
     INT32      dSize,           // IN: data size (may need to be a
                                 //     multiple of the blockSize)
     const BYTE* dIn             // IN: data buffer
@@ -309,16 +309,16 @@ LIB_EXPORT TPM_RC CryptSymmetricDecrypt(
 
     pAssert(dOut != NULL && key != NULL && dIn != NULL);
     if(dSize == 0)
-        return TPM_RC_SUCCESS;
+        return MSSIM_RC_SUCCESS;
 
     TEST(algorithm);
     blockSize = CryptGetSymmetricBlockSize(algorithm, keySizeInBits);
     if(blockSize == 0)
-        return TPM_RC_FAILURE;
+        return MSSIM_RC_FAILURE;
     // If the iv is provided, then it is expected to be block sized. In some cases,
     // the caller is providing an array of 0's that is equal to [MAX_SYM_BLOCK_SIZE]
     // with no knowledge of the actual block size. This function will set it.
-    if((ivInOut != NULL) && (mode != TPM_ALG_ECB))
+    if((ivInOut != NULL) && (mode != MSSIM_ALG_ECB))
     {
         ivInOut->t.size = blockSize;
         iv              = ivInOut->t.buffer;
@@ -333,17 +333,17 @@ LIB_EXPORT TPM_RC CryptSymmetricDecrypt(
     switch(mode)
     {
 #if ALG_CBC || ALG_ECB
-        case TPM_ALG_CBC:  // decrypt = decrypt
-        case TPM_ALG_ECB:
+        case MSSIM_ALG_CBC:  // decrypt = decrypt
+        case MSSIM_ALG_ECB:
             // For ECB and CBC, the data size must be an even multiple of the
             // cipher block size
             if((dSize % blockSize) != 0)
-                return TPM_RC_SIZE;
+                return MSSIM_RC_SIZE;
             switch(algorithm)
             {
                 FOR_EACH_SYM(DECRYPT_CASE)
                 default:
-                    return TPM_RC_SYMMETRIC;
+                    return MSSIM_RC_SYMMETRIC;
             }
             break;
 #endif
@@ -353,14 +353,14 @@ LIB_EXPORT TPM_RC CryptSymmetricDecrypt(
             {
                 FOR_EACH_SYM(ENCRYPT_CASE)
                 default:
-                    return TPM_RC_SYMMETRIC;
+                    return MSSIM_RC_SYMMETRIC;
             }
     }
     // Now do the mode-dependent decryption
     switch(mode)
     {
 #if ALG_CBC
-        case TPM_ALG_CBC:
+        case MSSIM_ALG_CBC:
             // Copy the input data to a temp buffer, decrypt the buffer into the
             // output, XOR in the IV, and copy the temp buffer to the IV and repeat.
             for(; dSize > 0; dSize -= blockSize)
@@ -379,7 +379,7 @@ LIB_EXPORT TPM_RC CryptSymmetricDecrypt(
             }
             break;
 #endif
-        case TPM_ALG_CFB:
+        case MSSIM_ALG_CFB:
             for(; dSize > 0; dSize -= blockSize)
             {
                 // Encrypt the IV into the temp buffer
@@ -400,7 +400,7 @@ LIB_EXPORT TPM_RC CryptSymmetricDecrypt(
 
             break;
 #if ALG_CTR
-        case TPM_ALG_CTR:
+        case MSSIM_ALG_CTR:
             for(; dSize > 0; dSize -= blockSize)
             {
                 // Encrypt the current value of the IV(counter)
@@ -418,7 +418,7 @@ LIB_EXPORT TPM_RC CryptSymmetricDecrypt(
             break;
 #endif
 #if ALG_ECB
-        case TPM_ALG_ECB:
+        case MSSIM_ALG_ECB:
             for(; dSize > 0; dSize -= blockSize)
             {
                 DECRYPT(&keySchedule, dIn, dOut);
@@ -428,7 +428,7 @@ LIB_EXPORT TPM_RC CryptSymmetricDecrypt(
             break;
 #endif
 #if ALG_OFB
-        case TPM_ALG_OFB:
+        case MSSIM_ALG_OFB:
             // This is written so that dIn and dOut may be the same
             for(; dSize > 0; dSize -= blockSize)
             {
@@ -443,24 +443,24 @@ LIB_EXPORT TPM_RC CryptSymmetricDecrypt(
             break;
 #endif
         default:
-            return TPM_RC_FAILURE;
+            return MSSIM_RC_FAILURE;
     }
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 //*** CryptSymKeyValidate()
-// Validate that a provided symmetric key meets the requirements of the TPM
-//  Return Type: TPM_RC
-//      TPM_RC_KEY_SIZE         Key size specifiers do not match
-//      TPM_RC_KEY              Key is not allowed
-TPM_RC
-CryptSymKeyValidate(TPMT_SYM_DEF_OBJECT* symDef, TPM2B_SYM_KEY* key)
+// Validate that a provided symmetric key meets the requirements of the MSSIM
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_KEY_SIZE         Key size specifiers do not match
+//      MSSIM_RC_KEY              Key is not allowed
+MSSIM_RC
+CryptSymKeyValidate(MSSIMT_SYM_DEF_OBJECT* symDef, MSSIM2B_SYM_KEY* key)
 {
     if(key->t.size != BITS_TO_BYTES(symDef->keyBits.sym))
-        return TPM_RCS_KEY_SIZE;
+        return MSSIM_RCS_KEY_SIZE;
 #if ALG_TDES
-    if(symDef->algorithm == TPM_ALG_TDES && !CryptDesValidateKey(key))
-        return TPM_RCS_KEY;
+    if(symDef->algorithm == MSSIM_ALG_TDES && !CryptDesValidateKey(key))
+        return MSSIM_RCS_KEY;
 #endif  // ALG_TDES
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,17 +45,17 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT   sequenceHandle;
-    TPM2B_MAX_BUFFER buffer;
+    MSSIMI_DH_OBJECT   sequenceHandle;
+    MSSIM2B_MAX_BUFFER buffer;
 } SequenceUpdate_In;
 
 // Response code modifiers
-#    define RC_SequenceUpdate_sequenceHandle (TPM_RC_H + TPM_RC_1)
-#    define RC_SequenceUpdate_buffer         (TPM_RC_P + TPM_RC_1)
+#    define RC_SequenceUpdate_sequenceHandle (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_SequenceUpdate_buffer         (MSSIM_RC_P + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_SequenceUpdate(SequenceUpdate_In* in);
+MSSIM_RC
+MSSIM2_SequenceUpdate(SequenceUpdate_In* in);
 
 #  endif  // _Sequence_Update_FP_H_
 #endif    // CC_SequenceUpdate

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -41,25 +41,25 @@
 /*(See part 3 specification)
 // Include an asymmetrically signed authorization to the policy evaluation
 */
-//  Return Type: TPM_RC
-//      TPM_RC_CPHASH           cpHash was previously set to a different value
-//      TPM_RC_EXPIRED          'expiration' indicates a time in the past or
-//                              'expiration' is non-zero but no nonceTPM is present
-//      TPM_RC_NONCE            'nonceTPM' is not the nonce associated with the
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_CPHASH           cpHash was previously set to a different value
+//      MSSIM_RC_EXPIRED          'expiration' indicates a time in the past or
+//                              'expiration' is non-zero but no nonceMSSIM is present
+//      MSSIM_RC_NONCE            'nonceMSSIM' is not the nonce associated with the
 //                              'policySession'
-//      TPM_RC_SCHEME           the signing scheme of 'auth' is not supported by the
-//                              TPM
-//      TPM_RC_SIGNATURE        the signature is not genuine
-//      TPM_RC_SIZE             input cpHash has wrong size
-TPM_RC
-TPM2_PolicySigned(PolicySigned_In*  in,  // IN: input parameter list
+//      MSSIM_RC_SCHEME           the signing scheme of 'auth' is not supported by the
+//                              MSSIM
+//      MSSIM_RC_SIGNATURE        the signature is not genuine
+//      MSSIM_RC_SIZE             input cpHash has wrong size
+MSSIM_RC
+MSSIM2_PolicySigned(PolicySigned_In*  in,  // IN: input parameter list
                   PolicySigned_Out* out  // OUT: output parameter list
 )
 {
-    TPM_RC       result = TPM_RC_SUCCESS;
+    MSSIM_RC       result = MSSIM_RC_SUCCESS;
     SESSION*     session;
-    TPM2B_NAME   entityName;
-    TPM2B_DIGEST authHash;
+    MSSIM2B_NAME   entityName;
+    MSSIM2B_DIGEST authHash;
     HASH_STATE   hashState;
     UINT64       authTimeout = 0;
     // Input Validation
@@ -69,24 +69,24 @@ TPM2_PolicySigned(PolicySigned_In*  in,  // IN: input parameter list
     // Only do input validation if this is not a trial policy session
     if(session->attributes.isTrialPolicy == CLEAR)
     {
-        authTimeout = ComputeAuthTimeout(session, in->expiration, &in->nonceTPM);
+        authTimeout = ComputeAuthTimeout(session, in->expiration, &in->nonceMSSIM);
 
         result      = PolicyParameterChecks(session,
                                        authTimeout,
                                        &in->cpHashA,
-                                       &in->nonceTPM,
-                                       RC_PolicySigned_nonceTPM,
+                                       &in->nonceMSSIM,
+                                       RC_PolicySigned_nonceMSSIM,
                                        RC_PolicySigned_cpHashA,
                                        RC_PolicySigned_expiration);
-        if(result != TPM_RC_SUCCESS)
+        if(result != MSSIM_RC_SUCCESS)
             return result;
         // Re-compute the digest being signed
         /*(See part 3 specification)
         // The digest is computed as:
-        //     aHash := hash ( nonceTPM | expiration | cpHashA | policyRef)
+        //     aHash := hash ( nonceMSSIM | expiration | cpHashA | policyRef)
         //  where:
         //      hash()      the hash associated with the signed authorization
-        //      nonceTPM    the nonceTPM value from the TPM2_StartAuthSession .
+        //      nonceMSSIM    the nonceMSSIM value from the MSSIM2_StartAuthSession .
         //                  response If the authorization is not limited to this
         //                  session, the size of this value is zero.
         //      expiration  time limit on authorization set by authorizing object.
@@ -102,13 +102,13 @@ TPM2_PolicySigned(PolicySigned_In*  in,  // IN: input parameter list
         // Start hash
         authHash.t.size = CryptHashStart(&hashState, CryptGetSignHashAlg(&in->auth));
         // If there is no digest size, then we don't have a verification function
-        // for this algorithm (e.g. TPM_ALG_ECDAA) so indicate that it is a
+        // for this algorithm (e.g. MSSIM_ALG_ECDAA) so indicate that it is a
         // bad scheme.
         if(authHash.t.size == 0)
-            return TPM_RCS_SCHEME + RC_PolicySigned_auth;
+            return MSSIM_RCS_SCHEME + RC_PolicySigned_auth;
 
-        //  nonceTPM
-        CryptDigestUpdate2B(&hashState, &in->nonceTPM.b);
+        //  nonceMSSIM
+        CryptDigestUpdate2B(&hashState, &in->nonceMSSIM.b);
 
         //  expiration
         CryptDigestUpdateInt(&hashState, sizeof(UINT32), in->expiration);
@@ -122,16 +122,16 @@ TPM2_PolicySigned(PolicySigned_In*  in,  // IN: input parameter list
         //  Complete digest
         CryptHashEnd2B(&hashState, &authHash.b);
 
-        // Validate Signature.  A TPM_RC_SCHEME, TPM_RC_HANDLE or TPM_RC_SIGNATURE
+        // Validate Signature.  A MSSIM_RC_SCHEME, MSSIM_RC_HANDLE or MSSIM_RC_SIGNATURE
         // error may be returned at this point
         result = CryptValidateSignature(in->authObject, &authHash, &in->auth);
-        if(result != TPM_RC_SUCCESS)
+        if(result != MSSIM_RC_SUCCESS)
             return RcSafeAddToResult(result, RC_PolicySigned_auth);
     }
     // Internal Data Update
     // Update policy with input policyRef and name of authorization key
     // These values are updated even if the session is a trial session
-    PolicyContextUpdate(TPM_CC_PolicySigned,
+    PolicyContextUpdate(MSSIM_CC_PolicySigned,
                         EntityGetName(in->authObject, &entityName),
                         &in->policyRef,
                         &in->cpHashA,
@@ -140,15 +140,15 @@ TPM2_PolicySigned(PolicySigned_In*  in,  // IN: input parameter list
     // Command Output
     // Create ticket and timeout buffer if in->expiration < 0 and this is not
     // a trial session.
-    // NOTE: PolicyParameterChecks() makes sure that nonceTPM is present
+    // NOTE: PolicyParameterChecks() makes sure that nonceMSSIM is present
     // when expiration is non-zero.
     if(in->expiration < 0 && session->attributes.isTrialPolicy == CLEAR)
     {
-        BOOL expiresOnReset = (in->nonceTPM.t.size == 0);
+        BOOL expiresOnReset = (in->nonceMSSIM.t.size == 0);
         // Compute policy ticket
         authTimeout &= ~EXPIRATION_BIT;
 
-        TicketComputeAuth(TPM_ST_AUTH_SIGNED,
+        TicketComputeAuth(MSSIM_ST_AUTH_SIGNED,
                           EntityGetHierarchy(in->authObject),
                           authTimeout,
                           expiresOnReset,
@@ -157,7 +157,7 @@ TPM2_PolicySigned(PolicySigned_In*  in,  // IN: input parameter list
                           &entityName,
                           &out->policyTicket);
         // Generate timeout buffer.  The format of output timeout buffer is
-        // TPM-specific.
+        // MSSIM-specific.
         // Note: In this implementation, the timeout buffer value is computed after
         // the ticket is produced so, when the ticket is checked, the expiration
         // flag needs to be extracted before the ticket is checked.
@@ -176,11 +176,11 @@ TPM2_PolicySigned(PolicySigned_In*  in,  // IN: input parameter list
         out->timeout.t.size = 0;
 
         // authorization ticket is null
-        out->policyTicket.tag           = TPM_ST_AUTH_SIGNED;
-        out->policyTicket.hierarchy     = TPM_RH_NULL;
+        out->policyTicket.tag           = MSSIM_ST_AUTH_SIGNED;
+        out->policyTicket.hierarchy     = MSSIM_RH_NULL;
         out->policyTicket.digest.t.size = 0;
     }
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_PolicySigned

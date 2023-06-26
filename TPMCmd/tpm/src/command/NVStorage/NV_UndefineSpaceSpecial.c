@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -41,21 +41,21 @@
 /*(See part 3 specification)
 // Delete a NV index that requires policy to delete.
 */
-//  Return Type: TPM_RC
-//      TPM_RC_ATTRIBUTES               TPMA_NV_POLICY_DELETE is not SET in the
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_ATTRIBUTES               MSSIMA_NV_POLICY_DELETE is not SET in the
 //                                      Index referenced by 'nvIndex'
-TPM_RC
-TPM2_NV_UndefineSpaceSpecial(
+MSSIM_RC
+MSSIM2_NV_UndefineSpaceSpecial(
     NV_UndefineSpaceSpecial_In* in  // IN: input parameter list
 )
 {
-    TPM_RC    result;
+    MSSIM_RC    result;
     NV_REF    locator;
     NV_INDEX* nvIndex = NvGetIndexInfo(in->nvIndex, &locator);
     // Input Validation
-    // This operation only applies when the TPMA_NV_POLICY_DELETE attribute is SET
-    if(!IS_ATTRIBUTE(nvIndex->publicArea.attributes, TPMA_NV, POLICY_DELETE))
-        return TPM_RCS_ATTRIBUTES + RC_NV_UndefineSpaceSpecial_nvIndex;
+    // This operation only applies when the MSSIMA_NV_POLICY_DELETE attribute is SET
+    if(!IS_ATTRIBUTE(nvIndex->publicArea.attributes, MSSIMA_NV, POLICY_DELETE))
+        return MSSIM_RCS_ATTRIBUTES + RC_NV_UndefineSpaceSpecial_nvIndex;
     // Internal Data Update
     // Call implementation dependent internal routine to delete NV index
     result = NvDeleteIndex(nvIndex, locator);
@@ -63,7 +63,7 @@ TPM2_NV_UndefineSpaceSpecial(
     // If we just removed the index providing the authorization, make sure that the
     // authorization session computation is modified so that it doesn't try to
     // access the authValue of the just deleted index
-    if(result == TPM_RC_SUCCESS)
+    if(result == MSSIM_RC_SUCCESS)
         SessionRemoveAssociationToHandle(in->nvIndex);
     return result;
 }

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -37,8 +37,8 @@
  *  Date: Aug 30, 2019  Time: 02:11:54PM
  */
 
-#ifndef _TPM_TO_WOLF_DES_SUPPORT_FP_H_
-#define _TPM_TO_WOLF_DES_SUPPORT_FP_H_
+#ifndef _MSSIM_TO_WOLF_DES_SUPPORT_FP_H_
+#define _MSSIM_TO_WOLF_DES_SUPPORT_FP_H_
 
 #if(defined SYM_LIB_WOLF) && ALG_TDES
 
@@ -64,4 +64,4 @@ void TDES_encrypt(const BYTE* in, BYTE* out, tpmKeyScheduleTDES* ks);
 void TDES_decrypt(const BYTE* in, BYTE* out, tpmKeyScheduleTDES* ks);
 #endif  // MATH_LIB_WOLF && ALG_TDES
 
-#endif  // _TPM_TO_WOLF_DES_SUPPORT_FP_H_
+#endif  // _MSSIM_TO_WOLF_DES_SUPPORT_FP_H_

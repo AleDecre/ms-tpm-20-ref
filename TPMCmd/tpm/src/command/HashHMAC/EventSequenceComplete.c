@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,32 +40,32 @@
 /*(See part 3 specification)
   Complete an event sequence and flush the object.
 */
-//  Return Type: TPM_RC
-//      TPM_RC_LOCALITY     PCR extension is not allowed at the current locality
-//      TPM_RC_MODE         input handle is not a valid event sequence object
-TPM_RC
-TPM2_EventSequenceComplete(
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_LOCALITY     PCR extension is not allowed at the current locality
+//      MSSIM_RC_MODE         input handle is not a valid event sequence object
+MSSIM_RC
+MSSIM2_EventSequenceComplete(
     EventSequenceComplete_In*  in,  // IN: input parameter list
     EventSequenceComplete_Out* out  // OUT: output parameter list
 )
 {
     HASH_OBJECT* hashObject;
     UINT32       i;
-    TPM_ALG_ID   hashAlg;
+    MSSIM_ALG_ID   hashAlg;
     // Input validation
     // get the event sequence object pointer
     hashObject = (HASH_OBJECT*)HandleToObject(in->sequenceHandle);
 
     // input handle must reference an event sequence object
     if(hashObject->attributes.eventSeq != SET)
-        return TPM_RCS_MODE + RC_EventSequenceComplete_sequenceHandle;
+        return MSSIM_RCS_MODE + RC_EventSequenceComplete_sequenceHandle;
 
     // see if a PCR extend is requested in call
-    if(in->pcrHandle != TPM_RH_NULL)
+    if(in->pcrHandle != MSSIM_RH_NULL)
     {
         // see if extend of the PCR is allowed at the locality of the command,
         if(!PCRIsExtendAllowed(in->pcrHandle))
-            return TPM_RC_LOCALITY;
+            return MSSIM_RC_LOCALITY;
         // if an extend is going to take place, then check to see if there has
         // been an orderly shutdown. If so, and the selected PCR is one of the
         // state saved PCR, then the orderly state has to change. The orderly state
@@ -93,7 +93,7 @@ TPM2_EventSequenceComplete(
                      CryptHashGetDigestSize(hashAlg),
                      (BYTE*)&out->results.digests[out->results.count].digest);
         // Extend PCR
-        if(in->pcrHandle != TPM_RH_NULL)
+        if(in->pcrHandle != MSSIM_RH_NULL)
             PCRExtend(in->pcrHandle,
                       hashAlg,
                       CryptHashGetDigestSize(hashAlg),
@@ -104,7 +104,7 @@ TPM2_EventSequenceComplete(
     // mark sequence object as evict so it will be flushed on the way out
     hashObject->attributes.evict = SET;
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_EventSequenceComplete

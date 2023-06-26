@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -34,7 +34,7 @@
  */
 //** Description
 
-//    This module simulates the physical presence interface pins on the TPM.
+//    This module simulates the physical presence interface pins on the MSSIM.
 
 //** Includes
 #include "Platform.h"

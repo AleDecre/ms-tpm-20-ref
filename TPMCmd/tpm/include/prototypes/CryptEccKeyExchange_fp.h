@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,17 +45,17 @@
 //*** CryptEcc2PhaseKeyExchange()
 // This function is the dispatch routine for the EC key exchange functions that use
 // two ephemeral and two static keys.
-//  Return Type: TPM_RC
-//      TPM_RC_SCHEME             scheme is not defined
-LIB_EXPORT TPM_RC CryptEcc2PhaseKeyExchange(
-    TPMS_ECC_POINT*      outZ1,    // OUT: a computed point
-    TPMS_ECC_POINT*      outZ2,    // OUT: and optional second point
-    TPM_ECC_CURVE        curveId,  // IN: the curve for the computations
-    TPM_ALG_ID           scheme,   // IN: the key exchange scheme
-    TPM2B_ECC_PARAMETER* dsA,      // IN: static private TPM key
-    TPM2B_ECC_PARAMETER* deA,      // IN: ephemeral private TPM key
-    TPMS_ECC_POINT*      QsB,      // IN: static public party B key
-    TPMS_ECC_POINT*      QeB       // IN: ephemeral public party B key
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_SCHEME             scheme is not defined
+LIB_EXPORT MSSIM_RC CryptEcc2PhaseKeyExchange(
+    MSSIMS_ECC_POINT*      outZ1,    // OUT: a computed point
+    MSSIMS_ECC_POINT*      outZ2,    // OUT: and optional second point
+    MSSIM_ECC_CURVE        curveId,  // IN: the curve for the computations
+    MSSIM_ALG_ID           scheme,   // IN: the key exchange scheme
+    MSSIM2B_ECC_PARAMETER* dsA,      // IN: static private MSSIM key
+    MSSIM2B_ECC_PARAMETER* deA,      // IN: ephemeral private MSSIM key
+    MSSIMS_ECC_POINT*      QsB,      // IN: static public party B key
+    MSSIMS_ECC_POINT*      QeB       // IN: ephemeral public party B key
 );
 #  if ALG_SM2
 
@@ -69,16 +69,16 @@ LIB_EXPORT TPM_RC CryptEcc2PhaseKeyExchange(
 // private key.
 // All points are required to be on the curve of 'inQsA'. The function will fail
 // catastrophically if this is not the case
-//  Return Type: TPM_RC
-//      TPM_RC_NO_RESULT        the value for dsA does not give a valid point on the
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_NO_RESULT        the value for dsA does not give a valid point on the
 //                              curve
-LIB_EXPORT TPM_RC SM2KeyExchange(
-    TPMS_ECC_POINT*      outZ,     // OUT: the computed point
-    TPM_ECC_CURVE        curveId,  // IN: the curve for the computations
-    TPM2B_ECC_PARAMETER* dsAIn,    // IN: static private TPM key
-    TPM2B_ECC_PARAMETER* deAIn,    // IN: ephemeral private TPM key
-    TPMS_ECC_POINT*      QsBIn,    // IN: static public party B key
-    TPMS_ECC_POINT*      QeBIn     // IN: ephemeral public party B key
+LIB_EXPORT MSSIM_RC SM2KeyExchange(
+    MSSIMS_ECC_POINT*      outZ,     // OUT: the computed point
+    MSSIM_ECC_CURVE        curveId,  // IN: the curve for the computations
+    MSSIM2B_ECC_PARAMETER* dsAIn,    // IN: static private MSSIM key
+    MSSIM2B_ECC_PARAMETER* deAIn,    // IN: ephemeral private MSSIM key
+    MSSIMS_ECC_POINT*      QsBIn,    // IN: static public party B key
+    MSSIMS_ECC_POINT*      QeBIn     // IN: ephemeral public party B key
 );
 #  endif
 #endif  // CC_ZGen_2Phase

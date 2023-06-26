@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -35,7 +35,7 @@
 //** Introduction
 //
 // This file contains the entry function ExecuteCommand() which provides the main
-// control flow for TPM command execution.
+// control flow for MSSIM command execution.
 
 //** Includes
 
@@ -80,7 +80,7 @@
 //  'request' and 'response' may point to the same buffer
 //
 // Note: As of February, 2016, the failure processing has been moved to the
-// platform-specific code. When the TPM code encounters an unrecoverable failure, it
+// platform-specific code. When the MSSIM code encounters an unrecoverable failure, it
 // will SET g_inFailureMode and call _plat__Fail(). That function should not return
 // but may call ExecuteCommand().
 //
@@ -97,7 +97,7 @@ LIB_EXPORT void ExecuteCommand(
 
     // Response local variables
     UINT32 maxResponse = *responseSize;
-    TPM_RC result;  // return code for the command
+    MSSIM_RC result;  // return code for the command
 
 #if MAX_COMMAND_SIZE < 6 || MAX_COMMAND_SIZE > UINT_MAX - 1 \
     || MAX_COMMAND_SIZE > INT32_MAX - 1
@@ -134,20 +134,20 @@ LIB_EXPORT void ExecuteCommand(
     // and will be reported by NvIsAvailable(). The reference code requires that
     // accessibility of NV does not change during the execution of a command.
     // Specifically, if NV is available when the command execution starts and then
-    // is not available later when it is necessary to write to NV, then the TPM
+    // is not available later when it is necessary to write to NV, then the MSSIM
     // will go into failure mode.
     NvCheckState();
 
-    // Due to the limitations of the simulation, TPM clock must be explicitly
+    // Due to the limitations of the simulation, MSSIM clock must be explicitly
     // synchronized with the system clock whenever a command is received.
-    // This function call is not necessary in a hardware TPM. However, taking
+    // This function call is not necessary in a hardware MSSIM. However, taking
     // a snapshot of the hardware timer at the beginning of the command allows
     // the time value to be consistent for the duration of the command execution.
     TimeUpdateToCurrent();
 
     // Any command through this function will unceremoniously end the
-    // _TPM_Hash_Data/_TPM_Hash_End sequence.
-    if(g_DRTMHandle != TPM_RH_UNASSIGNED)
+    // _MSSIM_Hash_Data/_MSSIM_Hash_End sequence.
+    if(g_DRTMHandle != MSSIM_RH_UNASSIGNED)
         ObjectTerminateEvent();
 
     // Get command buffer size and command buffer.
@@ -156,17 +156,17 @@ LIB_EXPORT void ExecuteCommand(
 
     // Parse command header: tag, commandSize and command.code.
     // First parse the tag. The unmarshaling routine will validate
-    // that it is either TPM_ST_SESSIONS or TPM_ST_NO_SESSIONS.
-    result = TPMI_ST_COMMAND_TAG_Unmarshal(
+    // that it is either MSSIM_ST_SESSIONS or MSSIM_ST_NO_SESSIONS.
+    result = MSSIMI_ST_COMMAND_TAG_Unmarshal(
         &command.tag, &command.parameterBuffer, &command.parameterSize);
-    if(result != TPM_RC_SUCCESS)
+    if(result != MSSIM_RC_SUCCESS)
         goto Cleanup;
     // Unmarshal the commandSize indicator.
     result = UINT32_Unmarshal(
         &commandSize, &command.parameterBuffer, &command.parameterSize);
-    if(result != TPM_RC_SUCCESS)
+    if(result != MSSIM_RC_SUCCESS)
         goto Cleanup;
-    // On a TPM that receives bytes on a port, the number of bytes that were
+    // On a MSSIM that receives bytes on a port, the number of bytes that were
     // received on that port is requestSize it must be identical to commandSize.
     // In addition, commandSize must not be larger than MAX_COMMAND_SIZE allowed
     // by the implementation. The check against MAX_COMMAND_SIZE may be redundant
@@ -175,80 +175,80 @@ LIB_EXPORT void ExecuteCommand(
     // it reaches MAX_COMMAND_SIZE, and requestSize would not equal commandSize.
     if(commandSize != requestSize || commandSize > MAX_COMMAND_SIZE)
     {
-        result = TPM_RC_COMMAND_SIZE;
+        result = MSSIM_RC_COMMAND_SIZE;
         goto Cleanup;
     }
     // Unmarshal the command code.
-    result = TPM_CC_Unmarshal(
+    result = MSSIM_CC_Unmarshal(
         &command.code, &command.parameterBuffer, &command.parameterSize);
-    if(result != TPM_RC_SUCCESS)
+    if(result != MSSIM_RC_SUCCESS)
         goto Cleanup;
     // Check to see if the command is implemented.
     command.index = CommandCodeToCommandIndex(command.code);
-    if(command.code == TPM_CC_VIRT_CreateSeed){
-        printf("\nEseguo TPM_CC_VIRT_CreateSeed: %d\n", TPM_CC_VIRT_CreateSeed);
+    if(command.code == MSSIM_CC_VIRT_CreateSeed){
+        printf("\nEseguo MSSIM_CC_VIRT_CreateSeed: %d\n", MSSIM_CC_VIRT_CreateSeed);
     }
     if(UNIMPLEMENTED_COMMAND_INDEX == command.index)
     {
-        result = TPM_RC_COMMAND_CODE;
+        result = MSSIM_RC_COMMAND_CODE;
         goto Cleanup;
     }
 #if FIELD_UPGRADE_IMPLEMENTED == YES
-    // If the TPM is in FUM, then the only allowed command is
-    // TPM_CC_FieldUpgradeData.
-    if(IsFieldUgradeMode() && (command.code != TPM_CC_FieldUpgradeData))
+    // If the MSSIM is in FUM, then the only allowed command is
+    // MSSIM_CC_FieldUpgradeData.
+    if(IsFieldUgradeMode() && (command.code != MSSIM_CC_FieldUpgradeData))
     {
-        result = TPM_RC_UPGRADE;
+        result = MSSIM_RC_UPGRADE;
         goto Cleanup;
     }
     else
 #endif
-        // Excepting FUM, the TPM only accepts TPM2_Startup() after
-        // _TPM_Init. After getting a TPM2_Startup(), TPM2_Startup()
+        // Excepting FUM, the MSSIM only accepts MSSIM2_Startup() after
+        // _MSSIM_Init. After getting a MSSIM2_Startup(), MSSIM2_Startup()
         // is no longer allowed.
-        if((!TPMIsStarted() && command.code != TPM_CC_Startup)
-           || (TPMIsStarted() && command.code == TPM_CC_Startup))
+        if((!MSSIMIsStarted() && command.code != MSSIM_CC_Startup)
+           || (MSSIMIsStarted() && command.code == MSSIM_CC_Startup))
         {
-            result = TPM_RC_INITIALIZE;
+            result = MSSIM_RC_INITIALIZE;
             goto Cleanup;
         }
     // Start regular command process.
     NvIndexCacheInit();
     // Parse Handle buffer.
     result = ParseHandleBuffer(&command);
-    if(result != TPM_RC_SUCCESS)
+    if(result != MSSIM_RC_SUCCESS)
         goto Cleanup;
-    // All handles in the handle area are required to reference TPM-resident
+    // All handles in the handle area are required to reference MSSIM-resident
     // entities.
     result = EntityGetLoadStatus(&command);
-    if(result != TPM_RC_SUCCESS)
+    if(result != MSSIM_RC_SUCCESS)
         goto Cleanup;
     // Authorization session handling for the command.
     ClearCpRpHashes(&command);
-    if(command.tag == TPM_ST_SESSIONS)
+    if(command.tag == MSSIM_ST_SESSIONS)
     {
         // Find out session buffer size.
         result = UINT32_Unmarshal((UINT32*)&command.authSize,
                                   &command.parameterBuffer,
                                   &command.parameterSize);
-        if(result != TPM_RC_SUCCESS)
+        if(result != MSSIM_RC_SUCCESS)
             goto Cleanup;
         // Perform sanity check on the unmarshaled value. If it is smaller than
         // the smallest possible session or larger than the remaining size of
         // the command, then it is an error. NOTE: This check could pass but the
         // session size could still be wrong. That will be determined after the
         // sessions are unmarshaled.
-        if(command.code == TPM_CC_Create){
+        if(command.code == MSSIM_CC_Create){
             printf("command.parameterSize: %d \n", command.parameterSize);
             printf("command.authSize: %d \n", command.authSize);
         }
-        if(command.code == TPM_CC_VIRT_CreateSeed){
+        if(command.code == MSSIM_CC_VIRT_CreateSeed){
             printf("command.parameterSize: %d \n", command.parameterSize);
             printf("command.authSize: %d \n", command.authSize);
         }
         if(command.authSize < 9 || command.authSize > command.parameterSize)
         {
-            result = TPM_RC_SIZE;
+            result = MSSIM_RC_SIZE;
             goto Cleanup;
         }
         command.parameterSize -= command.authSize;
@@ -258,7 +258,7 @@ LIB_EXPORT void ExecuteCommand(
         // successful return, command.parameterBuffer should be pointing at the
         // first byte of the parameters.
         result = ParseSessionBuffer(&command);
-        if(result != TPM_RC_SUCCESS)
+        if(result != MSSIM_RC_SUCCESS)
             goto Cleanup;
     }
     else
@@ -268,7 +268,7 @@ LIB_EXPORT void ExecuteCommand(
         // If the command requires authorizations, then CheckAuthNoSession() will
         // return an error.
         result = CheckAuthNoSession(&command);
-        if(result != TPM_RC_SUCCESS)
+        if(result != MSSIM_RC_SUCCESS)
             goto Cleanup;
     }
     // Set up the response buffer pointers. CommandDispatch will marshal the
@@ -278,21 +278,21 @@ LIB_EXPORT void ExecuteCommand(
     command.responseBuffer = *response + STD_RESPONSE_HEADER;
 
     // leave space for the parameter size field if needed
-    if(command.tag == TPM_ST_SESSIONS)
+    if(command.tag == MSSIM_ST_SESSIONS)
         command.responseBuffer += sizeof(UINT32);
     if(IsHandleInResponse(command.index))
-        command.responseBuffer += sizeof(TPM_HANDLE);
+        command.responseBuffer += sizeof(MSSIM_HANDLE);
 
     // CommandDispatcher returns a response handle buffer and a response parameter
     // buffer if it succeeds. It will also set the parameterSize field in the
-    // buffer if the tag is TPM_RC_SESSIONS.
+    // buffer if the tag is MSSIM_RC_SESSIONS.
     result = CommandDispatcher(&command);
-    if(result != TPM_RC_SUCCESS)
+    if(result != MSSIM_RC_SUCCESS)
         goto Cleanup;
 
     // Build the session area at the end of the parameter area.
     result = BuildResponseSession(&command);
-    if(result != TPM_RC_SUCCESS)
+    if(result != MSSIM_RC_SUCCESS)
     {
         goto Cleanup;
     }
@@ -321,7 +321,7 @@ Cleanup:
     // command execution. This check should be made for both succeeded and failed
     // commands, because a failed one may trigger a NV write in DA logic as well.
     // This is the only place in the command execution path that may call the NV
-    // commit. If the NV commit fails, the TPM should be put in failure mode.
+    // commit. If the NV commit fails, the MSSIM should be put in failure mode.
     if((g_updateNV != UT_NONE) && !g_inFailureMode)
     {
         if(g_updateNV == UT_ORDERLY)

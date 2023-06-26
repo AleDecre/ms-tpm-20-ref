@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -42,35 +42,35 @@
 /*(See part 3 specification)
 // Duplicate a loaded object
 */
-//  Return Type: TPM_RC
-//      TPM_RC_ATTRIBUTES   key to duplicate has 'fixedParent' SET
-//      TPM_RC_HASH         for an RSA key, the nameAlg digest size for the
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_ATTRIBUTES   key to duplicate has 'fixedParent' SET
+//      MSSIM_RC_HASH         for an RSA key, the nameAlg digest size for the
 //                          newParent is not compatible with the key size
-//      TPM_RC_HIERARCHY    'encryptedDuplication' is SET and 'newParentHandle'
+//      MSSIM_RC_HIERARCHY    'encryptedDuplication' is SET and 'newParentHandle'
 //                          specifies Null Hierarchy
-//      TPM_RC_KEY          'newParentHandle' references invalid ECC key (public
+//      MSSIM_RC_KEY          'newParentHandle' references invalid ECC key (public
 //                          point not on the curve)
-//      TPM_RC_SIZE         input encryption key size does not match the
+//      MSSIM_RC_SIZE         input encryption key size does not match the
 //                          size specified in symmetric algorithm
-//      TPM_RC_SYMMETRIC    'encryptedDuplication' is SET but no symmetric
+//      MSSIM_RC_SYMMETRIC    'encryptedDuplication' is SET but no symmetric
 //                          algorithm is provided
-//      TPM_RC_TYPE         'newParentHandle' is neither a storage key nor
-//                          TPM_RH_NULL; or the object has a NULL nameAlg
-//      TPM_RC_VALUE        for an RSA newParent, the sizes of the digest and
+//      MSSIM_RC_TYPE         'newParentHandle' is neither a storage key nor
+//                          MSSIM_RH_NULL; or the object has a NULL nameAlg
+//      MSSIM_RC_VALUE        for an RSA newParent, the sizes of the digest and
 //                          the encryption key are too large to be OAEP encoded
-TPM_RC
-TPM2_Duplicate(Duplicate_In*  in,  // IN: input parameter list
+MSSIM_RC
+MSSIM2_Duplicate(Duplicate_In*  in,  // IN: input parameter list
                Duplicate_Out* out  // OUT: output parameter list
 )
 {
-    TPM_RC         result = TPM_RC_SUCCESS;
-    TPMT_SENSITIVE sensitive;
+    MSSIM_RC         result = MSSIM_RC_SUCCESS;
+    MSSIMT_SENSITIVE sensitive;
 
     UINT16         innerKeySize = 0;  // encrypt key size for inner wrap
 
     OBJECT*        object;
     OBJECT*        newParent;
-    TPM2B_DATA     data;
+    MSSIM2B_DATA     data;
 
     // Input Validation
 
@@ -80,33 +80,33 @@ TPM2_Duplicate(Duplicate_In*  in,  // IN: input parameter list
     newParent = HandleToObject(in->newParentHandle);
 
     // duplicate key must have fixParent bit CLEAR.
-    if(IS_ATTRIBUTE(object->publicArea.objectAttributes, TPMA_OBJECT, fixedParent))
-        return TPM_RCS_ATTRIBUTES + RC_Duplicate_objectHandle;
+    if(IS_ATTRIBUTE(object->publicArea.objectAttributes, MSSIMA_OBJECT, fixedParent))
+        return MSSIM_RCS_ATTRIBUTES + RC_Duplicate_objectHandle;
 
     // Do not duplicate object with NULL nameAlg
-    if(object->publicArea.nameAlg == TPM_ALG_NULL)
-        return TPM_RCS_TYPE + RC_Duplicate_objectHandle;
+    if(object->publicArea.nameAlg == MSSIM_ALG_NULL)
+        return MSSIM_RCS_TYPE + RC_Duplicate_objectHandle;
 
-    // new parent key must be a storage object or TPM_RH_NULL
-    if(in->newParentHandle != TPM_RH_NULL && !ObjectIsStorage(in->newParentHandle))
-        return TPM_RCS_TYPE + RC_Duplicate_newParentHandle;
+    // new parent key must be a storage object or MSSIM_RH_NULL
+    if(in->newParentHandle != MSSIM_RH_NULL && !ObjectIsStorage(in->newParentHandle))
+        return MSSIM_RCS_TYPE + RC_Duplicate_newParentHandle;
 
     // If the duplicated object has encryptedDuplication SET, then there must be
-    // an inner wrapper and the new parent may not be TPM_RH_NULL
+    // an inner wrapper and the new parent may not be MSSIM_RH_NULL
     if(IS_ATTRIBUTE(
-           object->publicArea.objectAttributes, TPMA_OBJECT, encryptedDuplication))
+           object->publicArea.objectAttributes, MSSIMA_OBJECT, encryptedDuplication))
     {
-        if(in->symmetricAlg.algorithm == TPM_ALG_NULL)
-            return TPM_RCS_SYMMETRIC + RC_Duplicate_symmetricAlg;
-        if(in->newParentHandle == TPM_RH_NULL)
-            return TPM_RCS_HIERARCHY + RC_Duplicate_newParentHandle;
+        if(in->symmetricAlg.algorithm == MSSIM_ALG_NULL)
+            return MSSIM_RCS_SYMMETRIC + RC_Duplicate_symmetricAlg;
+        if(in->newParentHandle == MSSIM_RH_NULL)
+            return MSSIM_RCS_HIERARCHY + RC_Duplicate_newParentHandle;
     }
 
-    if(in->symmetricAlg.algorithm == TPM_ALG_NULL)
+    if(in->symmetricAlg.algorithm == MSSIM_ALG_NULL)
     {
-        // if algorithm is TPM_ALG_NULL, input key size must be 0
+        // if algorithm is MSSIM_ALG_NULL, input key size must be 0
         if(in->encryptionKeyIn.t.size != 0)
-            return TPM_RCS_SIZE + RC_Duplicate_encryptionKeyIn;
+            return MSSIM_RCS_SIZE + RC_Duplicate_encryptionKeyIn;
     }
     else
     {
@@ -116,19 +116,19 @@ TPM2_Duplicate(Duplicate_In*  in,  // IN: input parameter list
         // If provided the input symmetric key must match the size of the algorithm
         if(in->encryptionKeyIn.t.size != 0
            && in->encryptionKeyIn.t.size != (innerKeySize + 7) / 8)
-            return TPM_RCS_SIZE + RC_Duplicate_encryptionKeyIn;
+            return MSSIM_RCS_SIZE + RC_Duplicate_encryptionKeyIn;
     }
 
     // Command Output
 
-    if(in->newParentHandle != TPM_RH_NULL)
+    if(in->newParentHandle != MSSIM_RH_NULL)
     {
-        // Make encrypt key and its associated secret structure.  A TPM_RC_KEY
+        // Make encrypt key and its associated secret structure.  A MSSIM_RC_KEY
         // error may be returned at this point
         out->outSymSeed.t.size = sizeof(out->outSymSeed.t.secret);
         result =
             CryptSecretEncrypt(newParent, DUPLICATE_STRING, &data, &out->outSymSeed);
-        if(result != TPM_RC_SUCCESS)
+        if(result != MSSIM_RC_SUCCESS)
             return result;
     }
     else
@@ -156,7 +156,7 @@ TPM2_Duplicate(Duplicate_In*  in,  // IN: input parameter list
 
     out->encryptionKeyOut = in->encryptionKeyIn;
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_Duplicate

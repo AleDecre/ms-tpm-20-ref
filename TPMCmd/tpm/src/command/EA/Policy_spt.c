@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -41,51 +41,51 @@
 
 //** Functions
 //*** PolicyParameterChecks()
-// This function validates the common parameters of TPM2_PolicySiged()
-// and TPM2_PolicySecret(). The common parameters are 'nonceTPM',
+// This function validates the common parameters of MSSIM2_PolicySiged()
+// and MSSIM2_PolicySecret(). The common parameters are 'nonceMSSIM',
 // 'expiration', and 'cpHashA'.
-TPM_RC
+MSSIM_RC
 PolicyParameterChecks(SESSION*      session,
                       UINT64        authTimeout,
-                      TPM2B_DIGEST* cpHashA,
-                      TPM2B_NONCE*  nonce,
-                      TPM_RC        blameNonce,
-                      TPM_RC        blameCpHash,
-                      TPM_RC        blameExpiration)
+                      MSSIM2B_DIGEST* cpHashA,
+                      MSSIM2B_NONCE*  nonce,
+                      MSSIM_RC        blameNonce,
+                      MSSIM_RC        blameCpHash,
+                      MSSIM_RC        blameExpiration)
 {
-    // Validate that input nonceTPM is correct if present
+    // Validate that input nonceMSSIM is correct if present
     if(nonce != NULL && nonce->t.size != 0)
     {
-        if(!MemoryEqual2B(&nonce->b, &session->nonceTPM.b))
-            return TPM_RCS_NONCE + blameNonce;
+        if(!MemoryEqual2B(&nonce->b, &session->nonceMSSIM.b))
+            return MSSIM_RCS_NONCE + blameNonce;
     }
     // If authTimeout is set (expiration != 0...
     if(authTimeout != 0)
     {
         // Validate input expiration.
-        // Cannot compare time if clock stop advancing.  A TPM_RC_NV_UNAVAILABLE
-        // or TPM_RC_NV_RATE error may be returned here.
+        // Cannot compare time if clock stop advancing.  A MSSIM_RC_NV_UNAVAILABLE
+        // or MSSIM_RC_NV_RATE error may be returned here.
         RETURN_IF_NV_IS_NOT_AVAILABLE;
 
         // if the time has already passed or the time epoch has changed then the
         // time value is no longer good.
         if((authTimeout < g_time) || (session->epoch != g_timeEpoch))
-            return TPM_RCS_EXPIRED + blameExpiration;
+            return MSSIM_RCS_EXPIRED + blameExpiration;
     }
     // If the cpHash is present, then check it
     if(cpHashA != NULL && cpHashA->t.size != 0)
     {
         // The cpHash input has to have the correct size
         if(cpHashA->t.size != session->u2.policyDigest.t.size)
-            return TPM_RCS_SIZE + blameCpHash;
+            return MSSIM_RCS_SIZE + blameCpHash;
 
         // If the cpHash has already been set, then this input value
         // must match the current value.
         if(session->u1.cpHash.b.size != 0
            && !MemoryEqual2B(&cpHashA->b, &session->u1.cpHash.b))
-            return TPM_RC_CPHASH;
+            return MSSIM_RC_CPHASH;
     }
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 //*** PolicyContextUpdate()
@@ -95,10 +95,10 @@ PolicyParameterChecks(SESSION*      session,
 //
 //  Return Type: void
 void PolicyContextUpdate(
-    TPM_CC        commandCode,    // IN: command code
-    TPM2B_NAME*   name,           // IN: name of entity
-    TPM2B_NONCE*  ref,            // IN: the reference data
-    TPM2B_DIGEST* cpHash,         // IN: the cpHash (optional)
+    MSSIM_CC        commandCode,    // IN: command code
+    MSSIM2B_NAME*   name,           // IN: name of entity
+    MSSIM2B_NONCE*  ref,            // IN: the reference data
+    MSSIM2B_DIGEST* cpHash,         // IN: the cpHash (optional)
     UINT64        policyTimeout,  // IN: the timeout value for the policy
     SESSION*      session         // IN/OUT: policy session to be updated
 )
@@ -170,7 +170,7 @@ ComputeAuthTimeout(SESSION* session,   // IN: the session containing the time
                    INT32 expiration,   // IN: either the number of seconds from
                                        //     the start of the session or the
                                        //     time in g_timer;
-                   TPM2B_NONCE* nonce  // IN: indicator of the time base
+                   MSSIM2B_NONCE* nonce  // IN: indicator of the time base
 )
 {
     UINT64 policyTime;
@@ -205,52 +205,52 @@ void PolicyDigestClear(SESSION* session)
 
 //*** PolicySptCheckCondition()
 // Checks to see if the condition in the policy is satisfied.
-BOOL PolicySptCheckCondition(TPM_EO operation, BYTE* opA, BYTE* opB, UINT16 size)
+BOOL PolicySptCheckCondition(MSSIM_EO operation, BYTE* opA, BYTE* opB, UINT16 size)
 {
     // Arithmetic Comparison
     switch(operation)
     {
-        case TPM_EO_EQ:
+        case MSSIM_EO_EQ:
             // compare A = B
             return (UnsignedCompareB(size, opA, size, opB) == 0);
             break;
-        case TPM_EO_NEQ:
+        case MSSIM_EO_NEQ:
             // compare A != B
             return (UnsignedCompareB(size, opA, size, opB) != 0);
             break;
-        case TPM_EO_SIGNED_GT:
+        case MSSIM_EO_SIGNED_GT:
             // compare A > B signed
             return (SignedCompareB(size, opA, size, opB) > 0);
             break;
-        case TPM_EO_UNSIGNED_GT:
+        case MSSIM_EO_UNSIGNED_GT:
             // compare A > B unsigned
             return (UnsignedCompareB(size, opA, size, opB) > 0);
             break;
-        case TPM_EO_SIGNED_LT:
+        case MSSIM_EO_SIGNED_LT:
             // compare A < B signed
             return (SignedCompareB(size, opA, size, opB) < 0);
             break;
-        case TPM_EO_UNSIGNED_LT:
+        case MSSIM_EO_UNSIGNED_LT:
             // compare A < B unsigned
             return (UnsignedCompareB(size, opA, size, opB) < 0);
             break;
-        case TPM_EO_SIGNED_GE:
+        case MSSIM_EO_SIGNED_GE:
             // compare A >= B signed
             return (SignedCompareB(size, opA, size, opB) >= 0);
             break;
-        case TPM_EO_UNSIGNED_GE:
+        case MSSIM_EO_UNSIGNED_GE:
             // compare A >= B unsigned
             return (UnsignedCompareB(size, opA, size, opB) >= 0);
             break;
-        case TPM_EO_SIGNED_LE:
+        case MSSIM_EO_SIGNED_LE:
             // compare A <= B signed
             return (SignedCompareB(size, opA, size, opB) <= 0);
             break;
-        case TPM_EO_UNSIGNED_LE:
+        case MSSIM_EO_UNSIGNED_LE:
             // compare A <= B unsigned
             return (UnsignedCompareB(size, opA, size, opB) <= 0);
             break;
-        case TPM_EO_BITSET:
+        case MSSIM_EO_BITSET:
             // All bits SET in B are SET in A. ((A&B)=B)
             {
                 UINT32 i;
@@ -259,7 +259,7 @@ BOOL PolicySptCheckCondition(TPM_EO operation, BYTE* opA, BYTE* opB, UINT16 size
                         return FALSE;
             }
             break;
-        case TPM_EO_BITCLEAR:
+        case MSSIM_EO_BITCLEAR:
             // All bits SET in B are CLEAR in A. ((A&B)=0)
             {
                 UINT32 i;

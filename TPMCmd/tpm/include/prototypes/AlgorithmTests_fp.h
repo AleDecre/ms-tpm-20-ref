@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -53,17 +53,17 @@
 // If there doesn't happen to be a test for the algorithm, its associated bit is
 // quietly cleared.
 //
-// If 'alg' is zero (TPM_ALG_ERROR), then the toTest vector is cleared of any bits
+// If 'alg' is zero (MSSIM_ALG_ERROR), then the toTest vector is cleared of any bits
 // for which there is no test (i.e. no tests are actually run but the vector is
 // cleared).
 //
 // Note: 'toTest' will only ever have bits set for implemented algorithms but 'alg'
 // can be anything.
-//  Return Type: TPM_RC
-//      TPM_RC_CANCELED     test was canceled
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_CANCELED     test was canceled
 LIB_EXPORT
-TPM_RC
-TestAlgorithm(TPM_ALG_ID alg, ALGORITHM_VECTOR* toTest);
+MSSIM_RC
+TestAlgorithm(MSSIM_ALG_ID alg, ALGORITHM_VECTOR* toTest);
 #endif  // SELF_TESTS
 
 #endif  // _ALGORITHM_TESTS_FP_H_

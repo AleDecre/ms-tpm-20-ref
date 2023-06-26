@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -43,7 +43,7 @@
 #if TABLE_DRIVEN_MARSHAL
 
 //***UnmarshalUnion()
-TPM_RC
+MSSIM_RC
 UnmarshalUnion(UINT16  typeIndex,  // IN: the thing to unmarshal
                void*   target,     // IN: were the data goes to
                UINT8** buffer,     // IN/OUT: the data source buffer
@@ -59,7 +59,7 @@ MarshalUnion(UINT16  typeIndex,  // IN: the thing to marshal
              UINT32  selector    // IN: the union selector
 );
 
-TPM_RC
+MSSIM_RC
 UnmarshalInteger(int     iSize,   // IN: Number of bytes in the integer
                  void*   target,  // OUT: receives the integer
                  UINT8** buffer,  // IN/OUT: source of the data
@@ -69,10 +69,10 @@ UnmarshalInteger(int     iSize,   // IN: Number of bytes in the integer
 
 //*** Unmarshal()
 // This is the function that performs unmarshaling of different numbered types. Each
-// TPM type has a number. The number is used to lookup the address of the data
+// MSSIM type has a number. The number is used to lookup the address of the data
 // structure that describes how to unmarshal that data type.
 //
-TPM_RC
+MSSIM_RC
 Unmarshal(UINT16  typeIndex,  // IN: the thing to marshal
           void*   target,     // IN: were the data goes from
           UINT8** buffer,     // IN/OUT: the data source buffer

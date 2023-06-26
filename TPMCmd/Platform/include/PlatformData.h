@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -52,7 +52,7 @@ EXTERN int s_isCanceled;
 #ifndef HARDWARE_CLOCK
 typedef uint64_t clock64_t;
 // This is the value returned the last time that the system clock was read. This
-// is only relevant for a simulator or virtual TPM.
+// is only relevant for a simulator or virtual MSSIM.
 EXTERN clock64_t s_realTimePrevious;
 
 // These values are used to try to synthesize a long lived version of clock().
@@ -70,7 +70,7 @@ EXTERN int s_timerReset;
 EXTERN int s_timerStopped;
 
 // This variable records the time when _plat__TimerReset is called.  This mechanism
-// allow us to subtract the time when TPM is power off from the total
+// allow us to subtract the time when MSSIM is power off from the total
 // time reported by clock() function
 EXTERN uint64_t s_initClock;
 
@@ -86,15 +86,15 @@ EXTERN unsigned char s_locality;
 // If this macro is defined, then a file is used as NV.  If it is not defined,
 // then RAM is used to back NV memory. Comment out to use RAM.
 
-#if(!defined VTPM) || ((VTPM != NO) && (VTPM != YES))
-#  undef VTPM
-#  define VTPM YES  // Default: Either YES or NO
+#if(!defined VMSSIM) || ((VMSSIM != NO) && (VMSSIM != YES))
+#  undef VMSSIM
+#  define VMSSIM YES  // Default: Either YES or NO
 #endif
 
 // For a simulation, use a file to back up the NV
 #if(!defined FILE_BACKED_NV) || ((FILE_BACKED_NV != NO) && (FILE_BACKED_NV != YES))
 #  undef FILE_BACKED_NV
-#  define FILE_BACKED_NV (VTPM && YES)  // Default: Either YES or NO
+#  define FILE_BACKED_NV (VMSSIM && YES)  // Default: Either YES or NO
 #endif
 
 #if SIMULATION

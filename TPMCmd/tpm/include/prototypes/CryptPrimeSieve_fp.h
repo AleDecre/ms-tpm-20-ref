@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -104,12 +104,12 @@ LIB_EXPORT uint32_t SetFieldSize(uint32_t newFieldSize);
 // all values in the field have been checked. If all bits in the field have
 // been checked and none is prime, the function returns FALSE and a new random
 // value needs to be chosen.
-//  Return Type: TPM_RC
-//      TPM_RC_FAILURE      TPM in failure mode, probably due to entropy source
-//      TPM_RC_SUCCESS      candidate is probably prime
-//      TPM_RC_NO_RESULT    candidate is not prime and couldn't find and alternative
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_FAILURE      MSSIM in failure mode, probably due to entropy source
+//      MSSIM_RC_SUCCESS      candidate is probably prime
+//      MSSIM_RC_NO_RESULT    candidate is not prime and couldn't find and alternative
 //                          in the field
-LIB_EXPORT TPM_RC PrimeSelectWithSieve(
+LIB_EXPORT MSSIM_RC PrimeSelectWithSieve(
     bigNum      candidate,  // IN/OUT: The candidate to filter
     UINT32      e,          // IN: the exponent
     RAND_STATE* rand        // IN: the random number generator state

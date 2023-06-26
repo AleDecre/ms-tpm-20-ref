@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -47,7 +47,7 @@
 // This is the upper limit on the size of the number that can be held in the
 // structure. This differs from libraries like OpenSSL as this is not intended
 // to deal with numbers of arbitrary size; just numbers that are needed to deal
-// with the algorithms that are defined in the TPM implementation.
+// with the algorithms that are defined in the MSSIM implementation.
 //
 // The second field in the structure (size) is the number of significant words
 // in 'n'. When this number is zero, the number is zero. The word at used-1 should
@@ -182,10 +182,10 @@ extern const bignum_t BnConstZero;
 #define BN_TYPE(name, bits) typedef BN_STRUCT(bits) bn_##name##_t
 
 // This creates a local BIGNUM variable of a specific size and
-// initializes it from a TPM2B input parameter.
+// initializes it from a MSSIM2B input parameter.
 #define BN_INITIALIZED(name, bits, initializer) \
   BN_STRUCT(bits) name##_;                      \
-  bigNum name = BnFrom2B(BN_INIT(name##_), (const TPM2B*)initializer)
+  bigNum name = BnFrom2B(BN_INIT(name##_), (const MSSIM2B*)initializer)
 
 // Create a local variable that can hold a number with 'bits'
 #define BN_VAR(name, bits) \
@@ -215,7 +215,7 @@ extern const bignum_t BnConstZero;
 // library. Rather than have the interface layer have to create space for the
 // point each time it is used...
 // The x, y, and z values are pointers to bigNum values and not in-line versions of
-// the numbers. This is a relic of the days when there was no standard TPM format
+// the numbers. This is a relic of the days when there was no standard MSSIM format
 // for the numbers
 typedef struct _bn_point_t
 {
@@ -259,7 +259,7 @@ BN_TYPE(ecc, ECC_BITS);
 #define POINT(name) POINT_VAR(name, MAX_ECC_KEY_BITS)
 
 // Structure for the curve parameters. This is an analog to the
-// TPMS_ALGORITHM_DETAIL_ECC
+// MSSIMS_ALGORITHM_DETAIL_ECC
 typedef struct
 {
     bigConst         prime;  // a prime number

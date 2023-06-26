@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -44,55 +44,55 @@
 /*(See part 3 specification)
 // Create a regular object
 */
-//  Return Type: TPM_RC
-//      TPM_RC_ATTRIBUTES       'sensitiveDataOrigin' is CLEAR when 'sensitive.data'
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_ATTRIBUTES       'sensitiveDataOrigin' is CLEAR when 'sensitive.data'
 //                              is an Empty Buffer, or is SET when 'sensitive.data' is
 //                              not empty;
-//                              'fixedTPM', 'fixedParent', or 'encryptedDuplication'
+//                              'fixedMSSIM', 'fixedParent', or 'encryptedDuplication'
 //                              attributes are inconsistent between themselves or with
 //                              those of the parent object;
 //                              inconsistent 'restricted', 'decrypt' and 'sign'
 //                              attributes;
 //                              attempt to inject sensitive data for an asymmetric
 //                              key;
-//      TPM_RC_HASH             non-duplicable storage key and its parent have
+//      MSSIM_RC_HASH             non-duplicable storage key and its parent have
 //                              different name algorithm
-//      TPM_RC_KDF              incorrect KDF specified for decrypting keyed hash
+//      MSSIM_RC_KDF              incorrect KDF specified for decrypting keyed hash
 //                              object
-//      TPM_RC_KEY              invalid key size values in an asymmetric key public
+//      MSSIM_RC_KEY              invalid key size values in an asymmetric key public
 //                              area or a provided symmetric key has a value that is
 //                              not allowed
-//      TPM_RC_KEY_SIZE         key size in public area for symmetric key differs from
+//      MSSIM_RC_KEY_SIZE         key size in public area for symmetric key differs from
 //                              the size in the sensitive creation area; may also be
-//                              returned if the TPM does not allow the key size to be
+//                              returned if the MSSIM does not allow the key size to be
 //                              used for a Storage Key
-//      TPM_RC_OBJECT_MEMORY    a free slot is not available as scratch memory for
+//      MSSIM_RC_OBJECT_MEMORY    a free slot is not available as scratch memory for
 //                              object creation
-//      TPM_RC_RANGE            the exponent value of an RSA key is not supported.
-//      TPM_RC_SCHEME           inconsistent attributes 'decrypt', 'sign', or
+//      MSSIM_RC_RANGE            the exponent value of an RSA key is not supported.
+//      MSSIM_RC_SCHEME           inconsistent attributes 'decrypt', 'sign', or
 //                              'restricted' and key's scheme ID; or hash algorithm is
 //                              inconsistent with the scheme ID for keyed hash object
-//      TPM_RC_SIZE             size of public authPolicy or sensitive authValue does
+//      MSSIM_RC_SIZE             size of public authPolicy or sensitive authValue does
 //                              not match digest size of the name algorithm
 //                              sensitive data size for the keyed hash object is
 //                              larger than is allowed for the scheme
-//      TPM_RC_SYMMETRIC        a storage key with no symmetric algorithm specified;
+//      MSSIM_RC_SYMMETRIC        a storage key with no symmetric algorithm specified;
 //                              or non-storage key with symmetric algorithm different
-//                              from TPM_ALG_NULL
-//      TPM_RC_TYPE             unknown object type;
+//                              from MSSIM_ALG_NULL
+//      MSSIM_RC_TYPE             unknown object type;
 //                              'parentHandle' does not reference a restricted
 //                              decryption key in the storage hierarchy with both
 //                              public and sensitive portion loaded
-//      TPM_RC_VALUE            exponent is not prime or could not find a prime using
+//      MSSIM_RC_VALUE            exponent is not prime or could not find a prime using
 //                              the provided parameters for an RSA key;
 //                              unsupported name algorithm for an ECC key
-//      TPM_RC_OBJECT_MEMORY    there is no free slot for the object
-TPM_RC TPM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out)
+//      MSSIM_RC_OBJECT_MEMORY    there is no free slot for the object
+MSSIM_RC MSSIM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out)
 {
-    TPM_RC       result = TPM_RC_SUCCESS;
+    MSSIM_RC       result = MSSIM_RC_SUCCESS;
     OBJECT*      parentObject;
     OBJECT*      newObject;
-    TPMT_PUBLIC* publicArea;
+    MSSIMT_PUBLIC* publicArea;
 
 
 // TEST TCTI CONNECTION
@@ -114,7 +114,7 @@ TPM_RC TPM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out)
     rc = Tss2_Tcti_Tabrmd_Init(tcti_context,&context_size, NULL);
     fprintf(stdout,"KKKKKKKKKKKKKKKKKKK \n");
 
-    if(rc != TPM_RC_SUCCESS)
+    if(rc != MSSIM_RC_SUCCESS)
     {
         fprintf(stderr,"Failed to initialize the TCTI context: 0x%" PRIx32 "0 \n", rc);
         free(tcti_context);
@@ -134,15 +134,15 @@ TPM_RC TPM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out)
     fprintf(stdout,"Initialization of the ESYS context successfull \n");
 
 
-    TPM2_TSSB_DIGEST *randomBytes;
+    TPM2B_DIGEST *randomBytes;
     rc = Esys_GetRandom(esys_context, ESYS_TR_NONE, ESYS_TR_NONE, ESYS_TR_NONE,
                        20, &randomBytes);
 
-    printf("random size: %d\n", randomBytes->t.size);
+    printf("random size: %d\n", randomBytes->size);
     printf("random contents: ");
 
-    for(int i = 0; i < randomBytes->t.size; i++) {
-        printf("%d ", randomBytes->t.buffer[i]);
+    for(int i = 0; i < randomBytes->size; i++) {
+        printf("%d ", randomBytes->buffer[i]);
     }
     printf("\n");
 
@@ -160,14 +160,14 @@ TPM_RC TPM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out)
     printf("TEST1\n\n\n");
     // Does parent have the proper attributes?
     if(!ObjectIsParent(parentObject))
-        return TPM_RCS_TYPE + RC_VIRT_CreateSeed_parentHandle;
+        return MSSIM_RCS_TYPE + RC_VIRT_CreateSeed_parentHandle;
 
     printf("TEST2\n\n\n");
     // Get a slot for the creation
     newObject = FindEmptyObjectSlot(NULL);
     if(newObject == NULL)
-        return TPM_RC_OBJECT_MEMORY;
-    // If the TPM2_TSSB_PUBLIC was passed as a structure, marshal it into is canonical
+        return MSSIM_RC_OBJECT_MEMORY;
+    // If the MSSIM2_TSSB_PUBLIC was passed as a structure, marshal it into is canonical
     // form for processing
 
     // to save typing.
@@ -181,11 +181,11 @@ TPM_RC TPM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out)
     // common to create and load.
     result =
         VIRTCreateChecks(parentObject, publicArea, in->inSensitive.sensitive.data.t.size);
-    if(result != TPM_RC_SUCCESS){
+    if(result != MSSIM_RC_SUCCESS){
         return RcSafeAddToResult(result, RC_VIRT_CreateSeed_inPublic);}
     // Clean up the authValue if necessary
     if(!AdjustAuthSize(&in->inSensitive.sensitive.userAuth, publicArea->nameAlg))
-        return TPM_RCS_SIZE + RC_VIRT_CreateSeed_inSensitive;
+        return MSSIM_RCS_SIZE + RC_VIRT_CreateSeed_inSensitive;
 
     // if the requested bytes exceed the output buffer size, generates the
     // maximum bytes that the output buffer allows
@@ -202,9 +202,9 @@ TPM_RC TPM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out)
 
 
     // Command Output
-    // Create the object using the default TPM random-number generator
+    // Create the object using the default MSSIM random-number generator
     result = CryptCreateObject(newObject, &in->inSensitive.sensitive, NULL);
-    if(result != TPM_RC_SUCCESS)
+    if(result != MSSIM_RC_SUCCESS)
         return result;
     // Fill in creation data
     FillInCreationData(in->parentHandle,
@@ -230,7 +230,7 @@ TPM_RC TPM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out)
     // Finish by copying the remaining return values
     out->outPublic.publicArea = newObject->publicArea;
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_VIRT_CreateSeed

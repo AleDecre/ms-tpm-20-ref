@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -42,7 +42,7 @@
 
 // Set the default value for CC_VEND if not already set
 #ifndef CC_VEND
-#  define CC_VEND (TPM_CC)(0x20000000)
+#  define CC_VEND (MSSIM_CC)(0x20000000)
 #endif
 
 typedef UINT16 ATTRIBUTE_TYPE;
@@ -89,7 +89,7 @@ static COMMAND_INDEX NextImplementedIndex(COMMAND_INDEX commandIndex)
 //  UNIMPLEMENTED_COMMAND_INDEX     command is not implemented
 //  other                           index of a command
 COMMAND_INDEX
-GetClosestCommandIndex(TPM_CC commandCode  // IN: the command code to start at
+GetClosestCommandIndex(MSSIM_CC commandCode  // IN: the command code to start at
 )
 {
     BOOL          vendor      = (commandCode & CC_VEND) != 0;
@@ -120,7 +120,7 @@ GetClosestCommandIndex(TPM_CC commandCode  // IN: the command code to start at
         // entry.
         // Note: Put this check first so that the typical case of only one vendor-
         // specific command doesn't waste any more time.
-        if(GET_ATTRIBUTE(s_ccAttr[LIBRARY_COMMAND_ARRAY_SIZE], TPMA_CC, commandIndex)
+        if(GET_ATTRIBUTE(s_ccAttr[LIBRARY_COMMAND_ARRAY_SIZE], MSSIMA_CC, commandIndex)
            >= searchIndex)
         {
             // the vendor array is always assumed to be packed so there is
@@ -128,7 +128,7 @@ GetClosestCommandIndex(TPM_CC commandCode  // IN: the command code to start at
             return LIBRARY_COMMAND_ARRAY_SIZE;
         }
         // See if this is out of range on the top
-        if(GET_ATTRIBUTE(s_ccAttr[COMMAND_COUNT - 1], TPMA_CC, commandIndex)
+        if(GET_ATTRIBUTE(s_ccAttr[COMMAND_COUNT - 1], MSSIMA_CC, commandIndex)
            < searchIndex)
         {
             return UNIMPLEMENTED_COMMAND_INDEX;
@@ -142,7 +142,7 @@ GetClosestCommandIndex(TPM_CC commandCode  // IN: the command code to start at
         while(min <= max)
         {
             commandIndex = (min + max + 1) / 2;
-            diff = GET_ATTRIBUTE(s_ccAttr[commandIndex], TPMA_CC, commandIndex)
+            diff = GET_ATTRIBUTE(s_ccAttr[commandIndex], MSSIMA_CC, commandIndex)
                    - searchIndex;
             if(diff == 0)
                 return commandIndex;
@@ -170,7 +170,7 @@ GetClosestCommandIndex(TPM_CC commandCode  // IN: the command code to start at
     }
     // Get here if the V-Bit was not set in 'commandCode'
 
-    if(GET_ATTRIBUTE(s_ccAttr[LIBRARY_COMMAND_ARRAY_SIZE - 1], TPMA_CC, commandIndex)
+    if(GET_ATTRIBUTE(s_ccAttr[LIBRARY_COMMAND_ARRAY_SIZE - 1], MSSIMA_CC, commandIndex)
        < searchIndex)
     {
         // requested index is out of the range to the top
@@ -190,7 +190,7 @@ GetClosestCommandIndex(TPM_CC commandCode  // IN: the command code to start at
     }
     // If the request is lower than any value in the array, then return
     // the lowest value (needs to be an index for an implemented command
-    if(GET_ATTRIBUTE(s_ccAttr[0], TPMA_CC, commandIndex) >= searchIndex)
+    if(GET_ATTRIBUTE(s_ccAttr[0], MSSIMA_CC, commandIndex) >= searchIndex)
     {
         return NextImplementedIndex(0);
     }
@@ -209,11 +209,11 @@ GetClosestCommandIndex(TPM_CC commandCode  // IN: the command code to start at
         // out pointing to the last valid entry in the array which is - 2
         pAssert(
             max
-            == (sizeof(s_ccAttr) / sizeof(TPMA_CC) - VENDOR_COMMAND_ARRAY_SIZE - 2));
+            == (sizeof(s_ccAttr) / sizeof(MSSIMA_CC) - VENDOR_COMMAND_ARRAY_SIZE - 2));
         while(min <= max)
         {
             commandIndex = (min + max + 1) / 2;
-            diff = GET_ATTRIBUTE(s_ccAttr[commandIndex], TPMA_CC, commandIndex)
+            diff = GET_ATTRIBUTE(s_ccAttr[commandIndex], MSSIMA_CC, commandIndex)
                    - searchIndex;
             if(diff == 0)
                 return commandIndex;
@@ -250,7 +250,7 @@ GetClosestCommandIndex(TPM_CC commandCode  // IN: the command code to start at
 //  UNIMPLEMENTED_COMMAND_INDEX     command is not implemented
 //  other                           index of the command
 COMMAND_INDEX
-CommandCodeToCommandIndex(TPM_CC commandCode  // IN: the command code to look up
+CommandCodeToCommandIndex(MSSIM_CC commandCode  // IN: the command code to look up
 )
 {
     // Extract the low 16-bits of the command code to get the starting search index
@@ -279,9 +279,9 @@ CommandCodeToCommandIndex(TPM_CC commandCode  // IN: the command code to look up
     // requested, then the command is not implemented.
     if(commandIndex != UNIMPLEMENTED_COMMAND_INDEX)
     {
-        if((GET_ATTRIBUTE(s_ccAttr[commandIndex], TPMA_CC, commandIndex)
+        if((GET_ATTRIBUTE(s_ccAttr[commandIndex], MSSIMA_CC, commandIndex)
             != searchIndex)
-           || (IS_ATTRIBUTE(s_ccAttr[commandIndex], TPMA_CC, V)) != vendor)
+           || (IS_ATTRIBUTE(s_ccAttr[commandIndex], MSSIMA_CC, V)) != vendor)
             commandIndex = UNIMPLEMENTED_COMMAND_INDEX;
     }
     return commandIndex;
@@ -308,12 +308,12 @@ GetNextCommandIndex(COMMAND_INDEX commandIndex  // IN: the starting index
 
 //*** GetCommandCode()
 // This function returns the commandCode associated with the command index
-TPM_CC
+MSSIM_CC
 GetCommandCode(COMMAND_INDEX commandIndex  // IN: the command index
 )
 {
-    TPM_CC commandCode = GET_ATTRIBUTE(s_ccAttr[commandIndex], TPMA_CC, commandIndex);
-    if(IS_ATTRIBUTE(s_ccAttr[commandIndex], TPMA_CC, V))
+    MSSIM_CC commandCode = GET_ATTRIBUTE(s_ccAttr[commandIndex], MSSIMA_CC, commandIndex);
+    if(IS_ATTRIBUTE(s_ccAttr[commandIndex], MSSIMA_CC, V))
         commandCode += CC_VEND;
     return commandCode;
 }
@@ -413,27 +413,27 @@ BOOL IsWriteOperation(COMMAND_INDEX commandIndex  // IN: Command to check
 #ifdef WRITE_LOCK
     return ((s_commandAttributes[commandIndex] & WRITE_LOCK) != 0);
 #else
-    if(!IS_ATTRIBUTE(s_ccAttr[commandIndex], TPMA_CC, V))
+    if(!IS_ATTRIBUTE(s_ccAttr[commandIndex], MSSIMA_CC, V))
     {
-        switch(GET_ATTRIBUTE(s_ccAttr[commandIndex], TPMA_CC, commandIndex))
+        switch(GET_ATTRIBUTE(s_ccAttr[commandIndex], MSSIMA_CC, commandIndex))
         {
-            case TPM_CC_NV_Write:
+            case MSSIM_CC_NV_Write:
 #  if CC_NV_Increment
-            case TPM_CC_NV_Increment:
+            case MSSIM_CC_NV_Increment:
 #  endif
 #  if CC_NV_SetBits
-            case TPM_CC_NV_SetBits:
+            case MSSIM_CC_NV_SetBits:
 #  endif
 #  if CC_NV_Extend
-            case TPM_CC_NV_Extend:
+            case MSSIM_CC_NV_Extend:
 #  endif
 #  if CC_AC_Send
-            case TPM_CC_AC_Send:
+            case MSSIM_CC_AC_Send:
 #  endif
             // NV write lock counts as a write operation for authorization purposes.
             // We check to see if the NV is write locked before we do the
             // authorization. If it is locked, we fail the command early.
-            case TPM_CC_NV_WriteLock:
+            case MSSIM_CC_NV_WriteLock:
                 return TRUE;
             default:
                 break;
@@ -453,17 +453,17 @@ BOOL IsReadOperation(COMMAND_INDEX commandIndex  // IN: Command to check
     return ((s_commandAttributes[commandIndex] & READ_LOCK) != 0);
 #else
 
-    if(!IS_ATTRIBUTE(s_ccAttr[commandIndex], TPMA_CC, V))
+    if(!IS_ATTRIBUTE(s_ccAttr[commandIndex], MSSIMA_CC, V))
     {
-        switch(GET_ATTRIBUTE(s_ccAttr[commandIndex], TPMA_CC, commandIndex))
+        switch(GET_ATTRIBUTE(s_ccAttr[commandIndex], MSSIMA_CC, commandIndex))
         {
-            case TPM_CC_NV_Read:
-            case TPM_CC_PolicyNV:
-            case TPM_CC_NV_Certify:
+            case MSSIM_CC_NV_Read:
+            case MSSIM_CC_PolicyNV:
+            case MSSIM_CC_NV_Certify:
             // NV read lock counts as a read operation for authorization purposes.
             // We check to see if the NV is read locked before we do the
             // authorization. If it is locked, we fail the command early.
-            case TPM_CC_NV_ReadLock:
+            case MSSIM_CC_NV_ReadLock:
                 return TRUE;
             default:
                 break;
@@ -476,17 +476,17 @@ BOOL IsReadOperation(COMMAND_INDEX commandIndex  // IN: Command to check
 //*** CommandCapGetCCList()
 // This function returns a list of implemented commands and command attributes
 // starting from the command in 'commandCode'.
-//  Return Type: TPMI_YES_NO
+//  Return Type: MSSIMI_YES_NO
 //      YES         more command attributes are available
 //      NO          no more command attributes are available
-TPMI_YES_NO
-CommandCapGetCCList(TPM_CC commandCode,  // IN: start command code
+MSSIMI_YES_NO
+CommandCapGetCCList(MSSIM_CC commandCode,  // IN: start command code
                     UINT32 count,        // IN: maximum count for number of entries in
                                          //     'commandList'
-                    TPML_CCA* commandList  // OUT: list of TPMA_CC
+                    MSSIML_CCA* commandList  // OUT: list of MSSIMA_CC
 )
 {
-    TPMI_YES_NO   more = NO;
+    MSSIMI_YES_NO   more = NO;
     COMMAND_INDEX commandIndex;
 
     // initialize output handle list count
@@ -527,5 +527,5 @@ CommandCapGetCCList(TPM_CC commandCode,  // IN: start command code
 BOOL IsVendorCommand(COMMAND_INDEX commandIndex  // IN: command index to check
 )
 {
-    return (IS_ATTRIBUTE(s_ccAttr[commandIndex], TPMA_CC, V));
+    return (IS_ATTRIBUTE(s_ccAttr[commandIndex], MSSIMA_CC, V));
 }

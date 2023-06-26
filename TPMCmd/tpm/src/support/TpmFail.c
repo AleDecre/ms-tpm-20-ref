@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -33,7 +33,7 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 //** Includes, Defines, and Types
-#define TPM_FAIL_C
+#define MSSIM_FAIL_C
 #include "Tpm.h"
 #include <assert.h>
 
@@ -49,16 +49,16 @@
 // These defines are used primarily for sizing of the local response buffer.
 typedef struct
 {
-    TPM_ST tag;
+    MSSIM_ST tag;
     UINT32 size;
-    TPM_RC code;
+    MSSIM_RC code;
 } HEADER;
 
 typedef struct
 {
-    BYTE tag[sizeof(TPM_ST)];
+    BYTE tag[sizeof(MSSIM_ST)];
     BYTE size[sizeof(UINT32)];
-    BYTE code[sizeof(TPM_RC)];
+    BYTE code[sizeof(MSSIM_RC)];
 } PACKED_HEADER;
 
 typedef struct
@@ -70,14 +70,14 @@ typedef struct
         BYTE line[sizeof(UINT32)];
         BYTE code[sizeof(UINT32)];
     } values;
-    BYTE returnCode[sizeof(TPM_RC)];
+    BYTE returnCode[sizeof(MSSIM_RC)];
 } GET_TEST_RESULT_PARAMETERS;
 
 typedef struct
 {
-    BYTE moreData[sizeof(TPMI_YES_NO)];
-    BYTE capability[sizeof(TPM_CAP)];  // Always TPM_CAP_TPM_PROPERTIES
-    BYTE tpmProperty[sizeof(TPML_TAGGED_TPM_PROPERTY)];
+    BYTE moreData[sizeof(MSSIMI_YES_NO)];
+    BYTE capability[sizeof(MSSIM_CAP)];  // Always MSSIM_CAP_MSSIM_PROPERTIES
+    BYTE tpmProperty[sizeof(MSSIML_TAGGED_MSSIM_PROPERTY)];
 } GET_CAPABILITY_PARAMETERS;
 
 typedef struct
@@ -102,7 +102,7 @@ typedef union
 // required due to padding that a compiler might add.
 // Note: This is not in Global.c because of the specialized data definitions above.
 // Since the data contained in this structure is not relevant outside of the
-// execution of a single command (when the TPM is in failure mode. There is no
+// execution of a single command (when the MSSIM is in failure mode. There is no
 // compelling reason to move all the typedefs to Global.h and this structure
 // to Global.c.
 #ifndef __IGNORE_STATE__  // Don't define this value
@@ -191,8 +191,8 @@ void TpmLogFailure(
 }
 
 //*** TpmFail()
-// This function is called by TPM.lib when a failure occurs. It will set up the
-// failure values to be returned on TPM2_GetTestResult().
+// This function is called by MSSIM.lib when a failure occurs. It will set up the
+// failure values to be returned on MSSIM2_GetTestResult().
 NORETURN void TpmFail(
 #if FAIL_TRACE
     const char* function,
@@ -246,20 +246,20 @@ void TpmFailureMode(unsigned int    inRequestSize,    // IN: command buffer size
     UINT8* buffer = inRequest;
     INT32  size   = inRequestSize;
 
-    // If there is no command buffer, then just return TPM_RC_FAILURE
+    // If there is no command buffer, then just return MSSIM_RC_FAILURE
     if(inRequestSize == 0 || inRequest == NULL)
         goto FailureModeReturn;
-    // If the header is not correct for TPM2_GetCapability() or
-    // TPM2_GetTestResult() then just return the in failure mode response;
+    // If the header is not correct for MSSIM2_GetCapability() or
+    // MSSIM2_GetTestResult() then just return the in failure mode response;
     if(!(Unmarshal16(&header.tag, &buffer, &size)
          && Unmarshal32(&header.size, &buffer, &size)
          && Unmarshal32(&header.code, &buffer, &size)))
         goto FailureModeReturn;
-    if(header.tag != TPM_ST_NO_SESSIONS || header.size < 10)
+    if(header.tag != MSSIM_ST_NO_SESSIONS || header.size < 10)
         goto FailureModeReturn;
     switch(header.code)
     {
-        case TPM_CC_GetTestResult:
+        case MSSIM_CC_GetTestResult:
             // make sure that the command size is correct
             if(header.size != 10)
                 goto FailureModeReturn;
@@ -269,43 +269,43 @@ void TpmFailureMode(unsigned int    inRequestSize,    // IN: command buffer size
             marshalSize += MarshalUint32(s_failLine, &buffer);
             marshalSize += MarshalUint32(s_failCode, &buffer);
             if(s_failCode == FATAL_ERROR_NV_UNRECOVERABLE)
-                marshalSize += MarshalUint32(TPM_RC_NV_UNINITIALIZED, &buffer);
+                marshalSize += MarshalUint32(MSSIM_RC_NV_UNINITIALIZED, &buffer);
             else
-                marshalSize += MarshalUint32(TPM_RC_FAILURE, &buffer);
+                marshalSize += MarshalUint32(MSSIM_RC_FAILURE, &buffer);
             break;
-        case TPM_CC_GetCapability:
+        case MSSIM_CC_GetCapability:
             // make sure that the size of the command is exactly the size
             // returned for the capability, property, and count
             if(header.size != (10 + (3 * sizeof(UINT32)))
-               // also verify that this is requesting TPM properties
+               // also verify that this is requesting MSSIM properties
                || !Unmarshal32(&capability, &buffer, &size)
-               || capability != TPM_CAP_TPM_PROPERTIES
+               || capability != MSSIM_CAP_MSSIM_PROPERTIES
                || !Unmarshal32(&pt, &buffer, &size)
                || !Unmarshal32(&count, &buffer, &size))
                 goto FailureModeReturn;
             // If in failure mode because of an unrecoverable read error, and the
             // property is 0 and the count is 0, then this is an indication to
-            // re-manufacture the TPM. Do the re-manufacture but stay in failure
-            // mode until the TPM is reset.
+            // re-manufacture the MSSIM. Do the re-manufacture but stay in failure
+            // mode until the MSSIM is reset.
             // Note: this behavior is not required by the specification and it is
-            // OK to leave the TPM permanently bricked due to an unrecoverable NV
+            // OK to leave the MSSIM permanently bricked due to an unrecoverable NV
             // error.
             if(count == 0 && pt == 0 && s_failCode == FATAL_ERROR_NV_UNRECOVERABLE)
             {
                 g_manufactured = FALSE;
-                TPM_Manufacture(0);
+                MSSIM_Manufacture(0);
             }
             if(count > 0)
                 count = 1;
-            else if(pt > TPM_PT_FIRMWARE_VERSION_2)
+            else if(pt > MSSIM_PT_FIRMWARE_VERSION_2)
                 count = 0;
-            if(pt < TPM_PT_MANUFACTURER)
-                pt = TPM_PT_MANUFACTURER;
+            if(pt < MSSIM_PT_MANUFACTURER)
+                pt = MSSIM_PT_MANUFACTURER;
             // set up for return
             buffer = &response[10];
             // if the request was for a PT less than the last one
             // then we indicate more, otherwise, not.
-            if(pt < TPM_PT_FIRMWARE_VERSION_2)
+            if(pt < MSSIM_PT_FIRMWARE_VERSION_2)
                 *buffer++ = YES;
             else
                 *buffer++ = NO;
@@ -321,15 +321,15 @@ void TpmFailureMode(unsigned int    inRequestSize,    // IN: command buffer size
             if(count > 0)
                 switch(pt)
                 {
-                    case TPM_PT_MANUFACTURER:
-                        // the vendor ID unique to each TPM manufacturer
+                    case MSSIM_PT_MANUFACTURER:
+                        // the vendor ID unique to each MSSIM manufacturer
 #ifdef MANUFACTURER
                         pt = *(UINT32*)MANUFACTURER;
 #else
                         pt = 0;
 #endif
                         break;
-                    case TPM_PT_VENDOR_STRING_1:
+                    case MSSIM_PT_VENDOR_STRING_1:
                         // the first four characters of the vendor ID string
 #ifdef VENDOR_STRING_1
                         pt = *(UINT32*)VENDOR_STRING_1;
@@ -337,7 +337,7 @@ void TpmFailureMode(unsigned int    inRequestSize,    // IN: command buffer size
                         pt = 0;
 #endif
                         break;
-                    case TPM_PT_VENDOR_STRING_2:
+                    case MSSIM_PT_VENDOR_STRING_2:
                         // the second four characters of the vendor ID string
 #ifdef VENDOR_STRING_2
                         pt = *(UINT32*)VENDOR_STRING_2;
@@ -345,7 +345,7 @@ void TpmFailureMode(unsigned int    inRequestSize,    // IN: command buffer size
                         pt = 0;
 #endif
                         break;
-                    case TPM_PT_VENDOR_STRING_3:
+                    case MSSIM_PT_VENDOR_STRING_3:
                         // the third four characters of the vendor ID string
 #ifdef VENDOR_STRING_3
                         pt = *(UINT32*)VENDOR_STRING_3;
@@ -353,7 +353,7 @@ void TpmFailureMode(unsigned int    inRequestSize,    // IN: command buffer size
                         pt = 0;
 #endif
                         break;
-                    case TPM_PT_VENDOR_STRING_4:
+                    case MSSIM_PT_VENDOR_STRING_4:
                         // the fourth four characters of the vendor ID string
 #ifdef VENDOR_STRING_4
                         pt = *(UINT32*)VENDOR_STRING_4;
@@ -361,12 +361,12 @@ void TpmFailureMode(unsigned int    inRequestSize,    // IN: command buffer size
                         pt = 0;
 #endif
                         break;
-                    case TPM_PT_VENDOR_TPM_TYPE:
-                        // vendor-defined value indicating the TPM model
+                    case MSSIM_PT_VENDOR_MSSIM_TYPE:
+                        // vendor-defined value indicating the MSSIM model
                         // We just make up a number here
                         pt = 1;
                         break;
-                    case TPM_PT_FIRMWARE_VERSION_1:
+                    case MSSIM_PT_FIRMWARE_VERSION_1:
                         // the more significant 32-bits of a vendor-specific value
                         // indicating the version of the firmware
 #ifdef FIRMWARE_V1
@@ -375,7 +375,7 @@ void TpmFailureMode(unsigned int    inRequestSize,    // IN: command buffer size
                         pt = 0;
 #endif
                         break;
-                    default:  // TPM_PT_FIRMWARE_VERSION_2:
+                    default:  // MSSIM_PT_FIRMWARE_VERSION_2:
                         // the less significant 32-bits of a vendor-specific value
                         // indicating the version of the firmware
 #ifdef FIRMWARE_V2
@@ -394,18 +394,18 @@ void TpmFailureMode(unsigned int    inRequestSize,    // IN: command buffer size
     buffer      = response;
     marshalSize = marshalSize + 10;              // Add the header size to the
                                                  // stuff already marshaled
-    MarshalUint16(TPM_ST_NO_SESSIONS, &buffer);  // structure tag
+    MarshalUint16(MSSIM_ST_NO_SESSIONS, &buffer);  // structure tag
     MarshalUint32(marshalSize, &buffer);         // responseSize
-    MarshalUint32(TPM_RC_SUCCESS, &buffer);      // response code
+    MarshalUint32(MSSIM_RC_SUCCESS, &buffer);      // response code
 
     *outResponseSize = marshalSize;
     *outResponse     = (unsigned char*)&response;
     return;
 FailureModeReturn:
     buffer      = response;
-    marshalSize = MarshalUint16(TPM_ST_NO_SESSIONS, &buffer);
+    marshalSize = MarshalUint16(MSSIM_ST_NO_SESSIONS, &buffer);
     marshalSize += MarshalUint32(10, &buffer);
-    marshalSize += MarshalUint32(TPM_RC_FAILURE, &buffer);
+    marshalSize += MarshalUint32(MSSIM_RC_FAILURE, &buffer);
     *outResponseSize = marshalSize;
     *outResponse     = (unsigned char*)response;
     return;

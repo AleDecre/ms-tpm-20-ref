@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,12 +45,12 @@
 // Output structure definition
 typedef struct
 {
-    TPMS_TIME_INFO currentTime;
+    MSSIMS_TIME_INFO currentTime;
 } ReadClock_Out;
 
 // Function prototype
-TPM_RC
-TPM2_ReadClock(ReadClock_Out* out);
+MSSIM_RC
+MSSIM2_ReadClock(ReadClock_Out* out);
 
 #  endif  // _Read_Clock_FP_H_
 #endif    // CC_ReadClock

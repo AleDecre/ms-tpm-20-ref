@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,23 +45,23 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_PCR pcrHandle;
-    TPM2B_EVENT eventData;
+    MSSIMI_DH_PCR pcrHandle;
+    MSSIM2B_EVENT eventData;
 } PCR_Event_In;
 
 // Output structure definition
 typedef struct
 {
-    TPML_DIGEST_VALUES digests;
+    MSSIML_DIGEST_VALUES digests;
 } PCR_Event_Out;
 
 // Response code modifiers
-#    define RC_PCR_Event_pcrHandle (TPM_RC_H + TPM_RC_1)
-#    define RC_PCR_Event_eventData (TPM_RC_P + TPM_RC_1)
+#    define RC_PCR_Event_pcrHandle (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_PCR_Event_eventData (MSSIM_RC_P + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_PCR_Event(PCR_Event_In* in, PCR_Event_Out* out);
+MSSIM_RC
+MSSIM2_PCR_Event(PCR_Event_In* in, PCR_Event_Out* out);
 
 #  endif  // _PCR_Event_FP_H_
 #endif    // CC_PCR_Event

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,18 +40,18 @@
 /*(See part 3 specification)
 // Reset PCR
 */
-//  Return Type: TPM_RC
-//      TPM_RC_LOCALITY             current command locality is not allowed to
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_LOCALITY             current command locality is not allowed to
 //                                  reset the PCR referenced by 'pcrHandle'
-TPM_RC
-TPM2_PCR_Reset(PCR_Reset_In* in  // IN: input parameter list
+MSSIM_RC
+MSSIM2_PCR_Reset(PCR_Reset_In* in  // IN: input parameter list
 )
 {
     // Input Validation
 
     // Check if the reset operation is allowed by the current command locality
     if(!PCRIsResetAllowed(in->pcrHandle))
-        return TPM_RC_LOCALITY;
+        return MSSIM_RC_LOCALITY;
 
     // If PCR is state saved and we need to update orderlyState, check NV
     // availability
@@ -67,7 +67,7 @@ TPM2_PCR_Reset(PCR_Reset_In* in  // IN: input parameter list
     // necessary.
     PCRChanged(in->pcrHandle);
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_PCR_Reset

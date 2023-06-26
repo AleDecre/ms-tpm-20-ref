@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -69,7 +69,7 @@ void NvReadObject(NV_REF  ref,    // IN: points to NV where index is located
 
 //*** NvIndexIsDefined()
 // See if an index is already defined
-BOOL NvIndexIsDefined(TPM_HANDLE nvHandle  // IN: Index to look for
+BOOL NvIndexIsDefined(MSSIM_HANDLE nvHandle  // IN: Index to look for
 );
 
 //*** NvIsPlatformPersistentHandle()
@@ -79,7 +79,7 @@ BOOL NvIndexIsDefined(TPM_HANDLE nvHandle  // IN: Index to look for
 //      TRUE(1)         handle references a platform persistent object
 //                      and may reference an owner persistent object either
 //      FALSE(0)        handle does not reference platform persistent object
-BOOL NvIsPlatformPersistentHandle(TPM_HANDLE handle  // IN: handle
+BOOL NvIsPlatformPersistentHandle(MSSIM_HANDLE handle  // IN: handle
 );
 
 //*** NvIsOwnerPersistentHandle()
@@ -89,35 +89,35 @@ BOOL NvIsPlatformPersistentHandle(TPM_HANDLE handle  // IN: handle
 //      TRUE(1)         handle is owner persistent handle
 //      FALSE(0)        handle is not owner persistent handle and may not be
 //                      a persistent handle at all
-BOOL NvIsOwnerPersistentHandle(TPM_HANDLE handle  // IN: handle
+BOOL NvIsOwnerPersistentHandle(MSSIM_HANDLE handle  // IN: handle
 );
 
 //*** NvIndexIsAccessible()
 //
 // This function validates that a handle references a defined NV Index and
 // that the Index is currently accessible.
-//  Return Type: TPM_RC
-//      TPM_RC_HANDLE           the handle points to an undefined NV Index
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_HANDLE           the handle points to an undefined NV Index
 //                              If shEnable is CLEAR, this would include an index
 //                              created using ownerAuth. If phEnableNV is CLEAR,
 //                              this would include and index created using
 //                              platformAuth
-//      TPM_RC_NV_READLOCKED    Index is present but locked for reading and command
+//      MSSIM_RC_NV_READLOCKED    Index is present but locked for reading and command
 //                              does not write to the index
-//      TPM_RC_NV_WRITELOCKED   Index is present but locked for writing and command
+//      MSSIM_RC_NV_WRITELOCKED   Index is present but locked for writing and command
 //                              writes to the index
-TPM_RC
-NvIndexIsAccessible(TPMI_RH_NV_INDEX handle  // IN: handle
+MSSIM_RC
+NvIndexIsAccessible(MSSIMI_RH_NV_INDEX handle  // IN: handle
 );
 
 //*** NvGetEvictObject()
 // This function is used to dereference an evict object handle and get a pointer
 // to the object.
-//  Return Type: TPM_RC
-//      TPM_RC_HANDLE           the handle does not point to an existing
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_HANDLE           the handle does not point to an existing
 //                              persistent object
-TPM_RC
-NvGetEvictObject(TPM_HANDLE handle,  // IN: handle
+MSSIM_RC
+NvGetEvictObject(MSSIM_HANDLE handle,  // IN: handle
                  OBJECT*    object   // OUT: object data
 );
 
@@ -130,7 +130,7 @@ void NvIndexCacheInit(void);
 // as a byte sequence.
 //
 // This function requires that the NV Index be defined, and that the
-// required data is within the data range.  It also requires that TPMA_NV_WRITTEN
+// required data is within the data range.  It also requires that MSSIMA_NV_WRITTEN
 // of the Index is SET.
 void NvGetIndexData(NV_INDEX* nvIndex,  // IN: the in RAM index descriptor
                     NV_REF    locator,  // IN: where the data is located
@@ -161,24 +161,24 @@ NvGetUINT64Data(NV_INDEX* nvIndex,  // IN: the in RAM index descriptor
 
 //*** NvWriteIndexAttributes()
 // This function is used to write just the attributes of an index.
-//  Return type: TPM_RC
-//      TPM_RC_NV_RATE          NV is rate limiting so retry
-//      TPM_RC_NV_UNAVAILABLE   NV is not available
-TPM_RC
-NvWriteIndexAttributes(TPM_HANDLE handle,
+//  Return type: MSSIM_RC
+//      MSSIM_RC_NV_RATE          NV is rate limiting so retry
+//      MSSIM_RC_NV_UNAVAILABLE   NV is not available
+MSSIM_RC
+NvWriteIndexAttributes(MSSIM_HANDLE handle,
                        NV_REF     locator,    // IN: location of the index
-                       TPMA_NV    attributes  // IN: attributes to write
+                       MSSIMA_NV    attributes  // IN: attributes to write
 );
 
 //*** NvWriteIndexAuth()
 // This function is used to write the authValue of an index. It is used by
-// TPM2_NV_ChangeAuth()
-//  Return type: TPM_RC
-//      TPM_RC_NV_RATE          NV is rate limiting so retry
-//      TPM_RC_NV_UNAVAILABLE   NV is not available
-TPM_RC
+// MSSIM2_NV_ChangeAuth()
+//  Return type: MSSIM_RC
+//      MSSIM_RC_NV_RATE          NV is rate limiting so retry
+//      MSSIM_RC_NV_UNAVAILABLE   NV is not available
+MSSIM_RC
 NvWriteIndexAuth(NV_REF      locator,   // IN: location of the index
-                 TPM2B_AUTH* authValue  // IN: the authValue to write
+                 MSSIM2B_AUTH* authValue  // IN: the authValue to write
 );
 
 //*** NvGetIndexInfo()
@@ -189,7 +189,7 @@ NvWriteIndexAuth(NV_REF      locator,   // IN: location of the index
 //
 // This function will set the index cache. If the index is orderly, the attributes
 // from RAM are substituted for the attributes in the cached index
-NV_INDEX* NvGetIndexInfo(TPM_HANDLE nvHandle,  // IN: the index handle
+NV_INDEX* NvGetIndexInfo(MSSIM_HANDLE nvHandle,  // IN: the index handle
                          NV_REF*    locator    // OUT: location of the index
 );
 
@@ -205,10 +205,10 @@ NV_INDEX* NvGetIndexInfo(TPM_HANDLE nvHandle,  // IN: the index handle
 // same time. Multiple attributes may be change but not multiple index data. This
 // is important because we will normally be handling the index for which we have
 // the cached pointer values.
-//  Return type: TPM_RC
-//      TPM_RC_NV_RATE          NV is rate limiting so retry
-//      TPM_RC_NV_UNAVAILABLE   NV is not available
-TPM_RC
+//  Return type: MSSIM_RC
+//      MSSIM_RC_NV_RATE          NV is rate limiting so retry
+//      MSSIM_RC_NV_UNAVAILABLE   NV is not available
+MSSIM_RC
 NvWriteIndexData(NV_INDEX* nvIndex,  // IN: the description of the index
                  UINT32    offset,   // IN: offset of NV data
                  UINT32    size,     // IN: size of NV data
@@ -224,7 +224,7 @@ NvWriteIndexData(NV_INDEX* nvIndex,  // IN: the description of the index
 // This function will return the value from NV or RAM depending on the type of the
 // index (orderly or not)
 //
-TPM_RC
+MSSIM_RC
 NvWriteUINT64Data(NV_INDEX* nvIndex,  // IN: the description of the index
                   UINT64    intValue  // IN: the value to write
 );
@@ -235,10 +235,10 @@ NvWriteUINT64Data(NV_INDEX* nvIndex,  // IN: the description of the index
 // is the number of octets in the Name.
 //
 // This function requires that the NV Index is defined.
-TPM2B_NAME* NvGetIndexName(
+MSSIM2B_NAME* NvGetIndexName(
     NV_INDEX* nvIndex,  // IN: the index over which the name is to be
                         //     computed
-    TPM2B_NAME* name    // OUT: name of the index
+    MSSIM2B_NAME* name    // OUT: name of the index
 );
 
 //*** NvGetNameByIndexHandle()
@@ -248,64 +248,64 @@ TPM2B_NAME* NvGetIndexName(
 // is the number of octets in the Name.
 //
 // This function requires that the NV Index is defined.
-TPM2B_NAME* NvGetNameByIndexHandle(
-    TPMI_RH_NV_INDEX handle,  // IN: handle of the index
-    TPM2B_NAME*      name     // OUT: name of the index
+MSSIM2B_NAME* NvGetNameByIndexHandle(
+    MSSIMI_RH_NV_INDEX handle,  // IN: handle of the index
+    MSSIM2B_NAME*      name     // OUT: name of the index
 );
 
 //*** NvDefineIndex()
 // This function is used to assign NV memory to an NV Index.
 //
-//  Return Type: TPM_RC
-//      TPM_RC_NV_SPACE         insufficient NV space
-TPM_RC
-NvDefineIndex(TPMS_NV_PUBLIC* publicArea,  // IN: A template for an area to create.
-              TPM2B_AUTH*     authValue    // IN: The initial authorization value
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_NV_SPACE         insufficient NV space
+MSSIM_RC
+NvDefineIndex(MSSIMS_NV_PUBLIC* publicArea,  // IN: A template for an area to create.
+              MSSIM2B_AUTH*     authValue    // IN: The initial authorization value
 );
 
 //*** NvAddEvictObject()
 // This function is used to assign NV memory to a persistent object.
-//  Return Type: TPM_RC
-//      TPM_RC_NV_HANDLE        the requested handle is already in use
-//      TPM_RC_NV_SPACE         insufficient NV space
-TPM_RC
-NvAddEvictObject(TPMI_DH_OBJECT evictHandle,  // IN: new evict handle
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_NV_HANDLE        the requested handle is already in use
+//      MSSIM_RC_NV_SPACE         insufficient NV space
+MSSIM_RC
+NvAddEvictObject(MSSIMI_DH_OBJECT evictHandle,  // IN: new evict handle
                  OBJECT*        object        // IN: object to be added
 );
 
 //*** NvDeleteIndex()
 // This function is used to delete an NV Index.
-//  Return Type: TPM_RC
-//      TPM_RC_NV_UNAVAILABLE   NV is not accessible
-//      TPM_RC_NV_RATE          NV is rate limiting
-TPM_RC
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_NV_UNAVAILABLE   NV is not accessible
+//      MSSIM_RC_NV_RATE          NV is rate limiting
+MSSIM_RC
 NvDeleteIndex(NV_INDEX* nvIndex,    // IN: an in RAM index descriptor
               NV_REF    entityAddr  // IN: location in NV
 );
 
-TPM_RC
-NvDeleteEvict(TPM_HANDLE handle  // IN: handle of entity to be deleted
+MSSIM_RC
+NvDeleteEvict(MSSIM_HANDLE handle  // IN: handle of entity to be deleted
 );
 
 //*** NvFlushHierarchy()
 // This function will delete persistent objects belonging to the indicated hierarchy.
 // If the storage hierarchy is selected, the function will also delete any
 // NV Index defined using ownerAuth.
-//  Return Type: TPM_RC
-//      TPM_RC_NV_RATE           NV is unavailable because of rate limit
-//      TPM_RC_NV_UNAVAILABLE    NV is inaccessible
-TPM_RC
-NvFlushHierarchy(TPMI_RH_HIERARCHY hierarchy  // IN: hierarchy to be flushed.
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_NV_RATE           NV is unavailable because of rate limit
+//      MSSIM_RC_NV_UNAVAILABLE    NV is inaccessible
+MSSIM_RC
+NvFlushHierarchy(MSSIMI_RH_HIERARCHY hierarchy  // IN: hierarchy to be flushed.
 );
 
 //*** NvSetGlobalLock()
-// This function is used to SET the TPMA_NV_WRITELOCKED attribute for all
-// NV indexes that have TPMA_NV_GLOBALLOCK SET. This function is use by
-// TPM2_NV_GlobalWriteLock().
-//  Return Type: TPM_RC
-//      TPM_RC_NV_RATE           NV is unavailable because of rate limit
-//      TPM_RC_NV_UNAVAILABLE    NV is inaccessible
-TPM_RC
+// This function is used to SET the MSSIMA_NV_WRITELOCKED attribute for all
+// NV indexes that have MSSIMA_NV_GLOBALLOCK SET. This function is use by
+// MSSIM2_NV_GlobalWriteLock().
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_NV_RATE           NV is unavailable because of rate limit
+//      MSSIM_RC_NV_UNAVAILABLE    NV is inaccessible
+MSSIM_RC
 NvSetGlobalLock(void);
 
 //*** NvCapGetPersistent()
@@ -314,26 +314,26 @@ NvSetGlobalLock(void);
 //
 // 'Handle' must be in valid persistent object handle range, but does not
 // have to reference an existing persistent object.
-//  Return Type: TPMI_YES_NO
+//  Return Type: MSSIMI_YES_NO
 //      YES         if there are more handles available
 //      NO          all the available handles has been returned
-TPMI_YES_NO
-NvCapGetPersistent(TPMI_DH_OBJECT handle,  // IN: start handle
+MSSIMI_YES_NO
+NvCapGetPersistent(MSSIMI_DH_OBJECT handle,  // IN: start handle
                    UINT32         count,   // IN: maximum number of returned handles
-                   TPML_HANDLE*   handleList  // OUT: list of handle
+                   MSSIML_HANDLE*   handleList  // OUT: list of handle
 );
 
 //*** NvCapGetIndex()
 // This function returns a list of handles of NV indexes, starting from 'handle'.
 // 'Handle' must be in the range of NV indexes, but does not have to reference
 // an existing NV Index.
-//  Return Type: TPMI_YES_NO
+//  Return Type: MSSIMI_YES_NO
 //      YES         if there are more handles to report
 //      NO          all the available handles has been reported
-TPMI_YES_NO
-NvCapGetIndex(TPMI_DH_OBJECT handle,     // IN: start handle
+MSSIMI_YES_NO
+NvCapGetIndex(MSSIMI_DH_OBJECT handle,     // IN: start handle
               UINT32         count,      // IN: max number of returned handles
-              TPML_HANDLE*   handleList  // OUT: list of handle
+              MSSIML_HANDLE*   handleList  // OUT: list of handle
 );
 
 //*** NvCapGetIndexNumber()
@@ -358,11 +358,11 @@ UINT32
 NvCapGetCounterNumber(void);
 
 //*** NvEntityStartup()
-//  This function is called at TPM_Startup(). If the startup completes
-//  a TPM Resume cycle, no action is taken. If the startup is a TPM Reset
-//  or a TPM Restart, then this function will:
+//  This function is called at MSSIM_Startup(). If the startup completes
+//  a MSSIM Resume cycle, no action is taken. If the startup is a MSSIM Reset
+//  or a MSSIM Restart, then this function will:
 //  a) clear read/write lock;
-//  b) reset NV Index data that has TPMA_NV_CLEAR_STCLEAR SET; and
+//  b) reset NV Index data that has MSSIMA_NV_CLEAR_STCLEAR SET; and
 //  c) set the lower bits in orderly counters to 1 for a non-orderly startup
 //
 //  It is a prerequisite that NV be available for writing before this
@@ -381,7 +381,7 @@ NvCapGetCounterAvail(void);
 // with the input handle.  A value of zero indicates that handle does not
 //  exist reference an existing persistent object or defined NV Index.
 NV_REF
-NvFindHandle(TPM_HANDLE handle);
+NvFindHandle(MSSIM_HANDLE handle);
 
 //*** NvReadMaxCount()
 // This function returns the max NV counter value.

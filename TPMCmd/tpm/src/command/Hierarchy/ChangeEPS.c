@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,12 +40,12 @@
 /*(See part 3 specification)
 // Reset current EPS value
 */
-TPM_RC
-TPM2_ChangeEPS(ChangeEPS_In* in  // IN: input parameter list
+MSSIM_RC
+MSSIM2_ChangeEPS(ChangeEPS_In* in  // IN: input parameter list
 )
 {
     // The command needs NV update.  Check if NV is available.
-    // A TPM_RC_NV_UNAVAILABLE or TPM_RC_NV_RATE error may be returned at
+    // A MSSIM_RC_NV_UNAVAILABLE or MSSIM_RC_NV_RATE error may be returned at
     // this point
     RETURN_IF_NV_IS_NOT_AVAILABLE;
 
@@ -69,14 +69,14 @@ TPM2_ChangeEPS(ChangeEPS_In* in  // IN: input parameter list
     gp.endorsementAuth.t.size = 0;
 
     // Set endorsement authPolicy to null
-    gp.endorsementAlg           = TPM_ALG_NULL;
+    gp.endorsementAlg           = MSSIM_ALG_NULL;
     gp.endorsementPolicy.t.size = 0;
 
     // Flush loaded object in endorsement hierarchy
-    ObjectFlushHierarchy(TPM_RH_ENDORSEMENT);
+    ObjectFlushHierarchy(MSSIM_RH_ENDORSEMENT);
 
     // Flush evict object of endorsement hierarchy stored in NV
-    NvFlushHierarchy(TPM_RH_ENDORSEMENT);
+    NvFlushHierarchy(MSSIM_RH_ENDORSEMENT);
 
     // Save hierarchy changes to NV
     NV_SYNC_PERSISTENT(EPSeed);
@@ -88,7 +88,7 @@ TPM2_ChangeEPS(ChangeEPS_In* in  // IN: input parameter list
     // orderly state should be cleared because of the update to state clear data
     g_clearOrderly = TRUE;
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_ChangeEPS

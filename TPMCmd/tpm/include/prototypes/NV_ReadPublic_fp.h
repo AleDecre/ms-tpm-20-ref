@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,22 +45,22 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_RH_NV_INDEX nvIndex;
+    MSSIMI_RH_NV_INDEX nvIndex;
 } NV_ReadPublic_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_NV_PUBLIC nvPublic;
-    TPM2B_NAME      nvName;
+    MSSIM2B_NV_PUBLIC nvPublic;
+    MSSIM2B_NAME      nvName;
 } NV_ReadPublic_Out;
 
 // Response code modifiers
-#    define RC_NV_ReadPublic_nvIndex (TPM_RC_H + TPM_RC_1)
+#    define RC_NV_ReadPublic_nvIndex (MSSIM_RC_H + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_NV_ReadPublic(NV_ReadPublic_In* in, NV_ReadPublic_Out* out);
+MSSIM_RC
+MSSIM2_NV_ReadPublic(NV_ReadPublic_In* in, NV_ReadPublic_Out* out);
 
 #  endif  // _NV_Read_Public_FP_H_
 #endif    // CC_NV_ReadPublic

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,21 +45,21 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT itemHandle;
+    MSSIMI_DH_OBJECT itemHandle;
 } Unseal_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_SENSITIVE_DATA outData;
+    MSSIM2B_SENSITIVE_DATA outData;
 } Unseal_Out;
 
 // Response code modifiers
-#    define RC_Unseal_itemHandle (TPM_RC_H + TPM_RC_1)
+#    define RC_Unseal_itemHandle (MSSIM_RC_H + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_Unseal(Unseal_In* in, Unseal_Out* out);
+MSSIM_RC
+MSSIM2_Unseal(Unseal_In* in, Unseal_Out* out);
 
 #  endif  // _Unseal_FP_H_
 #endif    // CC_Unseal

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,27 +45,27 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT   sendObject;
-    TPMI_RH_NV_AUTH  authHandle;
-    TPMI_RH_AC       ac;
-    TPM2B_MAX_BUFFER acDataIn;
+    MSSIMI_DH_OBJECT   sendObject;
+    MSSIMI_RH_NV_AUTH  authHandle;
+    MSSIMI_RH_AC       ac;
+    MSSIM2B_MAX_BUFFER acDataIn;
 } AC_Send_In;
 
 // Output structure definition
 typedef struct
 {
-    TPMS_AC_OUTPUT acDataOut;
+    MSSIMS_AC_OUTPUT acDataOut;
 } AC_Send_Out;
 
 // Response code modifiers
-#    define RC_AC_Send_sendObject (TPM_RC_H + TPM_RC_1)
-#    define RC_AC_Send_authHandle (TPM_RC_H + TPM_RC_2)
-#    define RC_AC_Send_ac         (TPM_RC_H + TPM_RC_3)
-#    define RC_AC_Send_acDataIn   (TPM_RC_P + TPM_RC_1)
+#    define RC_AC_Send_sendObject (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_AC_Send_authHandle (MSSIM_RC_H + MSSIM_RC_2)
+#    define RC_AC_Send_ac         (MSSIM_RC_H + MSSIM_RC_3)
+#    define RC_AC_Send_acDataIn   (MSSIM_RC_P + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_AC_Send(AC_Send_In* in, AC_Send_Out* out);
+MSSIM_RC
+MSSIM2_AC_Send(AC_Send_In* in, AC_Send_Out* out);
 
 #  endif  // _AC_Send_FP_H_
 #endif    // CC_AC_Send

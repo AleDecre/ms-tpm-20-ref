@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,30 +45,30 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_RH_ENDORSEMENT privacyAdminHandle;
-    TPMI_DH_OBJECT      signHandle;
-    TPMI_SH_HMAC        sessionHandle;
-    TPM2B_DATA          qualifyingData;
-    TPMT_SIG_SCHEME     inScheme;
+    MSSIMI_RH_ENDORSEMENT privacyAdminHandle;
+    MSSIMI_DH_OBJECT      signHandle;
+    MSSIMI_SH_HMAC        sessionHandle;
+    MSSIM2B_DATA          qualifyingData;
+    MSSIMT_SIG_SCHEME     inScheme;
 } GetSessionAuditDigest_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_ATTEST   auditInfo;
-    TPMT_SIGNATURE signature;
+    MSSIM2B_ATTEST   auditInfo;
+    MSSIMT_SIGNATURE signature;
 } GetSessionAuditDigest_Out;
 
 // Response code modifiers
-#    define RC_GetSessionAuditDigest_privacyAdminHandle (TPM_RC_H + TPM_RC_1)
-#    define RC_GetSessionAuditDigest_signHandle         (TPM_RC_H + TPM_RC_2)
-#    define RC_GetSessionAuditDigest_sessionHandle      (TPM_RC_H + TPM_RC_3)
-#    define RC_GetSessionAuditDigest_qualifyingData     (TPM_RC_P + TPM_RC_1)
-#    define RC_GetSessionAuditDigest_inScheme           (TPM_RC_P + TPM_RC_2)
+#    define RC_GetSessionAuditDigest_privacyAdminHandle (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_GetSessionAuditDigest_signHandle         (MSSIM_RC_H + MSSIM_RC_2)
+#    define RC_GetSessionAuditDigest_sessionHandle      (MSSIM_RC_H + MSSIM_RC_3)
+#    define RC_GetSessionAuditDigest_qualifyingData     (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_GetSessionAuditDigest_inScheme           (MSSIM_RC_P + MSSIM_RC_2)
 
 // Function prototype
-TPM_RC
-TPM2_GetSessionAuditDigest(GetSessionAuditDigest_In*  in,
+MSSIM_RC
+MSSIM2_GetSessionAuditDigest(GetSessionAuditDigest_In*  in,
                            GetSessionAuditDigest_Out* out);
 
 #  endif  // _Get_Session_Audit_Digest_FP_H_

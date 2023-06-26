@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -42,11 +42,11 @@
 /*(See part 3 specification)
 // PolicyOR command
 */
-//  Return Type: TPM_RC
-//      TPM_RC_VALUE            no digest in 'pHashList' matched the current
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_VALUE            no digest in 'pHashList' matched the current
 //                              value of policyDigest for 'policySession'
-TPM_RC
-TPM2_PolicyOR(PolicyOR_In* in  // IN: input parameter list
+MSSIM_RC
+MSSIM2_PolicyOR(PolicyOR_In* in  // IN: input parameter list
 )
 {
     SESSION* session;
@@ -66,7 +66,7 @@ TPM2_PolicyOR(PolicyOR_In* in  // IN: input parameter list
         {
             // Found a match
             HASH_STATE hashState;
-            TPM_CC     commandCode = TPM_CC_PolicyOR;
+            MSSIM_CC     commandCode = MSSIM_CC_PolicyOR;
 
             // Start hash
             session->u2.policyDigest.t.size =
@@ -78,7 +78,7 @@ TPM2_PolicyOR(PolicyOR_In* in  // IN: input parameter list
             CryptDigestUpdate2B(&hashState, &session->u2.policyDigest.b);
 
             // add command code
-            CryptDigestUpdateInt(&hashState, sizeof(TPM_CC), commandCode);
+            CryptDigestUpdateInt(&hashState, sizeof(MSSIM_CC), commandCode);
 
             // Add each of the hashes in the list
             for(i = 0; i < in->pHashList.count; i++)
@@ -89,11 +89,11 @@ TPM2_PolicyOR(PolicyOR_In* in  // IN: input parameter list
             // Complete digest
             CryptHashEnd2B(&hashState, &session->u2.policyDigest.b);
 
-            return TPM_RC_SUCCESS;
+            return MSSIM_RC_SUCCESS;
         }
     }
     // None of the values in the list matched the current policyDigest
-    return TPM_RCS_VALUE + RC_PolicyOR_pHashList;
+    return MSSIM_RCS_VALUE + RC_PolicyOR_pHashList;
 }
 
 #endif  // CC_PolicyOR

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,28 +45,28 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_RH_ENDORSEMENT privacyHandle;
-    TPMI_DH_OBJECT      signHandle;
-    TPM2B_DATA          qualifyingData;
-    TPMT_SIG_SCHEME     inScheme;
+    MSSIMI_RH_ENDORSEMENT privacyHandle;
+    MSSIMI_DH_OBJECT      signHandle;
+    MSSIM2B_DATA          qualifyingData;
+    MSSIMT_SIG_SCHEME     inScheme;
 } GetCommandAuditDigest_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_ATTEST   auditInfo;
-    TPMT_SIGNATURE signature;
+    MSSIM2B_ATTEST   auditInfo;
+    MSSIMT_SIGNATURE signature;
 } GetCommandAuditDigest_Out;
 
 // Response code modifiers
-#    define RC_GetCommandAuditDigest_privacyHandle  (TPM_RC_H + TPM_RC_1)
-#    define RC_GetCommandAuditDigest_signHandle     (TPM_RC_H + TPM_RC_2)
-#    define RC_GetCommandAuditDigest_qualifyingData (TPM_RC_P + TPM_RC_1)
-#    define RC_GetCommandAuditDigest_inScheme       (TPM_RC_P + TPM_RC_2)
+#    define RC_GetCommandAuditDigest_privacyHandle  (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_GetCommandAuditDigest_signHandle     (MSSIM_RC_H + MSSIM_RC_2)
+#    define RC_GetCommandAuditDigest_qualifyingData (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_GetCommandAuditDigest_inScheme       (MSSIM_RC_P + MSSIM_RC_2)
 
 // Function prototype
-TPM_RC
-TPM2_GetCommandAuditDigest(GetCommandAuditDigest_In*  in,
+MSSIM_RC
+MSSIM2_GetCommandAuditDigest(GetCommandAuditDigest_In*  in,
                            GetCommandAuditDigest_Out* out);
 
 #  endif  // _Get_Command_Audit_Digest_FP_H_

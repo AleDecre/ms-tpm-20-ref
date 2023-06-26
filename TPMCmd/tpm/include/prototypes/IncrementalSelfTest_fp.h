@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,21 +45,21 @@
 // Input structure definition
 typedef struct
 {
-    TPML_ALG toTest;
+    MSSIML_ALG toTest;
 } IncrementalSelfTest_In;
 
 // Output structure definition
 typedef struct
 {
-    TPML_ALG toDoList;
+    MSSIML_ALG toDoList;
 } IncrementalSelfTest_Out;
 
 // Response code modifiers
-#    define RC_IncrementalSelfTest_toTest (TPM_RC_P + TPM_RC_1)
+#    define RC_IncrementalSelfTest_toTest (MSSIM_RC_P + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_IncrementalSelfTest(IncrementalSelfTest_In* in, IncrementalSelfTest_Out* out);
+MSSIM_RC
+MSSIM2_IncrementalSelfTest(IncrementalSelfTest_In* in, IncrementalSelfTest_Out* out);
 
 #  endif  // _Incremental_Self_Test_FP_H_
 #endif    // CC_IncrementalSelfTest

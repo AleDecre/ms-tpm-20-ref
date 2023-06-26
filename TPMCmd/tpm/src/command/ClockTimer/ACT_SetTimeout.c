@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -38,22 +38,22 @@
 #if CC_ACT_SetTimeout  // Conditional expansion of this file
 
 /*(See part 3 specification)
-// prove an object with a specific Name is loaded in the TPM
+// prove an object with a specific Name is loaded in the MSSIM
 */
-//  Return Type: TPM_RC
-//      TPM_RC_RETRY            returned when an update for the selected ACT is
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_RETRY            returned when an update for the selected ACT is
 //                              already pending
-//      TPM_RC_VALUE            attempt to disable signaling from an ACT that has
+//      MSSIM_RC_VALUE            attempt to disable signaling from an ACT that has
 //                              not expired
-TPM_RC
-TPM2_ACT_SetTimeout(ACT_SetTimeout_In* in  // IN: input parameter list
+MSSIM_RC
+MSSIM2_ACT_SetTimeout(ACT_SetTimeout_In* in  // IN: input parameter list
 )
 {
     // If 'startTimeout' is UINT32_MAX, then this is an attempt to disable the ACT
     // and turn off the signaling for the ACT. This is only valid if the ACT
     // is signaling.
     if((in->startTimeout == UINT32_MAX) && !ActGetSignaled(in->actHandle))
-        return TPM_RC_VALUE + RC_ACT_SetTimeout_startTimeout;
+        return MSSIM_RC_VALUE + RC_ACT_SetTimeout_startTimeout;
     return ActCounterUpdate(in->actHandle, in->startTimeout);
 }
 

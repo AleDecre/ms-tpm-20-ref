@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -42,44 +42,44 @@
 
 //*** HandleGetType()
 // This function returns the type of a handle which is the MSO of the handle.
-TPM_HT
-HandleGetType(TPM_HANDLE handle  // IN: a handle to be checked
+MSSIM_HT
+HandleGetType(MSSIM_HANDLE handle  // IN: a handle to be checked
 )
 {
     // return the upper bytes of input data
-    return (TPM_HT)((handle & HR_RANGE_MASK) >> HR_SHIFT);
+    return (MSSIM_HT)((handle & HR_RANGE_MASK) >> HR_SHIFT);
 }
 
 //*** NextPermanentHandle()
 // This function returns the permanent handle that is equal to the input value or
 // is the next higher value. If there is no handle with the input value and there
 // is no next higher value, it returns 0:
-TPM_HANDLE
-NextPermanentHandle(TPM_HANDLE inHandle  // IN: the handle to check
+MSSIM_HANDLE
+NextPermanentHandle(MSSIM_HANDLE inHandle  // IN: the handle to check
 )
 {
     // If inHandle is below the start of the range of permanent handles
     // set it to the start and scan from there
-    if(inHandle < TPM_RH_FIRST)
-        inHandle = TPM_RH_FIRST;
+    if(inHandle < MSSIM_RH_FIRST)
+        inHandle = MSSIM_RH_FIRST;
     // scan from input value until we find an implemented permanent handle
     // or go out of range
-    for(; inHandle <= TPM_RH_LAST; inHandle++)
+    for(; inHandle <= MSSIM_RH_LAST; inHandle++)
     {
         switch(inHandle)
         {
-            case TPM_RH_OWNER:
-            case TPM_RH_NULL:
-            case TPM_RS_PW:
-            case TPM_RH_LOCKOUT:
-            case TPM_RH_ENDORSEMENT:
-            case TPM_RH_PLATFORM:
-            case TPM_RH_PLATFORM_NV:
+            case MSSIM_RH_OWNER:
+            case MSSIM_RH_NULL:
+            case MSSIM_RS_PW:
+            case MSSIM_RH_LOCKOUT:
+            case MSSIM_RH_ENDORSEMENT:
+            case MSSIM_RH_PLATFORM:
+            case MSSIM_RH_PLATFORM_NV:
 #ifdef VENDOR_PERMANENT
             case VENDOR_PERMANENT:
 #endif
 // Each of the implemented ACT
-#define ACT_IMPLEMENTED_CASE(N) case TPM_RH_ACT_##N:
+#define ACT_IMPLEMENTED_CASE(N) case MSSIM_RH_ACT_##N:
 
                 FOR_EACH_ACT(ACT_IMPLEMENTED_CASE)
 
@@ -97,19 +97,19 @@ NextPermanentHandle(TPM_HANDLE inHandle  // IN: the handle to check
 // This function returns a list of the permanent handles of PCR, started from
 // 'handle'. If 'handle' is larger than the largest permanent handle, an empty list
 // will be returned with 'more' set to NO.
-//  Return Type: TPMI_YES_NO
+//  Return Type: MSSIMI_YES_NO
 //      YES         if there are more handles available
 //      NO          all the available handles has been returned
-TPMI_YES_NO
-PermanentCapGetHandles(TPM_HANDLE   handle,     // IN: start handle
+MSSIMI_YES_NO
+PermanentCapGetHandles(MSSIM_HANDLE   handle,     // IN: start handle
                        UINT32       count,      // IN: count of returned handles
-                       TPML_HANDLE* handleList  // OUT: list of handle
+                       MSSIML_HANDLE* handleList  // OUT: list of handle
 )
 {
-    TPMI_YES_NO more = NO;
+    MSSIMI_YES_NO more = NO;
     UINT32      i;
 
-    pAssert(HandleGetType(handle) == TPM_HT_PERMANENT);
+    pAssert(HandleGetType(handle) == MSSIM_HT_PERMANENT);
 
     // Initialize output handle list
     handleList->count = 0;
@@ -143,18 +143,18 @@ PermanentCapGetHandles(TPM_HANDLE   handle,     // IN: start handle
 // This function returns a list of the permanent handles of PCR, started from
 // 'handle'. If 'handle' is larger than the largest permanent handle, an empty list
 // will be returned with 'more' set to NO.
-//  Return Type: TPMI_YES_NO
+//  Return Type: MSSIMI_YES_NO
 //      YES         if there are more handles available
 //      NO          all the available handles has been returned
-TPMI_YES_NO
-PermanentHandleGetPolicy(TPM_HANDLE handle,  // IN: start handle
+MSSIMI_YES_NO
+PermanentHandleGetPolicy(MSSIM_HANDLE handle,  // IN: start handle
                          UINT32     count,   // IN: max count of returned handles
-                         TPML_TAGGED_POLICY* policyList  // OUT: list of handle
+                         MSSIML_TAGGED_POLICY* policyList  // OUT: list of handle
 )
 {
-    TPMI_YES_NO more = NO;
+    MSSIMI_YES_NO more = NO;
 
-    pAssert(HandleGetType(handle) == TPM_HT_PERMANENT);
+    pAssert(HandleGetType(handle) == MSSIM_HT_PERMANENT);
 
     // Initialize output handle list
     policyList->count = 0;
@@ -167,11 +167,11 @@ PermanentHandleGetPolicy(TPM_HANDLE handle,  // IN: start handle
     for(handle = NextPermanentHandle(handle); handle != 0;
         handle = NextPermanentHandle(handle + 1))
     {
-        TPM2B_DIGEST policyDigest;
-        TPM_ALG_ID   policyAlg;
+        MSSIM2B_DIGEST policyDigest;
+        MSSIM_ALG_ID   policyAlg;
         // Check to see if this permanent handle has a policy
         policyAlg = EntityGetAuthPolicy(handle, &policyDigest);
-        if(policyAlg == TPM_ALG_ERROR)
+        if(policyAlg == MSSIM_ALG_ERROR)
             continue;
         if(policyList->count < count)
         {

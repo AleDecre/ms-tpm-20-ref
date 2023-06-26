@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -41,17 +41,17 @@
 // allows qualification of duplication so that it a specific new parent may be
 // selected or a new parent selected for a specific object.
 */
-//  Return Type: TPM_RC
-//      TPM_RC_COMMAND_CODE   'commandCode' of 'policySession' is not empty
-//      TPM_RC_CPHASH         'cpHash' of 'policySession' is not empty
-TPM_RC
-TPM2_PolicyDuplicationSelect(
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_COMMAND_CODE   'commandCode' of 'policySession' is not empty
+//      MSSIM_RC_CPHASH         'cpHash' of 'policySession' is not empty
+MSSIM_RC
+MSSIM2_PolicyDuplicationSelect(
     PolicyDuplicationSelect_In* in  // IN: input parameter list
 )
 {
     SESSION*   session;
     HASH_STATE hashState;
-    TPM_CC     commandCode = TPM_CC_PolicyDuplicationSelect;
+    MSSIM_CC     commandCode = MSSIM_CC_PolicyDuplicationSelect;
 
     // Input Validation
 
@@ -60,11 +60,11 @@ TPM2_PolicyDuplicationSelect(
 
     // cpHash in session context must be empty
     if(session->u1.cpHash.t.size != 0)
-        return TPM_RC_CPHASH;
+        return MSSIM_RC_CPHASH;
 
     // commandCode in session context must be empty
     if(session->commandCode != 0)
-        return TPM_RC_COMMAND_CODE;
+        return MSSIM_RC_COMMAND_CODE;
 
     // Internal Data Update
 
@@ -89,7 +89,7 @@ TPM2_PolicyDuplicationSelect(
     CryptDigestUpdate2B(&hashState, &session->u2.policyDigest.b);
 
     //  add command code
-    CryptDigestUpdateInt(&hashState, sizeof(TPM_CC), commandCode);
+    CryptDigestUpdateInt(&hashState, sizeof(MSSIM_CC), commandCode);
 
     //  add objectName
     if(in->includeObject == YES)
@@ -99,15 +99,15 @@ TPM2_PolicyDuplicationSelect(
     CryptDigestUpdate2B(&hashState, &in->newParentName.b);
 
     //  add includeObject
-    CryptDigestUpdateInt(&hashState, sizeof(TPMI_YES_NO), in->includeObject);
+    CryptDigestUpdateInt(&hashState, sizeof(MSSIMI_YES_NO), in->includeObject);
 
     //  complete digest
     CryptHashEnd2B(&hashState, &session->u2.policyDigest.b);
 
     // set commandCode in session context
-    session->commandCode = TPM_CC_Duplicate;
+    session->commandCode = MSSIM_CC_Duplicate;
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_PolicyDuplicationSelect

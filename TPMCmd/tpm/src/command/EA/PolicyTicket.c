@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -42,22 +42,22 @@
 /*(See part 3 specification)
 // Include ticket to the policy evaluation
 */
-//  Return Type: TPM_RC
-//      TPM_RC_CPHASH           policy's cpHash was previously set to a different
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_CPHASH           policy's cpHash was previously set to a different
 //                              value
-//      TPM_RC_EXPIRED          'timeout' value in the ticket is in the past and the
+//      MSSIM_RC_EXPIRED          'timeout' value in the ticket is in the past and the
 //                              ticket has expired
-//      TPM_RC_SIZE             'timeout' or 'cpHash' has invalid size for the
-//      TPM_RC_TICKET           'ticket' is not valid
-TPM_RC
-TPM2_PolicyTicket(PolicyTicket_In* in  // IN: input parameter list
+//      MSSIM_RC_SIZE             'timeout' or 'cpHash' has invalid size for the
+//      MSSIM_RC_TICKET           'ticket' is not valid
+MSSIM_RC
+MSSIM2_PolicyTicket(PolicyTicket_In* in  // IN: input parameter list
 )
 {
-    TPM_RC       result;
+    MSSIM_RC       result;
     SESSION*     session;
     UINT64       authTimeout;
-    TPMT_TK_AUTH ticketToCompare;
-    TPM_CC       commandCode = TPM_CC_PolicySecret;
+    MSSIMT_TK_AUTH ticketToCompare;
+    MSSIM_CC       commandCode = MSSIM_CC_PolicySecret;
     BOOL         expiresOnReset;
 
     // Input Validation
@@ -72,14 +72,14 @@ TPM2_PolicyTicket(PolicyTicket_In* in  // IN: input parameter list
     // should use the intended authorization for which the ticket
     // would be a substitute.
     if(session->attributes.isTrialPolicy)
-        return TPM_RCS_ATTRIBUTES + RC_PolicyTicket_policySession;
-    // Restore timeout data.  The format of timeout buffer is TPM-specific.
+        return MSSIM_RCS_ATTRIBUTES + RC_PolicyTicket_policySession;
+    // Restore timeout data.  The format of timeout buffer is MSSIM-specific.
     // In this implementation, the most significant bit of the timeout value is
-    // used as the flag to indicate that the ticket expires on TPM Reset or
-    // TPM Restart. The flag has to be removed before the parameters and ticket
+    // used as the flag to indicate that the ticket expires on MSSIM Reset or
+    // MSSIM Restart. The flag has to be removed before the parameters and ticket
     // are checked.
     if(in->timeout.t.size != sizeof(UINT64))
-        return TPM_RCS_SIZE + RC_PolicyTicket_timeout;
+        return MSSIM_RCS_SIZE + RC_PolicyTicket_timeout;
     authTimeout = BYTE_ARRAY_TO_UINT64(in->timeout.t.buffer);
 
     // extract the flag
@@ -94,7 +94,7 @@ TPM2_PolicyTicket(PolicyTicket_In* in  // IN: input parameter list
                                    0,     // no bad nonce return
                                    RC_PolicyTicket_cpHashA,
                                    RC_PolicyTicket_timeout);
-    if(result != TPM_RC_SUCCESS)
+    if(result != MSSIM_RC_SUCCESS)
         return result;
     // Validate Ticket
     // Re-generate policy ticket by input parameters
@@ -108,16 +108,16 @@ TPM2_PolicyTicket(PolicyTicket_In* in  // IN: input parameter list
                       &ticketToCompare);
     // Compare generated digest with input ticket digest
     if(!MemoryEqual2B(&in->ticket.digest.b, &ticketToCompare.digest.b))
-        return TPM_RCS_TICKET + RC_PolicyTicket_ticket;
+        return MSSIM_RCS_TICKET + RC_PolicyTicket_ticket;
 
     // Internal Data Update
 
-    // Is this ticket to take the place of a TPM2_PolicySigned() or
-    // a TPM2_PolicySecret()?
-    if(in->ticket.tag == TPM_ST_AUTH_SIGNED)
-        commandCode = TPM_CC_PolicySigned;
-    else if(in->ticket.tag == TPM_ST_AUTH_SECRET)
-        commandCode = TPM_CC_PolicySecret;
+    // Is this ticket to take the place of a MSSIM2_PolicySigned() or
+    // a MSSIM2_PolicySecret()?
+    if(in->ticket.tag == MSSIM_ST_AUTH_SIGNED)
+        commandCode = MSSIM_CC_PolicySigned;
+    else if(in->ticket.tag == MSSIM_ST_AUTH_SECRET)
+        commandCode = MSSIM_CC_PolicySecret;
     else
         // There could only be two possible tag values.  Any other value should
         // be caught by the ticket validation process.
@@ -131,7 +131,7 @@ TPM2_PolicyTicket(PolicyTicket_In* in  // IN: input parameter list
                         authTimeout,
                         session);
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_PolicyTicket

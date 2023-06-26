@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,21 +45,21 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_RH_PLATFORM authorization;
-    TPMI_DH_OBJECT   keyHandle;
-    TPM2B_DIGEST     fuDigest;
-    TPMT_SIGNATURE   manifestSignature;
+    MSSIMI_RH_PLATFORM authorization;
+    MSSIMI_DH_OBJECT   keyHandle;
+    MSSIM2B_DIGEST     fuDigest;
+    MSSIMT_SIGNATURE   manifestSignature;
 } FieldUpgradeStart_In;
 
 // Response code modifiers
-#    define RC_FieldUpgradeStart_authorization     (TPM_RC_H + TPM_RC_1)
-#    define RC_FieldUpgradeStart_keyHandle         (TPM_RC_H + TPM_RC_2)
-#    define RC_FieldUpgradeStart_fuDigest          (TPM_RC_P + TPM_RC_1)
-#    define RC_FieldUpgradeStart_manifestSignature (TPM_RC_P + TPM_RC_2)
+#    define RC_FieldUpgradeStart_authorization     (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_FieldUpgradeStart_keyHandle         (MSSIM_RC_H + MSSIM_RC_2)
+#    define RC_FieldUpgradeStart_fuDigest          (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_FieldUpgradeStart_manifestSignature (MSSIM_RC_P + MSSIM_RC_2)
 
 // Function prototype
-TPM_RC
-TPM2_FieldUpgradeStart(FieldUpgradeStart_In* in);
+MSSIM_RC
+MSSIM2_FieldUpgradeStart(FieldUpgradeStart_In* in);
 
 #  endif  // _Field_Upgrade_Start_FP_H_
 #endif    // CC_FieldUpgradeStart

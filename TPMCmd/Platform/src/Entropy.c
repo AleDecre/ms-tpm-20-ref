@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -106,7 +106,7 @@ LIB_EXPORT int32_t _plat__GetEntropy(unsigned char* entropy,  // output buffer
         // NOTE 1: The following command does not provide proper cryptographic
         // entropy. Its primary purpose to make sure that different instances of the
         // simulator, possibly started by a script on the same machine, are seeded
-        // differently. Vendors of the actual TPMs need to ensure availability of
+        // differently. Vendors of the actual MSSIMs need to ensure availability of
         // proper entropy using their platform-specific means.
         //
         // NOTE 2: In debug builds by default the reference implementation will seed

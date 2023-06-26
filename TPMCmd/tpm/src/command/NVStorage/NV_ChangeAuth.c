@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,12 +40,12 @@
 /*(See part 3 specification)
 // change authorization value of a NV index
 */
-//  Return Type: TPM_RC
-//      TPM_RC_SIZE                     'newAuth' size is larger than the digest
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_SIZE                     'newAuth' size is larger than the digest
 //                                      size of the Name algorithm for the Index
 //                                      referenced by 'nvIndex'
-TPM_RC
-TPM2_NV_ChangeAuth(NV_ChangeAuth_In* in  // IN: input parameter list
+MSSIM_RC
+MSSIM2_NV_ChangeAuth(NV_ChangeAuth_In* in  // IN: input parameter list
 )
 {
     NV_REF    locator;
@@ -57,7 +57,7 @@ TPM2_NV_ChangeAuth(NV_ChangeAuth_In* in  // IN: input parameter list
     // digest of the nameAlg.
     if(MemoryRemoveTrailingZeros(&in->newAuth)
        > CryptHashGetDigestSize(nvIndex->publicArea.nameAlg))
-        return TPM_RCS_SIZE + RC_NV_ChangeAuth_newAuth;
+        return MSSIM_RCS_SIZE + RC_NV_ChangeAuth_newAuth;
 
     // Internal Data Update
     // Change authValue

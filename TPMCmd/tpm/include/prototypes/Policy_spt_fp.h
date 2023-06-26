@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -42,17 +42,17 @@
 
 //** Functions
 //*** PolicyParameterChecks()
-// This function validates the common parameters of TPM2_PolicySiged()
-// and TPM2_PolicySecret(). The common parameters are 'nonceTPM',
+// This function validates the common parameters of MSSIM2_PolicySiged()
+// and MSSIM2_PolicySecret(). The common parameters are 'nonceMSSIM',
 // 'expiration', and 'cpHashA'.
-TPM_RC
+MSSIM_RC
 PolicyParameterChecks(SESSION*      session,
                       UINT64        authTimeout,
-                      TPM2B_DIGEST* cpHashA,
-                      TPM2B_NONCE*  nonce,
-                      TPM_RC        blameNonce,
-                      TPM_RC        blameCpHash,
-                      TPM_RC        blameExpiration);
+                      MSSIM2B_DIGEST* cpHashA,
+                      MSSIM2B_NONCE*  nonce,
+                      MSSIM_RC        blameNonce,
+                      MSSIM_RC        blameCpHash,
+                      MSSIM_RC        blameExpiration);
 
 //*** PolicyContextUpdate()
 // Update policy hash
@@ -61,10 +61,10 @@ PolicyParameterChecks(SESSION*      session,
 //
 //  Return Type: void
 void PolicyContextUpdate(
-    TPM_CC        commandCode,    // IN: command code
-    TPM2B_NAME*   name,           // IN: name of entity
-    TPM2B_NONCE*  ref,            // IN: the reference data
-    TPM2B_DIGEST* cpHash,         // IN: the cpHash (optional)
+    MSSIM_CC        commandCode,    // IN: command code
+    MSSIM2B_NAME*   name,           // IN: name of entity
+    MSSIM2B_NONCE*  ref,            // IN: the reference data
+    MSSIM2B_DIGEST* cpHash,         // IN: the cpHash (optional)
     UINT64        policyTimeout,  // IN: the timeout value for the policy
     SESSION*      session         // IN/OUT: policy session to be updated
 );
@@ -78,7 +78,7 @@ ComputeAuthTimeout(SESSION* session,   // IN: the session containing the time
                    INT32 expiration,   // IN: either the number of seconds from
                                        //     the start of the session or the
                                        //     time in g_timer;
-                   TPM2B_NONCE* nonce  // IN: indicator of the time base
+                   MSSIM2B_NONCE* nonce  // IN: indicator of the time base
 );
 
 //*** PolicyDigestClear()
@@ -87,6 +87,6 @@ void PolicyDigestClear(SESSION* session);
 
 //*** PolicySptCheckCondition()
 // Checks to see if the condition in the policy is satisfied.
-BOOL PolicySptCheckCondition(TPM_EO operation, BYTE* opA, BYTE* opB, UINT16 size);
+BOOL PolicySptCheckCondition(MSSIM_EO operation, BYTE* opA, BYTE* opB, UINT16 size);
 
 #endif  // _POLICY_SPT_FP_H_

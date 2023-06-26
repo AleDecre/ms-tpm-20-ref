@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -36,53 +36,53 @@
 
 // These definitions allow the same code to be used pre and post 1.21. The main
 // action is to redefine the index type values from the bit values.
-// Use TPM_NT_ORDINARY to indicate if the TPM_NT type is defined
+// Use MSSIM_NT_ORDINARY to indicate if the MSSIM_NT type is defined
 
 #ifndef _NV_H_
 #define _NV_H_
 
-#ifdef TPM_NT_ORDINARY
-// If TPM_NT_ORDINARY is defined, then the TPM_NT field is present in a TPMA_NV
-#  define GET_TPM_NT(attributes) GET_ATTRIBUTE(attributes, TPMA_NV, TPM_NT)
+#ifdef MSSIM_NT_ORDINARY
+// If MSSIM_NT_ORDINARY is defined, then the MSSIM_NT field is present in a MSSIMA_NV
+#  define GET_MSSIM_NT(attributes) GET_ATTRIBUTE(attributes, MSSIMA_NV, MSSIM_NT)
 #else
-// If TPM_NT_ORDINARY is not defined, then need to synthesize it from the
+// If MSSIM_NT_ORDINARY is not defined, then need to synthesize it from the
 // attributes
-#  define GetNv_TPM_NV(attributes)                    \
-    (IS_ATTRIBUTE(attributes, TPMA_NV, COUNTER)       \
-     + (IS_ATTRIBUTE(attributes, TPMA_NV, BITS) << 1) \
-     + (IS_ATTRIBUTE(attributes, TPMA_NV, EXTEND) << 2))
-#  define TPM_NT_ORDINARY (0)
-#  define TPM_NT_COUNTER  (1)
-#  define TPM_NT_BITS     (2)
-#  define TPM_NT_EXTEND   (4)
+#  define GetNv_MSSIM_NV(attributes)                    \
+    (IS_ATTRIBUTE(attributes, MSSIMA_NV, COUNTER)       \
+     + (IS_ATTRIBUTE(attributes, MSSIMA_NV, BITS) << 1) \
+     + (IS_ATTRIBUTE(attributes, MSSIMA_NV, EXTEND) << 2))
+#  define MSSIM_NT_ORDINARY (0)
+#  define MSSIM_NT_COUNTER  (1)
+#  define MSSIM_NT_BITS     (2)
+#  define MSSIM_NT_EXTEND   (4)
 #endif
 
 //** Attribute Macros
 // These macros are used to isolate the differences in the way that the index type
 // changed in version 1.21 of the specification
-#define IsNvOrdinaryIndex(attributes) (GET_TPM_NT(attributes) == TPM_NT_ORDINARY)
+#define IsNvOrdinaryIndex(attributes) (GET_MSSIM_NT(attributes) == MSSIM_NT_ORDINARY)
 
-#define IsNvCounterIndex(attributes) (GET_TPM_NT(attributes) == TPM_NT_COUNTER)
+#define IsNvCounterIndex(attributes) (GET_MSSIM_NT(attributes) == MSSIM_NT_COUNTER)
 
-#define IsNvBitsIndex(attributes) (GET_TPM_NT(attributes) == TPM_NT_BITS)
+#define IsNvBitsIndex(attributes) (GET_MSSIM_NT(attributes) == MSSIM_NT_BITS)
 
-#define IsNvExtendIndex(attributes) (GET_TPM_NT(attributes) == TPM_NT_EXTEND)
+#define IsNvExtendIndex(attributes) (GET_MSSIM_NT(attributes) == MSSIM_NT_EXTEND)
 
-#ifdef TPM_NT_PIN_PASS
-#  define IsNvPinPassIndex(attributes) (GET_TPM_NT(attributes) == TPM_NT_PIN_PASS)
+#ifdef MSSIM_NT_PIN_PASS
+#  define IsNvPinPassIndex(attributes) (GET_MSSIM_NT(attributes) == MSSIM_NT_PIN_PASS)
 #endif
 
-#ifdef TPM_NT_PIN_FAIL
-#  define IsNvPinFailIndex(attributes) (GET_TPM_NT(attributes) == TPM_NT_PIN_FAIL)
+#ifdef MSSIM_NT_PIN_FAIL
+#  define IsNvPinFailIndex(attributes) (GET_MSSIM_NT(attributes) == MSSIM_NT_PIN_FAIL)
 #endif
 
 typedef struct
 {
     UINT32     size;
-    TPM_HANDLE handle;
+    MSSIM_HANDLE handle;
 } NV_ENTRY_HEADER;
 
-#define NV_EVICT_OBJECT_SIZE (sizeof(UINT32) + sizeof(TPM_HANDLE) + sizeof(OBJECT))
+#define NV_EVICT_OBJECT_SIZE (sizeof(UINT32) + sizeof(MSSIM_HANDLE) + sizeof(OBJECT))
 
 #define NV_INDEX_COUNTER_SIZE (sizeof(UINT32) + sizeof(NV_INDEX) + sizeof(UINT64))
 
@@ -91,8 +91,8 @@ typedef struct
 typedef struct
 {
     UINT32     size;
-    TPM_HANDLE handle;
-    TPMA_NV    attributes;
+    MSSIM_HANDLE handle;
+    MSSIMA_NV    attributes;
 } NV_RAM_HEADER;
 
 // Defines the end-of-list marker for NV. The list terminator is
@@ -125,7 +125,7 @@ typedef UINT32 NV_LIST_TERMINATOR[3];
 
 #define RETURN_IF_NV_IS_NOT_AVAILABLE \
   {                                   \
-    if(g_NvStatus != TPM_RC_SUCCESS)  \
+    if(g_NvStatus != MSSIM_RC_SUCCESS)  \
       return g_NvStatus;              \
   }
 
@@ -133,11 +133,11 @@ typedef UINT32 NV_LIST_TERMINATOR[3];
 // NV is not available so that it can be cleared.
 #define RETURN_IF_ORDERLY                  \
   {                                        \
-    if(NvClearOrderly() != TPM_RC_SUCCESS) \
+    if(NvClearOrderly() != MSSIM_RC_SUCCESS) \
       return g_NvStatus;                   \
   }
 
-#define NV_IS_AVAILABLE (g_NvStatus == TPM_RC_SUCCESS)
+#define NV_IS_AVAILABLE (g_NvStatus == MSSIM_RC_SUCCESS)
 
 #define IS_ORDERLY(value) (value < SU_DA_USED_VALUE)
 

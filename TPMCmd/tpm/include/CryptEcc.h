@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -35,7 +35,7 @@
 //** Introduction
 // This file contains structure definitions used for ECC. The
 // structures in this file are only used internally. The ECC-related structures
-// that cross the TPM interface are defined in TpmTypes.h
+// that cross the MSSIM interface are defined in TpmTypes.h
 //
 
 #ifndef _CRYPT_ECC_H
@@ -45,10 +45,10 @@
 
 typedef struct ECC_CURVE
 {
-    const TPM_ECC_CURVE   curveId;
+    const MSSIM_ECC_CURVE   curveId;
     const UINT16          keySizeBits;
-    const TPMT_KDF_SCHEME kdf;
-    const TPMT_ECC_SCHEME sign;
+    const MSSIMT_KDF_SCHEME kdf;
+    const MSSIMT_ECC_SCHEME sign;
     const ECC_CURVE_DATA* curveData;  // the address of the curve data
     const BYTE*           OID;
 } ECC_CURVE;
@@ -71,7 +71,7 @@ extern const ECC_CURVE eccCurves[ECC_CURVE_COUNT];
 
 #define CURVE_DEF(CURVE)                                                    \
   {                                                                         \
-    TPM_ECC_##CURVE, CURVE##_KEY_SIZE, CURVE##_KDF, CURVE##_SIGN, &##CURVE, \
+    MSSIM_ECC_##CURVE, CURVE##_KEY_SIZE, CURVE##_KDF, CURVE##_SIGN, &##CURVE, \
         OID_ECC_##CURVE                                                     \
   }
 

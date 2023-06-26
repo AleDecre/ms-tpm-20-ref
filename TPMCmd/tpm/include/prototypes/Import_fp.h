@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,31 +45,31 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_DH_OBJECT         parentHandle;
-    TPM2B_DATA             encryptionKey;
-    TPM2B_PUBLIC           objectPublic;
-    TPM2B_PRIVATE          duplicate;
-    TPM2B_ENCRYPTED_SECRET inSymSeed;
-    TPMT_SYM_DEF_OBJECT    symmetricAlg;
+    MSSIMI_DH_OBJECT         parentHandle;
+    MSSIM2B_DATA             encryptionKey;
+    MSSIM2B_PUBLIC           objectPublic;
+    MSSIM2B_PRIVATE          duplicate;
+    MSSIM2B_ENCRYPTED_SECRET inSymSeed;
+    MSSIMT_SYM_DEF_OBJECT    symmetricAlg;
 } Import_In;
 
 // Output structure definition
 typedef struct
 {
-    TPM2B_PRIVATE outPrivate;
+    MSSIM2B_PRIVATE outPrivate;
 } Import_Out;
 
 // Response code modifiers
-#    define RC_Import_parentHandle  (TPM_RC_H + TPM_RC_1)
-#    define RC_Import_encryptionKey (TPM_RC_P + TPM_RC_1)
-#    define RC_Import_objectPublic  (TPM_RC_P + TPM_RC_2)
-#    define RC_Import_duplicate     (TPM_RC_P + TPM_RC_3)
-#    define RC_Import_inSymSeed     (TPM_RC_P + TPM_RC_4)
-#    define RC_Import_symmetricAlg  (TPM_RC_P + TPM_RC_5)
+#    define RC_Import_parentHandle  (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_Import_encryptionKey (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_Import_objectPublic  (MSSIM_RC_P + MSSIM_RC_2)
+#    define RC_Import_duplicate     (MSSIM_RC_P + MSSIM_RC_3)
+#    define RC_Import_inSymSeed     (MSSIM_RC_P + MSSIM_RC_4)
+#    define RC_Import_symmetricAlg  (MSSIM_RC_P + MSSIM_RC_5)
 
 // Function prototype
-TPM_RC
-TPM2_Import(Import_In* in, Import_Out* out);
+MSSIM_RC
+MSSIM2_Import(Import_In* in, Import_Out* out);
 
 #  endif  // _Import_FP_H_
 #endif    // CC_Import

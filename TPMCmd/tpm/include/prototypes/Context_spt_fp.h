@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -42,21 +42,21 @@
 
 //*** ComputeContextProtectionKey()
 // This function retrieves the symmetric protection key for context encryption
-// It is used by TPM2_ConextSave and TPM2_ContextLoad to create the symmetric
+// It is used by MSSIM2_ConextSave and MSSIM2_ContextLoad to create the symmetric
 // encryption key and iv
 //  Return Type: void
-void ComputeContextProtectionKey(TPMS_CONTEXT*  contextBlob,  // IN: context blob
-                                 TPM2B_SYM_KEY* symKey,  // OUT: the symmetric key
-                                 TPM2B_IV*      iv       // OUT: the IV.
+void ComputeContextProtectionKey(MSSIMS_CONTEXT*  contextBlob,  // IN: context blob
+                                 MSSIM2B_SYM_KEY* symKey,  // OUT: the symmetric key
+                                 MSSIM2B_IV*      iv       // OUT: the IV.
 );
 
 //*** ComputeContextIntegrity()
 // Generate the integrity hash for a context
-//       It is used by TPM2_ContextSave to create an integrity hash
-//       and by TPM2_ContextLoad to compare an integrity hash
+//       It is used by MSSIM2_ContextSave to create an integrity hash
+//       and by MSSIM2_ContextLoad to compare an integrity hash
 //  Return Type: void
-void ComputeContextIntegrity(TPMS_CONTEXT* contextBlob,  // IN: context blob
-                             TPM2B_DIGEST* integrity     // OUT: integrity
+void ComputeContextIntegrity(MSSIMS_CONTEXT* contextBlob,  // IN: context blob
+                             MSSIM2B_DIGEST* integrity     // OUT: integrity
 );
 
 //*** SequenceDataExport()

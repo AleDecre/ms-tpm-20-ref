@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -35,7 +35,7 @@
 //** Description
 //
 // This file contains the routines that are used by the simulator to mimic
-// a hardware clock on a TPM.
+// a hardware clock on a MSSIM.
 //
 // In this implementation, all the time values are measured in millisecond.
 // However, the precision of the clock functions may be implementation dependent.
@@ -51,7 +51,7 @@
 // order to simulate hardware events.
 
 //***_plat__TimerReset()
-// This function sets current system clock time as t0 for counting TPM time.
+// This function sets current system clock time as t0 for counting MSSIM time.
 // This function is called at a power on event to reset the clock. When the clock
 // is reset, the indication that the clock was stopped is also set.
 LIB_EXPORT void _plat__TimerReset(void)
@@ -73,9 +73,9 @@ LIB_EXPORT void _plat__TimerRestart(void)
     return;
 }
 
-//** Functions Used by TPM
+//** Functions Used by MSSIM
 //*** Introduction
-// These functions are called by the TPM code. They should be replaced by
+// These functions are called by the MSSIM code. They should be replaced by
 // appropriated hardware functions.
 
 #include <time.h>
@@ -106,15 +106,15 @@ LIB_EXPORT uint64_t _plat__RealTime(void)
 }
 
 //***_plat__TimerRead()
-// This function provides access to the tick timer of the platform. The TPM code
-// uses this value to drive the TPM Clock.
+// This function provides access to the tick timer of the platform. The MSSIM code
+// uses this value to drive the MSSIM Clock.
 //
 // The tick timer is supposed to run when power is applied to the device. This timer
-// should not be reset by time events including _TPM_Init. It should only be reset
-// when TPM power is re-applied.
+// should not be reset by time events including _MSSIM_Init. It should only be reset
+// when MSSIM power is re-applied.
 //
-// If the TPM is run in a protected environment, that environment may provide the
-// tick time to the TPM as long as the time provided by the environment is not
+// If the MSSIM is run in a protected environment, that environment may provide the
+// tick time to the MSSIM as long as the time provided by the environment is not
 // allowed to go backwards. If the time provided by the system can go backwards
 // during a power discontinuity, then the _plat__Signal_PowerOn should call
 // _plat__TimerReset().
@@ -162,7 +162,7 @@ LIB_EXPORT uint64_t _plat__TimerRead(void)
     // Do the time rate adjustment and conversion from CLOCKS_PER_SEC to mSec
     adjustedTimeDiff = (timeDiff * CLOCK_NOMINAL) / ((uint64_t)s_adjustRate);
 
-    // update the TPM time with the adjusted timeDiff
+    // update the MSSIM time with the adjusted timeDiff
     s_tpmTime += (clock64_t)adjustedTimeDiff;
 
     // Might have some rounding error that would loose CLOCKS. See what is not
@@ -176,7 +176,7 @@ LIB_EXPORT uint64_t _plat__TimerRead(void)
     s_realTimePrevious = s_realTimePrevious + readjustedTimeDiff;
 
 #  ifdef DEBUGGING_TIME
-    // Put this in so that TPM time will pass much faster than real time when
+    // Put this in so that MSSIM time will pass much faster than real time when
     // doing debug.
     // A value of 1000 for DEBUG_TIME_MULTIPLER will make each ms into a second
     // A good value might be 100
@@ -205,8 +205,8 @@ LIB_EXPORT int _plat__TimerWasReset(void)
 //
 // This function will CLEAR the s_timerStopped flag before returning. This provides
 // functionality that is similar to status register that is cleared when read. This
-// is the model used here because it is the one that has the most impact on the TPM
-// code as the flag can only be accessed by one entity in the TPM. Any other
+// is the model used here because it is the one that has the most impact on the MSSIM
+// code as the flag can only be accessed by one entity in the MSSIM. Any other
 // implementation of the hardware can be made to look like a read-once register.
 LIB_EXPORT int _plat__TimerWasStopped(void)
 {

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -41,56 +41,56 @@
 /*(See part 3 specification)
 // certify the contents of an NV index or portion of an NV index
 */
-//  Return Type: TPM_RC
-//      TPM_RC_NV_AUTHORIZATION         the authorization was valid but the
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_NV_AUTHORIZATION         the authorization was valid but the
 //                                      authorizing entity ('authHandle')
 //                                      is not allowed to read from the Index
 //                                      referenced by 'nvIndex'
-//      TPM_RC_KEY                      'signHandle' does not reference a signing
+//      MSSIM_RC_KEY                      'signHandle' does not reference a signing
 //                                      key
-//      TPM_RC_NV_LOCKED                Index referenced by 'nvIndex' is locked
+//      MSSIM_RC_NV_LOCKED                Index referenced by 'nvIndex' is locked
 //                                      for reading
-//      TPM_RC_NV_RANGE                 'offset' plus 'size' extends outside of the
+//      MSSIM_RC_NV_RANGE                 'offset' plus 'size' extends outside of the
 //                                      data range of the Index referenced by
 //                                      'nvIndex'
-//      TPM_RC_NV_UNINITIALIZED         Index referenced by 'nvIndex' has not been
+//      MSSIM_RC_NV_UNINITIALIZED         Index referenced by 'nvIndex' has not been
 //                                      written
-//      TPM_RC_SCHEME                   'inScheme' is not an allowed value for the
+//      MSSIM_RC_SCHEME                   'inScheme' is not an allowed value for the
 //                                      key definition
-TPM_RC
-TPM2_NV_Certify(NV_Certify_In*  in,  // IN: input parameter list
+MSSIM_RC
+MSSIM2_NV_Certify(NV_Certify_In*  in,  // IN: input parameter list
                 NV_Certify_Out* out  // OUT: output parameter list
 )
 {
-    TPM_RC      result;
+    MSSIM_RC      result;
     NV_REF      locator;
     NV_INDEX*   nvIndex = NvGetIndexInfo(in->nvIndex, &locator);
-    TPMS_ATTEST certifyInfo;
+    MSSIMS_ATTEST certifyInfo;
     OBJECT*     signObject = HandleToObject(in->signHandle);
     // Input Validation
     if(!IsSigningObject(signObject))
-        return TPM_RCS_KEY + RC_NV_Certify_signHandle;
+        return MSSIM_RCS_KEY + RC_NV_Certify_signHandle;
     if(!CryptSelectSignScheme(signObject, &in->inScheme))
-        return TPM_RCS_SCHEME + RC_NV_Certify_inScheme;
+        return MSSIM_RCS_SCHEME + RC_NV_Certify_inScheme;
 
-    // Common access checks, NvWriteAccessCheck() may return TPM_RC_NV_AUTHORIZATION
-    // or TPM_RC_NV_LOCKED
+    // Common access checks, NvWriteAccessCheck() may return MSSIM_RC_NV_AUTHORIZATION
+    // or MSSIM_RC_NV_LOCKED
     result = NvReadAccessChecks(
         in->authHandle, in->nvIndex, nvIndex->publicArea.attributes);
-    if(result != TPM_RC_SUCCESS)
+    if(result != MSSIM_RC_SUCCESS)
         return result;
 
     // make sure that the selection is within the range of the Index (cast to avoid
     // any wrap issues with addition)
     if((UINT32)in->size + (UINT32)in->offset > (UINT32)nvIndex->publicArea.dataSize)
-        return TPM_RC_NV_RANGE;
+        return MSSIM_RC_NV_RANGE;
     // Make sure the data will fit the return buffer.
     // NOTE: This check may be modified if the output buffer will not hold the
     // maximum sized NV buffer as part of the certified data. The difference in
     // size could be substantial if the signature scheme was produced a large
     // signature (e.g., RSA 4096).
     if(in->size > MAX_NV_BUFFER_SIZE)
-        return TPM_RCS_VALUE + RC_NV_Certify_size;
+        return MSSIM_RCS_VALUE + RC_NV_Certify_size;
 
     // Command Output
 
@@ -106,7 +106,7 @@ TPM2_NV_Certify(NV_Certify_In*  in,  // IN: input parameter list
     {
         // NV certify specific fields
         // Attestation type
-        certifyInfo.type = TPM_ST_ATTEST_NV;
+        certifyInfo.type = MSSIM_ST_ATTEST_NV;
 
         // Set the return size
         certifyInfo.attested.nv.nvContents.t.size = in->size;
@@ -125,7 +125,7 @@ TPM2_NV_Certify(NV_Certify_In*  in,  // IN: input parameter list
     {
         HASH_STATE hashState;
         // This is to sign a digest of the data
-        certifyInfo.type = TPM_ST_ATTEST_NV_DIGEST;
+        certifyInfo.type = MSSIM_ST_ATTEST_NV_DIGEST;
         // Initialize the hash before calling the function to add the Index data to
         // the hash.
         certifyInfo.attested.nvDigest.nvDigest.t.size =

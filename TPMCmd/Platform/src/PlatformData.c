@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -33,7 +33,7 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 //** Description
-// This file will instance the TPM variables that are not stack allocated. The
+// This file will instance the MSSIM variables that are not stack allocated. The
 // descriptions for these variables are in Global.h for this project.
 
 //** Includes

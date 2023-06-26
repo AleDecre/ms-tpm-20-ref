@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -38,20 +38,20 @@
 
 #if CC_PolicyLocality  // Conditional expansion of this file
 
-//  Return Type: TPM_RC
-//      TPM_RC_RANGE          all the locality values selected by
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_RANGE          all the locality values selected by
 //                            'locality' have been disabled
-//                            by previous TPM2_PolicyLocality() calls.
-TPM_RC
-TPM2_PolicyLocality(PolicyLocality_In* in  // IN: input parameter list
+//                            by previous MSSIM2_PolicyLocality() calls.
+MSSIM_RC
+MSSIM2_PolicyLocality(PolicyLocality_In* in  // IN: input parameter list
 )
 {
     SESSION*   session;
-    BYTE       marshalBuffer[sizeof(TPMA_LOCALITY)];
-    BYTE       prevSetting[sizeof(TPMA_LOCALITY)];
+    BYTE       marshalBuffer[sizeof(MSSIMA_LOCALITY)];
+    BYTE       prevSetting[sizeof(MSSIMA_LOCALITY)];
     UINT32     marshalSize;
     BYTE*      buffer;
-    TPM_CC     commandCode = TPM_CC_PolicyLocality;
+    MSSIM_CC     commandCode = MSSIM_CC_PolicyLocality;
     HASH_STATE hashState;
 
     // Input Validation
@@ -62,23 +62,23 @@ TPM2_PolicyLocality(PolicyLocality_In* in  // IN: input parameter list
     // Get new locality setting in canonical form
     marshalBuffer[0] = 0;  // Code analysis says that this is not initialized
     buffer           = marshalBuffer;
-    marshalSize      = TPMA_LOCALITY_Marshal(&in->locality, &buffer, NULL);
+    marshalSize      = MSSIMA_LOCALITY_Marshal(&in->locality, &buffer, NULL);
 
     // Its an error if the locality parameter is zero
     if(marshalBuffer[0] == 0)
-        return TPM_RCS_RANGE + RC_PolicyLocality_locality;
+        return MSSIM_RCS_RANGE + RC_PolicyLocality_locality;
 
     // Get existing locality setting in canonical form
     prevSetting[0] = 0;  // Code analysis says that this is not initialized
     buffer         = prevSetting;
-    TPMA_LOCALITY_Marshal(&session->commandLocality, &buffer, NULL);
+    MSSIMA_LOCALITY_Marshal(&session->commandLocality, &buffer, NULL);
 
     // If the locality has previously been set
     if(prevSetting[0] != 0
        // then the current locality setting and the requested have to be the same
        // type (that is, either both normal or both extended
        && ((prevSetting[0] < 32) != (marshalBuffer[0] < 32)))
-        return TPM_RCS_RANGE + RC_PolicyLocality_locality;
+        return MSSIM_RCS_RANGE + RC_PolicyLocality_locality;
 
     // See if the input is a regular or extended locality
     if(marshalBuffer[0] < 32)
@@ -93,14 +93,14 @@ TPM2_PolicyLocality(PolicyLocality_In* in  // IN: input parameter list
 
         // The result setting can not be 0
         if(prevSetting[0] == 0)
-            return TPM_RCS_RANGE + RC_PolicyLocality_locality;
+            return MSSIM_RCS_RANGE + RC_PolicyLocality_locality;
     }
     else
     {
         // for extended locality
         // if the locality has already been set, then it must match the
         if(prevSetting[0] != 0 && prevSetting[0] != marshalBuffer[0])
-            return TPM_RCS_RANGE + RC_PolicyLocality_locality;
+            return MSSIM_RCS_RANGE + RC_PolicyLocality_locality;
 
         // Setting is OK
         prevSetting[0] = marshalBuffer[0];
@@ -109,7 +109,7 @@ TPM2_PolicyLocality(PolicyLocality_In* in  // IN: input parameter list
     // Internal Data Update
 
     // Update policy hash
-    // policyDigestnew = hash(policyDigestold || TPM_CC_PolicyLocality || locality)
+    // policyDigestnew = hash(policyDigestold || MSSIM_CC_PolicyLocality || locality)
     // Start hash
     CryptHashStart(&hashState, session->authHashAlg);
 
@@ -117,7 +117,7 @@ TPM2_PolicyLocality(PolicyLocality_In* in  // IN: input parameter list
     CryptDigestUpdate2B(&hashState, &session->u2.policyDigest.b);
 
     // add commandCode
-    CryptDigestUpdateInt(&hashState, sizeof(TPM_CC), commandCode);
+    CryptDigestUpdateInt(&hashState, sizeof(MSSIM_CC), commandCode);
 
     // add input locality
     CryptDigestUpdate(&hashState, marshalSize, marshalBuffer);
@@ -128,9 +128,9 @@ TPM2_PolicyLocality(PolicyLocality_In* in  // IN: input parameter list
     // update session locality by unmarshal function.  The function must succeed
     // because both input and existing locality setting have been validated.
     buffer = prevSetting;
-    TPMA_LOCALITY_Unmarshal(&session->commandLocality, &buffer, (INT32*)&marshalSize);
+    MSSIMA_LOCALITY_Unmarshal(&session->commandLocality, &buffer, (INT32*)&marshalSize);
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_PolicyLocality

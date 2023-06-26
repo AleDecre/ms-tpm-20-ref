@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -37,10 +37,10 @@
  *  Date: Mar 28, 2019  Time: 08:25:19PM
  */
 
-#ifndef __TPM_INIT_FP_H_
-#define __TPM_INIT_FP_H_
+#ifndef __MSSIM_INIT_FP_H_
+#define __MSSIM_INIT_FP_H_
 
-// This function is used to process a _TPM_Init indication.
-LIB_EXPORT void _TPM_Init(char* test);
+// This function is used to process a _MSSIM_Init indication.
+LIB_EXPORT void _MSSIM_Init(char* test);
 
-#endif  // __TPM_INIT_FP_H_
+#endif  // __MSSIM_INIT_FP_H_

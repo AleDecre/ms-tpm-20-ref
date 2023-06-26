@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,21 +45,21 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_ECC_CURVE curveID;
+    MSSIMI_ECC_CURVE curveID;
 } ECC_Parameters_In;
 
 // Output structure definition
 typedef struct
 {
-    TPMS_ALGORITHM_DETAIL_ECC parameters;
+    MSSIMS_ALGORITHM_DETAIL_ECC parameters;
 } ECC_Parameters_Out;
 
 // Response code modifiers
-#    define RC_ECC_Parameters_curveID (TPM_RC_P + TPM_RC_1)
+#    define RC_ECC_Parameters_curveID (MSSIM_RC_P + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_ECC_Parameters(ECC_Parameters_In* in, ECC_Parameters_Out* out);
+MSSIM_RC
+MSSIM2_ECC_Parameters(ECC_Parameters_In* in, ECC_Parameters_Out* out);
 
 #  endif  // _ECC_Parameters_FP_H_
 #endif    // CC_ECC_Parameters

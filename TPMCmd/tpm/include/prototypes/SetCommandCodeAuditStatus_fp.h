@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,21 +45,21 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_RH_PROVISION auth;
-    TPMI_ALG_HASH     auditAlg;
-    TPML_CC           setList;
-    TPML_CC           clearList;
+    MSSIMI_RH_PROVISION auth;
+    MSSIMI_ALG_HASH     auditAlg;
+    MSSIML_CC           setList;
+    MSSIML_CC           clearList;
 } SetCommandCodeAuditStatus_In;
 
 // Response code modifiers
-#    define RC_SetCommandCodeAuditStatus_auth      (TPM_RC_H + TPM_RC_1)
-#    define RC_SetCommandCodeAuditStatus_auditAlg  (TPM_RC_P + TPM_RC_1)
-#    define RC_SetCommandCodeAuditStatus_setList   (TPM_RC_P + TPM_RC_2)
-#    define RC_SetCommandCodeAuditStatus_clearList (TPM_RC_P + TPM_RC_3)
+#    define RC_SetCommandCodeAuditStatus_auth      (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_SetCommandCodeAuditStatus_auditAlg  (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_SetCommandCodeAuditStatus_setList   (MSSIM_RC_P + MSSIM_RC_2)
+#    define RC_SetCommandCodeAuditStatus_clearList (MSSIM_RC_P + MSSIM_RC_3)
 
 // Function prototype
-TPM_RC
-TPM2_SetCommandCodeAuditStatus(SetCommandCodeAuditStatus_In* in);
+MSSIM_RC
+MSSIM2_SetCommandCodeAuditStatus(SetCommandCodeAuditStatus_In* in);
 
 #  endif  // _Set_Command_Code_Audit_Status_FP_H_
 #endif    // CC_SetCommandCodeAuditStatus

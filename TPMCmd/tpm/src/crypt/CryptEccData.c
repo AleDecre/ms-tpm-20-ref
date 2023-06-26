@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -41,8 +41,8 @@
 #include "OIDs.h"
 
 // This file contains the ECC curve data. The format of the data depends on the
-// setting of USE_BN_ECC_DATA. If it is defined, then the TPM's BigNum format is
-// used. Otherwise, it is kept in TPM2B format. The purpose of having the data in
+// setting of USE_BN_ECC_DATA. If it is defined, then the MSSIM's BigNum format is
+// used. Otherwise, it is kept in MSSIM2B format. The purpose of having the data in
 // BigNum format is so that it does not have to be reformatted before being used
 // by the crypto library.
 
@@ -64,7 +64,7 @@
 #      define TO_ECC_16(a, b)    TO_ECC_32(0, 0, a, b)
 #      define TO_ECC_8(a)        TO_ECC_32(0, 0, 0, a)
 #    endif
-#  else  // TPM2B_
+#  else  // MSSIM2B_
 #    define TO_ECC_64(a, b, c, d, e, f, g, h) a, b, c, d, e, f, g, h
 #    define TO_ECC_56(a, b, c, d, e, f, g)    a, b, c, d, e, f, g
 #    define TO_ECC_48(a, b, c, d, e, f)       a, b, c, d, e, f
@@ -88,28 +88,28 @@ ECC_CONST(ECC_ZERO, 0, 0);
 
 #  else
 #    define ECC_CONST(NAME, bytes, initializer) \
-      const TPM2B_##bytes##_BYTE_VALUE NAME = {bytes, {initializer}}
+      const MSSIM2B_##bytes##_BYTE_VALUE NAME = {bytes, {initializer}}
 
 // Have to special case ECC_ZERO
-TPM2B_BYTE_VALUE(1);
-TPM2B_1_BYTE_VALUE ECC_ZERO = {1, {0}};
+MSSIM2B_BYTE_VALUE(1);
+MSSIM2B_1_BYTE_VALUE ECC_ZERO = {1, {0}};
 
 #  endif
 
 ECC_CONST(ECC_ONE, 1, 1);
 
 #  if !USE_BN_ECC_DATA
-TPM2B_BYTE_VALUE(24);
+MSSIM2B_BYTE_VALUE(24);
 #    define TO_ECC_192(a, b, c) a, b, c
-TPM2B_BYTE_VALUE(28);
+MSSIM2B_BYTE_VALUE(28);
 #    define TO_ECC_224(a, b, c, d) a, b, c, d
-TPM2B_BYTE_VALUE(32);
+MSSIM2B_BYTE_VALUE(32);
 #    define TO_ECC_256(a, b, c, d) a, b, c, d
-TPM2B_BYTE_VALUE(48);
+MSSIM2B_BYTE_VALUE(48);
 #    define TO_ECC_384(a, b, c, d, e, f) a, b, c, d, e, f
-TPM2B_BYTE_VALUE(66);
+MSSIM2B_BYTE_VALUE(66);
 #    define TO_ECC_528(a, b, c, d, e, f, g, h, i) a, b, c, d, e, f, g, h, i
-TPM2B_BYTE_VALUE(80);
+MSSIM2B_BYTE_VALUE(80);
 #    define TO_ECC_640(a, b, c, d, e, f, g, h, i, j) a, b, c, d, e, f, g, h, i, j
 #  else
 #    define TO_ECC_192(a, b, c)                      c, b, a
@@ -648,84 +648,84 @@ const ECC_CURVE_DATA SM2_P256  = {&SM2_P256_p.b,
 #  define comma
 const ECC_CURVE eccCurves[] = {
 #  if ECC_NIST_P192
-    comma{TPM_ECC_NIST_P192,
+    comma{MSSIM_ECC_NIST_P192,
           192,
-          {TPM_ALG_KDF1_SP800_56A, {{TPM_ALG_SHA256}}},
-          {TPM_ALG_NULL, {{TPM_ALG_NULL}}},
+          {MSSIM_ALG_KDF1_SP800_56A, {{MSSIM_ALG_SHA256}}},
+          {MSSIM_ALG_NULL, {{MSSIM_ALG_NULL}}},
           &NIST_P192,
           OID_ECC_NIST_P192 CURVE_NAME("NIST_P192")}
 #    undef comma
 #    define comma ,
 #  endif  // ECC_NIST_P192
 #  if ECC_NIST_P224
-    comma{TPM_ECC_NIST_P224,
+    comma{MSSIM_ECC_NIST_P224,
           224,
-          {TPM_ALG_KDF1_SP800_56A, {{TPM_ALG_SHA256}}},
-          {TPM_ALG_NULL, {{TPM_ALG_NULL}}},
+          {MSSIM_ALG_KDF1_SP800_56A, {{MSSIM_ALG_SHA256}}},
+          {MSSIM_ALG_NULL, {{MSSIM_ALG_NULL}}},
           &NIST_P224,
           OID_ECC_NIST_P224 CURVE_NAME("NIST_P224")}
 #    undef comma
 #    define comma ,
 #  endif  // ECC_NIST_P224
 #  if ECC_NIST_P256
-    comma{TPM_ECC_NIST_P256,
+    comma{MSSIM_ECC_NIST_P256,
           256,
-          {TPM_ALG_KDF1_SP800_56A, {{TPM_ALG_SHA256}}},
-          {TPM_ALG_NULL, {{TPM_ALG_NULL}}},
+          {MSSIM_ALG_KDF1_SP800_56A, {{MSSIM_ALG_SHA256}}},
+          {MSSIM_ALG_NULL, {{MSSIM_ALG_NULL}}},
           &NIST_P256,
           OID_ECC_NIST_P256 CURVE_NAME("NIST_P256")}
 #    undef comma
 #    define comma ,
 #  endif  // ECC_NIST_P256
 #  if ECC_NIST_P384
-    comma{TPM_ECC_NIST_P384,
+    comma{MSSIM_ECC_NIST_P384,
           384,
-          {TPM_ALG_KDF1_SP800_56A, {{TPM_ALG_SHA384}}},
-          {TPM_ALG_NULL, {{TPM_ALG_NULL}}},
+          {MSSIM_ALG_KDF1_SP800_56A, {{MSSIM_ALG_SHA384}}},
+          {MSSIM_ALG_NULL, {{MSSIM_ALG_NULL}}},
           &NIST_P384,
           OID_ECC_NIST_P384 CURVE_NAME("NIST_P384")}
 #    undef comma
 #    define comma ,
 #  endif  // ECC_NIST_P384
 #  if ECC_NIST_P521
-    comma{TPM_ECC_NIST_P521,
+    comma{MSSIM_ECC_NIST_P521,
           521,
-          {TPM_ALG_KDF1_SP800_56A, {{TPM_ALG_SHA512}}},
-          {TPM_ALG_NULL, {{TPM_ALG_NULL}}},
+          {MSSIM_ALG_KDF1_SP800_56A, {{MSSIM_ALG_SHA512}}},
+          {MSSIM_ALG_NULL, {{MSSIM_ALG_NULL}}},
           &NIST_P521,
           OID_ECC_NIST_P521 CURVE_NAME("NIST_P521")}
 #    undef comma
 #    define comma ,
 #  endif  // ECC_NIST_P521
 #  if ECC_BN_P256
-    comma{TPM_ECC_BN_P256,
+    comma{MSSIM_ECC_BN_P256,
           256,
-          {TPM_ALG_NULL, {{TPM_ALG_NULL}}},
-          {TPM_ALG_NULL, {{TPM_ALG_NULL}}},
+          {MSSIM_ALG_NULL, {{MSSIM_ALG_NULL}}},
+          {MSSIM_ALG_NULL, {{MSSIM_ALG_NULL}}},
           &BN_P256,
           OID_ECC_BN_P256 CURVE_NAME("BN_P256")}
 #    undef comma
 #    define comma ,
 #  endif  // ECC_BN_P256
 #  if ECC_BN_P638
-    comma{TPM_ECC_BN_P638,
+    comma{MSSIM_ECC_BN_P638,
           638,
-          {TPM_ALG_NULL, {{TPM_ALG_NULL}}},
-          {TPM_ALG_NULL, {{TPM_ALG_NULL}}},
+          {MSSIM_ALG_NULL, {{MSSIM_ALG_NULL}}},
+          {MSSIM_ALG_NULL, {{MSSIM_ALG_NULL}}},
           &BN_P638,
           OID_ECC_BN_P638 CURVE_NAME("BN_P638")}
 #    undef comma
 #    define comma ,
 #  endif  // ECC_BN_P638
 #  if ECC_SM2_P256
-    comma{TPM_ECC_SM2_P256,
+    comma{MSSIM_ECC_SM2_P256,
           256,
-          {TPM_ALG_KDF1_SP800_56A, {{TPM_ALG_SM3_256}}},
-          {TPM_ALG_NULL, {{TPM_ALG_NULL}}},
+          {MSSIM_ALG_KDF1_SP800_56A, {{MSSIM_ALG_SM3_256}}},
+          {MSSIM_ALG_NULL, {{MSSIM_ALG_NULL}}},
           &SM2_P256,
           OID_ECC_SM2_P256 CURVE_NAME("SM2_P256")}
 #    undef comma
 #    define comma ,
 #  endif  // ECC_SM2_P256
 };
-#endif  // TPM_ALG_ECC
+#endif  // MSSIM_ALG_ECC

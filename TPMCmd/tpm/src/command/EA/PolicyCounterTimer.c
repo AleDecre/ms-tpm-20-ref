@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -41,24 +41,24 @@
 
 /*(See part 3 specification)
 // Add a conditional gating of a policy based on the contents of the
-// TPMS_TIME_INFO structure.
+// MSSIMS_TIME_INFO structure.
 */
-//  Return Type: TPM_RC
-//      TPM_RC_POLICY           the comparison of the selected portion of the
-//                              TPMS_TIME_INFO with 'operandB' failed
-//      TPM_RC_RANGE            'offset' + 'size' exceed size of TPMS_TIME_INFO
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_POLICY           the comparison of the selected portion of the
+//                              MSSIMS_TIME_INFO with 'operandB' failed
+//      MSSIM_RC_RANGE            'offset' + 'size' exceed size of MSSIMS_TIME_INFO
 //                              structure
-TPM_RC
-TPM2_PolicyCounterTimer(PolicyCounterTimer_In* in  // IN: input parameter list
+MSSIM_RC
+MSSIM2_PolicyCounterTimer(PolicyCounterTimer_In* in  // IN: input parameter list
 )
 {
     SESSION*     session;
-    TIME_INFO    infoData;  // data buffer of  TPMS_TIME_INFO
+    TIME_INFO    infoData;  // data buffer of  MSSIMS_TIME_INFO
     BYTE*        pInfoData = (BYTE*)&infoData;
     UINT16       infoDataSize;
-    TPM_CC       commandCode = TPM_CC_PolicyCounterTimer;
+    MSSIM_CC       commandCode = MSSIM_CC_PolicyCounterTimer;
     HASH_STATE   hashState;
-    TPM2B_DIGEST argHash;
+    MSSIM2B_DIGEST argHash;
 
     // Input Validation
     // Get a marshaled time structure
@@ -68,9 +68,9 @@ TPM2_PolicyCounterTimer(PolicyCounterTimer_In* in  // IN: input parameter list
     // will not make any sense if the references are out of bounds of the timer
     // structure.
     if(in->offset > infoDataSize)
-        return TPM_RCS_VALUE + RC_PolicyCounterTimer_offset;
+        return MSSIM_RCS_VALUE + RC_PolicyCounterTimer_offset;
     if((UINT32)in->offset + (UINT32)in->operandB.t.size > infoDataSize)
-        return TPM_RCS_RANGE;
+        return MSSIM_RCS_RANGE;
     // Get pointer to the session structure
     session = SessionGet(in->policySession);
 
@@ -84,7 +84,7 @@ TPM2_PolicyCounterTimer(PolicyCounterTimer_In* in  // IN: input parameter list
         {
             // Using Clock or Time so see if clock is running. Clock doesn't
             // run while NV is unavailable.
-            // TPM_RC_NV_UNAVAILABLE or TPM_RC_NV_RATE error may be returned here.
+            // MSSIM_RC_NV_UNAVAILABLE or MSSIM_RC_NV_RATE error may be returned here.
             RETURN_IF_NV_IS_NOT_AVAILABLE;
         }
         // offset to the starting position
@@ -94,7 +94,7 @@ TPM2_PolicyCounterTimer(PolicyCounterTimer_In* in  // IN: input parameter list
                                     pInfoData + in->offset,
                                     in->operandB.t.buffer,
                                     in->operandB.t.size))
-            return TPM_RC_POLICY;
+            return MSSIM_RC_POLICY;
     }
     // Internal Data Update
     // Start argument list hash
@@ -104,7 +104,7 @@ TPM2_PolicyCounterTimer(PolicyCounterTimer_In* in  // IN: input parameter list
     //  add offset
     CryptDigestUpdateInt(&hashState, sizeof(UINT16), in->offset);
     //  add operation
-    CryptDigestUpdateInt(&hashState, sizeof(TPM_EO), in->operation);
+    CryptDigestUpdateInt(&hashState, sizeof(MSSIM_EO), in->operation);
     //  complete argument hash
     CryptHashEnd2B(&hashState, &argHash.b);
 
@@ -116,7 +116,7 @@ TPM2_PolicyCounterTimer(PolicyCounterTimer_In* in  // IN: input parameter list
     CryptDigestUpdate2B(&hashState, &session->u2.policyDigest.b);
 
     //  add commandCode
-    CryptDigestUpdateInt(&hashState, sizeof(TPM_CC), commandCode);
+    CryptDigestUpdateInt(&hashState, sizeof(MSSIM_CC), commandCode);
 
     //  add argument digest
     CryptDigestUpdate2B(&hashState, &argHash.b);
@@ -124,7 +124,7 @@ TPM2_PolicyCounterTimer(PolicyCounterTimer_In* in  // IN: input parameter list
     // complete the digest
     CryptHashEnd2B(&hashState, &session->u2.policyDigest.b);
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_PolicyCounterTimer

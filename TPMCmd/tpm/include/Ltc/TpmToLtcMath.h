@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -34,7 +34,7 @@
  */
 
 //** Introduction
-// This file contains the structure definitions used for linking from the TPM
+// This file contains the structure definitions used for linking from the MSSIM
 // code to the MPA and LTC math libraries.
 
 #ifndef MATH_LIB_DEFINED

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -38,14 +38,14 @@
 #if CC_SetAlgorithmSet  // Conditional expansion of this file
 
 /*(See part 3 specification)
-// This command allows the platform to change the algorithm set setting of the TPM
+// This command allows the platform to change the algorithm set setting of the MSSIM
 */
-TPM_RC
-TPM2_SetAlgorithmSet(SetAlgorithmSet_In* in  // IN: input parameter list
+MSSIM_RC
+MSSIM2_SetAlgorithmSet(SetAlgorithmSet_In* in  // IN: input parameter list
 )
 {
     // The command needs NV update.  Check if NV is available.
-    // A TPM_RC_NV_UNAVAILABLE or TPM_RC_NV_RATE error may be returned at
+    // A MSSIM_RC_NV_UNAVAILABLE or MSSIM_RC_NV_RATE error may be returned at
     // this point
     RETURN_IF_NV_IS_NOT_AVAILABLE;
 
@@ -55,7 +55,7 @@ TPM2_SetAlgorithmSet(SetAlgorithmSet_In* in  // IN: input parameter list
     // Write the algorithm set changes to NV
     NV_SYNC_PERSISTENT(algorithmSet);
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_SetAlgorithmSet

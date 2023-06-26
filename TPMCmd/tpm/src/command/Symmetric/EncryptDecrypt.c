@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -43,16 +43,16 @@
 /*(See part 3 specification)
 // symmetric encryption or decryption
 */
-//  Return Type: TPM_RC
-//      TPM_RC_KEY          is not a symmetric decryption key with both
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_KEY          is not a symmetric decryption key with both
 //                          public and private portions loaded
-//      TPM_RC_SIZE         'IvIn' size is incompatible with the block cipher mode;
+//      MSSIM_RC_SIZE         'IvIn' size is incompatible with the block cipher mode;
 //                          or 'inData' size is not an even multiple of the block
 //                          size for CBC or ECB mode
-//      TPM_RC_VALUE        'keyHandle' is restricted and the argument 'mode' does
+//      MSSIM_RC_VALUE        'keyHandle' is restricted and the argument 'mode' does
 //                          not match the key's mode
-TPM_RC
-TPM2_EncryptDecrypt(EncryptDecrypt_In*  in,  // IN: input parameter list
+MSSIM_RC
+MSSIM2_EncryptDecrypt(EncryptDecrypt_In*  in,  // IN: input parameter list
                     EncryptDecrypt_Out* out  // OUT: output parameter list
 )
 {
@@ -64,11 +64,11 @@ TPM2_EncryptDecrypt(EncryptDecrypt_In*  in,  // IN: input parameter list
     UINT16      keySize;
     UINT16      blockSize;
     BYTE*       key;
-    TPM_ALG_ID  alg;
-    TPM_ALG_ID  mode;
-    TPM_RC      result;
+    MSSIM_ALG_ID  alg;
+    MSSIM_ALG_ID  mode;
+    MSSIM_RC      result;
     BOOL        OK;
-    TPMA_OBJECT attributes;
+    MSSIMA_OBJECT attributes;
 
     // Input Validation
     symKey     = HandleToObject(in->keyHandle);
@@ -76,28 +76,28 @@ TPM2_EncryptDecrypt(EncryptDecrypt_In*  in,  // IN: input parameter list
     attributes = symKey->publicArea.objectAttributes;
 
     // The input key should be a symmetric key
-    if(symKey->publicArea.type != TPM_ALG_SYMCIPHER)
-        return TPM_RCS_KEY + RC_EncryptDecrypt_keyHandle;
+    if(symKey->publicArea.type != MSSIM_ALG_SYMCIPHER)
+        return MSSIM_RCS_KEY + RC_EncryptDecrypt_keyHandle;
     // The key must be unrestricted and allow the selected operation
-    OK      = IS_ATTRIBUTE(attributes, TPMA_OBJECT, restricted) if(YES == in->decrypt)
-        OK  = OK && IS_ATTRIBUTE(attributes, TPMA_OBJECT, decrypt);
-    else OK = OK && IS_ATTRIBUTE(attributes, TPMA_OBJECT, sign);
+    OK      = IS_ATTRIBUTE(attributes, MSSIMA_OBJECT, restricted) if(YES == in->decrypt)
+        OK  = OK && IS_ATTRIBUTE(attributes, MSSIMA_OBJECT, decrypt);
+    else OK = OK && IS_ATTRIBUTE(attributes, MSSIMA_OBJECT, sign);
     if(!OK)
-        return TPM_RCS_ATTRIBUTES + RC_EncryptDecrypt_keyHandle;
+        return MSSIM_RCS_ATTRIBUTES + RC_EncryptDecrypt_keyHandle;
 
-    // If the key mode is not TPM_ALG_NULL...
-    // or TPM_ALG_NULL
-    if(mode != TPM_ALG_NULL)
+    // If the key mode is not MSSIM_ALG_NULL...
+    // or MSSIM_ALG_NULL
+    if(mode != MSSIM_ALG_NULL)
     {
-        // then the input mode has to be TPM_ALG_NULL or the same as the key
-        if((in->mode != TPM_ALG_NULL) && (in->mode != mode))
-            return TPM_RCS_MODE + RC_EncryptDecrypt_mode;
+        // then the input mode has to be MSSIM_ALG_NULL or the same as the key
+        if((in->mode != MSSIM_ALG_NULL) && (in->mode != mode))
+            return MSSIM_RCS_MODE + RC_EncryptDecrypt_mode;
     }
     else
     {
         // if the key mode is null, then the input can't be null
-        if(in->mode == TPM_ALG_NULL)
-            return TPM_RCS_MODE + RC_EncryptDecrypt_mode;
+        if(in->mode == MSSIM_ALG_NULL)
+            return MSSIM_RCS_MODE + RC_EncryptDecrypt_mode;
         mode = in->mode;
     }
     // The input iv for ECB mode should be an Empty Buffer.  All the other modes
@@ -108,25 +108,25 @@ TPM2_EncryptDecrypt(EncryptDecrypt_In*  in,  // IN: input parameter list
 
     // reverify the algorithm. This is mainly to keep static analysis tools happy
     if(blockSize == 0)
-        return TPM_RCS_KEY + RC_EncryptDecrypt_keyHandle;
+        return MSSIM_RCS_KEY + RC_EncryptDecrypt_keyHandle;
 
-    // Note: When an algorithm is not supported by a TPM, the TPM_ALG_xxx for that
-    // algorithm is not defined. However, it is assumed that the TPM_ALG_xxx for
+    // Note: When an algorithm is not supported by a MSSIM, the MSSIM_ALG_xxx for that
+    // algorithm is not defined. However, it is assumed that the MSSIM_ALG_xxx for
     // the algorithm is always defined. Both have the same numeric value.
-    // TPM_ALG_xxx is used here so that the code does not get cluttered with
+    // MSSIM_ALG_xxx is used here so that the code does not get cluttered with
     // #ifdef's. Having this check does not mean that the algorithm is supported.
     // If it was not supported the unmarshaling code would have rejected it before
     // this function were called. This means that, depending on the implementation,
     // the check could be redundant but it doesn't hurt.
-    if(((mode == TPM_ALG_ECB) && (in->ivIn.t.size != 0))
-       || ((mode != TPM_ALG_ECB) && (in->ivIn.t.size != blockSize)))
-        return TPM_RCS_SIZE + RC_EncryptDecrypt_ivIn;
+    if(((mode == MSSIM_ALG_ECB) && (in->ivIn.t.size != 0))
+       || ((mode != MSSIM_ALG_ECB) && (in->ivIn.t.size != blockSize)))
+        return MSSIM_RCS_SIZE + RC_EncryptDecrypt_ivIn;
 
     // The input data size of CBC mode or ECB mode must be an even multiple of
     // the symmetric algorithm's block size
-    if(((mode == TPM_ALG_CBC) || (mode == TPM_ALG_ECB))
+    if(((mode == MSSIM_ALG_CBC) || (mode == MSSIM_ALG_ECB))
        && ((in->inData.t.size % blockSize) != 0))
-        return TPM_RCS_SIZE + RC_EncryptDecrypt_inData;
+        return MSSIM_RCS_SIZE + RC_EncryptDecrypt_inData;
 
     // Copy IV
     // Note: This is copied here so that the calls to the encrypt/decrypt functions

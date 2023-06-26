@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -41,36 +41,36 @@
 /*(See part 3 specification)
 // Applies a time stamp to the passed blob (qualifyingData).
 */
-//  Return Type: TPM_RC
-//      TPM_RC_KEY          key referenced by 'signHandle' is not a signing key
-//      TPM_RC_SCHEME       'inScheme' is incompatible with 'signHandle' type; or
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_KEY          key referenced by 'signHandle' is not a signing key
+//      MSSIM_RC_SCHEME       'inScheme' is incompatible with 'signHandle' type; or
 //                          both 'scheme' and key's default scheme are empty; or
 //                          'scheme' is empty while key's default scheme requires
 //                          explicit input scheme (split signing); or
 //                          non-empty default key scheme differs from 'scheme'
-//      TPM_RC_VALUE        digest generated for the given 'scheme' is greater than
+//      MSSIM_RC_VALUE        digest generated for the given 'scheme' is greater than
 //                          the modulus of 'signHandle' (for an RSA key);
 //                          invalid commit status or failed to generate "r" value
 //                          (for an ECC key)
-TPM_RC
-TPM2_GetTime(GetTime_In*  in,  // IN: input parameter list
+MSSIM_RC
+MSSIM2_GetTime(GetTime_In*  in,  // IN: input parameter list
              GetTime_Out* out  // OUT: output parameter list
 )
 {
-    TPMS_ATTEST timeInfo;
+    MSSIMS_ATTEST timeInfo;
     OBJECT*     signObject = HandleToObject(in->signHandle);
     // Input Validation
     if(!IsSigningObject(signObject))
-        return TPM_RCS_KEY + RC_GetTime_signHandle;
+        return MSSIM_RCS_KEY + RC_GetTime_signHandle;
     if(!CryptSelectSignScheme(signObject, &in->inScheme))
-        return TPM_RCS_SCHEME + RC_GetTime_inScheme;
+        return MSSIM_RCS_SCHEME + RC_GetTime_inScheme;
 
     // Command Output
     // Fill in attest common fields
     FillInAttestInfo(in->signHandle, &in->inScheme, &in->qualifyingData, &timeInfo);
 
     // GetClock specific fields
-    timeInfo.type                    = TPM_ST_ATTEST_TIME;
+    timeInfo.type                    = MSSIM_ST_ATTEST_TIME;
     timeInfo.attested.time.time.time = g_time;
     TimeFillInfo(&timeInfo.attested.time.time.clockInfo);
 

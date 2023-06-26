@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -61,9 +61,9 @@
 //** Functions
 
 //*** BnFromWolf()
-// This function converts a wolfcrypt mp_int to a TPM bignum. In this implementation
+// This function converts a wolfcrypt mp_int to a MSSIM bignum. In this implementation
 // it is assumed that wolfcrypt used the same format for a big number as does the
-// TPM -- an array of native-endian words in little-endian order.
+// MSSIM -- an array of native-endian words in little-endian order.
 void BnFromWolf(bigNum bn, mp_int* wolfBn)
 {
     if(bn != NULL)
@@ -95,7 +95,7 @@ void BnFromWolf(bigNum bn, mp_int* wolfBn)
 }
 
 //*** BnToWolf()
-// This function converts a TPM bignum to a wolfcrypt mp_init, and has the same
+// This function converts a MSSIM bignum to a wolfcrypt mp_init, and has the same
 // assumptions as made by BnFromWolf()
 void BnToWolf(mp_int* toInit, bigConst initializer)
 {
@@ -134,13 +134,13 @@ mp_int* MpInitialize(mp_int* toInit)
 #  if LIBRARY_COMPATIBILITY_CHECK
 //** MathLibraryCompatibililtyCheck()
 // This function is only used during development to make sure that the library
-// that is being referenced is using the same size of data structures as the TPM.
+// that is being referenced is using the same size of data structures as the MSSIM.
 BOOL MathLibraryCompatibilityCheck(void)
 {
     BN_VAR(tpmTemp, 64 * 8);  // allocate some space for a test value
     crypt_uword_t i;
-    TPM2B_TYPE(TEST, 16);
-    TPM2B_TEST test = {{16,
+    MSSIM2B_TYPE(TEST, 16);
+    MSSIM2B_TEST test = {{16,
                         {0x0F,
                          0x0E,
                          0x0D,
@@ -157,7 +157,7 @@ BOOL MathLibraryCompatibilityCheck(void)
                          0x02,
                          0x01,
                          0x00}}};
-    // Convert the test TPM2B to a bigNum
+    // Convert the test MSSIM2B to a bigNum
     BnFrom2B(tpmTemp, &test.b);
     MP_INITIALIZED(wolfTemp, tpmTemp);
     (wolfTemp);  // compiler warning
@@ -325,7 +325,7 @@ LIB_EXPORT BOOL BnModInverse(bigNum result, bigConst number, bigConst modulus)
     WOLF_LEAVE();
     return OK;
 }
-#  endif  // TPM_ALG_RSA
+#  endif  // MSSIM_ALG_RSA
 
 #  if ALG_ECC
 
@@ -477,6 +477,6 @@ LIB_EXPORT BOOL BnEccAdd(bigPoint   R,  // OUT: computed point
     return !BnEqualZero(R->z);
 }
 
-#  endif  // TPM_ALG_ECC
+#  endif  // MSSIM_ALG_ECC
 
 #endif  // MATH_LIB_WOLF

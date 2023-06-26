@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,23 +45,23 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_SH_POLICY policySession;
-    TPM2B_NAME     objectName;
-    TPM2B_NAME     authHandleName;
-    TPM2B_NAME     acName;
-    TPMI_YES_NO    includeObject;
+    MSSIMI_SH_POLICY policySession;
+    MSSIM2B_NAME     objectName;
+    MSSIM2B_NAME     authHandleName;
+    MSSIM2B_NAME     acName;
+    MSSIMI_YES_NO    includeObject;
 } Policy_AC_SendSelect_In;
 
 // Response code modifiers
-#    define RC_Policy_AC_SendSelect_policySession  (TPM_RC_H + TPM_RC_1)
-#    define RC_Policy_AC_SendSelect_objectName     (TPM_RC_P + TPM_RC_1)
-#    define RC_Policy_AC_SendSelect_authHandleName (TPM_RC_P + TPM_RC_2)
-#    define RC_Policy_AC_SendSelect_acName         (TPM_RC_P + TPM_RC_3)
-#    define RC_Policy_AC_SendSelect_includeObject  (TPM_RC_P + TPM_RC_4)
+#    define RC_Policy_AC_SendSelect_policySession  (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_Policy_AC_SendSelect_objectName     (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_Policy_AC_SendSelect_authHandleName (MSSIM_RC_P + MSSIM_RC_2)
+#    define RC_Policy_AC_SendSelect_acName         (MSSIM_RC_P + MSSIM_RC_3)
+#    define RC_Policy_AC_SendSelect_includeObject  (MSSIM_RC_P + MSSIM_RC_4)
 
 // Function prototype
-TPM_RC
-TPM2_Policy_AC_SendSelect(Policy_AC_SendSelect_In* in);
+MSSIM_RC
+MSSIM2_Policy_AC_SendSelect(Policy_AC_SendSelect_In* in);
 
 #  endif  // _Policy_AC_Send_Select_FP_H_
 #endif    // CC_Policy_AC_SendSelect

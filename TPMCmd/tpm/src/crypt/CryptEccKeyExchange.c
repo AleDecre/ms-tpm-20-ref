@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -76,15 +76,15 @@ static BOOL avf1(bigNum bnX,  // IN/OUT: the reduced value
 //
 // Points 'QsB' and 'QeB' are required to be on the curve of 'inQsA'. The function
 // will fail, possibly catastrophically, if this is not the case.
-//  Return Type: TPM_RC
-//      TPM_RC_NO_RESULT        the value for dsA does not give a valid point on the
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_NO_RESULT        the value for dsA does not give a valid point on the
 //                              curve
-static TPM_RC C_2_2_MQV(TPMS_ECC_POINT* outZ,   // OUT: the computed point
-                        TPM_ECC_CURVE curveId,  // IN: the curve for the computations
-                        TPM2B_ECC_PARAMETER* dsA,  // IN: static private TPM key
-                        TPM2B_ECC_PARAMETER* deA,  // IN: ephemeral private TPM key
-                        TPMS_ECC_POINT*      QsB,  // IN: static public party B key
-                        TPMS_ECC_POINT*      QeB   // IN: ephemeral public party B key
+static MSSIM_RC C_2_2_MQV(MSSIMS_ECC_POINT* outZ,   // OUT: the computed point
+                        MSSIM_ECC_CURVE curveId,  // IN: the curve for the computations
+                        MSSIM2B_ECC_PARAMETER* dsA,  // IN: static private MSSIM key
+                        MSSIM2B_ECC_PARAMETER* deA,  // IN: ephemeral private MSSIM key
+                        MSSIMS_ECC_POINT*      QsB,  // IN: static public party B key
+                        MSSIMS_ECC_POINT*      QeB   // IN: ephemeral public party B key
 )
 {
     CURVE_INITIALIZED(E, curveId);
@@ -97,11 +97,11 @@ static TPM_RC C_2_2_MQV(TPMS_ECC_POINT* outZ,   // OUT: the computed point
     ECC_INITIALIZED(bnDsA, dsA);
     ECC_NUM(bnN);
     ECC_NUM(bnXeB);
-    TPM_RC retVal;
+    MSSIM_RC retVal;
     //
     // Parameter checks
     if(E == NULL)
-        ERROR_RETURN(TPM_RC_VALUE);
+        ERROR_RETURN(MSSIM_RC_VALUE);
     pAssert(
         outZ != NULL && pQeB != NULL && pQsB != NULL && deA != NULL && dsA != NULL);
     C = AccessCurveData(E);
@@ -113,7 +113,7 @@ static TPM_RC C_2_2_MQV(TPMS_ECC_POINT* outZ,   // OUT: the computed point
 
     // Compute the public ephemeral key pQeA = [de,A]G
     if((retVal = BnPointMult(pQeA, CurveGetG(C), bnDeA, NULL, NULL, E))
-       != TPM_RC_SUCCESS)
+       != MSSIM_RC_SUCCESS)
         goto Exit;
 
     //  1. implicitsigA = (de,A + avf(Qe,A)ds,A ) mod n.
@@ -149,8 +149,8 @@ static TPM_RC C_2_2_MQV(TPMS_ECC_POINT* outZ,   // OUT: the computed point
     // If the result is not the point at infinity, return QeB
     BnPointMult(pQeB, pQeB, bnTa, NULL, NULL, E);
     if(BnEqualZero(pQeB->z))
-        ERROR_RETURN(TPM_RC_NO_RESULT);
-    // Convert BIGNUM E to TPM2B E
+        ERROR_RETURN(MSSIM_RC_NO_RESULT);
+    // Convert BIGNUM E to MSSIM2B E
     BnPointTo2B(outZ, pQeB, E);
 
 Exit:
@@ -164,13 +164,13 @@ Exit:
 // This function performs the two phase key exchange defined in SP800-56A,
 // 6.1.1.2 Full Unified Model, C(2, 2, ECC CDH).
 //
-static TPM_RC C_2_2_ECDH(TPMS_ECC_POINT* outZs,  // OUT: Zs
-                         TPMS_ECC_POINT* outZe,  // OUT: Ze
-                         TPM_ECC_CURVE curveId,  // IN: the curve for the computations
-                         TPM2B_ECC_PARAMETER* dsA,  // IN: static private TPM key
-                         TPM2B_ECC_PARAMETER* deA,  // IN: ephemeral private TPM key
-                         TPMS_ECC_POINT*      QsB,  // IN: static public party B key
-                         TPMS_ECC_POINT*      QeB  // IN: ephemeral public party B key
+static MSSIM_RC C_2_2_ECDH(MSSIMS_ECC_POINT* outZs,  // OUT: Zs
+                         MSSIMS_ECC_POINT* outZe,  // OUT: Ze
+                         MSSIM_ECC_CURVE curveId,  // IN: the curve for the computations
+                         MSSIM2B_ECC_PARAMETER* dsA,  // IN: static private MSSIM key
+                         MSSIM2B_ECC_PARAMETER* deA,  // IN: ephemeral private MSSIM key
+                         MSSIMS_ECC_POINT*      QsB,  // IN: static public party B key
+                         MSSIMS_ECC_POINT*      QeB  // IN: ephemeral public party B key
 )
 {
     CURVE_INITIALIZED(E, curveId);
@@ -179,23 +179,23 @@ static TPM_RC C_2_2_ECDH(TPMS_ECC_POINT* outZs,  // OUT: Zs
     POINT_INITIALIZED(ecBs, QsB);
     POINT_INITIALIZED(ecBe, QeB);
     POINT(ecZ);
-    TPM_RC retVal;
+    MSSIM_RC retVal;
     //
     // Parameter checks
     if(E == NULL)
-        ERROR_RETURN(TPM_RC_CURVE);
+        ERROR_RETURN(MSSIM_RC_CURVE);
     pAssert(
         outZs != NULL && dsA != NULL && deA != NULL && QsB != NULL && QeB != NULL);
 
     // Do the point multiply for the Zs value ([dsA]QsB)
     retVal = BnPointMult(ecZ, ecBs, bnAs, NULL, NULL, E);
-    if(retVal == TPM_RC_SUCCESS)
+    if(retVal == MSSIM_RC_SUCCESS)
     {
         // Convert the Zs value.
         BnPointTo2B(outZs, ecZ, E);
         // Do the point multiply for the Ze value ([deA]QeB)
         retVal = BnPointMult(ecZ, ecBe, bnAe, NULL, NULL, E);
-        if(retVal == TPM_RC_SUCCESS)
+        if(retVal == MSSIM_RC_SUCCESS)
             BnPointTo2B(outZe, ecZ, E);
     }
 Exit:
@@ -206,17 +206,17 @@ Exit:
 //*** CryptEcc2PhaseKeyExchange()
 // This function is the dispatch routine for the EC key exchange functions that use
 // two ephemeral and two static keys.
-//  Return Type: TPM_RC
-//      TPM_RC_SCHEME             scheme is not defined
-LIB_EXPORT TPM_RC CryptEcc2PhaseKeyExchange(
-    TPMS_ECC_POINT*      outZ1,    // OUT: a computed point
-    TPMS_ECC_POINT*      outZ2,    // OUT: and optional second point
-    TPM_ECC_CURVE        curveId,  // IN: the curve for the computations
-    TPM_ALG_ID           scheme,   // IN: the key exchange scheme
-    TPM2B_ECC_PARAMETER* dsA,      // IN: static private TPM key
-    TPM2B_ECC_PARAMETER* deA,      // IN: ephemeral private TPM key
-    TPMS_ECC_POINT*      QsB,      // IN: static public party B key
-    TPMS_ECC_POINT*      QeB       // IN: ephemeral public party B key
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_SCHEME             scheme is not defined
+LIB_EXPORT MSSIM_RC CryptEcc2PhaseKeyExchange(
+    MSSIMS_ECC_POINT*      outZ1,    // OUT: a computed point
+    MSSIMS_ECC_POINT*      outZ2,    // OUT: and optional second point
+    MSSIM_ECC_CURVE        curveId,  // IN: the curve for the computations
+    MSSIM_ALG_ID           scheme,   // IN: the key exchange scheme
+    MSSIM2B_ECC_PARAMETER* dsA,      // IN: static private MSSIM key
+    MSSIM2B_ECC_PARAMETER* deA,      // IN: ephemeral private MSSIM key
+    MSSIMS_ECC_POINT*      QsB,      // IN: static public party B key
+    MSSIMS_ECC_POINT*      QeB       // IN: ephemeral public party B key
 )
 {
     pAssert(
@@ -233,21 +233,21 @@ LIB_EXPORT TPM_RC CryptEcc2PhaseKeyExchange(
     }
     switch(scheme)
     {
-        case TPM_ALG_ECDH:
+        case MSSIM_ALG_ECDH:
             return C_2_2_ECDH(outZ1, outZ2, curveId, dsA, deA, QsB, QeB);
             break;
 #  if ALG_ECMQV
-        case TPM_ALG_ECMQV:
+        case MSSIM_ALG_ECMQV:
             return C_2_2_MQV(outZ1, curveId, dsA, deA, QsB, QeB);
             break;
 #  endif
 #  if ALG_SM2
-        case TPM_ALG_SM2:
+        case MSSIM_ALG_SM2:
             return SM2KeyExchange(outZ1, curveId, dsA, deA, QsB, QeB);
             break;
 #  endif
         default:
-            return TPM_RC_SCHEME;
+            return MSSIM_RC_SCHEME;
     }
 }
 
@@ -293,16 +293,16 @@ static bigNum avfSm2(bigNum bn,  // IN/OUT: the reduced value
 // private key.
 // All points are required to be on the curve of 'inQsA'. The function will fail
 // catastrophically if this is not the case
-//  Return Type: TPM_RC
-//      TPM_RC_NO_RESULT        the value for dsA does not give a valid point on the
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_NO_RESULT        the value for dsA does not give a valid point on the
 //                              curve
-LIB_EXPORT TPM_RC SM2KeyExchange(
-    TPMS_ECC_POINT*      outZ,     // OUT: the computed point
-    TPM_ECC_CURVE        curveId,  // IN: the curve for the computations
-    TPM2B_ECC_PARAMETER* dsAIn,    // IN: static private TPM key
-    TPM2B_ECC_PARAMETER* deAIn,    // IN: ephemeral private TPM key
-    TPMS_ECC_POINT*      QsBIn,    // IN: static public party B key
-    TPMS_ECC_POINT*      QeBIn     // IN: ephemeral public party B key
+LIB_EXPORT MSSIM_RC SM2KeyExchange(
+    MSSIMS_ECC_POINT*      outZ,     // OUT: the computed point
+    MSSIM_ECC_CURVE        curveId,  // IN: the curve for the computations
+    MSSIM2B_ECC_PARAMETER* dsAIn,    // IN: static private MSSIM key
+    MSSIM2B_ECC_PARAMETER* deAIn,    // IN: ephemeral private MSSIM key
+    MSSIMS_ECC_POINT*      QsBIn,    // IN: static public party B key
+    MSSIMS_ECC_POINT*      QeBIn     // IN: ephemeral public party B key
 )
 {
     CURVE_INITIALIZED(E, curveId);
@@ -317,11 +317,11 @@ LIB_EXPORT TPM_RC SM2KeyExchange(
     POINT(Z);
     ECC_NUM(Ta);
     UINT32 w;
-    TPM_RC retVal = TPM_RC_NO_RESULT;
+    MSSIM_RC retVal = MSSIM_RC_NO_RESULT;
     //
     // Parameter checks
     if(E == NULL)
-        ERROR_RETURN(TPM_RC_CURVE);
+        ERROR_RETURN(MSSIM_RC_CURVE);
     C = AccessCurveData(E);
     pAssert(outZ != NULL && dsA != NULL && deA != NULL && QsB != NULL && QeB != NULL);
 
@@ -355,9 +355,9 @@ LIB_EXPORT TPM_RC SM2KeyExchange(
     // QeB := [tA]QeB = [tA](QsB + [Xe,B]QeB) and check for at infinity
     if(!BnEccModMult(Z, Z, Ta, E))
         goto Exit;
-    // Convert BIGNUM E to TPM2B E
+    // Convert BIGNUM E to MSSIM2B E
     BnPointTo2B(outZ, Z, E);
-    retVal = TPM_RC_SUCCESS;
+    retVal = MSSIM_RC_SUCCESS;
 Exit:
     CURVE_FREE(E);
     return retVal;

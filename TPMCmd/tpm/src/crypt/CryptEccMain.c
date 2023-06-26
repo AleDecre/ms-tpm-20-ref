@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -54,22 +54,22 @@ void EccSimulationEnd(void)
 #  endif  // SIMULATION
 
 //*** CryptEccInit()
-// This function is called at _TPM_Init
+// This function is called at _MSSIM_Init
 BOOL CryptEccInit(void)
 {
     return TRUE;
 }
 
 //*** CryptEccStartup()
-// This function is called at TPM2_Startup().
+// This function is called at MSSIM2_Startup().
 BOOL CryptEccStartup(void)
 {
     return TRUE;
 }
 
 //*** ClearPoint2B(generic)
-// Initialize the size values of a TPMS_ECC_POINT structure.
-void ClearPoint2B(TPMS_ECC_POINT* p  // IN: the point
+// Initialize the size values of a MSSIMS_ECC_POINT structure.
+void ClearPoint2B(MSSIMS_ECC_POINT* p  // IN: the point
 )
 {
     if(p != NULL)
@@ -85,10 +85,10 @@ void ClearPoint2B(TPMS_ECC_POINT* p  // IN: the point
 // If there is no curve with the indicated ID, the function returns NULL. This
 // function is in this module so that it can be called by GetCurve data.
 //  Return Type: const ECC_CURVE_DATA
-//      NULL            curve with the indicated TPM_ECC_CURVE is not implemented
+//      NULL            curve with the indicated MSSIM_ECC_CURVE is not implemented
 //      != NULL         pointer to the curve data
 LIB_EXPORT const ECC_CURVE* CryptEccGetParametersByCurveId(
-    TPM_ECC_CURVE curveId  // IN: the curveID
+    MSSIM_ECC_CURVE curveId  // IN: the curveID
 )
 {
     int i;
@@ -102,7 +102,7 @@ LIB_EXPORT const ECC_CURVE* CryptEccGetParametersByCurveId(
 
 //*** CryptEccGetKeySizeForCurve()
 // This function returns the key size in bits of the indicated curve.
-LIB_EXPORT UINT16 CryptEccGetKeySizeForCurve(TPM_ECC_CURVE curveId  // IN: the curve
+LIB_EXPORT UINT16 CryptEccGetKeySizeForCurve(MSSIM_ECC_CURVE curveId  // IN: the curve
 )
 {
     const ECC_CURVE* curve = CryptEccGetParametersByCurveId(curveId);
@@ -115,7 +115,7 @@ LIB_EXPORT UINT16 CryptEccGetKeySizeForCurve(TPM_ECC_CURVE curveId  // IN: the c
 //*** GetCurveData()
 // This function returns the a pointer for the parameter data
 // associated with a curve.
-const ECC_CURVE_DATA* GetCurveData(TPM_ECC_CURVE curveId  // IN: the curveID
+const ECC_CURVE_DATA* GetCurveData(MSSIM_ECC_CURVE curveId  // IN: the curveID
 )
 {
     const ECC_CURVE* curve = CryptEccGetParametersByCurveId(curveId);
@@ -123,7 +123,7 @@ const ECC_CURVE_DATA* GetCurveData(TPM_ECC_CURVE curveId  // IN: the curveID
 }
 
 //***CryptEccGetOID()
-const BYTE* CryptEccGetOID(TPM_ECC_CURVE curveId)
+const BYTE* CryptEccGetOID(MSSIM_ECC_CURVE curveId)
 {
     const ECC_CURVE* curve = CryptEccGetParametersByCurveId(curveId);
     return (curve != NULL) ? curve->OID : NULL;
@@ -132,11 +132,11 @@ const BYTE* CryptEccGetOID(TPM_ECC_CURVE curveId)
 //*** CryptEccGetCurveByIndex()
 // This function returns the number of the 'i'-th implemented curve. The normal
 // use would be to call this function with 'i' starting at 0. When the 'i' is greater
-// than or equal to the number of implemented curves, TPM_ECC_NONE is returned.
-LIB_EXPORT TPM_ECC_CURVE CryptEccGetCurveByIndex(UINT16 i)
+// than or equal to the number of implemented curves, MSSIM_ECC_NONE is returned.
+LIB_EXPORT MSSIM_ECC_CURVE CryptEccGetCurveByIndex(UINT16 i)
 {
     if(i >= ECC_CURVE_COUNT)
-        return TPM_ECC_NONE;
+        return MSSIM_ECC_NONE;
     return eccCurves[i].curveId;
 }
 
@@ -147,9 +147,9 @@ LIB_EXPORT TPM_ECC_CURVE CryptEccGetCurveByIndex(UINT16 i)
 //      TRUE(1)         curve exists and parameter returned
 //      FALSE(0)        curve does not exist or parameter selector
 LIB_EXPORT BOOL CryptEccGetParameter(
-    TPM2B_ECC_PARAMETER* out,     // OUT: place to put parameter
+    MSSIM2B_ECC_PARAMETER* out,     // OUT: place to put parameter
     char                 p,       // IN: the parameter selector
-    TPM_ECC_CURVE        curveId  // IN: the curve id
+    MSSIM_ECC_CURVE        curveId  // IN: the curve id
 )
 {
     const ECC_CURVE_DATA* curve     = GetCurveData(curveId);
@@ -192,19 +192,19 @@ LIB_EXPORT BOOL CryptEccGetParameter(
 
 //*** CryptCapGetECCCurve()
 // This function returns the list of implemented ECC curves.
-//  Return Type: TPMI_YES_NO
+//  Return Type: MSSIMI_YES_NO
 //      YES             if no more ECC curve is available
 //      NO              if there are more ECC curves not reported
-TPMI_YES_NO
-CryptCapGetECCCurve(TPM_ECC_CURVE   curveID,   // IN: the starting ECC curve
+MSSIMI_YES_NO
+CryptCapGetECCCurve(MSSIM_ECC_CURVE   curveID,   // IN: the starting ECC curve
                     UINT32          maxCount,  // IN: count of returned curves
-                    TPML_ECC_CURVE* curveList  // OUT: ECC curve list
+                    MSSIML_ECC_CURVE* curveList  // OUT: ECC curve list
 )
 {
-    TPMI_YES_NO   more = NO;
+    MSSIMI_YES_NO   more = NO;
     UINT16        i;
     UINT32        count = ECC_CURVE_COUNT;
-    TPM_ECC_CURVE curve;
+    MSSIM_ECC_CURVE curve;
 
     // Initialize output property list
     curveList->count = 0;
@@ -240,8 +240,8 @@ CryptCapGetECCCurve(TPM_ECC_CURVE   curveID,   // IN: the starting ECC curve
 
 //*** CryptGetCurveSignScheme()
 // This function will return a pointer to the scheme of the curve.
-const TPMT_ECC_SCHEME* CryptGetCurveSignScheme(
-    TPM_ECC_CURVE curveId  // IN: The curve selector
+const MSSIMT_ECC_SCHEME* CryptGetCurveSignScheme(
+    MSSIM_ECC_CURVE curveId  // IN: The curve selector
 )
 {
     const ECC_CURVE* curve = CryptEccGetParametersByCurveId(curveId);
@@ -256,25 +256,25 @@ const TPMT_ECC_SCHEME* CryptGetCurveSignScheme(
 // This function computes the commit random value for a split signing scheme.
 //
 // If 'c' is NULL, it indicates that 'r' is being generated
-// for TPM2_Commit.
-// If 'c' is not NULL, the TPM will validate that the 'gr.commitArray'
-// bit associated with the input value of 'c' is SET. If not, the TPM
+// for MSSIM2_Commit.
+// If 'c' is not NULL, the MSSIM will validate that the 'gr.commitArray'
+// bit associated with the input value of 'c' is SET. If not, the MSSIM
 // returns FALSE and no 'r' value is generated.
 //  Return Type: BOOL
 //      TRUE(1)         r value computed
 //      FALSE(0)        no r value computed
-BOOL CryptGenerateR(TPM2B_ECC_PARAMETER* r,        // OUT: the generated random value
+BOOL CryptGenerateR(MSSIM2B_ECC_PARAMETER* r,        // OUT: the generated random value
                     UINT16*              c,        // IN/OUT: count value.
-                    TPMI_ECC_CURVE       curveID,  // IN: the curve for the value
-                    TPM2B_NAME*          name      // IN: optional name of a key to
+                    MSSIMI_ECC_CURVE       curveID,  // IN: the curve for the value
+                    MSSIM2B_NAME*          name      // IN: optional name of a key to
                                                    //     associate with 'r'
 )
 {
     // This holds the marshaled g_commitCounter.
-    TPM2B_TYPE(8B, 8);
-    TPM2B_8B            cntr = {{8, {0}}};
+    MSSIM2B_TYPE(8B, 8);
+    MSSIM2B_8B            cntr = {{8, {0}}};
     UINT32              iterations;
-    TPM2B_ECC_PARAMETER n;
+    MSSIM2B_ECC_PARAMETER n;
     UINT64              currentCount = gr.commitCounter;
     UINT16              t1;
     //
@@ -310,7 +310,7 @@ BOOL CryptGenerateR(TPM2B_ECC_PARAMETER* r,        // OUT: the generated random 
         // present when the commitment was made
         currentCount = (currentCount & 0xffffffffffff0000) | *c;
     }
-    // Marshal the count value to a TPM2B buffer for the KDF
+    // Marshal the count value to a MSSIM2B buffer for the KDF
     cntr.t.size = sizeof(currentCount);
     UINT64_TO_BYTE_ARRAY(currentCount, cntr.t.buffer);
 
@@ -375,8 +375,8 @@ void CryptEndCommit(UINT16 c  // IN: the counter value of the commitment
 //      TRUE(1)         success
 //      FALSE(0)        unsupported ECC curve ID
 BOOL CryptEccGetParameters(
-    TPM_ECC_CURVE              curveId,    // IN: ECC curve ID
-    TPMS_ALGORITHM_DETAIL_ECC* parameters  // OUT: ECC parameters
+    MSSIM_ECC_CURVE              curveId,    // IN: ECC curve ID
+    MSSIMS_ALGORITHM_DETAIL_ECC* parameters  // OUT: ECC parameters
 )
 {
     const ECC_CURVE*      curve = CryptEccGetParametersByCurveId(curveId);
@@ -406,7 +406,7 @@ BOOL CryptEccGetParameters(
 
 //*** BnGetCurvePrime()
 // This function is used to get just the prime modulus associated with a curve.
-const bignum_t* BnGetCurvePrime(TPM_ECC_CURVE curveId)
+const bignum_t* BnGetCurvePrime(MSSIM_ECC_CURVE curveId)
 {
     const ECC_CURVE_DATA* C = GetCurveData(curveId);
     return (C != NULL) ? CurveGetPrime(C) : NULL;
@@ -414,7 +414,7 @@ const bignum_t* BnGetCurvePrime(TPM_ECC_CURVE curveId)
 
 //*** BnGetCurveOrder()
 // This function is used to get just the curve order
-const bignum_t* BnGetCurveOrder(TPM_ECC_CURVE curveId)
+const bignum_t* BnGetCurveOrder(MSSIM_ECC_CURVE curveId)
 {
     const ECC_CURVE_DATA* C = GetCurveData(curveId);
     return (C != NULL) ? CurveGetOrder(C) : NULL;
@@ -466,8 +466,8 @@ BOOL BnIsValidPrivateEcc(bigConst x,  // IN: private key to check
     return retVal;
 }
 
-LIB_EXPORT BOOL CryptEccIsValidPrivateKey(TPM2B_ECC_PARAMETER* d,
-                                          TPM_ECC_CURVE        curveId)
+LIB_EXPORT BOOL CryptEccIsValidPrivateKey(MSSIM2B_ECC_PARAMETER* d,
+                                          MSSIM_ECC_CURVE        curveId)
 {
     BN_INITIALIZED(bnD, MAX_ECC_PARAMETER_BYTES * 8, d);
     return !BnEqualZero(bnD) && (BnUnsignedCmp(bnD, BnGetCurveOrder(curveId)) < 0);
@@ -480,12 +480,12 @@ LIB_EXPORT BOOL CryptEccIsValidPrivateKey(TPM2B_ECC_PARAMETER* d,
 // If 'skipChecks' is TRUE, then the function will not verify that the inputs are
 // correct for the domain. This would be the case when the values were created by the
 // CryptoEngine code.
-// It will return TPM_RC_NO_RESULT if the resulting point is the point at infinity.
-//  Return Type: TPM_RC
-//      TPM_RC_NO_RESULT        result of multiplication is a point at infinity
-//      TPM_RC_ECC_POINT        'S' or 'Q' is not on the curve
-//      TPM_RC_VALUE            'd' or 'u' is not < n
-TPM_RC
+// It will return MSSIM_RC_NO_RESULT if the resulting point is the point at infinity.
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_NO_RESULT        result of multiplication is a point at infinity
+//      MSSIM_RC_ECC_POINT        'S' or 'Q' is not on the curve
+//      MSSIM_RC_VALUE            'd' or 'u' is not < n
+MSSIM_RC
 BnPointMult(bigPoint   R,  // OUT: computed point
             pointConst S,  // IN: optional point to multiply by 'd'
             bigConst   d,  // IN: scalar for [d]S or [d]G
@@ -496,7 +496,7 @@ BnPointMult(bigPoint   R,  // OUT: computed point
 {
     BOOL OK;
     //
-    TEST(TPM_ALG_ECDH);
+    TEST(MSSIM_ALG_ECDH);
 
     // Need one scalar
     OK = (d != NULL || u != NULL);
@@ -511,12 +511,12 @@ BnPointMult(bigPoint   R,  // OUT: computed point
 
     OK = OK && (E != NULL);
     if(!OK)
-        return TPM_RC_VALUE;
+        return MSSIM_RC_VALUE;
 
     OK = (S == NULL) || BnIsOnCurve(S, AccessCurveData(E));
     OK = OK && ((Q == NULL) || BnIsOnCurve(Q, AccessCurveData(E)));
     if(!OK)
-        return TPM_RC_ECC_POINT;
+        return MSSIM_RC_ECC_POINT;
 
     if((d != NULL) && (S == NULL))
         S = CurveGetG(AccessCurveData(E));
@@ -532,7 +532,7 @@ BnPointMult(bigPoint   R,  // OUT: computed point
     {
         OK = BnEccModMult2(R, S, d, Q, u, E);
     }
-    return (OK ? TPM_RC_SUCCESS : TPM_RC_NO_RESULT);
+    return (OK ? MSSIM_RC_SUCCESS : MSSIM_RC_NO_RESULT);
 }
 
 //***BnEccGetPrivate()
@@ -588,10 +588,10 @@ BOOL BnEccGenerateKeyPair(bigNum      bnD,  // OUT: private scalar
 //***CryptEccNewKeyPair(***)
 // This function creates an ephemeral ECC. It is ephemeral in that
 // is expected that the private part of the key will be discarded
-LIB_EXPORT TPM_RC CryptEccNewKeyPair(
-    TPMS_ECC_POINT*      Qout,    // OUT: the public point
-    TPM2B_ECC_PARAMETER* dOut,    // OUT: the private scalar
-    TPM_ECC_CURVE        curveId  // IN: the curve for the key
+LIB_EXPORT MSSIM_RC CryptEccNewKeyPair(
+    MSSIMS_ECC_POINT*      Qout,    // OUT: the public point
+    MSSIM2B_ECC_PARAMETER* dOut,    // OUT: the private scalar
+    MSSIM_ECC_CURVE        curveId  // IN: the curve for the key
 )
 {
     CURVE_INITIALIZED(E, curveId);
@@ -600,9 +600,9 @@ LIB_EXPORT TPM_RC CryptEccNewKeyPair(
     BOOL OK;
 
     if(E == NULL)
-        return TPM_RC_CURVE;
+        return MSSIM_RC_CURVE;
 
-    TEST(TPM_ALG_ECDH);
+    TEST(MSSIM_ALG_ECDH);
     OK = BnEccGenerateKeyPair(bnD, ecQ, E, NULL);
     if(OK)
     {
@@ -614,7 +614,7 @@ LIB_EXPORT TPM_RC CryptEccNewKeyPair(
         Qout->x.t.size = Qout->y.t.size = dOut->t.size = 0;
     }
     CURVE_FREE(E);
-    return OK ? TPM_RC_SUCCESS : TPM_RC_NO_RESULT;
+    return OK ? MSSIM_RC_SUCCESS : MSSIM_RC_NO_RESULT;
 }
 
 //*** CryptEccPointMultiply()
@@ -629,7 +629,7 @@ LIB_EXPORT TPM_RC CryptEccNewKeyPair(
 // 'dIn' must be provided. If 'dIn' and 'QIn' are specified but 'uIn' is not
 // provided, then 'R' = ['dIn']'QIn'.
 //
-// If the multiply produces the point at infinity, the TPM_RC_NO_RESULT is returned.
+// If the multiply produces the point at infinity, the MSSIM_RC_NO_RESULT is returned.
 //
 // The sizes of 'xOut' and yOut' will be set to be the size of the degree of
 // the curve
@@ -637,20 +637,20 @@ LIB_EXPORT TPM_RC CryptEccNewKeyPair(
 // It is a fatal error if 'dIn' and 'uIn' are both unspecified (NULL) or if 'Qin'
 // or 'Rout' is unspecified.
 //
-//  Return Type: TPM_RC
-//      TPM_RC_ECC_POINT         the point 'Pin' or 'Qin' is not on the curve
-//      TPM_RC_NO_RESULT         the product point is at infinity
-//      TPM_RC_CURVE             bad curve
-//      TPM_RC_VALUE             'dIn' or 'uIn' out of range
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_ECC_POINT         the point 'Pin' or 'Qin' is not on the curve
+//      MSSIM_RC_NO_RESULT         the product point is at infinity
+//      MSSIM_RC_CURVE             bad curve
+//      MSSIM_RC_VALUE             'dIn' or 'uIn' out of range
 //
-LIB_EXPORT TPM_RC CryptEccPointMultiply(
-    TPMS_ECC_POINT*      Rout,     // OUT: the product point R
-    TPM_ECC_CURVE        curveId,  // IN: the curve to use
-    TPMS_ECC_POINT*      Pin,      // IN: first point (can be null)
-    TPM2B_ECC_PARAMETER* dIn,      // IN: scalar value for [dIn]Qin
+LIB_EXPORT MSSIM_RC CryptEccPointMultiply(
+    MSSIMS_ECC_POINT*      Rout,     // OUT: the product point R
+    MSSIM_ECC_CURVE        curveId,  // IN: the curve to use
+    MSSIMS_ECC_POINT*      Pin,      // IN: first point (can be null)
+    MSSIM2B_ECC_PARAMETER* dIn,      // IN: scalar value for [dIn]Qin
                                    //     the Pin
-    TPMS_ECC_POINT*      Qin,      // IN: point Q
-    TPM2B_ECC_PARAMETER* uIn       // IN: scalar value for the multiplier
+    MSSIMS_ECC_POINT*      Qin,      // IN: point Q
+    MSSIM2B_ECC_PARAMETER* uIn       // IN: scalar value for the multiplier
                                    //     of Q
 )
 {
@@ -660,11 +660,11 @@ LIB_EXPORT TPM_RC CryptEccPointMultiply(
     ECC_INITIALIZED(bnU, uIn);
     POINT_INITIALIZED(ecQ, Qin);
     POINT(ecR);
-    TPM_RC retVal;
+    MSSIM_RC retVal;
     //
     retVal = BnPointMult(ecR, ecP, bnD, ecQ, bnU, E);
 
-    if(retVal == TPM_RC_SUCCESS)
+    if(retVal == MSSIM_RC_SUCCESS)
         BnPointTo2B(Rout, ecR, E);
     else
         ClearPoint2B(Rout);
@@ -681,8 +681,8 @@ LIB_EXPORT TPM_RC CryptEccPointMultiply(
 //      TRUE(1)         point is on curve
 //      FALSE(0)        point is not on curve or curve is not supported
 LIB_EXPORT BOOL CryptEccIsPointOnCurve(
-    TPM_ECC_CURVE   curveId,  // IN: the curve selector
-    TPMS_ECC_POINT* Qin       // IN: the point.
+    MSSIM_ECC_CURVE   curveId,  // IN: the curve selector
+    MSSIMS_ECC_POINT* Qin       // IN: the point.
 )
 {
     const ECC_CURVE_DATA* C = GetCurveData(curveId);
@@ -705,15 +705,15 @@ LIB_EXPORT BOOL CryptEccIsPointOnCurve(
 //
 // If the curve is not supported
 // If 'seed' is not provided, then a random number will be used for the key
-//  Return Type: TPM_RC
-//      TPM_RC_CURVE            curve is not supported
-//      TPM_RC_NO_RESULT        could not verify key with signature (FIPS only)
-LIB_EXPORT TPM_RC CryptEccGenerateKey(
-    TPMT_PUBLIC* publicArea,    // IN/OUT: The public area template for
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_CURVE            curve is not supported
+//      MSSIM_RC_NO_RESULT        could not verify key with signature (FIPS only)
+LIB_EXPORT MSSIM_RC CryptEccGenerateKey(
+    MSSIMT_PUBLIC* publicArea,    // IN/OUT: The public area template for
                                 //      the new key. The public key
                                 //      area will be replaced computed
                                 //      ECC public key
-    TPMT_SENSITIVE* sensitive,  // OUT: the sensitive area will be
+    MSSIMT_SENSITIVE* sensitive,  // OUT: the sensitive area will be
                                 //      updated to contain the private
                                 //      ECC key and the symmetric
                                 //      encryption key
@@ -725,13 +725,13 @@ LIB_EXPORT TPM_RC CryptEccGenerateKey(
     ECC_NUM(bnD);
     POINT(ecQ);
     BOOL   OK;
-    TPM_RC retVal;
+    MSSIM_RC retVal;
     //
-    TEST(TPM_ALG_ECDSA);  // ECDSA is used to verify each key
+    TEST(MSSIM_ALG_ECDSA);  // ECDSA is used to verify each key
 
     // Validate parameters
     if(E == NULL)
-        ERROR_RETURN(TPM_RC_CURVE);
+        ERROR_RETURN(MSSIM_RC_CURVE);
 
     publicArea->unique.ecc.x.t.size = 0;
     publicArea->unique.ecc.y.t.size = 0;
@@ -745,24 +745,24 @@ LIB_EXPORT TPM_RC CryptEccGenerateKey(
     }
 #  if FIPS_COMPLIANT
     // See if PWCT is required
-    if(OK && IS_ATTRIBUTE(publicArea->objectAttributes, TPMA_OBJECT, sign))
+    if(OK && IS_ATTRIBUTE(publicArea->objectAttributes, MSSIMA_OBJECT, sign))
     {
         ECC_NUM(bnT);
         ECC_NUM(bnS);
-        TPM2B_DIGEST digest;
+        MSSIM2B_DIGEST digest;
         //
-        TEST(TPM_ALG_ECDSA);
+        TEST(MSSIM_ALG_ECDSA);
         digest.t.size = MIN(sensitive->sensitive.ecc.t.size, sizeof(digest.t.buffer));
         // Get a random value to sign using the built in DRBG state
         DRBG_Generate(NULL, digest.t.buffer, digest.t.size);
         if(g_inFailureMode)
-            return TPM_RC_FAILURE;
+            return MSSIM_RC_FAILURE;
         BnSignEcdsa(bnT, bnS, E, bnD, &digest, NULL);
         // and make sure that we can validate the signature
-        OK = BnValidateSignatureEcdsa(bnT, bnS, E, ecQ, &digest) == TPM_RC_SUCCESS;
+        OK = BnValidateSignatureEcdsa(bnT, bnS, E, ecQ, &digest) == MSSIM_RC_SUCCESS;
     }
 #  endif
-    retVal = (OK) ? TPM_RC_SUCCESS : TPM_RC_NO_RESULT;
+    retVal = (OK) ? MSSIM_RC_SUCCESS : MSSIM_RC_NO_RESULT;
 Exit:
     CURVE_FREE(E);
     return retVal;

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,19 +45,19 @@
 // Input structure definition
 typedef struct
 {
-    TPMI_RH_HIERARCHY authHandle;
-    TPMI_RH_ENABLES   enable;
-    TPMI_YES_NO       state;
+    MSSIMI_RH_HIERARCHY authHandle;
+    MSSIMI_RH_ENABLES   enable;
+    MSSIMI_YES_NO       state;
 } HierarchyControl_In;
 
 // Response code modifiers
-#    define RC_HierarchyControl_authHandle (TPM_RC_H + TPM_RC_1)
-#    define RC_HierarchyControl_enable     (TPM_RC_P + TPM_RC_1)
-#    define RC_HierarchyControl_state      (TPM_RC_P + TPM_RC_2)
+#    define RC_HierarchyControl_authHandle (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_HierarchyControl_enable     (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_HierarchyControl_state      (MSSIM_RC_P + MSSIM_RC_2)
 
 // Function prototype
-TPM_RC
-TPM2_HierarchyControl(HierarchyControl_In* in);
+MSSIM_RC
+MSSIM2_HierarchyControl(HierarchyControl_In* in);
 
 #  endif  // _Hierarchy_Control_FP_H_
 #endif    // CC_HierarchyControl

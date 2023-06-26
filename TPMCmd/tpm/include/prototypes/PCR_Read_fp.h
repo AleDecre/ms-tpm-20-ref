@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,23 +45,23 @@
 // Input structure definition
 typedef struct
 {
-    TPML_PCR_SELECTION pcrSelectionIn;
+    MSSIML_PCR_SELECTION pcrSelectionIn;
 } PCR_Read_In;
 
 // Output structure definition
 typedef struct
 {
     UINT32             pcrUpdateCounter;
-    TPML_PCR_SELECTION pcrSelectionOut;
-    TPML_DIGEST        pcrValues;
+    MSSIML_PCR_SELECTION pcrSelectionOut;
+    MSSIML_DIGEST        pcrValues;
 } PCR_Read_Out;
 
 // Response code modifiers
-#    define RC_PCR_Read_pcrSelectionIn (TPM_RC_P + TPM_RC_1)
+#    define RC_PCR_Read_pcrSelectionIn (MSSIM_RC_P + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_PCR_Read(PCR_Read_In* in, PCR_Read_Out* out);
+MSSIM_RC
+MSSIM2_PCR_Read(PCR_Read_In* in, PCR_Read_Out* out);
 
 #  endif  // _PCR_Read_FP_H_
 #endif    // CC_PCR_Read

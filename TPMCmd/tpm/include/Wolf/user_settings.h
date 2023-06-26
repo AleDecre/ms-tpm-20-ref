@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -33,7 +33,7 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* TPM specific preprocessor flags for wolfcrypt */
+/* MSSIM specific preprocessor flags for wolfcrypt */
 
 #ifndef WOLF_CRYPT_USER_SETTINGS_H
 #define WOLF_CRYPT_USER_SETTINGS_H
@@ -52,7 +52,7 @@
 /* Expose direct encryption functions */
 #define WOLFSSL_AES_DIRECT
 
-/* Enable/Disable algorithm support based on TPM implementation header */
+/* Enable/Disable algorithm support based on MSSIM implementation header */
 #if ALG_SHA256
 #  define WOLFSSL_SHA256
 #endif
@@ -77,7 +77,7 @@
 /* Enables Shamir calc method */
 #  define ECC_SHAMIR
 
-/* The TPM only needs low level ECC crypto */
+/* The MSSIM only needs low level ECC crypto */
 #  define NO_ECC_SIGN
 #  define NO_ECC_VERIFY
 #  define NO_ECC_SECP
@@ -91,7 +91,7 @@
 
 #endif
 
-/* Disable explicit RSA. The TPM support for RSA is dependent only on TFM */
+/* Disable explicit RSA. The MSSIM support for RSA is dependent only on TFM */
 #define NO_RSA
 #define NO_RC4
 #define NO_ASN

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -33,23 +33,23 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 //
-// This file contains extra TPM2B structures
+// This file contains extra MSSIM2B structures
 //
 
-#ifndef _TPMB_H
-#define _TPMB_H
+#ifndef _MSSIMB_H
+#define _MSSIMB_H
 
-// TPM2B Types
+// MSSIM2B Types
 typedef struct
 {
     UINT16 size;
     BYTE   buffer[1];
-} TPM2B, *P2B;
-typedef const TPM2B* PC2B;
+} MSSIM2B, *P2B;
+typedef const MSSIM2B* PC2B;
 
 // This macro helps avoid having to type in the structure in order to create
-// a new TPM2B type that is used in a function.
-#define TPM2B_TYPE(name, bytes) \
+// a new MSSIM2B type that is used in a function.
+#define MSSIM2B_TYPE(name, bytes) \
   typedef union                 \
   {                             \
     struct                      \
@@ -57,18 +57,18 @@ typedef const TPM2B* PC2B;
       UINT16 size;              \
       BYTE   buffer[(bytes)];   \
     } t;                        \
-    TPM2B b;                    \
-  } TPM2B_##name
+    MSSIM2B b;                    \
+  } MSSIM2B_##name
 
-// This macro defines a TPM2B with a constant character value. This macro
+// This macro defines a MSSIM2B with a constant character value. This macro
 // sets the size of the string to the size minus the terminating zero byte.
 // This lets the user of the label add their terminating 0. This method
 // is chosen so that existing code that provides a label will continue
 // to work correctly.
 
-// Macro to instance and initialize a TPM2B value
-#define TPM2B_INIT(TYPE, name) TPM2B_##TYPE name = {sizeof(name.t.buffer), {0}}
+// Macro to instance and initialize a MSSIM2B value
+#define MSSIM2B_INIT(TYPE, name) MSSIM2B_##TYPE name = {sizeof(name.t.buffer), {0}}
 
-#define TPM2B_BYTE_VALUE(bytes) TPM2B_TYPE(bytes##_BYTE_VALUE, bytes)
+#define MSSIM2B_BYTE_VALUE(bytes) MSSIM2B_TYPE(bytes##_BYTE_VALUE, bytes)
 
 #endif

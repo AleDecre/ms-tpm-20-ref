@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -35,7 +35,7 @@
 //** Introduction
 // This file contains the structure definitions used for ECC in the OpenSSL
 // version of the code. These definitions would change, based on the library.
-// The ECC-related structures that cross the TPM interface are defined
+// The ECC-related structures that cross the MSSIM interface are defined
 // in TpmTypes.h
 //
 
@@ -97,7 +97,7 @@ struct bignum_st
 
 typedef struct
 {
-    const ECC_CURVE_DATA* C;    // the TPM curve values
+    const ECC_CURVE_DATA* C;    // the MSSIM curve values
     EC_GROUP*             G;    // group parameters
     BN_CTX*               CTX;  // the context for the math (this might not be
                                 // the context in which the curve was created>;

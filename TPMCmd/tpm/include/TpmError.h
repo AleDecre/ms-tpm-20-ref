@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -32,8 +32,8 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef _TPM_ERROR_H
-#define _TPM_ERROR_H
+#ifndef _MSSIM_ERROR_H
+#define _MSSIM_ERROR_H
 
 #define FATAL_ERROR_ALLOCATION       (1)
 #define FATAL_ERROR_DIVIDE_ZERO      (2)
@@ -43,7 +43,7 @@
 #define FATAL_ERROR_SELF_TEST        (6)
 #define FATAL_ERROR_CRYPTO           (7)
 #define FATAL_ERROR_NV_UNRECOVERABLE (8)
-// indicates that the TPM has
+// indicates that the MSSIM has
 // been re-manufactured after an
 // unrecoverable NV error
 #define FATAL_ERROR_REMANUFACTURED   (9)
@@ -54,4 +54,4 @@
 #define FATAL_ERROR_MATHLIBRARY      (14)
 #define FATAL_ERROR_FORCED           (666)
 
-#endif  // _TPM_ERROR_H
+#endif  // _MSSIM_ERROR_H

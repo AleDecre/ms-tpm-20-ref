@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -69,6 +69,6 @@ BYTE* MemoryGetOutBuffer(UINT32 size  // required size of the buffer
 //  Return Type: BOOL
 //      TRUE(1)         string is null terminated
 //      FALSE(0)        string is not null terminated
-BOOL IsLabelProperlyFormatted(TPM2B* x);
+BOOL IsLabelProperlyFormatted(MSSIM2B* x);
 
 #endif  // _IO_BUFFERS_FP_H_

@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -40,8 +40,8 @@
 /*(See part 3 specification)
 // returns the current policyDigest of the session
 */
-TPM_RC
-TPM2_PolicyGetDigest(PolicyGetDigest_In*  in,  // IN: input parameter list
+MSSIM_RC
+MSSIM2_PolicyGetDigest(PolicyGetDigest_In*  in,  // IN: input parameter list
                      PolicyGetDigest_Out* out  // OUT: output parameter list
 )
 {
@@ -54,7 +54,7 @@ TPM2_PolicyGetDigest(PolicyGetDigest_In*  in,  // IN: input parameter list
 
     out->policyDigest = session->u2.policyDigest;
 
-    return TPM_RC_SUCCESS;
+    return MSSIM_RC_SUCCESS;
 }
 
 #endif  // CC_PolicyGetDigest

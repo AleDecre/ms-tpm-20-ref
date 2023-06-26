@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -41,23 +41,23 @@
 #define _TIME_FP_H_
 
 //*** TimePowerOn()
-// This function initialize time info at _TPM_Init().
+// This function initialize time info at _MSSIM_Init().
 //
-// This function is called at _TPM_Init() so that the TPM time can start counting
-// as soon as the TPM comes out of reset and doesn't have to wait until
-// TPM2_Startup() in order to begin the new time epoch. This could be significant
-// for systems that could get powered up but not run any TPM commands for some
+// This function is called at _MSSIM_Init() so that the MSSIM time can start counting
+// as soon as the MSSIM comes out of reset and doesn't have to wait until
+// MSSIM2_Startup() in order to begin the new time epoch. This could be significant
+// for systems that could get powered up but not run any MSSIM commands for some
 // period of time.
 //
 void TimePowerOn(void);
 
 //*** TimeStartup()
 // This function updates the resetCount and restartCount components of
-// TPMS_CLOCK_INFO structure at TPM2_Startup().
+// MSSIMS_CLOCK_INFO structure at MSSIM2_Startup().
 //
 // This function will deal with the deferred creation of a new epoch.
 // TimeUpdateToCurrent() will not start a new epoch even if one is due when
-// TPM_Startup() has not been run. This is because the state of NV is not known
+// MSSIM_Startup() has not been run. This is because the state of NV is not known
 // until startup completes. When Startup is done, then it will create the epoch
 // nonce to complete the initializations by calling this function.
 BOOL TimeStartup(STARTUP_TYPE type  // IN: start up type
@@ -73,18 +73,18 @@ void TimeClockUpdate(UINT64 newTime  // IN: New time value in mS.
 );
 
 //*** TimeUpdate()
-// This function is used to update the time and clock values. If the TPM
-// has run TPM2_Startup(), this function is called at the start of each command.
-// If the TPM has not run TPM2_Startup(), this is called from TPM2_Startup() to
+// This function is used to update the time and clock values. If the MSSIM
+// has run MSSIM2_Startup(), this function is called at the start of each command.
+// If the MSSIM has not run MSSIM2_Startup(), this is called from MSSIM2_Startup() to
 // get the clock values initialized. It is not called on command entry because, in
-// this implementation, the go structure is not read from NV until TPM2_Startup().
-// The reason for this is that the initialization code (_TPM_Init()) may run before
+// this implementation, the go structure is not read from NV until MSSIM2_Startup().
+// The reason for this is that the initialization code (_MSSIM_Init()) may run before
 // NV is accessible.
 void TimeUpdate(void);
 
 //*** TimeUpdateToCurrent()
 // This function updates the 'Time' and 'Clock' in the global
-// TPMS_TIME_INFO structure.
+// MSSIMS_TIME_INFO structure.
 //
 // In this implementation, 'Time' and 'Clock' are updated at the beginning
 // of each command and the values are unchanged for the duration of the
@@ -92,8 +92,8 @@ void TimeUpdate(void);
 //
 // Because 'Clock' updates may require a write to NV memory, 'Time' and 'Clock'
 // are not allowed to advance if NV is not available. When clock is not advancing,
-// any function that uses 'Clock' will fail and return TPM_RC_NV_UNAVAILABLE or
-// TPM_RC_NV_RATE.
+// any function that uses 'Clock' will fail and return MSSIM_RC_NV_UNAVAILABLE or
+// MSSIM_RC_NV_RATE.
 //
 // This implementation does not do rate limiting. If the implementation does do
 // rate limiting, then the 'Clock' update should not be inhibited even when doing
@@ -102,11 +102,11 @@ void TimeUpdateToCurrent(void);
 
 //*** TimeSetAdjustRate()
 // This function is used to perform rate adjustment on 'Time' and 'Clock'.
-void TimeSetAdjustRate(TPM_CLOCK_ADJUST adjust  // IN: adjust constant
+void TimeSetAdjustRate(MSSIM_CLOCK_ADJUST adjust  // IN: adjust constant
 );
 
 //*** TimeGetMarshaled()
-// This function is used to access TPMS_TIME_INFO in canonical form.
+// This function is used to access MSSIMS_TIME_INFO in canonical form.
 // The function collects the time information and marshals it into 'dataBuffer'
 // and returns the marshaled size
 UINT16
@@ -114,7 +114,7 @@ TimeGetMarshaled(TIME_INFO* dataBuffer  // OUT: result buffer
 );
 
 //*** TimeFillInfo
-// This function gathers information to fill in a TPMS_CLOCK_INFO structure.
-void TimeFillInfo(TPMS_CLOCK_INFO* clockInfo);
+// This function gathers information to fill in a MSSIMS_CLOCK_INFO structure.
+void TimeFillInfo(MSSIMS_CLOCK_INFO* clockInfo);
 
 #endif  // _TIME_FP_H_

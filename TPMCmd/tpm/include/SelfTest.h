@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -53,7 +53,7 @@
 
 typedef UINT32 SYM_INDEX;
 
-// These two defines deal with the fact that the TPM_ALG_ID table does not delimit
+// These two defines deal with the fact that the MSSIM_ALG_ID table does not delimit
 // the symmetric mode values with a SYM_MODE_FIRST and SYM_MODE_LAST
 #define SYM_MODE_FIRST ALG_CTR_VALUE
 #define SYM_MODE_LAST  ALG_ECB_VALUE
@@ -75,7 +75,7 @@ typedef UINT32 SYM_MODES;
 
 typedef struct SYMMETRIC_TEST_VECTOR
 {
-    const TPM_ALG_ID alg;                     // the algorithm
+    const MSSIM_ALG_ID alg;                     // the algorithm
     const UINT16     keyBits;                 // bits in the key
     const BYTE*      key;                     // The test key
     const UINT32     ivSize;                  // block size of the algorithm

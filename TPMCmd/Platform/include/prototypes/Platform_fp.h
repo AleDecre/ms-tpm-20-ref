@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -59,7 +59,7 @@ LIB_EXPORT void _plat__ClearCancel(void);
 //** From Clock.c
 
 //***_plat__TimerReset()
-// This function sets current system clock time as t0 for counting TPM time.
+// This function sets current system clock time as t0 for counting MSSIM time.
 // This function is called at a power on event to reset the clock. When the clock
 // is reset, the indication that the clock was stopped is also set.
 LIB_EXPORT void _plat__TimerReset(void);
@@ -75,15 +75,15 @@ LIB_EXPORT void _plat__TimerRestart(void);
 LIB_EXPORT uint64_t _plat__RealTime(void);
 
 //***_plat__TimerRead()
-// This function provides access to the tick timer of the platform. The TPM code
-// uses this value to drive the TPM Clock.
+// This function provides access to the tick timer of the platform. The MSSIM code
+// uses this value to drive the MSSIM Clock.
 //
 // The tick timer is supposed to run when power is applied to the device. This timer
-// should not be reset by time events including _TPM_Init. It should only be reset
-// when TPM power is re-applied.
+// should not be reset by time events including _MSSIM_Init. It should only be reset
+// when MSSIM power is re-applied.
 //
-// If the TPM is run in a protected environment, that environment may provide the
-// tick time to the TPM as long as the time provided by the environment is not
+// If the MSSIM is run in a protected environment, that environment may provide the
+// tick time to the MSSIM as long as the time provided by the environment is not
 // allowed to go backwards. If the time provided by the system can go backwards
 // during a power discontinuity, then the _plat__Signal_PowerOn should call
 // _plat__TimerReset().
@@ -103,8 +103,8 @@ LIB_EXPORT int _plat__TimerWasReset(void);
 //
 // This function will CLEAR the s_timerStopped flag before returning. This provides
 // functionality that is similar to status register that is cleared when read. This
-// is the model used here because it is the one that has the most impact on the TPM
-// code as the flag can only be accessed by one entity in the TPM. Any other
+// is the model used here because it is the one that has the most impact on the MSSIM
+// code as the flag can only be accessed by one entity in the MSSIM. Any other
 // implementation of the hardware can be made to look like a read-once register.
 LIB_EXPORT int _plat__TimerWasStopped(void);
 
@@ -166,14 +166,14 @@ LIB_EXPORT void _plat__NvErrors(int recoverable, int unrecoverable);
 //***_plat__NVEnable()
 // Enable NV memory.
 //
-// This version just pulls in data from a file. In a real TPM, with NV on chip,
+// This version just pulls in data from a file. In a real MSSIM, with NV on chip,
 // this function would verify the integrity of the saved context. If the NV
 // memory was not on chip but was in something like RPMB, the NV state would be
 // read in, decrypted and integrity checked.
 //
 // The recovery from an integrity failure depends on where the error occurred. It
-// it was in the state that is discarded by TPM Reset, then the error is
-// recoverable if the TPM is reset. Otherwise, the TPM must go into failure mode.
+// it was in the state that is discarded by MSSIM Reset, then the error is
+// recoverable if the MSSIM is reset. Otherwise, the MSSIM must go into failure mode.
 //  Return Type: int
 //      0           if success
 //      > 0         if receive recoverable error
@@ -262,7 +262,7 @@ LIB_EXPORT void _plat__SetNvAvail(void);
 LIB_EXPORT void _plat__ClearNvAvail(void);
 
 //*** _plat__NVNeedsManufacture()
-// This function is used by the simulator to determine when the TPM's NV state
+// This function is used by the simulator to determine when the MSSIM's NV state
 // needs to be manufactured.
 LIB_EXPORT int _plat__NVNeedsManufacture(void);
 
@@ -270,7 +270,7 @@ LIB_EXPORT int _plat__NVNeedsManufacture(void);
 
 //*** _plat__ACT_GetImplemented()
 // This function tests to see if an ACT is implemented. It is a belt and suspenders
-// function because the TPM should not be calling to manipulate an ACT that is not
+// function because the MSSIM should not be calling to manipulate an ACT that is not
 // implemented. However, this could help the simulator code which doesn't necessarily
 // know if an ACT is implemented or not.
 LIB_EXPORT int _plat__ACT_GetImplemented(uint32_t act);
@@ -305,13 +305,13 @@ LIB_EXPORT int _plat__ACT_UpdateCounter(uint32_t act,      // IN: ACT to update
 
 //***_plat__ACT_EnableTicks()
 // This enables and disables the processing of the once-per-second ticks. This should
-// be turned off ('enable' = FALSE) by _TPM_Init and turned on ('enable' = TRUE) by
-// TPM2_Startup() after all the initializations have completed.
+// be turned off ('enable' = FALSE) by _MSSIM_Init and turned on ('enable' = TRUE) by
+// MSSIM2_Startup() after all the initializations have completed.
 LIB_EXPORT void _plat__ACT_EnableTicks(int enable);
 
 //*** _plat__ACT_Tick()
 // This processes the once-per-second clock tick from the hardware. This is set up
-// for the simulator to use the control interface to send ticks to the TPM. These
+// for the simulator to use the control interface to send ticks to the MSSIM. These
 // ticks do not have to be on a per second basis. They can be as slow or as fast as
 // desired so that the simulation can be tested.
 LIB_EXPORT void _plat__ACT_Tick(void);
@@ -327,13 +327,13 @@ LIB_EXPORT int _plat__ACT_Initialize(void);
 LIB_EXPORT int _plat__Signal_PowerOn(void);
 
 //*** _plat__WasPowerLost()
-// Test whether power was lost before a _TPM_Init.
+// Test whether power was lost before a _MSSIM_Init.
 //
 // This function will clear the "hardware" indication of power loss before return.
-// This means that there can only be one spot in the TPM code where this value
+// This means that there can only be one spot in the MSSIM code where this value
 // gets read. This method is used here as it is the most difficult to manage in the
-// TPM code and, if the hardware actually works this way, it is hard to make it
-// look like anything else. So, the burden is placed on the TPM code rather than the
+// MSSIM code and, if the hardware actually works this way, it is hard to make it
+// look like anything else. So, the burden is placed on the MSSIM code rather than the
 // platform code
 //  Return Type: int
 //      TRUE(1)         power was lost
@@ -341,7 +341,7 @@ LIB_EXPORT int _plat__Signal_PowerOn(void);
 LIB_EXPORT int _plat__WasPowerLost(void);
 
 //*** _plat_Signal_Reset()
-// This a TPM reset without a power loss.
+// This a MSSIM reset without a power loss.
 LIB_EXPORT int _plat__Signal_Reset(void);
 
 //***_plat__Signal_PowerOff()
@@ -372,7 +372,7 @@ LIB_EXPORT void _plat__Signal_PhysicalPresenceOff(void);
 // the command executes without failing, it will return and RunCommand will return.
 // If there is a failure in the command, then _plat__Fail() is called and it will
 // longjump back to RunCommand which will call ExecuteCommand again. However, this
-// time, the TPM will be in failure mode so ExecuteCommand will simply build
+// time, the MSSIM will be in failure mode so ExecuteCommand will simply build
 // a failure response and return.
 LIB_EXPORT void _plat__RunCommand(
     uint32_t        requestSize,   // IN: command buffer size
@@ -382,7 +382,7 @@ LIB_EXPORT void _plat__RunCommand(
 );
 
 //***_plat__Fail()
-// This is the platform depended failure exit for the TPM.
+// This is the platform depended failure exit for the MSSIM.
 LIB_EXPORT NORETURN void _plat__Fail(void);
 
 //** From Unique.c

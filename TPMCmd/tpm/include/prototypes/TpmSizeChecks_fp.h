@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -37,8 +37,8 @@
  *  Date: Oct 24, 2019  Time: 11:37:07AM
  */
 
-#ifndef _TPM_SIZE_CHECKS_FP_H_
-#define _TPM_SIZE_CHECKS_FP_H_
+#ifndef _MSSIM_SIZE_CHECKS_FP_H_
+#define _MSSIM_SIZE_CHECKS_FP_H_
 
 #if RUNTIME_SIZE_CHECKS
 
@@ -50,4 +50,4 @@
 BOOL TpmSizeChecks(void);
 #endif  // RUNTIME_SIZE_CHECKS
 
-#endif  // _TPM_SIZE_CHECKS_FP_H_
+#endif  // _MSSIM_SIZE_CHECKS_FP_H_

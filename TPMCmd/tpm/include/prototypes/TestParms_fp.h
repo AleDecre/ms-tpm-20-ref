@@ -1,4 +1,4 @@
-/* Microsoft Reference Implementation for TPM 2.0
+/* Microsoft Reference Implementation for MSSIM 2.0
  *
  *  The copyright in this software is being made available under the BSD License,
  *  included below. This software may be subject to other third party and
@@ -45,15 +45,15 @@
 // Input structure definition
 typedef struct
 {
-    TPMT_PUBLIC_PARMS parameters;
+    MSSIMT_PUBLIC_PARMS parameters;
 } TestParms_In;
 
 // Response code modifiers
-#    define RC_TestParms_parameters (TPM_RC_P + TPM_RC_1)
+#    define RC_TestParms_parameters (MSSIM_RC_P + MSSIM_RC_1)
 
 // Function prototype
-TPM_RC
-TPM2_TestParms(TestParms_In* in);
+MSSIM_RC
+MSSIM2_TestParms(TestParms_In* in);
 
 #  endif  // _Test_Parms_FP_H_
 #endif    // CC_TestParms
