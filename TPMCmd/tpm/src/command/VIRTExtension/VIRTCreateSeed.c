@@ -35,7 +35,9 @@
 #include "Tpm.h"
 #include "VIRT_CreateSeed_fp.h"
 #include "stdio.h"
-#include "tpm_tcti_mssim.h"
+#include "tss2/tss2_tcti_mssim.h"
+#include "tss2/tss2-tcti-tabrmd.h"
+#include "tss2/tss2_esys.h"
 
 #if CC_VIRT_CreateSeed  // Conditional expansion of this file
 
@@ -99,14 +101,53 @@ TPM_RC TPM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out)
 
     TSS2_RC rc;
     size_t context_size;
-    rc = Tss2_Tcti_Mssim_Init(0, &context_size, NULL);
+
+    TSS2_ABI_VERSION abi_version = TSS2_ABI_VERSION_CURRENT;
+    ESYS_CONTEXT *esys_context = 0;
+
+
+    rc = Tss2_Tcti_Tabrmd_Init(0, &context_size, NULL);
     
     TSS2_TCTI_CONTEXT *tcti_context = (TSS2_TCTI_CONTEXT *) calloc(1,context_size);
 
-    rc = Tss2_Tcti_Mssim_Init(tcti_context,&context_size, NULL);
+    fprintf(stdout,"OOOOOOOOOOOOOOOOOOO \n");
+    rc = Tss2_Tcti_Tabrmd_Init(tcti_context,&context_size, NULL);
+    fprintf(stdout,"KKKKKKKKKKKKKKKKKKK \n");
 
-    if(rc == TPM_RC_SUCCESS)
-        fprintf(stdout,"Initialization of the TCTI context successfull \n");
+    if(rc != TPM_RC_SUCCESS)
+    {
+        fprintf(stderr,"Failed to initialize the TCTI context: 0x%" PRIx32 "0 \n", rc);
+        free(tcti_context);
+        exit(EXIT_FAILURE);
+    }
+    
+    fprintf(stdout,"Initialization of the TCTI context successfull \n");
+
+    rc = Esys_Initialize(&esys_context,tcti_context,&abi_version);
+    if (rc != TSS2_RC_SUCCESS)
+    {
+        fprintf(stderr,"Failed to initialize the ESYS context: 0x%" PRIx32 "0 \n", rc);
+        free(tcti_context);
+        exit(EXIT_FAILURE);
+    }
+
+    fprintf(stdout,"Initialization of the ESYS context successfull \n");
+
+
+    TPM2_TSSB_DIGEST *randomBytes;
+    rc = Esys_GetRandom(esys_context, ESYS_TR_NONE, ESYS_TR_NONE, ESYS_TR_NONE,
+                       20, &randomBytes);
+
+    printf("random size: %d\n", randomBytes->t.size);
+    printf("random contents: ");
+
+    for(int i = 0; i < randomBytes->t.size; i++) {
+        printf("%d ", randomBytes->t.buffer[i]);
+    }
+    printf("\n");
+
+
+    free(tcti_context);
 
 
 
@@ -126,7 +167,7 @@ TPM_RC TPM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out)
     newObject = FindEmptyObjectSlot(NULL);
     if(newObject == NULL)
         return TPM_RC_OBJECT_MEMORY;
-    // If the TPM2B_PUBLIC was passed as a structure, marshal it into is canonical
+    // If the TPM2_TSSB_PUBLIC was passed as a structure, marshal it into is canonical
     // form for processing
 
     // to save typing.
