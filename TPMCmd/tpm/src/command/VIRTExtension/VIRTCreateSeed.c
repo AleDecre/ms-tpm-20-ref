@@ -97,8 +97,6 @@ MSSIM_RC MSSIM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out)
 
 // TEST TCTI CONNECTION
 
-
-
     TSS2_RC rc;
     size_t context_size;
 
@@ -110,9 +108,7 @@ MSSIM_RC MSSIM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out)
     
     TSS2_TCTI_CONTEXT *tcti_context = (TSS2_TCTI_CONTEXT *) calloc(1,context_size);
 
-    fprintf(stdout,"OOOOOOOOOOOOOOOOOOO \n");
     rc = Tss2_Tcti_Tabrmd_Init(tcti_context,&context_size, NULL);
-    fprintf(stdout,"KKKKKKKKKKKKKKKKKKK \n");
 
     if(rc != MSSIM_RC_SUCCESS)
     {
@@ -133,19 +129,125 @@ MSSIM_RC MSSIM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out)
 
     fprintf(stdout,"Initialization of the ESYS context successfull \n");
 
-
     TPM2B_DIGEST *randomBytes;
     rc = Esys_GetRandom(esys_context, ESYS_TR_NONE, ESYS_TR_NONE, ESYS_TR_NONE,
                        20, &randomBytes);
 
-    printf("random size: %d\n", randomBytes->size);
-    printf("random contents: ");
-
-    for(int i = 0; i < randomBytes->size; i++) {
-        printf("%d ", randomBytes->buffer[i]);
+    if (rc != TSS2_RC_SUCCESS)
+    {
+        fprintf(stderr,"Failed to create of RandomData: 0x%" PRIx32 "0 \n", rc);
+        free(tcti_context);
+        exit(EXIT_FAILURE);
     }
-    printf("\n");
 
+    fprintf(stdout,"Creation of RandomData successfull \n");
+
+    ESYS_TR primaryHandle = ESYS_TR_NONE;
+    
+    // Approximation : no session or HMAC authorization defined
+    TPM2B_AUTH authValuePK = {
+        .size = 5,
+        .buffer = {1,2,3,4,5}
+    };
+
+    TPM2B_SENSITIVE_CREATE inSensitivePK = {
+        .size = 0,
+        .sensitive = {
+            .userAuth = authValuePK,
+            .data = {
+                .size = 0,
+                .buffer = {0}
+            },
+        },
+    };
+
+    TPM2B_PUBLIC inPublic = {
+        .size = 0,
+        .publicArea = {
+            .type = TPM2_ALG_RSA,
+            .nameAlg = TPM2_ALG_SHA256,
+            .objectAttributes = (
+                TPMA_OBJECT_USERWITHAUTH | 
+                TPMA_OBJECT_RESTRICTED |
+                TPMA_OBJECT_DECRYPT |
+                TPMA_OBJECT_FIXEDTPM |
+                TPMA_OBJECT_FIXEDPARENT |
+                TPMA_OBJECT_SENSITIVEDATAORIGIN 
+            ),
+            .authPolicy = {
+                .size = 0,
+                .buffer = {},
+            },
+            .parameters = {
+                .rsaDetail = {
+                    .symmetric = {
+                        .algorithm = TPM2_ALG_AES,
+                        .keyBits = {
+                            .aes = 128
+                        },
+                        .mode = {
+                            .aes = TPM2_ALG_CFB,
+                        },
+                    },
+                    .scheme = {
+                        .scheme = TPM2_ALG_NULL,
+                    /*    .details = {
+                            .rsapss = {
+                                .hashAlg = TPM2_ALG_SHA256
+                            }
+                        }*/
+                    },
+                    .keyBits = 2048,
+                    .exponent = 0,
+                },
+            },
+            .unique = {
+                .rsa = {
+                    .size = 0,
+                    .buffer = {},
+                },
+            },
+        },
+    };
+
+    TPM2B_DATA outInfo = {.size = 0, .buffer = {}};
+    TPML_PCR_SELECTION pcrSelection = {.count = 0};
+    TPM2B_AUTH authValue = {.size = 0, .buffer = {}};
+
+    rc = Esys_TR_SetAuth(esys_context,ESYS_TR_RH_OWNER,&authValue);
+
+    TPM2B_PUBLIC *outPublic;
+    TPM2B_CREATION_DATA *creationData;
+    TPM2B_DIGEST *creationHash;
+    TPMT_TK_CREATION *creationTicket;
+
+    rc = Esys_CreatePrimary(
+        esys_context,           // [in] esysContext
+        ESYS_TR_RH_OWNER,       // [in] primaryHandle : hierarchy
+        ESYS_TR_PASSWORD,       // [in] Session handle for authorization of primaryHandle
+        ESYS_TR_NONE,           // Session handle 2
+        ESYS_TR_NONE,           // Session handle 3
+        &inSensitivePK,         // [in] inSensitive => sensitive data
+        &inPublic,              // [in] public Template
+        &outInfo,               // [in] data that will be included in the creation data this object to provide permanent
+        &pcrSelection,          // [in] PCR that will be used in the creation process
+        &primaryHandle,         // [in] object handle
+        &outPublic,             // [out] Public portion of the created object 
+        &creationData,          // [out] contains the creation data
+        &creationHash,          // [out] Digest of creation data
+        &creationTicket         // [out] ticket used to validate the creation of the object
+    );
+
+    if (rc != TSS2_RC_SUCCESS)
+    {
+        fprintf(stderr,"Failed to create PrimaryKey: 0x%" PRIx32 "0 \n", rc);
+        free(tcti_context);
+        exit(EXIT_FAILURE);
+    }
+
+    fprintf(stdout,"Creation of PrimaryKey successfull \n");
+
+    rc = Esys_TR_SetAuth(esys_context,primaryHandle,&authValuePK);
 
     free(tcti_context);
 

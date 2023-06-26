@@ -185,9 +185,7 @@ LIB_EXPORT void ExecuteCommand(
         goto Cleanup;
     // Check to see if the command is implemented.
     command.index = CommandCodeToCommandIndex(command.code);
-    if(command.code == MSSIM_CC_VIRT_CreateSeed){
-        printf("\nEseguo MSSIM_CC_VIRT_CreateSeed: %d\n", MSSIM_CC_VIRT_CreateSeed);
-    }
+
     if(UNIMPLEMENTED_COMMAND_INDEX == command.index)
     {
         result = MSSIM_RC_COMMAND_CODE;
@@ -238,14 +236,6 @@ LIB_EXPORT void ExecuteCommand(
         // the command, then it is an error. NOTE: This check could pass but the
         // session size could still be wrong. That will be determined after the
         // sessions are unmarshaled.
-        if(command.code == MSSIM_CC_Create){
-            printf("command.parameterSize: %d \n", command.parameterSize);
-            printf("command.authSize: %d \n", command.authSize);
-        }
-        if(command.code == MSSIM_CC_VIRT_CreateSeed){
-            printf("command.parameterSize: %d \n", command.parameterSize);
-            printf("command.authSize: %d \n", command.authSize);
-        }
         if(command.authSize < 9 || command.authSize > command.parameterSize)
         {
             result = MSSIM_RC_SIZE;
