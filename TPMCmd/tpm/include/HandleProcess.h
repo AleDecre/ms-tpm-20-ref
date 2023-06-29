@@ -1175,3 +1175,11 @@ case MSSIM_CC_VIRT_CreateSeed:
         return result + MSSIM_RC_H + MSSIM_RC_1;
     break;
 #endif  // CC_VIRT_CreateSeed
+#if CC_VIRT_LoadSeed
+#endif  // CC_VIRT_LoadSeed
+#if CC_VIRT_CreatePrimary
+#endif  // CC_VIRT_CreatePrimary
+#if CC_VIRT_StoreState
+#endif  // CC_VIRT_StoreState
+#if CC_VIRT_RestoreState
+#endif  // CC_VIRT_RestoreState

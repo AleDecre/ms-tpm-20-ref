@@ -777,6 +777,18 @@
 #ifndef CC_VIRT_CreateSeed
 #  define CC_VIRT_CreateSeed CC_YES
 #endif
+#ifndef CC_VIRT_LoadSeed
+#  define CC_VIRT_LoadSeed CC_YES
+#endif
+#ifndef CC_VIRT_CreatePrimary
+#  define CC_VIRT_CreatePrimary CC_YES
+#endif
+#ifndef CC_VIRT_StoreState
+#  define CC_VIRT_StoreState CC_YES
+#endif
+#ifndef CC_VIRT_RestoreState
+#  define CC_VIRT_RestoreState CC_YES
+#endif
 #ifndef CC_VerifySignature
 #  define CC_VerifySignature CC_YES
 #endif

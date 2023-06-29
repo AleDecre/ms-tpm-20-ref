@@ -271,9 +271,13 @@ typedef UINT32 MSSIM_CC;
 #define MSSIM_CC_ACT_SetTimeout             (MSSIM_CC)(0x00000198)
 #define MSSIM_CC_ECC_Encrypt                (MSSIM_CC)(0x00000199)
 #define MSSIM_CC_ECC_Decrypt                (MSSIM_CC)(0x0000019A)
-#define CC_VEND                           0x20000000
+#define CC_VEND                             0x20000000
 #define MSSIM_CC_Vendor_TCG_Test            (MSSIM_CC)(0x20000000)
 #define MSSIM_CC_VIRT_CreateSeed            (MSSIM_CC)(0x20000001)
+#define MSSIM_CC_VIRT_LoadSeed              (MSSIM_CC)(0x20000002)
+#define MSSIM_CC_VIRT_CreatePrimary         (MSSIM_CC)(0x20000003)
+#define MSSIM_CC_VIRT_StoreState            (MSSIM_CC)(0x20000004)
+#define MSSIM_CC_VIRT_RestoreState          (MSSIM_CC)(0x20000005)
 
 // Table 2:5 - Definition of Types for Documentation Clarity
 typedef UINT32 MSSIM_ALGORITHM_ID;

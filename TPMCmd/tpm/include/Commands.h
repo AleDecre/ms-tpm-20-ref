@@ -460,5 +460,17 @@
 #if CC_VIRT_CreateSeed
 #  include "VIRT_CreateSeed_fp.h"
 #endif
+#if CC_VIRT_LoadSeed
+#  include "VIRT_LoadSeed_fp.h"
+#endif
+#if CC_VIRT_CreatePrimary
+#  include "VIRT_CreatePrimary_fp.h"
+#endif
+#if CC_VIRT_StoreState
+#  include "VIRT_StoreState_fp.h"
+#endif
+#if CC_VIRT_RestoreState
+#  include "VIRT_RestoreState_fp.h"
+#endif
 
 #endif

@@ -34,9 +34,9 @@
  */
 
 #include "Tpm.h"
-#include "VIRT_LoadSeed_fp.h"
+#include "VIRT_StoreState_fp.h"
 
-#if CC_VIRT_LoadSeed  // Conditional expansion of this file
+#if CC_VIRT_StoreState  // Conditional expansion of this file
 
 /*(See part 3 specification)
 // Create a regular object
@@ -84,11 +84,11 @@
 //                              the provided parameters for an RSA key;
 //                              unsupported name algorithm for an ECC key
 //      MSSIM_RC_OBJECT_MEMORY    there is no free slot for the object
-MSSIM_RC MSSIM2_VIRT_LoadSeed()
+MSSIM_RC MSSIM2_VIRT_StoreState()
 {
-    printf("MSSIM2_VIRT_LoadSeed()...\n");
+    printf("MSSIM2_VIRT_StoreState()...\n");
 
     return MSSIM_RC_SUCCESS;
 }
 
-#endif  // CC_VIRT_LoadSeed
+#endif  // CC_VIRT_StoreState

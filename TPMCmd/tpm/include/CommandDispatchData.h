@@ -4744,6 +4744,26 @@ VIRT_CreateSeed_COMMAND_DESCRIPTOR_t _VIRT_CreateSeedData = {
 #    define _VIRT_CreateSeedDataAddress 0
 #  endif  // CC_VIRT_CreateSeed
 
+#  if CC_VIRT_LoadSeed
+#  else
+#    define _VIRT_LoadSeedDataAddress 0
+#  endif  // CC_VIRT_LoadSeed
+
+#  if CC_VIRT_CreatePrimary
+#  else
+#    define _VIRT_CreatePrimaryDataAddress 0
+#  endif  // CC_VIRT_CreatePrimary
+
+#  if CC_VIRT_StoreState
+#  else
+#    define _VIRT_StoreStateDataAddress 0
+#  endif  // CC_VIRT_StoreState
+
+#  if CC_VIRT_RestoreState
+#  else
+#    define _VIRT_RestoreStateDataAddress 0
+#  endif  // CC_VIRT_RestoreState
+
 COMMAND_DESCRIPTOR_t* s_CommandDataArray[] = {
 #  if(PAD_LIST || CC_NV_UndefineSpaceSpecial)
     (COMMAND_DESCRIPTOR_t*)_NV_UndefineSpaceSpecialDataAddress,
@@ -5139,6 +5159,18 @@ COMMAND_DESCRIPTOR_t* s_CommandDataArray[] = {
 #  if(PAD_LIST || CC_VIRT_CreateSeed)
     (COMMAND_DESCRIPTOR_t*)_VIRT_CreateSeedDataAddress,
 #  endif  // CC_VIRT_CreateSeed
+#  if(PAD_LIST || CC_VIRT_LoadSeed)
+    (COMMAND_DESCRIPTOR_t*)_VIRT_LoadSeedDataAddress,
+#  endif  // CC_VIRT_LoadSeed
+#  if(PAD_LIST || CC_VIRT_CreatePrimary)
+    (COMMAND_DESCRIPTOR_t*)_VIRT_CreatePrimaryDataAddress,
+#  endif  // CC_VIRT_CreatePrimary
+#  if(PAD_LIST || CC_VIRT_StoreState)
+    (COMMAND_DESCRIPTOR_t*)_VIRT_StoreStateDataAddress,
+#  endif  // CC_VIRT_StoreState
+#  if(PAD_LIST || CC_VIRT_RestoreState)
+    (COMMAND_DESCRIPTOR_t*)_VIRT_RestoreStateDataAddress,
+#  endif  // CC_VIRT_RestoreState
     0};
 
 #endif  // _COMMAND_TABLE_DISPATCH_

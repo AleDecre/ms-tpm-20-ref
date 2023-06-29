@@ -430,6 +430,18 @@ const MSSIMA_CC s_ccAttr[] = {
 #  if(PAD_LIST || CC_VIRT_CreateSeed)
     MSSIMA_CC_INITIALIZER(0x0001, 0, 0, 0, 0, 1, 0, 1, 0),
 #  endif
+#  if(PAD_LIST || CC_VIRT_LoadSeed)
+    MSSIMA_CC_INITIALIZER(0x0002, 0, 0, 0, 0, 0, 0, 1, 0),
+#  endif
+#  if(PAD_LIST || CC_VIRT_CreatePrimary)
+    MSSIMA_CC_INITIALIZER(0x0003, 0, 0, 0, 0, 0, 0, 1, 0),
+#  endif
+#  if(PAD_LIST || CC_VIRT_StoreState)
+    MSSIMA_CC_INITIALIZER(0x0004, 0, 0, 0, 0, 0, 0, 1, 0),
+#  endif
+#  if(PAD_LIST || CC_VIRT_RestoreState)
+    MSSIMA_CC_INITIALIZER(0x0005, 0, 0, 0, 0, 0, 0, 1, 0),
+#  endif
     MSSIMA_ZERO_INITIALIZER()};
 
 // This is the command code attribute structure.
@@ -945,6 +957,22 @@ const COMMAND_ATTRIBUTES s_commandAttributes[] = {
 #  if(PAD_LIST || CC_VIRT_CreateSeed)
     (COMMAND_ATTRIBUTES)(CC_VIRT_CreateSeed*  // 0x0001
                          (IS_IMPLEMENTED + DECRYPT_2 + HANDLE_1_USER + ENCRYPT_2)),
+#  endif
+#  if(PAD_LIST || CC_VIRT_LoadSeed)
+    (COMMAND_ATTRIBUTES)(CC_VIRT_LoadSeed*  // 0x0002
+                         (IS_IMPLEMENTED + DECRYPT_2 + ENCRYPT_2)),
+#  endif
+#  if(PAD_LIST || CC_VIRT_CreatePrimary)
+    (COMMAND_ATTRIBUTES)(CC_VIRT_CreatePrimary*  // 0x0003
+                         (IS_IMPLEMENTED + DECRYPT_2 + ENCRYPT_2)),
+#  endif
+#  if(PAD_LIST || CC_VIRT_StoreState)
+    (COMMAND_ATTRIBUTES)(CC_VIRT_StoreState*  // 0x0004
+                         (IS_IMPLEMENTED + DECRYPT_2 + ENCRYPT_2)),
+#  endif
+#  if(PAD_LIST || CC_VIRT_RestoreState)
+    (COMMAND_ATTRIBUTES)(CC_VIRT_RestoreState*  // 0x0005
+                         (IS_IMPLEMENTED + DECRYPT_2 + ENCRYPT_2)),
 #  endif
     0};
 

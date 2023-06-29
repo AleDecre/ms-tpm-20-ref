@@ -37,14 +37,14 @@
  *  Date: Mar 28, 2019  Time: 08:25:17PM
  */
 
-#if CC_VIRT_LoadSeed  // Command must be enabled
+#if CC_VIRT_CreatePrimary  // Command must be enabled
 
-#  ifndef _VIRT_LoadSeed_FP_H_
-#    define _VIRT_LoadSeed_FP_H_
+#  ifndef _VIRT_CreatePrimary_FP_H_
+#    define _VIRT_CreatePrimary_FP_H_
 
 // Function prototype
 MSSIM_RC
-MSSIM2_VIRT_LoadSeed();
+MSSIM2_VIRT_CreatePrimary();
 
-#  endif  // _VIRT_LoadSeed_FP_H_
-#endif    // CC_VIRT_LoadSeed
+#  endif  // _VIRT_CreatePrimary_FP_H_
+#endif    // CC_VIRT_CreatePrimary
