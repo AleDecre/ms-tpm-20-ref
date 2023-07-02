@@ -42,9 +42,29 @@
 #  ifndef _VIRT_LoadSeed_FP_H_
 #    define _VIRT_LoadSeed_FP_H_
 
+// Input structure definition
+typedef struct
+{
+    MSSIMI_DH_OBJECT parentHandle;
+    MSSIM2B_PRIVATE  inPrivate;
+    MSSIM2B_PUBLIC   inPublic;
+} VIRTLoadSeed_In;
+
+// Output structure definition
+typedef struct
+{
+    MSSIM_HANDLE objectHandle;
+    MSSIM2B_NAME name;
+} VIRTLoadSeed_Out;
+
+// Response code modifiers
+#    define RC_VIRT_LoadSeed_parentHandle (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_VIRT_LoadSeed_inPrivate    (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_VIRT_LoadSeed_inPublic     (MSSIM_RC_P + MSSIM_RC_2)
+
 // Function prototype
 MSSIM_RC
-MSSIM2_VIRT_LoadSeed();
+MSSIM2_VIRT_LoadSeed(VIRTLoadSeed_In* in, VIRTLoadSeed_Out* out);
 
 #  endif  // _VIRT_LoadSeed_FP_H_
 #endif    // CC_VIRT_LoadSeed

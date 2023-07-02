@@ -35,60 +35,52 @@
 
 #include "Tpm.h"
 #include "VIRT_RestoreState_fp.h"
+#include "EncryptDecrypt_fp.h"
+#include "EncryptDecrypt_spt_fp.h"
 
 #if CC_VIRT_RestoreState  // Conditional expansion of this file
 
 /*(See part 3 specification)
-// Create a regular object
+// symmetric encryption or decryption using modified parameter list
 */
 //  Return Type: MSSIM_RC
-//      MSSIM_RC_ATTRIBUTES       'sensitiveDataOrigin' is CLEAR when 'sensitive.data'
-//                              is an Empty Buffer, or is SET when 'sensitive.data' is
-//                              not empty;
-//                              'fixedMSSIM', 'fixedParent', or 'encryptedDuplication'
-//                              attributes are inconsistent between themselves or with
-//                              those of the parent object;
-//                              inconsistent 'restricted', 'decrypt' and 'sign'
-//                              attributes;
-//                              attempt to inject sensitive data for an asymmetric
-//                              key;
-//      MSSIM_RC_HASH             non-duplicable storage key and its parent have
-//                              different name algorithm
-//      MSSIM_RC_KDF              incorrect KDF specified for decrypting keyed hash
-//                              object
-//      MSSIM_RC_KEY              invalid key size values in an asymmetric key public
-//                              area or a provided symmetric key has a value that is
-//                              not allowed
-//      MSSIM_RC_KEY_SIZE         key size in public area for symmetric key differs from
-//                              the size in the sensitive creation area; may also be
-//                              returned if the MSSIM does not allow the key size to be
-//                              used for a Storage Key
-//      MSSIM_RC_OBJECT_MEMORY    a free slot is not available as scratch memory for
-//                              object creation
-//      MSSIM_RC_RANGE            the exponent value of an RSA key is not supported.
-//      MSSIM_RC_SCHEME           inconsistent attributes 'decrypt', 'sign', or
-//                              'restricted' and key's scheme ID; or hash algorithm is
-//                              inconsistent with the scheme ID for keyed hash object
-//      MSSIM_RC_SIZE             size of public authPolicy or sensitive authValue does
-//                              not match digest size of the name algorithm
-//                              sensitive data size for the keyed hash object is
-//                              larger than is allowed for the scheme
-//      MSSIM_RC_SYMMETRIC        a storage key with no symmetric algorithm specified;
-//                              or non-storage key with symmetric algorithm different
-//                              from MSSIM_ALG_NULL
-//      MSSIM_RC_TYPE             unknown object type;
-//                              'parentHandle' does not reference a restricted
-//                              decryption key in the storage hierarchy with both
-//                              public and sensitive portion loaded
-//      MSSIM_RC_VALUE            exponent is not prime or could not find a prime using
-//                              the provided parameters for an RSA key;
-//                              unsupported name algorithm for an ECC key
-//      MSSIM_RC_OBJECT_MEMORY    there is no free slot for the object
-MSSIM_RC MSSIM2_VIRT_RestoreState()
+//      MSSIM_RC_KEY          is not a symmetric decryption key with both
+//                          public and private portions loaded
+//      MSSIM_RC_SIZE         'IvIn' size is incompatible with the block cipher mode;
+//                          or 'inData' size is not an even multiple of the block
+//                          size for CBC or ECB mode
+//      MSSIM_RC_VALUE        'keyHandle' is restricted and the argument 'mode' does
+//                          not match the key's mode
+MSSIM_RC
+MSSIM2_VIRT_RestoreState(VIRTRestoreState_In*  in,  // IN: input parameter list
+                     VIRTRestoreState_Out* out  // OUT: output parameter list
+)
 {
-    printf("MSSIM2_VIRT_RestoreState()...\n");
-
-    return MSSIM_RC_SUCCESS;
+    MSSIM_RC result;
+    // EncryptDecyrptShared() performs the operations as shown in
+    // MSSIM2_EncrypDecrypt
+    result = EncryptDecryptShared(in->keyHandle,
+                                  in->decrypt,
+                                  in->mode,
+                                  &in->ivIn,
+                                  &in->inData,
+                                  (EncryptDecrypt_Out*)out);
+    // Handle response code swizzle.
+    switch(result)
+    {
+        case MSSIM_RCS_MODE + RC_EncryptDecrypt_mode:
+            result = MSSIM_RCS_MODE + RC_VIRT_RestoreState_mode;
+            break;
+        case MSSIM_RCS_SIZE + RC_EncryptDecrypt_ivIn:
+            result = MSSIM_RCS_SIZE + RC_VIRT_RestoreState_ivIn;
+            break;
+        case MSSIM_RCS_SIZE + RC_EncryptDecrypt_inData:
+            result = MSSIM_RCS_SIZE + RC_VIRT_RestoreState_inData;
+            break;
+        default:
+            break;
+    }
+    return result;
 }
 
 #endif  // CC_VIRT_RestoreState

@@ -2675,10 +2675,124 @@ case MSSIM_CC_VIRT_CreateSeed:
 }
 #endif  // CC_VIRT_CreateSeed
 #if CC_VIRT_LoadSeed
+case MSSIM_CC_VIRT_LoadSeed:
+{
+    VIRTLoadSeed_In*  in     = (VIRTLoadSeed_In*)MemoryGetInBuffer(sizeof(VIRTLoadSeed_In));
+    VIRTLoadSeed_Out* out    = (VIRTLoadSeed_Out*)MemoryGetOutBuffer(sizeof(VIRTLoadSeed_Out));
+    in->parentHandle = handles[0];
+    result = MSSIM2B_PRIVATE_Unmarshal(&in->inPrivate, paramBuffer, paramBufferSize);
+    EXIT_IF_ERROR_PLUS(RC_VIRT_LoadSeed_inPrivate);
+    result =
+        MSSIM2B_PUBLIC_Unmarshal(&in->inPublic, paramBuffer, paramBufferSize, FALSE);
+    EXIT_IF_ERROR_PLUS(RC_VIRT_LoadSeed_inPublic);
+    if(*paramBufferSize != 0)
+    {
+        result = MSSIM_RC_SIZE;
+        goto Exit;
+    }
+    result = MSSIM2_VIRT_LoadSeed(in, out);
+    rSize  = sizeof(VIRTLoadSeed_Out);
+    if(MSSIM_RC_SUCCESS != result)
+        goto Exit;
+    command->handles[command->handleNum++] = out->objectHandle;
+    *respParmSize += MSSIM2B_NAME_Marshal(&out->name, responseBuffer, &rSize);
+    break;
+}
 #endif  // CC_VIRT_LoadSeed
 #if CC_VIRT_CreatePrimary
+case MSSIM_CC_VIRT_CreatePrimary:
+{
+    VIRTCreatePrimary_In* in =
+        (VIRTCreatePrimary_In*)MemoryGetInBuffer(sizeof(VIRTCreatePrimary_In));
+    VIRTCreatePrimary_Out* out =
+        (VIRTCreatePrimary_Out*)MemoryGetOutBuffer(sizeof(VIRTCreatePrimary_Out));
+    in->primaryHandle = handles[0];
+    result            = MSSIM2B_SENSITIVE_CREATE_Unmarshal(
+        &in->inSensitive, paramBuffer, paramBufferSize);
+    EXIT_IF_ERROR_PLUS(RC_VIRT_CreatePrimary_inSensitive);
+    result =
+        MSSIM2B_PUBLIC_Unmarshal(&in->inPublic, paramBuffer, paramBufferSize, FALSE);
+    EXIT_IF_ERROR_PLUS(RC_VIRT_CreatePrimary_inPublic);
+    result = MSSIM2B_DATA_Unmarshal(&in->outsideInfo, paramBuffer, paramBufferSize);
+    EXIT_IF_ERROR_PLUS(RC_VIRT_CreatePrimary_outsideInfo);
+    result =
+        MSSIML_PCR_SELECTION_Unmarshal(&in->creationPCR, paramBuffer, paramBufferSize);
+    EXIT_IF_ERROR_PLUS(RC_VIRT_CreatePrimary_creationPCR);
+    if(*paramBufferSize != 0)
+    {
+        result = MSSIM_RC_SIZE;
+        goto Exit;
+    }
+    result = MSSIM2_VIRT_CreatePrimary(in, out);
+    rSize  = sizeof(VIRTCreatePrimary_Out);
+    if(MSSIM_RC_SUCCESS != result)
+        goto Exit;
+    command->handles[command->handleNum++] = out->objectHandle;
+    *respParmSize += MSSIM2B_PUBLIC_Marshal(&out->outPublic, responseBuffer, &rSize);
+    *respParmSize +=
+        MSSIM2B_CREATION_DATA_Marshal(&out->creationData, responseBuffer, &rSize);
+    *respParmSize += MSSIM2B_DIGEST_Marshal(&out->creationHash, responseBuffer, &rSize);
+    *respParmSize +=
+        MSSIMT_TK_CREATION_Marshal(&out->creationTicket, responseBuffer, &rSize);
+    *respParmSize += MSSIM2B_NAME_Marshal(&out->name, responseBuffer, &rSize);
+    break;
+}
 #endif  // CC_VIRT_CreatePrimary
 #if CC_VIRT_StoreState
+case MSSIM_CC_VIRT_StoreState:
+{
+    VIRTStoreState_In* in =
+        (VIRTStoreState_In*)MemoryGetInBuffer(sizeof(VIRTStoreState_In));
+    VIRTStoreState_Out* out =
+        (VIRTStoreState_Out*)MemoryGetOutBuffer(sizeof(VIRTStoreState_Out));
+    in->keyHandle = handles[0];
+    result = MSSIM2B_MAX_BUFFER_Unmarshal(&in->inData, paramBuffer, paramBufferSize);
+    EXIT_IF_ERROR_PLUS(RC_VIRT_StoreState_inData);
+    result = MSSIMI_YES_NO_Unmarshal(&in->decrypt, paramBuffer, paramBufferSize);
+    EXIT_IF_ERROR_PLUS(RC_VIRT_StoreState_decrypt);
+    result =
+        MSSIMI_ALG_CIPHER_MODE_Unmarshal(&in->mode, paramBuffer, paramBufferSize, TRUE);
+    EXIT_IF_ERROR_PLUS(RC_VIRT_StoreState_mode);
+    result = MSSIM2B_IV_Unmarshal(&in->ivIn, paramBuffer, paramBufferSize);
+    EXIT_IF_ERROR_PLUS(RC_VIRT_StoreState_ivIn);
+    if(*paramBufferSize != 0)
+    {
+        result = MSSIM_RC_SIZE;
+        goto Exit;
+    }
+    result = MSSIM2_VIRT_StoreState(in, out);
+    rSize  = sizeof(VIRTStoreState_Out);
+    *respParmSize += MSSIM2B_MAX_BUFFER_Marshal(&out->outData, responseBuffer, &rSize);
+    *respParmSize += MSSIM2B_IV_Marshal(&out->ivOut, responseBuffer, &rSize);
+    break;
+}
 #endif  // CC_VIRT_StoreState
 #if CC_VIRT_RestoreState
+case MSSIM_CC_EncryptDecrypt2:
+{
+    VIRTRestoreState_In* in =
+        (VIRTRestoreState_In*)MemoryGetInBuffer(sizeof(VIRTRestoreState_In));
+    VIRTRestoreState_Out* out =
+        (VIRTRestoreState_Out*)MemoryGetOutBuffer(sizeof(VIRTRestoreState_Out));
+    in->keyHandle = handles[0];
+    result = MSSIM2B_MAX_BUFFER_Unmarshal(&in->inData, paramBuffer, paramBufferSize);
+    EXIT_IF_ERROR_PLUS(RC_VIRT_RestoreState_inData);
+    result = MSSIMI_YES_NO_Unmarshal(&in->decrypt, paramBuffer, paramBufferSize);
+    EXIT_IF_ERROR_PLUS(RC_VIRT_RestoreState_decrypt);
+    result =
+        MSSIMI_ALG_CIPHER_MODE_Unmarshal(&in->mode, paramBuffer, paramBufferSize, TRUE);
+    EXIT_IF_ERROR_PLUS(RC_VIRT_RestoreState_mode);
+    result = MSSIM2B_IV_Unmarshal(&in->ivIn, paramBuffer, paramBufferSize);
+    EXIT_IF_ERROR_PLUS(RC_VIRT_RestoreState_ivIn);
+    if(*paramBufferSize != 0)
+    {
+        result = MSSIM_RC_SIZE;
+        goto Exit;
+    }
+    result = MSSIM2_VIRT_RestoreState(in, out);
+    rSize  = sizeof(VIRTRestoreState_Out);
+    *respParmSize += MSSIM2B_MAX_BUFFER_Marshal(&out->outData, responseBuffer, &rSize);
+    *respParmSize += MSSIM2B_IV_Marshal(&out->ivOut, responseBuffer, &rSize);
+    break;
+}
 #endif  // CC_VIRT_RestoreState

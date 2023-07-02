@@ -4745,21 +4745,179 @@ VIRT_CreateSeed_COMMAND_DESCRIPTOR_t _VIRT_CreateSeedData = {
 #  endif  // CC_VIRT_CreateSeed
 
 #  if CC_VIRT_LoadSeed
+
+#    include "VIRT_LoadSeed_fp.h"
+
+typedef MSSIM_RC(VIRT_LoadSeed_Entry)(VIRTLoadSeed_In* in, VIRTLoadSeed_Out* out);
+
+typedef const struct
+{
+    VIRT_LoadSeed_Entry* entry;
+    UINT16      inSize;
+    UINT16      outSize;
+    UINT16      offsetOfTypes;
+    UINT16      paramOffsets[3];
+    BYTE        types[7];
+} VIRT_LoadSeed_COMMAND_DESCRIPTOR_t;
+
+VIRT_LoadSeed_COMMAND_DESCRIPTOR_t _VIRT_LoadSeedData = {
+    /* entry         */ &MSSIM2_VIRT_LoadSeed,
+    /* inSize        */ (UINT16)(sizeof(VIRTLoadSeed_In)),
+    /* outSize       */ (UINT16)(sizeof(VIRTLoadSeed_Out)),
+    /* offsetOfTypes */ offsetof(VIRT_LoadSeed_COMMAND_DESCRIPTOR_t, types),
+    /* offsets       */
+    {(UINT16)(offsetof(VIRTLoadSeed_In, inPrivate)),
+     (UINT16)(offsetof(VIRTLoadSeed_In, inPublic)),
+     (UINT16)(offsetof(VIRTLoadSeed_Out, name))},
+    /* types         */
+    {MSSIMI_DH_OBJECT_H_UNMARSHAL,
+     MSSIM2B_PRIVATE_P_UNMARSHAL,
+     MSSIM2B_PUBLIC_P_UNMARSHAL,
+     END_OF_LIST,
+     MSSIM_HANDLE_H_MARSHAL,
+     MSSIM2B_NAME_P_MARSHAL,
+     END_OF_LIST}};
+
+#    define _VIRT_LoadSeedDataAddress (&_VIRT_LoadSeedData)
 #  else
 #    define _VIRT_LoadSeedDataAddress 0
 #  endif  // CC_VIRT_LoadSeed
 
 #  if CC_VIRT_CreatePrimary
+
+#    include "VIRT_CreatePrimary_fp.h"
+
+typedef MSSIM_RC(VIRT_CreatePrimary_Entry)(VIRTCreatePrimary_In* in, VIRTCreatePrimary_Out* out);
+
+typedef const struct
+{
+    VIRT_CreatePrimary_Entry* entry;
+    UINT16               inSize;
+    UINT16               outSize;
+    UINT16               offsetOfTypes;
+    UINT16               paramOffsets[9];
+    BYTE                 types[13];
+} VIRT_CreatePrimary_COMMAND_DESCRIPTOR_t;
+
+VIRT_CreatePrimary_COMMAND_DESCRIPTOR_t _VIRT_CreatePrimaryData = {
+    /* entry         */ &MSSIM2_VIRT_CreatePrimary,
+    /* inSize        */ (UINT16)(sizeof(VIRTCreatePrimary_In)),
+    /* outSize       */ (UINT16)(sizeof(VIRTCreatePrimary_Out)),
+    /* offsetOfTypes */ offsetof(VIRT_CreatePrimary_COMMAND_DESCRIPTOR_t, types),
+    /* offsets       */
+    {(UINT16)(offsetof(VIRTCreatePrimary_In, inSensitive)),
+     (UINT16)(offsetof(VIRTCreatePrimary_In, inPublic)),
+     (UINT16)(offsetof(VIRTCreatePrimary_In, outsideInfo)),
+     (UINT16)(offsetof(VIRTCreatePrimary_In, creationPCR)),
+     (UINT16)(offsetof(VIRTCreatePrimary_Out, outPublic)),
+     (UINT16)(offsetof(VIRTCreatePrimary_Out, creationData)),
+     (UINT16)(offsetof(VIRTCreatePrimary_Out, creationHash)),
+     (UINT16)(offsetof(VIRTCreatePrimary_Out, creationTicket)),
+     (UINT16)(offsetof(VIRTCreatePrimary_Out, name))},
+    /* types         */
+    {MSSIMI_RH_HIERARCHY_H_UNMARSHAL + ADD_FLAG,
+     MSSIM2B_SENSITIVE_CREATE_P_UNMARSHAL,
+     MSSIM2B_PUBLIC_P_UNMARSHAL,
+     MSSIM2B_DATA_P_UNMARSHAL,
+     MSSIML_PCR_SELECTION_P_UNMARSHAL,
+     END_OF_LIST,
+     MSSIM_HANDLE_H_MARSHAL,
+     MSSIM2B_PUBLIC_P_MARSHAL,
+     MSSIM2B_CREATION_DATA_P_MARSHAL,
+     MSSIM2B_DIGEST_P_MARSHAL,
+     MSSIMT_TK_CREATION_P_MARSHAL,
+     MSSIM2B_NAME_P_MARSHAL,
+     END_OF_LIST}};
+
+#    define _VIRT_CreatePrimaryDataAddress (&_VIRT_CreatePrimaryData)
 #  else
 #    define _VIRT_CreatePrimaryDataAddress 0
 #  endif  // CC_VIRT_CreatePrimary
 
 #  if CC_VIRT_StoreState
+
+#    include "VIRT_StoreState_fp.h"
+
+typedef MSSIM_RC(VIRT_StoreState_Entry)(VIRTStoreState_In*  in,
+                                      VIRTStoreState_Out* out);
+
+typedef const struct
+{
+    VIRT_StoreState_Entry* entry;
+    UINT16                 inSize;
+    UINT16                 outSize;
+    UINT16                 offsetOfTypes;
+    UINT16                 paramOffsets[5];
+    BYTE                   types[9];
+} VIRT_StoreState_COMMAND_DESCRIPTOR_t;
+
+VIRT_StoreState_COMMAND_DESCRIPTOR_t _VIRT_StoreStateData = {
+    /* entry         */ &MSSIM2_VIRT_StoreState,
+    /* inSize        */ (UINT16)(sizeof(VIRTStoreState_In)),
+    /* outSize       */ (UINT16)(sizeof(VIRTStoreState_Out)),
+    /* offsetOfTypes */ offsetof(VIRT_StoreState_COMMAND_DESCRIPTOR_t, types),
+    /* offsets       */
+    {(UINT16)(offsetof(VIRTStoreState_In, inData)),
+     (UINT16)(offsetof(VIRTStoreState_In, decrypt)),
+     (UINT16)(offsetof(VIRTStoreState_In, mode)),
+     (UINT16)(offsetof(VIRTStoreState_In, ivIn)),
+     (UINT16)(offsetof(VIRTStoreState_Out, ivOut))},
+    /* types         */
+    {MSSIMI_DH_OBJECT_H_UNMARSHAL,
+     MSSIM2B_MAX_BUFFER_P_UNMARSHAL,
+     MSSIMI_YES_NO_P_UNMARSHAL,
+     MSSIMI_ALG_CIPHER_MODE_P_UNMARSHAL + ADD_FLAG,
+     MSSIM2B_IV_P_UNMARSHAL,
+     END_OF_LIST,
+     MSSIM2B_MAX_BUFFER_P_MARSHAL,
+     MSSIM2B_IV_P_MARSHAL,
+     END_OF_LIST}};
+
+#    define _VIRT_StoreStateDataAddress (&_VIRT_StoreStateData)
 #  else
 #    define _VIRT_StoreStateDataAddress 0
 #  endif  // CC_VIRT_StoreState
 
 #  if CC_VIRT_RestoreState
+
+#    include "VIRT_RestoreState_fp.h"
+
+typedef MSSIM_RC(VIRT_RestoreState_Entry)(VIRTRestoreState_In*  in,
+                                      VIRTRestoreState_Out* out);
+
+typedef const struct
+{
+    VIRT_RestoreState_Entry* entry;
+    UINT16                 inSize;
+    UINT16                 outSize;
+    UINT16                 offsetOfTypes;
+    UINT16                 paramOffsets[5];
+    BYTE                   types[9];
+} VIRT_RestoreState_COMMAND_DESCRIPTOR_t;
+
+VIRT_RestoreState_COMMAND_DESCRIPTOR_t _VIRT_RestoreStateData = {
+    /* entry         */ &MSSIM2_VIRT_RestoreState,
+    /* inSize        */ (UINT16)(sizeof(VIRTRestoreState_In)),
+    /* outSize       */ (UINT16)(sizeof(VIRTRestoreState_Out)),
+    /* offsetOfTypes */ offsetof(VIRT_RestoreState_COMMAND_DESCRIPTOR_t, types),
+    /* offsets       */
+    {(UINT16)(offsetof(VIRTRestoreState_In, inData)),
+     (UINT16)(offsetof(VIRTRestoreState_In, decrypt)),
+     (UINT16)(offsetof(VIRTRestoreState_In, mode)),
+     (UINT16)(offsetof(VIRTRestoreState_In, ivIn)),
+     (UINT16)(offsetof(VIRTRestoreState_Out, ivOut))},
+    /* types         */
+    {MSSIMI_DH_OBJECT_H_UNMARSHAL,
+     MSSIM2B_MAX_BUFFER_P_UNMARSHAL,
+     MSSIMI_YES_NO_P_UNMARSHAL,
+     MSSIMI_ALG_CIPHER_MODE_P_UNMARSHAL + ADD_FLAG,
+     MSSIM2B_IV_P_UNMARSHAL,
+     END_OF_LIST,
+     MSSIM2B_MAX_BUFFER_P_MARSHAL,
+     MSSIM2B_IV_P_MARSHAL,
+     END_OF_LIST}};
+
+#    define _VIRT_RestoreStateDataAddress (&_VIRT_RestoreStateData)
 #  else
 #    define _VIRT_RestoreStateDataAddress 0
 #  endif  // CC_VIRT_RestoreState

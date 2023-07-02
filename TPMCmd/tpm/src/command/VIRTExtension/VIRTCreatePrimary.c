@@ -39,56 +39,109 @@
 #if CC_VIRT_CreatePrimary  // Conditional expansion of this file
 
 /*(See part 3 specification)
-// Create a regular object
+// Creates a primary or temporary object from a primary seed.
 */
 //  Return Type: MSSIM_RC
-//      MSSIM_RC_ATTRIBUTES       'sensitiveDataOrigin' is CLEAR when 'sensitive.data'
-//                              is an Empty Buffer, or is SET when 'sensitive.data' is
-//                              not empty;
-//                              'fixedMSSIM', 'fixedParent', or 'encryptedDuplication'
-//                              attributes are inconsistent between themselves or with
-//                              those of the parent object;
+//      MSSIM_RC_ATTRIBUTES       sensitiveDataOrigin is CLEAR when sensitive.data is an
+//                              Empty Buffer 'fixedMSSIM', 'fixedParent', or
+//                              'encryptedDuplication' attributes are inconsistent
+//                              between themselves or with those of the parent object;
 //                              inconsistent 'restricted', 'decrypt' and 'sign'
-//                              attributes;
+//                              attributes
 //                              attempt to inject sensitive data for an asymmetric
 //                              key;
-//      MSSIM_RC_HASH             non-duplicable storage key and its parent have
-//                              different name algorithm
 //      MSSIM_RC_KDF              incorrect KDF specified for decrypting keyed hash
 //                              object
-//      MSSIM_RC_KEY              invalid key size values in an asymmetric key public
-//                              area or a provided symmetric key has a value that is
-//                              not allowed
-//      MSSIM_RC_KEY_SIZE         key size in public area for symmetric key differs from
-//                              the size in the sensitive creation area; may also be
-//                              returned if the MSSIM does not allow the key size to be
-//                              used for a Storage Key
-//      MSSIM_RC_OBJECT_MEMORY    a free slot is not available as scratch memory for
-//                              object creation
-//      MSSIM_RC_RANGE            the exponent value of an RSA key is not supported.
-//      MSSIM_RC_SCHEME           inconsistent attributes 'decrypt', 'sign', or
+//      MSSIM_RC_KEY              a provided symmetric key value is not allowed
+//      MSSIM_RC_OBJECT_MEMORY    there is no free slot for the object
+//      MSSIM_RC_SCHEME           inconsistent attributes 'decrypt', 'sign',
 //                              'restricted' and key's scheme ID; or hash algorithm is
 //                              inconsistent with the scheme ID for keyed hash object
-//      MSSIM_RC_SIZE             size of public authPolicy or sensitive authValue does
-//                              not match digest size of the name algorithm
-//                              sensitive data size for the keyed hash object is
-//                              larger than is allowed for the scheme
+//      MSSIM_RC_SIZE             size of public authorization policy or sensitive
+//                              authorization value does not match digest size of the
+//                              name algorithm; or sensitive data size for the keyed
+//                              hash object is larger than is allowed for the scheme
 //      MSSIM_RC_SYMMETRIC        a storage key with no symmetric algorithm specified;
 //                              or non-storage key with symmetric algorithm different
 //                              from MSSIM_ALG_NULL
-//      MSSIM_RC_TYPE             unknown object type;
-//                              'parentHandle' does not reference a restricted
-//                              decryption key in the storage hierarchy with both
-//                              public and sensitive portion loaded
-//      MSSIM_RC_VALUE            exponent is not prime or could not find a prime using
-//                              the provided parameters for an RSA key;
-//                              unsupported name algorithm for an ECC key
-//      MSSIM_RC_OBJECT_MEMORY    there is no free slot for the object
-MSSIM_RC MSSIM2_VIRT_CreatePrimary()
+//      MSSIM_RC_TYPE             unknown object type
+MSSIM_RC
+MSSIM2_VIRT_CreatePrimary(VIRTCreatePrimary_In*  in,  // IN: input parameter list
+                   VIRTCreatePrimary_Out* out  // OUT: output parameter list
+)
 {
-    printf("MSSIM2_VIRT_CreatePrimary()...\n");
+    MSSIM_RC       result = MSSIM_RC_SUCCESS;
+    MSSIMT_PUBLIC* publicArea;
+    DRBG_STATE   rand;
+    OBJECT*      newObject;
+    MSSIM2B_NAME   name;
 
-    return MSSIM_RC_SUCCESS;
+    // Input Validation
+    // Will need a place to put the result
+    newObject = FindEmptyObjectSlot(&out->objectHandle);
+    if(newObject == NULL)
+        return MSSIM_RC_OBJECT_MEMORY;
+    // Get the address of the public area in the new object
+    // (this is just to save typing)
+    publicArea  = &newObject->publicArea;
+
+    *publicArea = in->inPublic.publicArea;
+
+    // Check attributes in input public area. CreateChecks() checks the things that
+    // are unique to creation and then validates the attributes and values that are
+    // common to create and load.
+    result = CreateChecks(NULL, publicArea, in->inSensitive.sensitive.data.t.size);
+    if(result != MSSIM_RC_SUCCESS)
+        return RcSafeAddToResult(result, RC_VIRT_CreatePrimary_inPublic);
+    // Validate the sensitive area values
+    if(!AdjustAuthSize(&in->inSensitive.sensitive.userAuth, publicArea->nameAlg))
+        return MSSIM_RCS_SIZE + RC_VIRT_CreatePrimary_inSensitive;
+    // Command output
+    // Compute the name using out->name as a scratch area (this is not the value
+    // that ultimately will be returned, then instantiate the state that will be
+    // used as a random number generator during the object creation.
+    // The caller does not know the seed values so the actual name does not have
+    // to be over the input, it can be over the unmarshaled structure.
+    result =
+        DRBG_InstantiateSeeded(&rand,
+                               &HierarchyGetPrimarySeed(in->primaryHandle)->b,
+                               PRIMARY_OBJECT_CREATION,
+                               (MSSIM2B*)PublicMarshalAndComputeName(publicArea, &name),
+                               &in->inSensitive.sensitive.data.b);
+    if(result == MSSIM_RC_SUCCESS)
+    {
+        newObject->attributes.primary = SET;
+        if(in->primaryHandle == MSSIM_RH_ENDORSEMENT)
+            newObject->attributes.epsHierarchy = SET;
+
+        // Create the primary object.
+        result = CryptCreateObject(
+            newObject, &in->inSensitive.sensitive, (RAND_STATE*)&rand);
+    }
+    if(result != MSSIM_RC_SUCCESS)
+        return result;
+
+    // Set the publicArea and name from the computed values
+    out->outPublic.publicArea = newObject->publicArea;
+    out->name                 = newObject->name;
+
+    // Fill in creation data
+    FillInCreationData(in->primaryHandle,
+                       publicArea->nameAlg,
+                       &in->creationPCR,
+                       &in->outsideInfo,
+                       &out->creationData,
+                       &out->creationHash);
+
+    // Compute creation ticket
+    TicketComputeCreation(EntityGetHierarchy(in->primaryHandle),
+                          &out->name,
+                          &out->creationHash,
+                          &out->creationTicket);
+
+    // Set the remaining attributes for a loaded object
+    ObjectSetLoadedAttributes(newObject, in->primaryHandle);
+    return result;
 }
 
 #endif  // CC_VIRT_CreatePrimary

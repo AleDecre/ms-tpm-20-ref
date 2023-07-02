@@ -1176,10 +1176,38 @@ case MSSIM_CC_VIRT_CreateSeed:
     break;
 #endif  // CC_VIRT_CreateSeed
 #if CC_VIRT_LoadSeed
+case MSSIM_CC_VIRT_LoadSeed:
+    *handleCount = 1;
+    result       = MSSIMI_DH_OBJECT_Unmarshal(
+        &handles[0], handleBufferStart, bufferRemainingSize, FALSE);
+    if(MSSIM_RC_SUCCESS != result)
+        return result + MSSIM_RC_H + MSSIM_RC_1;
+    break;
 #endif  // CC_VIRT_LoadSeed
 #if CC_VIRT_CreatePrimary
+case MSSIM_CC_VIRT_CreatePrimary:
+    *handleCount = 1;
+    result       = MSSIMI_RH_HIERARCHY_Unmarshal(
+        &handles[0], handleBufferStart, bufferRemainingSize, TRUE);
+    if(MSSIM_RC_SUCCESS != result)
+        return result + MSSIM_RC_H + MSSIM_RC_1;
+    break;
 #endif  // CC_VIRT_CreatePrimary
 #if CC_VIRT_StoreState
+case MSSIM_CC_VIRT_StoreState:
+    *handleCount = 1;
+    result       = MSSIMI_DH_OBJECT_Unmarshal(
+        &handles[0], handleBufferStart, bufferRemainingSize, FALSE);
+    if(MSSIM_RC_SUCCESS != result)
+        return result + MSSIM_RC_H + MSSIM_RC_1;
+    break;
 #endif  // CC_VIRT_StoreState
 #if CC_VIRT_RestoreState
+case MSSIM_CC_VIRT_RestoreState:
+    *handleCount = 1;
+    result       = MSSIMI_DH_OBJECT_Unmarshal(
+        &handles[0], handleBufferStart, bufferRemainingSize, FALSE);
+    if(MSSIM_RC_SUCCESS != result)
+        return result + MSSIM_RC_H + MSSIM_RC_1;
+    break;
 #endif  // CC_VIRT_RestoreState

@@ -38,57 +38,88 @@
 
 #if CC_VIRT_LoadSeed  // Conditional expansion of this file
 
+#  include "Object_spt_fp.h"
+
 /*(See part 3 specification)
-// Create a regular object
+// Load an ordinary or temporary object
 */
 //  Return Type: MSSIM_RC
-//      MSSIM_RC_ATTRIBUTES       'sensitiveDataOrigin' is CLEAR when 'sensitive.data'
-//                              is an Empty Buffer, or is SET when 'sensitive.data' is
-//                              not empty;
-//                              'fixedMSSIM', 'fixedParent', or 'encryptedDuplication'
-//                              attributes are inconsistent between themselves or with
-//                              those of the parent object;
-//                              inconsistent 'restricted', 'decrypt' and 'sign'
-//                              attributes;
-//                              attempt to inject sensitive data for an asymmetric
-//                              key;
-//      MSSIM_RC_HASH             non-duplicable storage key and its parent have
-//                              different name algorithm
-//      MSSIM_RC_KDF              incorrect KDF specified for decrypting keyed hash
-//                              object
-//      MSSIM_RC_KEY              invalid key size values in an asymmetric key public
-//                              area or a provided symmetric key has a value that is
-//                              not allowed
-//      MSSIM_RC_KEY_SIZE         key size in public area for symmetric key differs from
-//                              the size in the sensitive creation area; may also be
-//                              returned if the MSSIM does not allow the key size to be
-//                              used for a Storage Key
-//      MSSIM_RC_OBJECT_MEMORY    a free slot is not available as scratch memory for
-//                              object creation
-//      MSSIM_RC_RANGE            the exponent value of an RSA key is not supported.
-//      MSSIM_RC_SCHEME           inconsistent attributes 'decrypt', 'sign', or
-//                              'restricted' and key's scheme ID; or hash algorithm is
-//                              inconsistent with the scheme ID for keyed hash object
-//      MSSIM_RC_SIZE             size of public authPolicy or sensitive authValue does
-//                              not match digest size of the name algorithm
-//                              sensitive data size for the keyed hash object is
-//                              larger than is allowed for the scheme
-//      MSSIM_RC_SYMMETRIC        a storage key with no symmetric algorithm specified;
-//                              or non-storage key with symmetric algorithm different
-//                              from MSSIM_ALG_NULL
-//      MSSIM_RC_TYPE             unknown object type;
-//                              'parentHandle' does not reference a restricted
-//                              decryption key in the storage hierarchy with both
-//                              public and sensitive portion loaded
-//      MSSIM_RC_VALUE            exponent is not prime or could not find a prime using
-//                              the provided parameters for an RSA key;
-//                              unsupported name algorithm for an ECC key
-//      MSSIM_RC_OBJECT_MEMORY    there is no free slot for the object
-MSSIM_RC MSSIM2_VIRT_LoadSeed()
+//      MSSIM_RC_ATTRIBUTES       'inPulblic' attributes are not allowed with selected
+//                              parent
+//      MSSIM_RC_BINDING          'inPrivate' and 'inPublic' are not
+//                              cryptographically bound
+//      MSSIM_RC_HASH             incorrect hash selection for signing key or
+//                              the 'nameAlg' for 'inPubic' is not valid
+//      MSSIM_RC_INTEGRITY        HMAC on 'inPrivate' was not valid
+//      MSSIM_RC_KDF              KDF selection not allowed
+//      MSSIM_RC_KEY              the size of the object's 'unique' field is not
+//                              consistent with the indicated size in the object's
+//                              parameters
+//      MSSIM_RC_OBJECT_MEMORY    no available object slot
+//      MSSIM_RC_SCHEME           the signing scheme is not valid for the key
+//      MSSIM_RC_SENSITIVE        the 'inPrivate' did not unmarshal correctly
+//      MSSIM_RC_SIZE             'inPrivate' missing, or 'authPolicy' size for
+//                              'inPublic' or is not valid
+//      MSSIM_RC_SYMMETRIC        symmetric algorithm not provided when required
+//      MSSIM_RC_TYPE             'parentHandle' is not a storage key, or the object
+//                              to load is a storage key but its parameters do not
+//                              match the parameters of the parent.
+//      MSSIM_RC_VALUE            decryption failure
+MSSIM_RC
+MSSIM2_VIRT_LoadSeed(VIRTLoadSeed_In*  in,  // IN: input parameter list
+          VIRTLoadSeed_Out* out  // OUT: output parameter list
+)
 {
-    printf("MSSIM2_VIRT_LoadSeed()...\n");
+    MSSIM_RC         result = MSSIM_RC_SUCCESS;
+    MSSIMT_SENSITIVE sensitive;
+    OBJECT*        parentObject;
+    OBJECT*        newObject;
 
-    return MSSIM_RC_SUCCESS;
+    // Input Validation
+    // Don't get invested in loading if there is no place to put it.
+    newObject = FindEmptyObjectSlot(&out->objectHandle);
+    if(newObject == NULL)
+        return MSSIM_RC_OBJECT_MEMORY;
+
+    if(in->inPrivate.t.size == 0)
+        return MSSIM_RCS_SIZE + RC_VIRT_LoadSeed_inPrivate;
+
+    parentObject = HandleToObject(in->parentHandle);
+    pAssert(parentObject != NULL);
+    // Is the object that is being used as the parent actually a parent.
+    if(!ObjectIsParent(parentObject))
+        return MSSIM_RCS_TYPE + RC_VIRT_LoadSeed_parentHandle;
+
+    // Compute the name of object. If there isn't one, it is because the nameAlg is
+    // not valid.
+    PublicMarshalAndComputeName(&in->inPublic.publicArea, &out->name);
+    if(out->name.t.size == 0)
+        return MSSIM_RCS_HASH + RC_VIRT_LoadSeed_inPublic;
+
+    // Retrieve sensitive data.
+    result = PrivateToSensitive(&in->inPrivate.b,
+                                &out->name.b,
+                                parentObject,
+                                in->inPublic.publicArea.nameAlg,
+                                &sensitive);
+    if(result != MSSIM_RC_SUCCESS)
+        return RcSafeAddToResult(result, RC_VIRT_LoadSeed_inPrivate);
+
+    // Internal Data Update
+    // Load and validate object
+    result = ObjectLoad(newObject,
+                        parentObject,
+                        &in->inPublic.publicArea,
+                        &sensitive,
+                        RC_VIRT_LoadSeed_inPublic,
+                        RC_VIRT_LoadSeed_inPrivate,
+                        &out->name);
+    if(result == MSSIM_RC_SUCCESS)
+    {
+        // Set the common OBJECT attributes for a loaded object.
+        ObjectSetLoadedAttributes(newObject, in->parentHandle);
+    }
+    return result;
 }
 
 #endif  // CC_VIRT_LoadSeed

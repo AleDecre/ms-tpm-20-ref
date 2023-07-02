@@ -42,9 +42,37 @@
 #  ifndef _VIRT_CreatePrimary_FP_H_
 #    define _VIRT_CreatePrimary_FP_H_
 
+// Input structure definition
+typedef struct
+{
+    MSSIMI_RH_HIERARCHY      primaryHandle;
+    MSSIM2B_SENSITIVE_CREATE inSensitive;
+    MSSIM2B_PUBLIC           inPublic;
+    MSSIM2B_DATA             outsideInfo;
+    MSSIML_PCR_SELECTION     creationPCR;
+} VIRTCreatePrimary_In;
+
+// Output structure definition
+typedef struct
+{
+    MSSIM_HANDLE          objectHandle;
+    MSSIM2B_PUBLIC        outPublic;
+    MSSIM2B_CREATION_DATA creationData;
+    MSSIM2B_DIGEST        creationHash;
+    MSSIMT_TK_CREATION    creationTicket;
+    MSSIM2B_NAME          name;
+} VIRTCreatePrimary_Out;
+
+// Response code modifiers
+#    define RC_VIRT_CreatePrimary_primaryHandle (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_VIRT_CreatePrimary_inSensitive   (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_VIRT_CreatePrimary_inPublic      (MSSIM_RC_P + MSSIM_RC_2)
+#    define RC_VIRT_CreatePrimary_outsideInfo   (MSSIM_RC_P + MSSIM_RC_3)
+#    define RC_VIRT_CreatePrimary_creationPCR   (MSSIM_RC_P + MSSIM_RC_4)
+
 // Function prototype
 MSSIM_RC
-MSSIM2_VIRT_CreatePrimary();
+MSSIM2_VIRT_CreatePrimary(VIRTCreatePrimary_In* in, VIRTCreatePrimary_Out* out);
 
 #  endif  // _VIRT_CreatePrimary_FP_H_
 #endif    // CC_VIRT_CreatePrimary

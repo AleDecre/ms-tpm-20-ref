@@ -42,9 +42,33 @@
 #  ifndef _VIRT_StoreState_FP_H_
 #    define _VIRT_StoreState_FP_H_
 
+// Input structure definition
+typedef struct
+{
+    MSSIMI_DH_OBJECT       keyHandle;
+    MSSIM2B_MAX_BUFFER     inData;
+    MSSIMI_YES_NO          decrypt;
+    MSSIMI_ALG_CIPHER_MODE mode;
+    MSSIM2B_IV             ivIn;
+} VIRTStoreState_In;
+
+// Output structure definition
+typedef struct
+{
+    MSSIM2B_MAX_BUFFER outData;
+    MSSIM2B_IV         ivOut;
+} VIRTStoreState_Out;
+
+// Response code modifiers
+#    define RC_VIRT_StoreState_keyHandle (MSSIM_RC_H + MSSIM_RC_1)
+#    define RC_VIRT_StoreState_inData    (MSSIM_RC_P + MSSIM_RC_1)
+#    define RC_VIRT_StoreState_decrypt   (MSSIM_RC_P + MSSIM_RC_2)
+#    define RC_VIRT_StoreState_mode      (MSSIM_RC_P + MSSIM_RC_3)
+#    define RC_VIRT_StoreState_ivIn      (MSSIM_RC_P + MSSIM_RC_4)
+
 // Function prototype
 MSSIM_RC
-MSSIM2_VIRT_StoreState();
+MSSIM2_VIRT_StoreState(VIRTStoreState_In* in, VIRTStoreState_Out* out);
 
 #  endif  // _VIRT_StoreState_FP_H_
 #endif    // CC_VIRT_StoreState
