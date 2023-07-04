@@ -451,7 +451,6 @@ VIRTCreateChecks(OBJECT* parentObject, MSSIMT_PUBLIC* publicArea, UINT16 sensiti
     if(MSSIM_RC_SUCCESS == result)
     {
         result = PublicVIRTAttributesValidation(parentObject, publicArea);
-        printf("RES= %d\n\n\n", result);
     }
     return result;
 }

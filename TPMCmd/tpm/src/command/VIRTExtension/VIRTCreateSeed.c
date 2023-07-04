@@ -259,12 +259,10 @@ MSSIM_RC MSSIM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out)
     parentObject = HandleToObject(in->parentHandle);
     pAssert(parentObject != NULL);
 
-    printf("TEST1\n\n\n");
     // Does parent have the proper attributes?
     if(!ObjectIsParent(parentObject))
         return MSSIM_RCS_TYPE + RC_VIRT_CreateSeed_parentHandle;
 
-    printf("TEST2\n\n\n");
     // Get a slot for the creation
     newObject = FindEmptyObjectSlot(NULL);
     if(newObject == NULL)

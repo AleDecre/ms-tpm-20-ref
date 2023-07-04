@@ -295,7 +295,7 @@ int main(int argc, char* argv[])
     if(hwbind)
     {
         printf("\nPerforming hardware binding...\n");
-        _MSSIM_Init("Init with pMSSIM...\n");
+        _MSSIM_Init("Init with pTPM...\n");
     }
     // Disable NV memory
     _plat__NVDisable(0);

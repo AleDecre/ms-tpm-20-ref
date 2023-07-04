@@ -336,7 +336,7 @@ int RegularCommandService(int PortNumber)
     // a new connection until the prior connection drops.
     do
     {
-        printf("MSSIM command server listening on port %d\n", PortNumber);
+        printf("TPM command server listening on port %d\n", PortNumber);
 
         // blocking accept
         length       = sizeof(HerAddress);
