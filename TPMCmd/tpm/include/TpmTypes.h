@@ -822,8 +822,8 @@ typedef UINT32 MSSIMA_ALGORITHM;
 #if USE_BIT_FIELD_STRUCTURES
 typedef struct MSSIMA_OBJECT
 {  // Table 2:31
-    unsigned Reserved_bit_at_0    : 1;
-    unsigned fixedMSSIM             : 1;
+    unsigned pMSSIMCreate         : 1;
+    unsigned fixedMSSIM           : 1;
     unsigned stClear              : 1;
     unsigned Reserved_bit_at_3    : 1;
     unsigned fixedParent          : 1;
@@ -841,7 +841,7 @@ typedef struct MSSIMA_OBJECT
     unsigned Reserved_bits_at_20  : 12;
 } MSSIMA_OBJECT; /* Bits */
 // This is the initializer for a MSSIMA_OBJECT structure
-#  define MSSIMA_OBJECT_INITIALIZER(bit_at_0,                                     \
+#  define MSSIMA_OBJECT_INITIALIZER(pMSSIMCreate,                               \
                                   fixedtpm,                                     \
                                   stclear,                                      \
                                   bit_at_3,                                     \
@@ -859,7 +859,7 @@ typedef struct MSSIMA_OBJECT
                                   x509sign,                                     \
                                   bits_at_20)                                   \
     {                                                                           \
-      bit_at_0, fixedtpm, stclear, bit_at_3, fixedparent, sensitivedataorigin,  \
+      pMSSIMCreate, fixedtpm, stclear, bit_at_3, fixedparent, sensitivedataorigin,  \
           userwithauth, adminwithpolicy, bits_at_8, noda, encryptedduplication, \
           bits_at_12, restricted, decrypt, sign, x509sign, bits_at_20           \
     }
@@ -867,7 +867,8 @@ typedef struct MSSIMA_OBJECT
 // This implements Table 2:31 MSSIMA_OBJECT using bit masking
 typedef UINT32 MSSIMA_OBJECT;
 #  define TYPE_OF_MSSIMA_OBJECT              UINT32
-#  define MSSIMA_OBJECT_fixedMSSIM             ((MSSIMA_OBJECT)1 << 1)
+#  define MSSIMA_OBJECT_pMSSIMCreated        ((MSSIMA_OBJECT)1 << 0)
+#  define MSSIMA_OBJECT_fixedMSSIM           ((MSSIMA_OBJECT)1 << 1)
 #  define MSSIMA_OBJECT_stClear              ((MSSIMA_OBJECT)1 << 2)
 #  define MSSIMA_OBJECT_fixedParent          ((MSSIMA_OBJECT)1 << 4)
 #  define MSSIMA_OBJECT_sensitiveDataOrigin  ((MSSIMA_OBJECT)1 << 5)
@@ -880,7 +881,7 @@ typedef UINT32 MSSIMA_OBJECT;
 #  define MSSIMA_OBJECT_sign                 ((MSSIMA_OBJECT)1 << 18)
 #  define MSSIMA_OBJECT_x509sign             ((MSSIMA_OBJECT)1 << 19)
 //  This is the initializer for a MSSIMA_OBJECT bit array.
-#  define MSSIMA_OBJECT_INITIALIZER(bit_at_0,                             \
+#  define MSSIMA_OBJECT_INITIALIZER(pMSSIMCreate,                          \
                                   fixedtpm,                             \
                                   stclear,                              \
                                   bit_at_3,                             \
@@ -897,7 +898,7 @@ typedef UINT32 MSSIMA_OBJECT;
                                   sign,                                 \
                                   x509sign,                             \
                                   bits_at_20)                           \
-    (MSSIMA_OBJECT)((fixedtpm << 1) + (stclear << 2) + (fixedparent << 4) \
+    (MSSIMA_OBJECT)((pMSSIMCreate << 0) + (fixedtpm << 1) + (stclear << 2) + (fixedparent << 4) \
                   + (sensitivedataorigin << 5) + (userwithauth << 6)    \
                   + (adminwithpolicy << 7) + (noda << 10)               \
                   + (encryptedduplication << 11) + (restricted << 16)   \
