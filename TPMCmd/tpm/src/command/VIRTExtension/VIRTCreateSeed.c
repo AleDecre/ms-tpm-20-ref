@@ -280,7 +280,7 @@ MSSIM_RC MSSIM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out)
     // are unique to creation and then validates the attributes and values that are
     // common to create and load.
     result =
-        VIRTCreateChecks(parentObject, publicArea, in->inSensitive.sensitive.data.t.size);
+        VIRTCreateChecks(parentObject, publicArea, in->bytesRequested);
     if(result != MSSIM_RC_SUCCESS){
         return RcSafeAddToResult(result, RC_VIRT_CreateSeed_inPublic);}
     // Clean up the authValue if necessary
@@ -290,6 +290,7 @@ MSSIM_RC MSSIM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out)
     // if the requested bytes exceed the output buffer size, generates the
     // maximum bytes that the output buffer allows
 
+    in->inSensitive.sensitive.data.t.size = in->bytesRequested;
     CryptRandomGenerate(in->inSensitive.sensitive.data.t.size, in->inSensitive.sensitive.data.t.buffer);
 
     printf("buffer size: %d\n", in->inSensitive.sensitive.data.t.size);

@@ -46,7 +46,7 @@
 typedef struct
 {
     MSSIMI_DH_OBJECT         parentHandle;
-    UINT16                 bytesRequested;
+    UINT16                   bytesRequested;
     MSSIM2B_SENSITIVE_CREATE inSensitive;
     MSSIM2B_PUBLIC           inPublic;
     MSSIM2B_DATA             outsideInfo;

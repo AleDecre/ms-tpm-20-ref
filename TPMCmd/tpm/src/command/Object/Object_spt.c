@@ -419,7 +419,7 @@ CreateChecks(OBJECT* parentObject, MSSIMT_PUBLIC* publicArea, UINT16 sensitiveDa
 //                          object type
 //      other               returns from PublicAttributesValidation()
 MSSIM_RC
-VIRTCreateChecks(OBJECT* parentObject, MSSIMT_PUBLIC* publicArea, UINT16 sensitiveDataSize)
+VIRTCreateChecks(OBJECT* parentObject, MSSIMT_PUBLIC* publicArea, UINT16 bytesRequested)
 {
     MSSIMA_OBJECT attributes = publicArea->objectAttributes;
     MSSIM_RC      result     = MSSIM_RC_SUCCESS;
@@ -437,7 +437,7 @@ VIRTCreateChecks(OBJECT* parentObject, MSSIMT_PUBLIC* publicArea, UINT16 sensiti
     //     return MSSIM_RCS_ATTRIBUTES;
     if((parentObject != NULL)
        && (IS_ATTRIBUTE(attributes, MSSIMA_OBJECT, sensitiveDataOrigin))
-       && (sensitiveDataSize == 0))
+       && (bytesRequested == 0))
         return MSSIM_RCS_ATTRIBUTES;
     if(publicArea->type == MSSIM_ALG_KEYEDHASH){
         if(!(!IS_ATTRIBUTE(attributes, MSSIMA_OBJECT, sign)
