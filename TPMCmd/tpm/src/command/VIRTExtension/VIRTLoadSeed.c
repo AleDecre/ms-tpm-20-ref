@@ -107,7 +107,7 @@ MSSIM2_VIRT_LoadSeed(VIRTLoadSeed_In*  in,  // IN: input parameter list
 
     // Internal Data Update
     // Load and validate object
-    result = ObjectLoad(newObject,
+    result = VIRTObjectLoad(newObject,
                         parentObject,
                         &in->inPublic.publicArea,
                         &sensitive,

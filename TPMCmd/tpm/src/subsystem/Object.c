@@ -441,6 +441,106 @@ ObjectLoad(OBJECT* object,           // IN: pointer to object slot
     return result;
 }
 
+//*** ObjectLoad()
+// Common function to load an object. A loaded object has its public area validated
+// (unless its 'nameAlg' is MSSIM_ALG_NULL). If a sensitive part is loaded, it is
+// verified to be correct and if both public and sensitive parts are loaded, then
+// the cryptographic binding between the objects is validated. This function does
+// not cause the allocated slot to be marked as in use.
+MSSIM_RC
+VIRTObjectLoad(OBJECT* object,           // IN: pointer to object slot
+                                     //     object
+           OBJECT*      parent,      // IN: (optional) the parent object
+           MSSIMT_PUBLIC* publicArea,  // IN: public area to be installed in the object
+           MSSIMT_SENSITIVE* sensitive,  // IN: (optional) sensitive area to be
+                                       //      installed in the object
+           MSSIM_RC blamePublic,         // IN: parameter number to associate with the
+                                       //     publicArea errors
+           MSSIM_RC blameSensitive,      // IN: parameter number to associate with the
+                                       //     sensitive area errors
+           MSSIM2B_NAME* name            // IN: (optional)
+)
+{
+    MSSIM_RC result = MSSIM_RC_SUCCESS;
+    //
+    // Do validations of public area object descriptions
+    pAssert(publicArea != NULL);
+
+    // Is this public only or a no-name object?
+    if(sensitive == NULL || publicArea->nameAlg == MSSIM_ALG_NULL)
+    {
+        // Need to have schemes checked so that we do the right thing with the
+        // public key.
+        result = SchemeChecks(NULL, publicArea);
+    }
+    else
+    {
+        // For any sensitive area, make sure that the seedSize is no larger than the
+        // digest size of nameAlg
+        if(sensitive->seedValue.t.size > CryptHashGetDigestSize(publicArea->nameAlg))
+            return MSSIM_RCS_KEY_SIZE + blameSensitive;
+        // Check attributes and schemes for consistency
+        result = PublicAttributesValidation(parent, publicArea);
+    }
+    if(result != MSSIM_RC_SUCCESS)
+        return RcSafeAddToResult(result, blamePublic);
+
+    MSSIMA_OBJECT attributes = publicArea->objectAttributes;
+    if(!(!IS_ATTRIBUTE(attributes, MSSIMA_OBJECT, sign)
+        && !IS_ATTRIBUTE(attributes, MSSIMA_OBJECT, decrypt)
+        && !IS_ATTRIBUTE(attributes, MSSIMA_OBJECT, sensitiveDataOrigin)
+        && IS_ATTRIBUTE(attributes, MSSIMA_OBJECT, restricted)))
+        result = MSSIM_RC_ATTRIBUTES;
+    if(result != MSSIM_RC_SUCCESS)
+        return RcSafeAddToResult(result, blamePublic);
+
+    // Sensitive area and binding checks
+
+    // On load, check nothing if the parent is fixedMSSIM. For all other cases, validate
+    // the keys.
+    if((parent == NULL)
+       || ((parent != NULL)
+           && !IS_ATTRIBUTE(
+               parent->publicArea.objectAttributes, MSSIMA_OBJECT, fixedMSSIM)))
+    {
+        // Do the cryptographic key validation
+        result =
+            CryptValidateKeys(publicArea, sensitive, blamePublic, blameSensitive);
+        if(result != MSSIM_RC_SUCCESS)
+            return result;
+    }
+#if ALG_RSA
+    // If this is an RSA key, then expand the private exponent.
+    // Note: ObjectLoad() is only called by MSSIM2_Import() if the parent is fixedMSSIM.
+    // For any key that does not have a fixedMSSIM parent, the exponent is computed
+    // whenever it is loaded
+    if((publicArea->type == MSSIM_ALG_RSA) && (sensitive != NULL))
+    {
+        result = CryptRsaLoadPrivateExponent(publicArea, sensitive);
+        if(result != MSSIM_RC_SUCCESS)
+            return result;
+    }
+#endif  // ALG_RSA
+    // See if there is an object to populate
+    if((result == MSSIM_RC_SUCCESS) && (object != NULL))
+    {
+        // Initialize public
+        object->publicArea = *publicArea;
+        // Copy sensitive if there is one
+        if(sensitive == NULL)
+            object->attributes.publicOnly = SET;
+        else
+            object->sensitive = *sensitive;
+        // Set the name, if one was provided
+        if(name != NULL)
+            object->name = *name;
+        else
+            object->name.t.size = 0;
+    }
+    return result;
+}
+
+
 //*** AllocateSequenceSlot()
 // This function allocates a sequence slot and initializes the parts that
 // are used by the normal objects so that a sequence object is not inadvertently

@@ -162,6 +162,26 @@ ObjectLoad(OBJECT* object,           // IN: pointer to object slot
            MSSIM2B_NAME* name            // IN: (optional)
 );
 
+//*** ObjectLoad()
+// Common function to load an object. A loaded object has its public area validated
+// (unless its 'nameAlg' is MSSIM_ALG_NULL). If a sensitive part is loaded, it is
+// verified to be correct and if both public and sensitive parts are loaded, then
+// the cryptographic binding between the objects is validated. This function does
+// not cause the allocated slot to be marked as in use.
+MSSIM_RC
+VIRTObjectLoad(OBJECT* object,           // IN: pointer to object slot
+                                     //     object
+           OBJECT*      parent,      // IN: (optional) the parent object
+           MSSIMT_PUBLIC* publicArea,  // IN: public area to be installed in the object
+           MSSIMT_SENSITIVE* sensitive,  // IN: (optional) sensitive area to be
+                                       //      installed in the object
+           MSSIM_RC blamePublic,         // IN: parameter number to associate with the
+                                       //     publicArea errors
+           MSSIM_RC blameSensitive,      // IN: parameter number to associate with the
+                                       //     sensitive area errors
+           MSSIM2B_NAME* name            // IN: (optional)
+);
+
 #if CC_HMAC_Start || CC_MAC_Start
 //*** ObjectCreateHMACSequence()
 // This function creates an internal HMAC sequence object.
