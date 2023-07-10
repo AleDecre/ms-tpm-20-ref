@@ -480,7 +480,7 @@ VIRTObjectLoad(OBJECT* object,           // IN: pointer to object slot
         if(sensitive->seedValue.t.size > CryptHashGetDigestSize(publicArea->nameAlg))
             return MSSIM_RCS_KEY_SIZE + blameSensitive;
         // Check attributes and schemes for consistency
-        result = PublicAttributesValidation(parent, publicArea);
+        result = PublicVIRTAttributesValidation(parent, publicArea);
     }
     if(result != MSSIM_RC_SUCCESS)
         return RcSafeAddToResult(result, blamePublic);

@@ -94,7 +94,7 @@ MSSIM_RC MSSIM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out)
     OBJECT*      newObject;
     MSSIMT_PUBLIC* publicArea;
 
-
+/*
 // TEST TCTI CONNECTION
 
     TSS2_RC rc;
@@ -191,11 +191,11 @@ MSSIM_RC MSSIM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out)
                     },
                     .scheme = {
                         .scheme = TPM2_ALG_NULL,
-                    /*    .details = {
-                            .rsapss = {
-                                .hashAlg = TPM2_ALG_SHA256
-                            }
-                        }*/
+                        // .details = {
+                        //     .rsapss = {
+                        //         .hashAlg = TPM2_ALG_SHA256
+                        //     }
+                        // }
                     },
                     .keyBits = 2048,
                     .exponent = 0,
@@ -254,6 +254,7 @@ MSSIM_RC MSSIM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out)
 
 
 // END TEST TCTI CONNECTION
+*/
 
     // Input Validation
     parentObject = HandleToObject(in->parentHandle);
@@ -293,13 +294,13 @@ MSSIM_RC MSSIM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out)
     in->inSensitive.sensitive.data.t.size = in->bytesRequested;
     CryptRandomGenerate(in->inSensitive.sensitive.data.t.size, in->inSensitive.sensitive.data.t.buffer);
 
-    printf("buffer size: %d\n", in->inSensitive.sensitive.data.t.size);
-    printf("buffer contents: ");
+    // printf("buffer size: %d\n", in->inSensitive.sensitive.data.t.size);
+    // printf("buffer contents: ");
 
-    for(int i = 0; i < in->inSensitive.sensitive.data.t.size; i++) {
-        printf("%d ", in->inSensitive.sensitive.data.t.buffer[i]);
-    }
-    printf("\n");
+    // for(int i = 0; i < in->inSensitive.sensitive.data.t.size; i++) {
+    //     printf("%d ", in->inSensitive.sensitive.data.t.buffer[i]);
+    // }
+    // printf("\n");
 
 
     // Command Output
