@@ -35,6 +35,7 @@
 
 #include "Tpm.h"
 #include "VIRT_CreatePrimary_fp.h"
+#include "stdio.h"
 
 #if CC_VIRT_CreatePrimary  // Conditional expansion of this file
 
@@ -102,14 +103,21 @@ MSSIM2_VIRT_CreatePrimary(VIRTCreatePrimary_In*  in,  // IN: input parameter lis
     // used as a random number generator during the object creation.
     // The caller does not know the seed values so the actual name does not have
     // to be over the input, it can be over the unmarshaled structure.
+    OBJECT *object = HandleToObject(in->primaryHandle);
+    if(object == NULL){
+        printf("test1");
+        return MSSIM_RCS_HANDLE + RC_VIRT_CreatePrimary_primaryHandle;
+    }
+        
     result =
         DRBG_InstantiateSeeded(&rand,
-                               &HierarchyGetPrimarySeed(in->primaryHandle)->b,
+                               &(object->sensitive.sensitive.bits.b),
                                PRIMARY_OBJECT_CREATION,
                                (MSSIM2B*)PublicMarshalAndComputeName(publicArea, &name),
                                &in->inSensitive.sensitive.data.b);
     if(result == MSSIM_RC_SUCCESS)
     {
+                printf("SIIIIIIIIIIIIIIIIII");
         newObject->attributes.primary = SET;
         if(in->primaryHandle == MSSIM_RH_ENDORSEMENT)
             newObject->attributes.epsHierarchy = SET;
@@ -118,8 +126,10 @@ MSSIM2_VIRT_CreatePrimary(VIRTCreatePrimary_In*  in,  // IN: input parameter lis
         result = CryptCreateObject(
             newObject, &in->inSensitive.sensitive, (RAND_STATE*)&rand);
     }
-    if(result != MSSIM_RC_SUCCESS)
-        return result;
+    if(result != MSSIM_RC_SUCCESS){
+                printf("NOOOOOOOOOOOOOOOOOOOOOOO"); return result;
+    }
+       
 
     // Set the publicArea and name from the computed values
     out->outPublic.publicArea = newObject->publicArea;

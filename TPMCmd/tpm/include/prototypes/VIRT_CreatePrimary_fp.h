@@ -45,7 +45,7 @@
 // Input structure definition
 typedef struct
 {
-    MSSIMI_RH_HIERARCHY      primaryHandle;
+    MSSIM_HANDLE             primaryHandle;
     MSSIM2B_SENSITIVE_CREATE inSensitive;
     MSSIM2B_PUBLIC           inPublic;
     MSSIM2B_DATA             outsideInfo;
