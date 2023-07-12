@@ -4815,7 +4815,7 @@ VIRT_CreatePrimary_COMMAND_DESCRIPTOR_t _VIRT_CreatePrimaryData = {
      (UINT16)(offsetof(VIRTCreatePrimary_Out, creationTicket)),
      (UINT16)(offsetof(VIRTCreatePrimary_Out, name))},
     /* types         */
-    {MSSIMI_RH_HIERARCHY_H_UNMARSHAL + ADD_FLAG,
+    {MSSIMI_DH_OBJECT_H_UNMARSHAL,
      MSSIM2B_SENSITIVE_CREATE_P_UNMARSHAL,
      MSSIM2B_PUBLIC_P_UNMARSHAL,
      MSSIM2B_DATA_P_UNMARSHAL,

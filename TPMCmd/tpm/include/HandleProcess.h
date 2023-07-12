@@ -1187,8 +1187,8 @@ case MSSIM_CC_VIRT_LoadSeed:
 #if CC_VIRT_CreatePrimary
 case MSSIM_CC_VIRT_CreatePrimary:
     *handleCount = 1;
-    result       = MSSIMI_RH_HIERARCHY_Unmarshal(
-        &handles[0], handleBufferStart, bufferRemainingSize, TRUE);
+    result       = MSSIMI_DH_OBJECT_Unmarshal(
+        &handles[0], handleBufferStart, bufferRemainingSize, FALSE);
     if(MSSIM_RC_SUCCESS != result)
         return result + MSSIM_RC_H + MSSIM_RC_1;
     break;

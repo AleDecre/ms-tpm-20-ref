@@ -104,10 +104,8 @@ MSSIM2_VIRT_CreatePrimary(VIRTCreatePrimary_In*  in,  // IN: input parameter lis
     // The caller does not know the seed values so the actual name does not have
     // to be over the input, it can be over the unmarshaled structure.
     OBJECT *object = HandleToObject(in->primaryHandle);
-    if(object == NULL){
-        printf("test1");
+    if(object == NULL)
         return MSSIM_RCS_HANDLE + RC_VIRT_CreatePrimary_primaryHandle;
-    }
         
     result =
         DRBG_InstantiateSeeded(&rand,
