@@ -115,7 +115,6 @@ MSSIM2_VIRT_CreatePrimary(VIRTCreatePrimary_In*  in,  // IN: input parameter lis
                                &in->inSensitive.sensitive.data.b);
     if(result == MSSIM_RC_SUCCESS)
     {
-                printf("SIIIIIIIIIIIIIIIIII");
         newObject->attributes.primary = SET;
         if(in->primaryHandle == MSSIM_RH_ENDORSEMENT)
             newObject->attributes.epsHierarchy = SET;
@@ -124,10 +123,8 @@ MSSIM2_VIRT_CreatePrimary(VIRTCreatePrimary_In*  in,  // IN: input parameter lis
         result = CryptCreateObject(
             newObject, &in->inSensitive.sensitive, (RAND_STATE*)&rand);
     }
-    if(result != MSSIM_RC_SUCCESS){
-                printf("NOOOOOOOOOOOOOOOOOOOOOOO"); return result;
-    }
-       
+    if(result != MSSIM_RC_SUCCESS)
+        return result;       
 
     // Set the publicArea and name from the computed values
     out->outPublic.publicArea = newObject->publicArea;

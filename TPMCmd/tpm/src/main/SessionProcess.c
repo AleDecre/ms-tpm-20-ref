@@ -1510,7 +1510,11 @@ ParseSessionBuffer(COMMAND* command  // IN: the structure that contains
             if(i > (command->sessionNum - 1))
                 return MSSIM_RC_AUTH_MISSING;
             // Record the handle associated with the authorization session
-            s_associatedHandles[i] = command->handles[i];
+            if(command->code == MSSIM_CC_VIRT_CreatePrimary)
+                s_associatedHandles[i] = ObjectGetHierarchy(HandleToObject(command->handles[i]));
+            else
+                s_associatedHandles[i] = command->handles[i];
+            
         }
     }
     // Consistency checks are done first to avoid authorization failure when the

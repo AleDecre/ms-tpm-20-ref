@@ -221,8 +221,6 @@ LIB_EXPORT void ExecuteCommand(
     result = EntityGetLoadStatus(&command);
     if(result != MSSIM_RC_SUCCESS)
         goto Cleanup;
-    if(command.code == MSSIM_CC_VIRT_CreatePrimary)
-        printf("\nTEST1\n");
     // Authorization session handling for the command.
     ClearCpRpHashes(&command);
     if(command.tag == MSSIM_ST_SESSIONS)
@@ -267,8 +265,6 @@ LIB_EXPORT void ExecuteCommand(
     // response parameters starting at the address in command.responseBuffer.
     //*response = MemoryGetResponseBuffer(command.index);
     // leave space for the command header
-    if(command.code == MSSIM_CC_VIRT_CreatePrimary)
-        printf("\nTEST2\n");
     command.responseBuffer = *response + STD_RESPONSE_HEADER;
 
     // leave space for the parameter size field if needed
@@ -283,8 +279,6 @@ LIB_EXPORT void ExecuteCommand(
     result = CommandDispatcher(&command);
     if(result != MSSIM_RC_SUCCESS)
         goto Cleanup;
-    if(command.code == MSSIM_CC_VIRT_CreatePrimary)
-        printf("\nTEST3\n");
     // Build the session area at the end of the parameter area.
     result = BuildResponseSession(&command);
     if(result != MSSIM_RC_SUCCESS)
