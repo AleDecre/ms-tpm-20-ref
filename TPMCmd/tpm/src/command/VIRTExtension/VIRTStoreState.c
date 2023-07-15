@@ -60,7 +60,7 @@ MSSIM2_VIRT_StoreState(VIRTStoreState_In*  in,  // IN: input parameter list
     // EncryptDecyrptShared() performs the operations as shown in
     // MSSIM2_EncrypDecrypt
     result = EncryptDecryptShared(in->keyHandle,
-                                  in->decrypt,
+                                  0,
                                   in->mode,
                                   &in->ivIn,
                                   &in->inData,

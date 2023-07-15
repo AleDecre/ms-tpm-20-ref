@@ -4847,8 +4847,8 @@ typedef const struct
     UINT16                 inSize;
     UINT16                 outSize;
     UINT16                 offsetOfTypes;
-    UINT16                 paramOffsets[5];
-    BYTE                   types[9];
+    UINT16                 paramOffsets[4];
+    BYTE                   types[8];
 } VIRT_StoreState_COMMAND_DESCRIPTOR_t;
 
 VIRT_StoreState_COMMAND_DESCRIPTOR_t _VIRT_StoreStateData = {
@@ -4858,14 +4858,12 @@ VIRT_StoreState_COMMAND_DESCRIPTOR_t _VIRT_StoreStateData = {
     /* offsetOfTypes */ offsetof(VIRT_StoreState_COMMAND_DESCRIPTOR_t, types),
     /* offsets       */
     {(UINT16)(offsetof(VIRTStoreState_In, inData)),
-     (UINT16)(offsetof(VIRTStoreState_In, decrypt)),
      (UINT16)(offsetof(VIRTStoreState_In, mode)),
      (UINT16)(offsetof(VIRTStoreState_In, ivIn)),
      (UINT16)(offsetof(VIRTStoreState_Out, ivOut))},
     /* types         */
     {MSSIMI_DH_OBJECT_H_UNMARSHAL,
      MSSIM2B_MAX_BUFFER_P_UNMARSHAL,
-     MSSIMI_YES_NO_P_UNMARSHAL,
      MSSIMI_ALG_CIPHER_MODE_P_UNMARSHAL + ADD_FLAG,
      MSSIM2B_IV_P_UNMARSHAL,
      END_OF_LIST,
@@ -4891,8 +4889,8 @@ typedef const struct
     UINT16                 inSize;
     UINT16                 outSize;
     UINT16                 offsetOfTypes;
-    UINT16                 paramOffsets[5];
-    BYTE                   types[9];
+    UINT16                 paramOffsets[4];
+    BYTE                   types[8];
 } VIRT_RestoreState_COMMAND_DESCRIPTOR_t;
 
 VIRT_RestoreState_COMMAND_DESCRIPTOR_t _VIRT_RestoreStateData = {
@@ -4902,14 +4900,12 @@ VIRT_RestoreState_COMMAND_DESCRIPTOR_t _VIRT_RestoreStateData = {
     /* offsetOfTypes */ offsetof(VIRT_RestoreState_COMMAND_DESCRIPTOR_t, types),
     /* offsets       */
     {(UINT16)(offsetof(VIRTRestoreState_In, inData)),
-     (UINT16)(offsetof(VIRTRestoreState_In, decrypt)),
      (UINT16)(offsetof(VIRTRestoreState_In, mode)),
      (UINT16)(offsetof(VIRTRestoreState_In, ivIn)),
      (UINT16)(offsetof(VIRTRestoreState_Out, ivOut))},
     /* types         */
     {MSSIMI_DH_OBJECT_H_UNMARSHAL,
      MSSIM2B_MAX_BUFFER_P_UNMARSHAL,
-     MSSIMI_YES_NO_P_UNMARSHAL,
      MSSIMI_ALG_CIPHER_MODE_P_UNMARSHAL + ADD_FLAG,
      MSSIM2B_IV_P_UNMARSHAL,
      END_OF_LIST,

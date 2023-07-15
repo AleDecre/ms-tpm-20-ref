@@ -47,7 +47,6 @@ typedef struct
 {
     MSSIMI_DH_OBJECT       keyHandle;
     MSSIM2B_MAX_BUFFER     inData;
-    MSSIMI_YES_NO          decrypt;
     MSSIMI_ALG_CIPHER_MODE mode;
     MSSIM2B_IV             ivIn;
 } VIRTStoreState_In;
@@ -62,9 +61,8 @@ typedef struct
 // Response code modifiers
 #    define RC_VIRT_StoreState_keyHandle (MSSIM_RC_H + MSSIM_RC_1)
 #    define RC_VIRT_StoreState_inData    (MSSIM_RC_P + MSSIM_RC_1)
-#    define RC_VIRT_StoreState_decrypt   (MSSIM_RC_P + MSSIM_RC_2)
-#    define RC_VIRT_StoreState_mode      (MSSIM_RC_P + MSSIM_RC_3)
-#    define RC_VIRT_StoreState_ivIn      (MSSIM_RC_P + MSSIM_RC_4)
+#    define RC_VIRT_StoreState_mode      (MSSIM_RC_P + MSSIM_RC_2)
+#    define RC_VIRT_StoreState_ivIn      (MSSIM_RC_P + MSSIM_RC_3)
 
 // Function prototype
 MSSIM_RC

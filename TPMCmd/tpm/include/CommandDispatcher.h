@@ -2748,8 +2748,6 @@ case MSSIM_CC_VIRT_StoreState:
     in->keyHandle = handles[0];
     result = MSSIM2B_MAX_BUFFER_Unmarshal(&in->inData, paramBuffer, paramBufferSize);
     EXIT_IF_ERROR_PLUS(RC_VIRT_StoreState_inData);
-    result = MSSIMI_YES_NO_Unmarshal(&in->decrypt, paramBuffer, paramBufferSize);
-    EXIT_IF_ERROR_PLUS(RC_VIRT_StoreState_decrypt);
     result =
         MSSIMI_ALG_CIPHER_MODE_Unmarshal(&in->mode, paramBuffer, paramBufferSize, TRUE);
     EXIT_IF_ERROR_PLUS(RC_VIRT_StoreState_mode);
@@ -2777,8 +2775,6 @@ case MSSIM_CC_EncryptDecrypt2:
     in->keyHandle = handles[0];
     result = MSSIM2B_MAX_BUFFER_Unmarshal(&in->inData, paramBuffer, paramBufferSize);
     EXIT_IF_ERROR_PLUS(RC_VIRT_RestoreState_inData);
-    result = MSSIMI_YES_NO_Unmarshal(&in->decrypt, paramBuffer, paramBufferSize);
-    EXIT_IF_ERROR_PLUS(RC_VIRT_RestoreState_decrypt);
     result =
         MSSIMI_ALG_CIPHER_MODE_Unmarshal(&in->mode, paramBuffer, paramBufferSize, TRUE);
     EXIT_IF_ERROR_PLUS(RC_VIRT_RestoreState_mode);
