@@ -2730,4 +2730,19 @@ typedef struct
     MSSIMS_AC_OUTPUT acCapabilities[MAX_AC_CAPABILITIES];
 } MSSIML_AC_CAPABILITIES; /* Structure */
 
+typedef struct {
+    MSSIM2B_PRIVATE vpsPrivate;
+    MSSIM2B_PUBLIC vpsPublic;
+} VPS;
+
+typedef union{
+    MSSIM_HANDLE VPS;
+    MSSIM_HANDLE Object;
+} pHandleData;
+
+typedef struct {
+    MSSIM2_HANDLE vHandle;
+    pHandleData pHandle;
+} HandleMapEntry;
+
 #endif  // _MSSIM_TYPES_H_

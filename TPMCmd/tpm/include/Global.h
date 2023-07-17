@@ -204,6 +204,18 @@ typedef struct OBJECT
                                       // to avoid repeatedly computing it.
 } OBJECT;
 
+typedef struct {
+    VPS vEPS;
+    VPS vPPS;
+    VPS vSPS;
+} VPSMap;
+
+typedef struct {
+    MSSIMI_RH_HIERARCHY eSWK;
+    MSSIMI_RH_HIERARCHY sSWK;
+    MSSIMI_RH_HIERARCHY pSWK;
+} SWK;
+
 //*** HASH_OBJECT Structure
 // This structure holds a hash sequence object or an event sequence object.
 //
@@ -1299,6 +1311,9 @@ EXTERN BYTE*    s_cachedNvRamRef;
 // This type is the container for an object.
 
 EXTERN OBJECT s_objects[MAX_LOADED_OBJECTS];
+EXTERN VPS s_VPS[MAX_CREATED_VPS];
+EXTERN SWK s_SWK;
+EXTERN HandleMapEntry HandleMap[MAX_HANDLEMAP_ENTRY];
 
 #  endif  // OBJECT_C
 
