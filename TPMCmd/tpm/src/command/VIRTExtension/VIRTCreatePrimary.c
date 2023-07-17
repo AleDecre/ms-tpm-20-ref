@@ -91,7 +91,7 @@ MSSIM2_VIRT_CreatePrimary(VIRTCreatePrimary_In*  in,  // IN: input parameter lis
     // Check attributes in input public area. CreateChecks() checks the things that
     // are unique to creation and then validates the attributes and values that are
     // common to create and load.
-    result = CreateChecks(NULL, publicArea, in->inSensitive.sensitive.data.t.size);
+    result = VIRTPrimaryCreateChecks(NULL, publicArea, in->inSensitive.sensitive.data.t.size);
     if(result != MSSIM_RC_SUCCESS)
         return RcSafeAddToResult(result, RC_VIRT_CreatePrimary_inPublic);
     // Validate the sensitive area values

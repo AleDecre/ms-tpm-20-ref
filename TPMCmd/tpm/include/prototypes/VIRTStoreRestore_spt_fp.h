@@ -32,18 +32,16 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+/*(Auto-generated)
+ *  Created by TpmPrototypes; Version 3.0 July 18, 2017
+ *  Date: Mar 28, 2019  Time: 08:25:18PM
+ */
 
-#include "Tpm.h"
-#include "VIRT_StoreState_fp.h"
-#include "EncryptDecrypt_fp.h"
-#include "VIRTStoreRestore_spt_fp.h"
-#include "stdio.h"
+#ifndef _VIRT_STORE_RESTORE_SPT_FP_H_
+#define _VIRT_STORE_RESTORE_SPT_FP_H_
 
-#if CC_VIRT_StoreState  // Conditional expansion of this file
+#if CC_VIRT_StoreState || CC_VIRT_RestoreState
 
-/*(See part 3 specification)
-// symmetric encryption or decryption using modified parameter list
-*/
 //  Return Type: MSSIM_RC
 //      MSSIM_RC_KEY          is not a symmetric decryption key with both
 //                          public and private portions loaded
@@ -53,35 +51,12 @@
 //      MSSIM_RC_VALUE        'keyHandle' is restricted and the argument 'mode' does
 //                          not match the key's mode
 MSSIM_RC
-MSSIM2_VIRT_StoreState(VIRTStoreState_In*  in,  // IN: input parameter list
-                     VIRTStoreState_Out* out  // OUT: output parameter list
-)
-{
-    MSSIM_RC result;
-    // EncryptDecyrptShared() performs the operations as shown in
-    // MSSIM2_EncrypDecrypt
-    result = StoreRestoreShared(in->keyHandle,
-                                  0,
-                                  in->mode,
-                                  &in->ivIn,
-                                  &in->inData,
-                                  (EncryptDecrypt_Out*)out);
-    // Handle response code swizzle.
-    switch(result)
-    {
-        case MSSIM_RCS_MODE + RC_EncryptDecrypt_mode:
-            result = MSSIM_RCS_MODE + RC_VIRT_StoreState_mode;
-            break;
-        case MSSIM_RCS_SIZE + RC_EncryptDecrypt_ivIn:
-            result = MSSIM_RCS_SIZE + RC_VIRT_StoreState_ivIn;
-            break;
-        case MSSIM_RCS_SIZE + RC_EncryptDecrypt_inData:
-            result = MSSIM_RCS_SIZE + RC_VIRT_StoreState_inData;
-            break;
-        default:
-            break;
-    }
-    return result;
-}
+StoreRestoreShared(MSSIMI_DH_OBJECT      keyHandleIn,
+                     MSSIMI_YES_NO         decryptIn,
+                     MSSIMI_ALG_SYM_MODE   modeIn,
+                     MSSIM2B_IV*           ivIn,
+                     MSSIM2B_MAX_BUFFER*   inData,
+                     EncryptDecrypt_Out* out);
+#endif  // CC_VIRT_StoreState || CC_VIRT_RestoreState
 
-#endif  // CC_VIRT_StoreState
+#endif  // _VIRT_STORE_RESTORE_SPT_FP_H_

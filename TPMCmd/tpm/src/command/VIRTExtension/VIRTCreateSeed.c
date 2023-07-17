@@ -281,7 +281,7 @@ MSSIM_RC MSSIM2_VIRT_CreateSeed(VIRTCreateSeed_In* in, VIRTCreateSeed_Out* out)
     // are unique to creation and then validates the attributes and values that are
     // common to create and load.
     result =
-        VIRTCreateChecks(parentObject, publicArea, in->bytesRequested);
+        VIRTObjectCreateChecks(parentObject, publicArea, in->bytesRequested);
     if(result != MSSIM_RC_SUCCESS){
         return RcSafeAddToResult(result, RC_VIRT_CreateSeed_inPublic);}
     // Clean up the authValue if necessary

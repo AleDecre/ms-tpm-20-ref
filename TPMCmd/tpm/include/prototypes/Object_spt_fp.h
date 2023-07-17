@@ -75,7 +75,17 @@ CreateChecks(OBJECT* parentObject, MSSIMT_PUBLIC* publicArea, UINT16 sensitiveDa
 //                              object type
 //      other                   returns from PublicAttributesValidation()
 MSSIM_RC
-VIRTCreateChecks(OBJECT* parentObject, MSSIMT_PUBLIC* publicArea, UINT16 sensitiveDataSize);
+VIRTObjectCreateChecks(OBJECT* parentObject, MSSIMT_PUBLIC* publicArea, UINT16 sensitiveDataSize);
+
+//*** CreateChecks()
+// Attribute checks that are unique to creation.
+//  Return Type: MSSIM_RC
+//      MSSIM_RC_ATTRIBUTES       sensitiveDataOrigin is not consistent with the
+//                              object type
+//      other                   returns from PublicAttributesValidation()
+MSSIM_RC
+VIRTPrimaryCreateChecks(OBJECT* parentObject, MSSIMT_PUBLIC* publicArea, UINT16 sensitiveDataSize);
+
 
 //*** SchemeChecks
 // This function is called by MSSIM2_LoadExternal() and PublicAttributesValidation().

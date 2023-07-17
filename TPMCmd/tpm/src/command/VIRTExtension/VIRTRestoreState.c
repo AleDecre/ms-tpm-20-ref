@@ -36,7 +36,7 @@
 #include "Tpm.h"
 #include "VIRT_RestoreState_fp.h"
 #include "EncryptDecrypt_fp.h"
-#include "EncryptDecrypt_spt_fp.h"
+#include "VIRTStoreRestore_spt_fp.h"
 
 #if CC_VIRT_RestoreState  // Conditional expansion of this file
 
@@ -59,7 +59,7 @@ MSSIM2_VIRT_RestoreState(VIRTRestoreState_In*  in,  // IN: input parameter list
     MSSIM_RC result;
     // EncryptDecyrptShared() performs the operations as shown in
     // MSSIM2_EncrypDecrypt
-    result = EncryptDecryptShared(in->keyHandle,
+    result = StoreRestoreShared(in->keyHandle,
                                   1,
                                   in->mode,
                                   &in->ivIn,
