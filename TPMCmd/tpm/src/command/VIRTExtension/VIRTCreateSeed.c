@@ -35,9 +35,6 @@
 #include "Tpm.h"
 #include "VIRT_CreateSeed_fp.h"
 #include "stdio.h"
-#include "tss2/tss2_tcti_mssim.h"
-#include "tss2/tss2-tcti-tabrmd.h"
-#include "tss2/tss2_esys.h"
 
 #if CC_VIRT_CreateSeed  // Conditional expansion of this file
 

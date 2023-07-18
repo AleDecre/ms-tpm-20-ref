@@ -39,8 +39,9 @@
 
 #ifndef __MSSIM_INIT_FP_H_
 #define __MSSIM_INIT_FP_H_
+#include <stdbool.h>
 
 // This function is used to process a _MSSIM_Init indication.
-LIB_EXPORT void _MSSIM_Init(char* test);
+LIB_EXPORT void _MSSIM_Init(bool binding);
 
 #endif  // __MSSIM_INIT_FP_H_

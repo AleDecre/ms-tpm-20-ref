@@ -292,13 +292,14 @@ int main(int argc, char* argv[])
             exit(3);
         }
     }
+    // Disable NV memory
+    _plat__NVDisable(0);
+
     if(hwbind)
     {
         printf("\nPerforming hardware binding...\n");
-        _MSSIM_Init("Init with pTPM...\n");
+        _MSSIM_Init(1);
     }
-    // Disable NV memory
-    _plat__NVDisable(0);
 
     StartTcpServer(PortNum);
     return EXIT_SUCCESS;
