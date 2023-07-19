@@ -211,9 +211,9 @@ typedef struct {
 } VPSMap;
 
 typedef struct {
-    MSSIMI_RH_HIERARCHY eSWK;
-    MSSIMI_RH_HIERARCHY sSWK;
-    MSSIMI_RH_HIERARCHY pSWK;
+    SWKEntry eSWK;
+    SWKEntry sSWK;
+    SWKEntry pSWK;
 } SWK;
 
 //*** HASH_OBJECT Structure

@@ -152,7 +152,7 @@
 #  define MAX_SESSION_NUM 3
 #endif
 #ifndef MAX_LOADED_OBJECTS
-#  define MAX_LOADED_OBJECTS 3
+#  define MAX_LOADED_OBJECTS 30
 #endif
 #ifndef MAX_CREATED_VPS
 #  define MAX_CREATED_VPS 3

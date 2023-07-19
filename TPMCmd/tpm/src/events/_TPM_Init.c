@@ -211,9 +211,9 @@ LIB_EXPORT void _MSSIM_Init(bool binding)
         TPM2B_DIGEST *creationHash;
         TPMT_TK_CREATION *creationTicket;
 
-        printf("\n\nPrima eSWK--> %d\n", s_SWK.eSWK);
-        printf("Prima sSWK--> %d\n", s_SWK.sSWK);
-        printf("Prima pSWK--> %d\n", s_SWK.pSWK);
+        printf("\n\nPrima eSWK--> %d\n", s_SWK.eSWK.handle);
+        printf("Prima sSWK--> %d\n", s_SWK.sSWK.handle);
+        printf("Prima pSWK--> %d\n", s_SWK.pSWK.handle);
 
         printf("\n-------------Esys_CreatePrimary------------\n");
         rc = Esys_CreatePrimary(
@@ -233,7 +233,7 @@ LIB_EXPORT void _MSSIM_Init(bool binding)
             &creationTicket         // [out] ticket used to validate the creation of the object
         );
 
-        s_SWK.eSWK = swkHandle;
+        s_SWK.eSWK.handle = swkHandle;
 
         rc = Esys_TR_SetAuth(esys_context,ESYS_TR_RH_OWNER,&authValue);
 
@@ -255,7 +255,7 @@ LIB_EXPORT void _MSSIM_Init(bool binding)
             &creationTicket         // [out] ticket used to validate the creation of the object
         );
 
-        s_SWK.sSWK = swkHandle;
+        s_SWK.sSWK.handle = swkHandle;
 
         rc = Esys_TR_SetAuth(esys_context,ESYS_TR_RH_PLATFORM,&authValue);
 
@@ -277,13 +277,114 @@ LIB_EXPORT void _MSSIM_Init(bool binding)
             &creationTicket         // [out] ticket used to validate the creation of the object
         );
 
-        s_SWK.pSWK = swkHandle;
+        s_SWK.pSWK.handle = swkHandle;
 
-        printf("\n\nDopo eSWK--> %d", s_SWK.eSWK);
-        printf("\nDopo sSWK--> %d", s_SWK.sSWK);
-        printf("\nDopo pSWK--> %d\n", s_SWK.pSWK);
 
-    
+
+
+
+        printf("\n\nTransient eSWK--> %d", s_SWK.eSWK.handle);
+        printf("\nTransient sSWK--> %d", s_SWK.sSWK.handle);
+        printf("\nTransient pSWK--> %d\n", s_SWK.pSWK.handle);
+
+
+        // rc = Esys_EvictControl(esys_context, ESYS_TR_RH_OWNER, s_SWK.eSWK.handle,
+        //                   ESYS_TR_PASSWORD, ESYS_TR_NONE, ESYS_TR_NONE,
+        //                   0x81000005, &swkHandle);
+
+        // printf("\n-------------Esys_FlushContext------------\n");
+        // rc = Esys_FlushContext(
+        //     esys_context,
+        //     s_SWK.eSWK.handle
+        // );
+
+        // s_SWK.eSWK.handle = swkHandle;
+
+
+        // rc = Esys_EvictControl(esys_context, ESYS_TR_RH_OWNER, s_SWK.sSWK.handle,
+        //                   ESYS_TR_PASSWORD, ESYS_TR_NONE, ESYS_TR_NONE,
+        //                   0x81000006, &swkHandle);
+
+
+        
+        // printf("\n-------------Esys_FlushContext------------\n");
+        // rc = Esys_FlushContext(
+        //     esys_context,
+        //     s_SWK.sSWK.handle
+        // );
+
+
+        // s_SWK.sSWK.handle = swkHandle;
+
+
+        // rc = Esys_EvictControl(esys_context, ESYS_TR_RH_PLATFORM, s_SWK.pSWK.handle,
+        //                   ESYS_TR_PASSWORD, ESYS_TR_NONE, ESYS_TR_NONE,
+        //                   PLATFORM_PERSISTENT+1, &swkHandle);
+
+        // printf("\n-------------Esys_FlushContext------------\n");
+        // rc = Esys_FlushContext(
+        //     esys_context,
+        //     s_SWK.pSWK.handle
+        // );
+
+        // s_SWK.pSWK.handle = swkHandle;
+
+
+        printf("\n\nDopo eSWK--> %d", s_SWK.eSWK.handle);
+        printf("\nDopo sSWK--> %d", s_SWK.sSWK.handle);
+        printf("\nDopo pSWK--> %d\n", s_SWK.pSWK.handle);
+
+        // // TPMS_CONTEXT *context;
+        // printf("\n-------------Esys_ContextSave------------\n");
+        // rc = Esys_ContextSave(esys_context, s_SWK.eSWK.handle, &s_SWK.eSWK.context);
+
+        // printf("\n-------------Esys_FlushContext------------\n");
+        // rc = Esys_FlushContext(
+        //     esys_context,
+        //     s_SWK.eSWK.handle
+        // );
+        // // s_SWK.eSWK.context = (MSSIMS_CONTEXT *)&context;
+        // // printf("\n\nAAAAAAA--> %ld", s_SWK.eSWK.context->sequence);
+        // // printf("\n\nBBBBBBB--> %ld", context->sequence);
+        // // printf("\n\nAAAAAAA--> %d", s_SWK.eSWK.context->savedHandle);
+        // // printf("\n\nBBBBBBB--> %d", context->savedHandle);
+        // // printf("\n\nAAAAAAA--> %d", s_SWK.eSWK.context->hierarchy);
+        // // printf("\n\nBBBBBBB--> %d", context->hierarchy);
+
+        
+        // printf("\n-------------Esys_ContextSave------------\n");
+        // rc = Esys_ContextSave(esys_context, s_SWK.sSWK.handle, &s_SWK.sSWK.context);
+
+        // printf("\n-------------Esys_FlushContext------------\n");
+        // rc = Esys_FlushContext(
+        //     esys_context,
+        //     s_SWK.sSWK.handle
+        // );
+        // // s_SWK.sSWK.context = (MSSIMS_CONTEXT *)&context;
+        // // printf("\n\nAAAAAAA--> %ld", s_SWK.sSWK.context.sequence);
+        // // printf("\n\nBBBBBBB--> %ld", context->sequence);
+        
+        // printf("\n-------------Esys_ContextSave------------\n");
+        // rc = Esys_ContextSave(esys_context, s_SWK.pSWK.handle, &s_SWK.pSWK.context);
+
+        // printf("\n-------------Esys_FlushContext------------\n");
+        // rc = Esys_FlushContext(
+        //     esys_context,
+        //     s_SWK.pSWK.handle
+        // );
+        // // s_SWK.pSWK.context = (MSSIMS_CONTEXT *)&context;
+        // // printf("\n\nAAAAAAA--> %ld", s_SWK.pSWK.context.sequence);
+        // // printf("\n\nBBBBBBB--> %ld", context->sequence);
+
+
+        // printf("\n\nDopo ancora eSWK--> %d", s_SWK.eSWK.handle);
+        // printf("\nDopo ancora sSWK--> %d", s_SWK.sSWK.handle);
+        // printf("\nDopo ancora pSWK--> %d\n", s_SWK.pSWK.handle);
+
+        // printf("\n\nCONTEXT eSWK--> %ld", s_SWK.eSWK.context->sequence);
+        // printf("\nCONTEXT sSWK--> %ld", s_SWK.sSWK.context->sequence);
+        // printf("\nCONTEXT pSWK--> %ld\n", s_SWK.pSWK.context->sequence);
+        
         Tss2_Tcti_Finalize(tcti_context);
         Esys_Finalize(&esys_context);
         free(tcti_context);

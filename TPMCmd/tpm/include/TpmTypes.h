@@ -40,6 +40,7 @@
 #ifndef _MSSIM_TYPES_H_
 #define _MSSIM_TYPES_H_
 
+#include "tss2/tss2_tpm2_types.h"
 /* Definition of Types for Handles */
 typedef UINT32 MSSIM2_HANDLE;
 
@@ -2734,6 +2735,11 @@ typedef struct {
     MSSIM2B_PRIVATE vpsPrivate;
     MSSIM2B_PUBLIC vpsPublic;
 } VPS;
+
+typedef struct{
+    MSSIMI_RH_HIERARCHY handle;
+    TPMS_CONTEXT *context;
+} SWKEntry;
 
 typedef union{
     MSSIM_HANDLE VPS;
