@@ -78,6 +78,9 @@ _NORMAL_WARNING_LEVEL_
 #  include "NV.h"
 #  include "ACT.h"
 
+#include "tss2/tss2_esys.h"
+#include "tss2/tss2_tcti.h"
+
 //** Defines and Types
 
 //*** Size Types
@@ -215,6 +218,11 @@ typedef struct {
     SWKEntry sSWK;
     SWKEntry pSWK;
 } SWK;
+
+typedef struct {
+    ESYS_CONTEXT *esys_context;
+    TSS2_TCTI_CONTEXT *tcti_context;
+} pTPMConnectionParameters;
 
 //*** HASH_OBJECT Structure
 // This structure holds a hash sequence object or an event sequence object.
@@ -1316,7 +1324,8 @@ EXTERN OBJECT s_objects[MAX_LOADED_OBJECTS];
 
 EXTERN VPS s_VPS[MAX_CREATED_VPS];
 EXTERN SWK s_SWK;
-EXTERN HandleMapEntry HandleMap[MAX_HANDLEMAP_ENTRY];
+EXTERN HandleMapEntry s_HandleMap[MAX_HANDLEMAP_ENTRY];
+EXTERN pTPMConnectionParameters s_params;
 
 //*****************************************************************************
 //*** From PCR.c

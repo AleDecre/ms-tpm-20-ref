@@ -40,8 +40,13 @@
 #ifndef _VIRTUTILITY_SPT_FP_H_
 #define _VIRTUTILITY_SPT_FP_H_
 
-void Init_Tcti_Esys_Context(ESYS_CONTEXT *esys_context, TSS2_TCTI_CONTEXT *tcti_context);
+#include "tss2/tss2_tcti_mssim.h"
+#include "tss2/tss2-tcti-tabrmd.h"
+#include "tss2/tss2_esys.h"
 
-void Finalize_Tcti_Esys_Context(ESYS_CONTEXT *esys_context, TSS2_TCTI_CONTEXT *tcti_context);
+
+void Init_Tcti_Esys_Context();
+
+void Finalize_Tcti_Esys_Context();
 
 #endif  // _VIRTUTILITY_SPT_FP_H_

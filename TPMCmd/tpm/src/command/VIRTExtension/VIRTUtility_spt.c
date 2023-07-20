@@ -36,17 +36,12 @@
 #include "Tpm.h"
 #include "VIRTUtility_spt.h"
 #include "Marshal.h"
-#include "tss2_esys.h"
-#include "tss2/tss2_tcti_mssim.h"
-#include "tss2/tss2-tcti-tabrmd.h"
-#include "tss2/tss2_esys.h"
 
 
-void Init_Tcti_Esys_Context(ESYS_CONTEXT *esys_context, TSS2_TCTI_CONTEXT *tcti_context)
+void Init_Tcti_Esys_Context()
 {
     TSS2_RC rc;
     size_t context_size;
-    tcti_context = (TSS2_TCTI_CONTEXT *) calloc(1,context_size);
 
     //Define allocation for the mssim TCTI
     /* 
@@ -61,18 +56,18 @@ void Init_Tcti_Esys_Context(ESYS_CONTEXT *esys_context, TSS2_TCTI_CONTEXT *tcti_
         exit(EXIT_FAILURE);
     }
     
-    tcti_context = (TSS2_TCTI_CONTEXT *) calloc(1,context_size);
+    s_params.tcti_context = (TSS2_TCTI_CONTEXT *) calloc(1,context_size);
     if(rc != TSS2_RC_SUCCESS)
     {
-        fprintf(stdout, "Allocation for TCTI context failed: %s0 \n", rc);
+        fprintf(stdout, "Allocation for TCTI context failed: %d0 \n", rc);
         exit(EXIT_FAILURE);
     }
 
-    rc = Tss2_Tcti_Mssim_Init(tcti_context,&context_size, "host=localhost,port=2321");
+    rc = Tss2_Tcti_Mssim_Init(s_params.tcti_context,&context_size, "host=localhost,port=2321");
     if(rc != TSS2_RC_SUCCESS)
     {
         fprintf(stdout, "Failed to initialize tabrmd TCTI context: 0x%" PRIx32 "0\n", rc);
-        free(tcti_context);
+        free(s_params.tcti_context);
         exit(EXIT_FAILURE);
     }
 
@@ -88,27 +83,29 @@ void Init_Tcti_Esys_Context(ESYS_CONTEXT *esys_context, TSS2_TCTI_CONTEXT *tcti_
         tcti => pointer to the TCTI context
         abiVersion => pointer to the ABI version that the application requests
     */
-    rc = Esys_Initialize(&esys_context,tcti_context,&abi_version);
+    rc = Esys_Initialize(&s_params.esys_context,s_params.tcti_context,&abi_version);
     if (rc != TSS2_RC_SUCCESS)
     {
         fprintf(stderr,"Failed to initialize the ESYS context: 0x%" PRIx32 "0 \n", rc);
-        free(tcti_context);
+        free(s_params.tcti_context);
         exit(EXIT_FAILURE);
     }
 
     fprintf(stdout,"Initialization of the ESYS context successfull\n");
 
+
 }
 
-void Finalize_Tcti_Esys_Context(ESYS_CONTEXT *esys_context, TSS2_TCTI_CONTEXT *tcti_context)
+void Finalize_Tcti_Esys_Context()
 {
-    Tss2_Tcti_Finalize(tcti_context);
+    Tss2_Tcti_Finalize(s_params.tcti_context);
 
     fprintf(stdout,"\nFinalization of the TCTI context\n");
 
-    Esys_Finalize(&esys_context);
+    Esys_Finalize(&s_params.esys_context);
 
-    free(tcti_context);
+    free(s_params.tcti_context);
+    s_params.tcti_context = NULL;
     
     fprintf(stdout,"Finalization of the Esys context\n\n");
 }

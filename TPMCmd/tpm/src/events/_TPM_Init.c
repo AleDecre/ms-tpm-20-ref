@@ -96,16 +96,14 @@ LIB_EXPORT void _MSSIM_Init(bool binding)
     if(binding){
 
         TSS2_RC rc;
-        ESYS_CONTEXT *esys_context = 0;
-        TSS2_TCTI_CONTEXT *tcti_context = 0;
 
-        Init_Tcti_Esys_Context(esys_context, tcti_context);
+        Init_Tcti_Esys_Context();
 
-        rc = Esys_Startup(esys_context, TPM2_SU_CLEAR);
+        rc = Esys_Startup(s_params.esys_context, TPM2_SU_CLEAR);
         if (rc != TSS2_RC_SUCCESS)
         {
             fprintf(stderr,"Failed to Startup TPM: 0x%" PRIx32 "0 \n", rc);
-            free(tcti_context);
+            free(s_params.tcti_context);
             exit(EXIT_FAILURE);
         }
         ESYS_TR swkHandle = ESYS_TR_NONE;
@@ -180,7 +178,7 @@ LIB_EXPORT void _MSSIM_Init(bool binding)
         TPML_PCR_SELECTION pcrSelection = {.count = 0};
         TPM2B_AUTH authValue = {.size = 0, .buffer = {}};
 
-        rc = Esys_TR_SetAuth(esys_context,ESYS_TR_RH_ENDORSEMENT,&authValue);
+        rc = Esys_TR_SetAuth(s_params.esys_context,ESYS_TR_RH_ENDORSEMENT,&authValue);
 
         TPM2B_PUBLIC *outPublic;
         TPM2B_CREATION_DATA *creationData;
@@ -193,7 +191,7 @@ LIB_EXPORT void _MSSIM_Init(bool binding)
 
         printf("\n-------------Esys_CreatePrimary------------\n");
         rc = Esys_CreatePrimary(
-            esys_context,           // [in] esysContext
+            s_params.esys_context,           // [in] esysContext
             ESYS_TR_RH_ENDORSEMENT,              // [in] primaryHandle : hierarchy
             ESYS_TR_PASSWORD,       // [in] Session handle for authorization of primaryHandle
             ESYS_TR_NONE,           // Session handle 2
@@ -211,11 +209,11 @@ LIB_EXPORT void _MSSIM_Init(bool binding)
 
         s_SWK.eSWK.handle = swkHandle;
 
-        rc = Esys_TR_SetAuth(esys_context,ESYS_TR_RH_OWNER,&authValue);
+        rc = Esys_TR_SetAuth(s_params.esys_context,ESYS_TR_RH_OWNER,&authValue);
 
         printf("\n-------------Esys_CreatePrimary------------\n");
         rc = Esys_CreatePrimary(
-            esys_context,           // [in] esysContext
+            s_params.esys_context,           // [in] esysContext
             ESYS_TR_RH_OWNER,              // [in] primaryHandle : hierarchy
             ESYS_TR_PASSWORD,       // [in] Session handle for authorization of primaryHandle
             ESYS_TR_NONE,           // Session handle 2
@@ -233,11 +231,11 @@ LIB_EXPORT void _MSSIM_Init(bool binding)
 
         s_SWK.sSWK.handle = swkHandle;
 
-        rc = Esys_TR_SetAuth(esys_context,ESYS_TR_RH_PLATFORM,&authValue);
+        rc = Esys_TR_SetAuth(s_params.esys_context,ESYS_TR_RH_PLATFORM,&authValue);
 
         printf("\n-------------Esys_CreatePrimary------------\n");
         rc = Esys_CreatePrimary(
-            esys_context,           // [in] esysContext
+            s_params.esys_context,           // [in] esysContext
             ESYS_TR_RH_PLATFORM,              // [in] primaryHandle : hierarchy
             ESYS_TR_PASSWORD,       // [in] Session handle for authorization of primaryHandle
             ESYS_TR_NONE,           // Session handle 2
@@ -264,7 +262,7 @@ LIB_EXPORT void _MSSIM_Init(bool binding)
         printf("\nTransient pSWK--> %d\n", s_SWK.pSWK.handle);
 
 
-        // rc = Esys_EvictControl(esys_context, ESYS_TR_RH_OWNER, s_SWK.eSWK.handle,
+        // rc = Esys_EvictControl(s_params.esys_context, ESYS_TR_RH_OWNER, s_SWK.eSWK.handle,
         //                   ESYS_TR_PASSWORD, ESYS_TR_NONE, ESYS_TR_NONE,
         //                   0x81000005, &swkHandle);
 
@@ -277,7 +275,7 @@ LIB_EXPORT void _MSSIM_Init(bool binding)
         // s_SWK.eSWK.handle = swkHandle;
 
 
-        // rc = Esys_EvictControl(esys_context, ESYS_TR_RH_OWNER, s_SWK.sSWK.handle,
+        // rc = Esys_EvictControl(s_params.esys_context, ESYS_TR_RH_OWNER, s_SWK.sSWK.handle,
         //                   ESYS_TR_PASSWORD, ESYS_TR_NONE, ESYS_TR_NONE,
         //                   0x81000006, &swkHandle);
 
@@ -293,7 +291,7 @@ LIB_EXPORT void _MSSIM_Init(bool binding)
         // s_SWK.sSWK.handle = swkHandle;
 
 
-        // rc = Esys_EvictControl(esys_context, ESYS_TR_RH_PLATFORM, s_SWK.pSWK.handle,
+        // rc = Esys_EvictControl(s_params.esys_context, ESYS_TR_RH_PLATFORM, s_SWK.pSWK.handle,
         //                   ESYS_TR_PASSWORD, ESYS_TR_NONE, ESYS_TR_NONE,
         //                   PLATFORM_PERSISTENT+1, &swkHandle);
 
@@ -312,7 +310,7 @@ LIB_EXPORT void _MSSIM_Init(bool binding)
 
         // // TPMS_CONTEXT *context;
         // printf("\n-------------Esys_ContextSave------------\n");
-        // rc = Esys_ContextSave(esys_context, s_SWK.eSWK.handle, &s_SWK.eSWK.context);
+        // rc = Esys_ContextSave(s_params.esys_context, s_SWK.eSWK.handle, &s_SWK.eSWK.context);
 
         // printf("\n-------------Esys_FlushContext------------\n");
         // rc = Esys_FlushContext(
@@ -329,7 +327,7 @@ LIB_EXPORT void _MSSIM_Init(bool binding)
 
         
         // printf("\n-------------Esys_ContextSave------------\n");
-        // rc = Esys_ContextSave(esys_context, s_SWK.sSWK.handle, &s_SWK.sSWK.context);
+        // rc = Esys_ContextSave(s_params.esys_context, s_SWK.sSWK.handle, &s_SWK.sSWK.context);
 
         // printf("\n-------------Esys_FlushContext------------\n");
         // rc = Esys_FlushContext(
@@ -341,7 +339,7 @@ LIB_EXPORT void _MSSIM_Init(bool binding)
         // // printf("\n\nBBBBBBB--> %ld", context->sequence);
         
         // printf("\n-------------Esys_ContextSave------------\n");
-        // rc = Esys_ContextSave(esys_context, s_SWK.pSWK.handle, &s_SWK.pSWK.context);
+        // rc = Esys_ContextSave(s_params.esys_context, s_SWK.pSWK.handle, &s_SWK.pSWK.context);
 
         // printf("\n-------------Esys_FlushContext------------\n");
         // rc = Esys_FlushContext(
@@ -361,9 +359,7 @@ LIB_EXPORT void _MSSIM_Init(bool binding)
         // printf("\nCONTEXT sSWK--> %ld", s_SWK.sSWK.context->sequence);
         // printf("\nCONTEXT pSWK--> %ld\n", s_SWK.pSWK.context->sequence);
         
-        Tss2_Tcti_Finalize(tcti_context);
-        Esys_Finalize(&esys_context);
-        free(tcti_context);
+        Finalize_Tcti_Esys_Context();
 
     }
 
