@@ -38,6 +38,7 @@
 #include "tss2/tss2_tcti_mssim.h"
 #include "tss2/tss2-tcti-tabrmd.h"
 #include "tss2/tss2_esys.h"
+#include "VIRTUtility_spt.h"
 
 // This function is used to process a _MSSIM_Init indication.
 LIB_EXPORT void _MSSIM_Init(bool binding)
@@ -95,35 +96,10 @@ LIB_EXPORT void _MSSIM_Init(bool binding)
     if(binding){
 
         TSS2_RC rc;
-        size_t context_size;
-
-        TSS2_ABI_VERSION abi_version = TSS2_ABI_VERSION_CURRENT;
         ESYS_CONTEXT *esys_context = 0;
+        TSS2_TCTI_CONTEXT *tcti_context = 0;
 
-        rc = Tss2_Tcti_Mssim_Init(0, &context_size, NULL);
-        
-        TSS2_TCTI_CONTEXT *tcti_context = (TSS2_TCTI_CONTEXT *) calloc(1,context_size);
-
-        rc = Tss2_Tcti_Mssim_Init(tcti_context,&context_size, NULL);
-
-        if(rc != MSSIM_RC_SUCCESS)
-        {
-            fprintf(stderr,"Failed to initialize the TCTI context: 0x%" PRIx32 "0 \n", rc);
-            free(tcti_context);
-            exit(EXIT_FAILURE);
-        }
-        
-        fprintf(stdout,"Initialization of the TCTI context successfull \n");
-
-        rc = Esys_Initialize(&esys_context,tcti_context,&abi_version);
-        if (rc != TSS2_RC_SUCCESS)
-        {
-            fprintf(stderr,"Failed to initialize the ESYS context: 0x%" PRIx32 "0 \n", rc);
-            free(tcti_context);
-            exit(EXIT_FAILURE);
-        }
-
-        fprintf(stdout,"Initialization of the ESYS context successfull \n");
+        Init_Tcti_Esys_Context(esys_context, tcti_context);
 
         rc = Esys_Startup(esys_context, TPM2_SU_CLEAR);
         if (rc != TSS2_RC_SUCCESS)
