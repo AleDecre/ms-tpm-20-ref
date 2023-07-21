@@ -1389,6 +1389,8 @@ typedef MSSIM_HANDLE MSSIMI_RH_AC;  // Table 2:64  /* Interface */
 
 typedef MSSIM_HANDLE MSSIMI_RH_ACT;  // Table 2:65  /* Interface */
 
+typedef MSSIM_HANDLE VSPK_STRUCTURE;  // VIRT Extension
+
 typedef MSSIM_ALG_ID MSSIMI_ALG_HASH;  // Table 2:66  /* Interface */
 
 typedef MSSIM_ALG_ID MSSIMI_ALG_ASYM;  // Table 2:67  /* Interface */
@@ -2732,9 +2734,9 @@ typedef struct
 } MSSIML_AC_CAPABILITIES; /* Structure */
 
 typedef struct {
-    MSSIM2B_PRIVATE vpsPrivate;
-    MSSIM2B_PUBLIC vpsPublic;
-} VPS;
+    TPM2B_PRIVATE vpsPrivate;
+    TPM2B_PUBLIC vpsPublic;
+} VPSEntry;
 
 typedef struct{
     MSSIMI_RH_HIERARCHY handle;
@@ -2742,13 +2744,16 @@ typedef struct{
 } SWKEntry;
 
 typedef union{
-    MSSIM_HANDLE VPS;
-    MSSIM_HANDLE Object;
-} pHandleData;
+    MSSIM_HANDLE vObjectHandle;
+    MSSIM_HANDLE pObjectHandle;
+} CREATED_OBJECT;
 
 typedef struct {
-    MSSIM2_HANDLE vHandle;
-    pHandleData pHandle;
-} HandleMapEntry;
+    MSSIMI_RH_HIERARCHY vEPSHandle;
+    MSSIMI_RH_HIERARCHY vPPSHandle;
+    MSSIMI_RH_HIERARCHY vSPSHandle;
+    VSPK_STRUCTURE pVSPKHandle;
+    CREATED_OBJECT objectHandle[MAX_LOADED_OBJECTS];
+} HandleMap;
 
 #endif  // _MSSIM_TYPES_H_

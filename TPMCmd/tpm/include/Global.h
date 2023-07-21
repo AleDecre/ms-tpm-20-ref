@@ -208,9 +208,9 @@ typedef struct OBJECT
 } OBJECT;
 
 typedef struct {
-    VPS vEPS;
-    VPS vPPS;
-    VPS vSPS;
+    VPSEntry vEPS;
+    VPSEntry vPPS;
+    VPSEntry vSPS;
 } VPSMap;
 
 typedef struct {
@@ -1322,9 +1322,9 @@ EXTERN OBJECT s_objects[MAX_LOADED_OBJECTS];
 
 #  endif  // OBJECT_C
 
-EXTERN VPS s_VPS[MAX_CREATED_VPS];
+EXTERN VPSMap s_VPS;
 EXTERN SWK s_SWK;
-EXTERN HandleMapEntry s_HandleMap[MAX_HANDLEMAP_ENTRY];
+EXTERN HandleMap s_HandleMap;
 EXTERN pTPMConnectionParameters s_params;
 
 //*****************************************************************************

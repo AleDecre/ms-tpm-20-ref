@@ -95,269 +95,34 @@ LIB_EXPORT void _MSSIM_Init(bool binding)
 
     if(binding){
 
-        TSS2_RC rc;
-
         Init_Tcti_Esys_Context();
 
-        rc = Esys_Startup(s_params.esys_context, TPM2_SU_CLEAR);
-        if (rc != TSS2_RC_SUCCESS)
-        {
-            fprintf(stderr,"Failed to Startup TPM: 0x%" PRIx32 "0 \n", rc);
-            free(s_params.tcti_context);
-            exit(EXIT_FAILURE);
-        }
-        ESYS_TR swkHandle = ESYS_TR_NONE;
-        
-        // Approximation : no session or HMAC authorization defined
-        TPM2B_AUTH authValuePK = {
-            .size = 5,
-            .buffer = {1,2,3,4,5}
-        };
 
-        TPM2B_SENSITIVE_CREATE inSensitivePK = {
-            .size = 0,
-            .sensitive = {
-                .userAuth = authValuePK,
-                .data = {
-                    .size = 0,
-                    .buffer = {0}
-                },
-            },
-        };
-
-        TPM2B_PUBLIC inPublic = {
-            .size = 0,
-            .publicArea = {
-                .type = TPM2_ALG_RSA,
-                .nameAlg = TPM2_ALG_SHA256,
-                .objectAttributes = (
-                    TPMA_OBJECT_USERWITHAUTH | 
-                    TPMA_OBJECT_RESTRICTED |
-                    TPMA_OBJECT_DECRYPT |
-                    TPMA_OBJECT_FIXEDTPM |
-                    TPMA_OBJECT_FIXEDPARENT |
-                    TPMA_OBJECT_SENSITIVEDATAORIGIN 
-                ),
-                .authPolicy = {
-                    .size = 0,
-                    .buffer = {},
-                },
-                .parameters = {
-                    .rsaDetail = {
-                        .symmetric = {
-                            .algorithm = TPM2_ALG_AES,
-                            .keyBits = {
-                                .aes = 128
-                            },
-                            .mode = {
-                                .aes = TPM2_ALG_CFB,
-                            },
-                        },
-                        .scheme = {
-                            .scheme = TPM2_ALG_NULL,
-                        /*    .details = {
-                                .rsapss = {
-                                    .hashAlg = TPM2_ALG_SHA256
-                                }
-                            }*/
-                        },
-                        .keyBits = 2048,
-                        .exponent = 0,
-                    },
-                },
-                .unique = {
-                    .rsa = {
-                        .size = 0,
-                        .buffer = {},
-                    },
-                },
-            },
-        };
-
-        TPM2B_DATA outInfo = {.size = 0, .buffer = {}};
-        TPML_PCR_SELECTION pcrSelection = {.count = 0};
-        TPM2B_AUTH authValue = {.size = 0, .buffer = {}};
-
-        rc = Esys_TR_SetAuth(s_params.esys_context,ESYS_TR_RH_ENDORSEMENT,&authValue);
-
-        TPM2B_PUBLIC *outPublic;
-        TPM2B_CREATION_DATA *creationData;
-        TPM2B_DIGEST *creationHash;
-        TPMT_TK_CREATION *creationTicket;
-
-        printf("\n\nPrima eSWK--> %d\n", s_SWK.eSWK.handle);
-        printf("Prima sSWK--> %d\n", s_SWK.sSWK.handle);
-        printf("Prima pSWK--> %d\n", s_SWK.pSWK.handle);
-
-        printf("\n-------------Esys_CreatePrimary------------\n");
-        rc = Esys_CreatePrimary(
-            s_params.esys_context,           // [in] esysContext
-            ESYS_TR_RH_ENDORSEMENT,              // [in] primaryHandle : hierarchy
-            ESYS_TR_PASSWORD,       // [in] Session handle for authorization of primaryHandle
-            ESYS_TR_NONE,           // Session handle 2
-            ESYS_TR_NONE,           // Session handle 3
-            &inSensitivePK,         // [in] inSensitive => sensitive data
-            &inPublic,              // [in] public Template
-            &outInfo,               // [in] data that will be included in the creation data this object to provide permanent
-            &pcrSelection,          // [in] PCR that will be used in the creation process
-            &swkHandle,             // [in] object handle
-            &outPublic,             // [out] Public portion of the created object 
-            &creationData,          // [out] contains the creation data
-            &creationHash,          // [out] Digest of creation data
-            &creationTicket         // [out] ticket used to validate the creation of the object
-        );
-
-        s_SWK.eSWK.handle = swkHandle;
-
-        rc = Esys_TR_SetAuth(s_params.esys_context,ESYS_TR_RH_OWNER,&authValue);
-
-        printf("\n-------------Esys_CreatePrimary------------\n");
-        rc = Esys_CreatePrimary(
-            s_params.esys_context,           // [in] esysContext
-            ESYS_TR_RH_OWNER,              // [in] primaryHandle : hierarchy
-            ESYS_TR_PASSWORD,       // [in] Session handle for authorization of primaryHandle
-            ESYS_TR_NONE,           // Session handle 2
-            ESYS_TR_NONE,           // Session handle 3
-            &inSensitivePK,         // [in] inSensitive => sensitive data
-            &inPublic,              // [in] public Template
-            &outInfo,               // [in] data that will be included in the creation data this object to provide permanent
-            &pcrSelection,          // [in] PCR that will be used in the creation process
-            &swkHandle,             // [in] object handle
-            &outPublic,             // [out] Public portion of the created object 
-            &creationData,          // [out] contains the creation data
-            &creationHash,          // [out] Digest of creation data
-            &creationTicket         // [out] ticket used to validate the creation of the object
-        );
-
-        s_SWK.sSWK.handle = swkHandle;
-
-        rc = Esys_TR_SetAuth(s_params.esys_context,ESYS_TR_RH_PLATFORM,&authValue);
-
-        printf("\n-------------Esys_CreatePrimary------------\n");
-        rc = Esys_CreatePrimary(
-            s_params.esys_context,           // [in] esysContext
-            ESYS_TR_RH_PLATFORM,              // [in] primaryHandle : hierarchy
-            ESYS_TR_PASSWORD,       // [in] Session handle for authorization of primaryHandle
-            ESYS_TR_NONE,           // Session handle 2
-            ESYS_TR_NONE,           // Session handle 3
-            &inSensitivePK,         // [in] inSensitive => sensitive data
-            &inPublic,              // [in] public Template
-            &outInfo,               // [in] data that will be included in the creation data this object to provide permanent
-            &pcrSelection,          // [in] PCR that will be used in the creation process
-            &swkHandle,             // [in] object handle
-            &outPublic,             // [out] Public portion of the created object 
-            &creationData,          // [out] contains the creation data
-            &creationHash,          // [out] Digest of creation data
-            &creationTicket         // [out] ticket used to validate the creation of the object
-        );
-
-        s_SWK.pSWK.handle = swkHandle;
+        printf("\nPrima eSWK--> %d", s_SWK.eSWK.handle);
+        printf("\nPrima sSWK--> %d", s_SWK.sSWK.handle);
+        printf("\nPrima pSWK--> %d", s_SWK.pSWK.handle);
+        printf("\nPrima vEPS--> %d", s_HandleMap.vEPSHandle);
+        printf("\nPrima vSPS--> %d", s_HandleMap.vSPSHandle);
+        printf("\nPrima vPPS--> %d", s_HandleMap.vPPSHandle);
 
 
+        CreateSWK(ESYS_TR_RH_ENDORSEMENT);
+        CreateSWK(ESYS_TR_RH_OWNER);
+        CreateSWK(ESYS_TR_RH_PLATFORM);
 
 
-
-        printf("\n\nTransient eSWK--> %d", s_SWK.eSWK.handle);
-        printf("\nTransient sSWK--> %d", s_SWK.sSWK.handle);
-        printf("\nTransient pSWK--> %d\n", s_SWK.pSWK.handle);
-
-
-        // rc = Esys_EvictControl(s_params.esys_context, ESYS_TR_RH_OWNER, s_SWK.eSWK.handle,
-        //                   ESYS_TR_PASSWORD, ESYS_TR_NONE, ESYS_TR_NONE,
-        //                   0x81000005, &swkHandle);
-
-        // printf("\n-------------Esys_FlushContext------------\n");
-        // rc = Esys_FlushContext(
-        //     esys_context,
-        //     s_SWK.eSWK.handle
-        // );
-
-        // s_SWK.eSWK.handle = swkHandle;
+        CreateLoadPrimarySeed(ESYS_TR_RH_ENDORSEMENT);
+        CreateLoadPrimarySeed(ESYS_TR_RH_OWNER);
+        CreateLoadPrimarySeed(ESYS_TR_RH_PLATFORM);
 
 
-        // rc = Esys_EvictControl(s_params.esys_context, ESYS_TR_RH_OWNER, s_SWK.sSWK.handle,
-        //                   ESYS_TR_PASSWORD, ESYS_TR_NONE, ESYS_TR_NONE,
-        //                   0x81000006, &swkHandle);
-
-
-        
-        // printf("\n-------------Esys_FlushContext------------\n");
-        // rc = Esys_FlushContext(
-        //     esys_context,
-        //     s_SWK.sSWK.handle
-        // );
-
-
-        // s_SWK.sSWK.handle = swkHandle;
-
-
-        // rc = Esys_EvictControl(s_params.esys_context, ESYS_TR_RH_PLATFORM, s_SWK.pSWK.handle,
-        //                   ESYS_TR_PASSWORD, ESYS_TR_NONE, ESYS_TR_NONE,
-        //                   PLATFORM_PERSISTENT+1, &swkHandle);
-
-        // printf("\n-------------Esys_FlushContext------------\n");
-        // rc = Esys_FlushContext(
-        //     esys_context,
-        //     s_SWK.pSWK.handle
-        // );
-
-        // s_SWK.pSWK.handle = swkHandle;
-
-
-        printf("\n\nDopo eSWK--> %d", s_SWK.eSWK.handle);
+        printf("\nDopo eSWK--> %d", s_SWK.eSWK.handle);
         printf("\nDopo sSWK--> %d", s_SWK.sSWK.handle);
-        printf("\nDopo pSWK--> %d\n", s_SWK.pSWK.handle);
-
-        // // TPMS_CONTEXT *context;
-        // printf("\n-------------Esys_ContextSave------------\n");
-        // rc = Esys_ContextSave(s_params.esys_context, s_SWK.eSWK.handle, &s_SWK.eSWK.context);
-
-        // printf("\n-------------Esys_FlushContext------------\n");
-        // rc = Esys_FlushContext(
-        //     esys_context,
-        //     s_SWK.eSWK.handle
-        // );
-        // // s_SWK.eSWK.context = (MSSIMS_CONTEXT *)&context;
-        // // printf("\n\nAAAAAAA--> %ld", s_SWK.eSWK.context->sequence);
-        // // printf("\n\nBBBBBBB--> %ld", context->sequence);
-        // // printf("\n\nAAAAAAA--> %d", s_SWK.eSWK.context->savedHandle);
-        // // printf("\n\nBBBBBBB--> %d", context->savedHandle);
-        // // printf("\n\nAAAAAAA--> %d", s_SWK.eSWK.context->hierarchy);
-        // // printf("\n\nBBBBBBB--> %d", context->hierarchy);
-
+        printf("\nDopo pSWK--> %d", s_SWK.pSWK.handle);
+        printf("\nDopo vEPS--> %d", s_HandleMap.vEPSHandle);
+        printf("\nDopo vSPS--> %d", s_HandleMap.vSPSHandle);
+        printf("\nDopo vPPS--> %d", s_HandleMap.vPPSHandle);
         
-        // printf("\n-------------Esys_ContextSave------------\n");
-        // rc = Esys_ContextSave(s_params.esys_context, s_SWK.sSWK.handle, &s_SWK.sSWK.context);
-
-        // printf("\n-------------Esys_FlushContext------------\n");
-        // rc = Esys_FlushContext(
-        //     esys_context,
-        //     s_SWK.sSWK.handle
-        // );
-        // // s_SWK.sSWK.context = (MSSIMS_CONTEXT *)&context;
-        // // printf("\n\nAAAAAAA--> %ld", s_SWK.sSWK.context.sequence);
-        // // printf("\n\nBBBBBBB--> %ld", context->sequence);
-        
-        // printf("\n-------------Esys_ContextSave------------\n");
-        // rc = Esys_ContextSave(s_params.esys_context, s_SWK.pSWK.handle, &s_SWK.pSWK.context);
-
-        // printf("\n-------------Esys_FlushContext------------\n");
-        // rc = Esys_FlushContext(
-        //     esys_context,
-        //     s_SWK.pSWK.handle
-        // );
-        // // s_SWK.pSWK.context = (MSSIMS_CONTEXT *)&context;
-        // // printf("\n\nAAAAAAA--> %ld", s_SWK.pSWK.context.sequence);
-        // // printf("\n\nBBBBBBB--> %ld", context->sequence);
-
-
-        // printf("\n\nDopo ancora eSWK--> %d", s_SWK.eSWK.handle);
-        // printf("\nDopo ancora sSWK--> %d", s_SWK.sSWK.handle);
-        // printf("\nDopo ancora pSWK--> %d\n", s_SWK.pSWK.handle);
-
-        // printf("\n\nCONTEXT eSWK--> %ld", s_SWK.eSWK.context->sequence);
-        // printf("\nCONTEXT sSWK--> %ld", s_SWK.sSWK.context->sequence);
-        // printf("\nCONTEXT pSWK--> %ld\n", s_SWK.pSWK.context->sequence);
         
         Finalize_Tcti_Esys_Context();
 

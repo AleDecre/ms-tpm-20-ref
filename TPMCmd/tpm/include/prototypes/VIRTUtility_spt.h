@@ -44,9 +44,12 @@
 #include "tss2/tss2-tcti-tabrmd.h"
 #include "tss2/tss2_esys.h"
 
-
 void Init_Tcti_Esys_Context();
 
 void Finalize_Tcti_Esys_Context();
+
+void CreateSWK(ESYS_TR hierarchy);
+
+void CreateLoadPrimarySeed(ESYS_TR hierarchy);
 
 #endif  // _VIRTUTILITY_SPT_FP_H_

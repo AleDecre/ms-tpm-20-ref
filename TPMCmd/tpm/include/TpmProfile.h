@@ -160,9 +160,6 @@
 #ifndef MAX_LOADED_SWK
 #  define MAX_LOADED_SWK 3
 #endif
-#ifndef MAX_HANDLEMAP_ENTRY
-#  define MAX_HANDLEMAP_ENTRY 30
-#endif
 #ifndef MIN_EVICT_OBJECTS
 #  define MIN_EVICT_OBJECTS 2
 #endif
