@@ -98,21 +98,21 @@ LIB_EXPORT void _MSSIM_Init(bool binding)
         Init_Tcti_Esys_Context();
 
 
-        printf("\nPrima eSWK--> %d", s_SWK.eSWK.handle);
-        printf("\nPrima sSWK--> %d", s_SWK.sSWK.handle);
+        // printf("\nPrima eSWK--> %d", s_SWK.eSWK.handle);
+        // printf("\nPrima sSWK--> %d", s_SWK.sSWK.handle);
         printf("\nPrima pSWK--> %d", s_SWK.pSWK.handle);
-        printf("\nPrima vEPS--> %d", s_HandleMap.vEPSHandle);
-        printf("\nPrima vSPS--> %d", s_HandleMap.vSPSHandle);
+        // printf("\nPrima vEPS--> %d", s_HandleMap.vEPSHandle);
+        // printf("\nPrima vSPS--> %d", s_HandleMap.vSPSHandle);
         printf("\nPrima vPPS--> %d", s_HandleMap.vPPSHandle);
 
 
-        CreateSWK(ESYS_TR_RH_ENDORSEMENT);
-        CreateSWK(ESYS_TR_RH_OWNER);
+        // CreateSWK(ESYS_TR_RH_ENDORSEMENT);
+        // CreateSWK(ESYS_TR_RH_OWNER);
         CreateSWK(ESYS_TR_RH_PLATFORM);
 
 
-        CreateLoadPrimarySeed(ESYS_TR_RH_ENDORSEMENT);
-        CreateLoadPrimarySeed(ESYS_TR_RH_OWNER);
+        // CreateLoadPrimarySeed(ESYS_TR_RH_ENDORSEMENT);
+        // CreateLoadPrimarySeed(ESYS_TR_RH_OWNER);
         CreateLoadPrimarySeed(ESYS_TR_RH_PLATFORM);
 
 

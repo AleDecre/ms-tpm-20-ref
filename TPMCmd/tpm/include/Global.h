@@ -1277,7 +1277,7 @@ EXTERN UINT64 s_lockoutTimer;
 //*****************************************************************************
 //*** From NV.c
 //*****************************************************************************
-#  if defined NV_C || defined GLOBAL_C
+#  if defined NV_C || defined GLOBAL_C || defined TESTMIO
 // This marks the end of the NV area. This is a run-time variable as it might
 // not be compile-time constant.
 EXTERN NV_REF s_evictNvEnd;

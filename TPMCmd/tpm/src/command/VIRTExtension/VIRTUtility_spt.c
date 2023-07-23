@@ -33,6 +33,7 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 //** Includes
+#define TESTMIO
 #include "Tpm.h"
 #include "VIRTUtility_spt.h"
 #include "Marshal.h"
@@ -687,95 +688,119 @@ void StoreRestoreState(){
 
     TPMI_ALG_CIPHER_MODE mode = TPM2_ALG_NULL;
 
-    UINT32 maxCmdSize = 1024;
+    UINT32 maxCmdSize = 102400;
     BYTE cmdBuffer[maxCmdSize];
     size_t nextData = 0;
 
-    rc = Tss2_MU_UINT32_Marshal(s_SWK.eSWK.handle, cmdBuffer,
-                                maxCmdSize,
-                                &nextData);
-    if (rc)
-        exit(EXIT_FAILURE);
-    
-    rc = Tss2_MU_UINT32_Marshal(s_SWK.sSWK.handle, cmdBuffer,
-                                maxCmdSize,
-                                &nextData);
-    if (rc)
-        exit(EXIT_FAILURE);
+    // rc = Tss2_MU_TPM2B_PRIVATE_Marshal(&s_VPS.vEPS.vpsPrivate, cmdBuffer,
+    //                             maxCmdSize,
+    //                             &nextData);
+    // if (rc)
+    //     exit(EXIT_FAILURE);
 
-    rc = Tss2_MU_UINT32_Marshal(s_SWK.pSWK.handle, cmdBuffer,
-                                maxCmdSize,
-                                &nextData);
-    if (rc)
-        exit(EXIT_FAILURE);
-
-    rc = Tss2_MU_UINT32_Marshal(s_HandleMap.vEPSHandle, cmdBuffer,
-                                maxCmdSize,
-                                &nextData);
-    if (rc)
-        exit(EXIT_FAILURE);
-    
-    rc = Tss2_MU_UINT32_Marshal(s_HandleMap.vSPSHandle, cmdBuffer,
-                                maxCmdSize,
-                                &nextData);
-    if (rc)
-        exit(EXIT_FAILURE);
-
-    rc = Tss2_MU_UINT32_Marshal(s_HandleMap.vPPSHandle, cmdBuffer,
-                                maxCmdSize,
-                                &nextData);
-    if (rc)
-        exit(EXIT_FAILURE);
-
-
-    rc = Tss2_MU_TPM2B_PRIVATE_Marshal(&s_VPS.vEPS.vpsPrivate, cmdBuffer,
-                                maxCmdSize,
-                                &nextData);
-    if (rc)
-        exit(EXIT_FAILURE);
-
-    rc = Tss2_MU_TPM2B_PUBLIC_Marshal(&s_VPS.vEPS.vpsPublic, cmdBuffer,
-                                maxCmdSize,
-                                &nextData);
-    if (rc)
-        exit(EXIT_FAILURE);
+    // rc = Tss2_MU_TPM2B_PUBLIC_Marshal(&s_VPS.vEPS.vpsPublic, cmdBuffer,
+    //                             maxCmdSize,
+    //                             &nextData);
+    // if (rc)
+    //     exit(EXIT_FAILURE);
 
     
-    rc = Tss2_MU_TPM2B_PRIVATE_Marshal(&s_VPS.vSPS.vpsPrivate, cmdBuffer,
-                                maxCmdSize,
-                                &nextData);
-    if (rc)
-        exit(EXIT_FAILURE);
+    // rc = Tss2_MU_TPM2B_PRIVATE_Marshal(&s_VPS.vSPS.vpsPrivate, cmdBuffer,
+    //                             maxCmdSize,
+    //                             &nextData);
+    // if (rc)
+    //     exit(EXIT_FAILURE);
 
-    rc = Tss2_MU_TPM2B_PUBLIC_Marshal(&s_VPS.vSPS.vpsPublic, cmdBuffer,
-                                maxCmdSize,
-                                &nextData);
-    if (rc)
-        exit(EXIT_FAILURE);
+    // rc = Tss2_MU_TPM2B_PUBLIC_Marshal(&s_VPS.vSPS.vpsPublic, cmdBuffer,
+    //                             maxCmdSize,
+    //                             &nextData);
+    // if (rc)
+    //     exit(EXIT_FAILURE);
 
 
-    rc = Tss2_MU_TPM2B_PRIVATE_Marshal(&s_VPS.vPPS.vpsPrivate, cmdBuffer,
-                                maxCmdSize,
-                                &nextData);
-    if (rc)
-        exit(EXIT_FAILURE);
+    // rc = Tss2_MU_TPM2B_PRIVATE_Marshal(&s_VPS.vPPS.vpsPrivate, cmdBuffer,
+    //                             maxCmdSize,
+    //                             &nextData);
+    // if (rc)
+    //     exit(EXIT_FAILURE);
 
-    rc = Tss2_MU_TPM2B_PUBLIC_Marshal(&s_VPS.vPPS.vpsPublic, cmdBuffer,
-                                maxCmdSize,
-                                &nextData);
-    if (rc)
-        exit(EXIT_FAILURE);
+    // rc = Tss2_MU_TPM2B_PUBLIC_Marshal(&s_VPS.vPPS.vpsPublic, cmdBuffer,
+    //                             maxCmdSize,
+    //                             &nextData);
+    // if (rc)
+    //     exit(EXIT_FAILURE);
+
+    // rc = Tss2_MU_UINT32_Marshal(s_SWK.eSWK.handle, cmdBuffer,
+    //                             maxCmdSize,
+    //                             &nextData);
+    // if (rc)
+    //     exit(EXIT_FAILURE);
+    
+    // rc = Tss2_MU_UINT32_Marshal(s_SWK.sSWK.handle, cmdBuffer,
+    //                             maxCmdSize,
+    //                             &nextData);
+    // if (rc)
+    //     exit(EXIT_FAILURE);
+
+    // rc = Tss2_MU_UINT32_Marshal(s_SWK.pSWK.handle, cmdBuffer,
+    //                             maxCmdSize,
+    //                             &nextData);
+    // if (rc)
+    //     exit(EXIT_FAILURE);
+
+    // rc = Tss2_MU_UINT32_Marshal(s_HandleMap.vEPSHandle, cmdBuffer,
+    //                             maxCmdSize,
+    //                             &nextData);
+    // if (rc)
+    //     exit(EXIT_FAILURE);
+    
+    // rc = Tss2_MU_UINT32_Marshal(s_HandleMap.vSPSHandle, cmdBuffer,
+    //                             maxCmdSize,
+    //                             &nextData);
+    // if (rc)
+    //     exit(EXIT_FAILURE);
+
+    // rc = Tss2_MU_UINT32_Marshal(s_HandleMap.vPPSHandle, cmdBuffer,
+    //                             maxCmdSize,
+    //                             &nextData);
+    // if (rc)
+    //     exit(EXIT_FAILURE);
+
+    // rc = Tss2_MU_UINT32_Marshal(sizeof(PERSISTENT_DATA), cmdBuffer,
+    //                             maxCmdSize,
+    //                             &nextData);
+    // if (rc)
+    //     exit(EXIT_FAILURE);
+
+    // NvRead(cmdBuffer+nextData, NV_PERSISTENT_DATA, sizeof(PERSISTENT_DATA));
+    // nextData += sizeof(PERSISTENT_DATA);
+    // printf("\n\n TEST %ld \n\n", nextData);
+    NvRead(cmdBuffer+nextData, NV_USER_DYNAMIC, NV_USER_DYNAMIC_END - NV_USER_DYNAMIC - 1);
+    nextData += NV_USER_DYNAMIC_END - NV_USER_DYNAMIC - 1;
+    printf("\n\n TEST %ld \n\n", nextData);
+
+
+
+
+
+    printf("\n\n\n\n\n\n-------------------------------------------------------------\n\n\n\n\n\n\n\n\n");
+
+    for (size_t i = 0; i < nextData; i++)
+    {
+        printf("%d ", cmdBuffer[i]);
+    }
+    printf("\n\n\n\n\n\n-------------------------------------------------------------\n\n\n\n\n\n\n\n\n");
 
     TPM2B_IV ivIn = {
         .size = 16,
         .buffer = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16}
     };
     TPM2B_MAX_BUFFER inData = {
-        .size = (UINT16)nextData,
+        .size = (UINT16)1024,
         .buffer = {}
     };
 
-    memcpy(inData.buffer, cmdBuffer, nextData);
+    memcpy(inData.buffer, cmdBuffer, 1024);
 
 
     printf("\nMarshalled data in cmdBuffer copied in inData %ld:\n", nextData);
