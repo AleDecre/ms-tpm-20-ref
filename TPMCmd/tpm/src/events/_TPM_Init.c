@@ -123,6 +123,10 @@ LIB_EXPORT void _MSSIM_Init(bool binding)
         printf("\nDopo vSPS--> %d", s_HandleMap.vSPSHandle);
         printf("\nDopo vPPS--> %d", s_HandleMap.vPPSHandle);
         
+
+        CreateVSPK();
+        StoreRestoreState();
+        
         
         Finalize_Tcti_Esys_Context();
 

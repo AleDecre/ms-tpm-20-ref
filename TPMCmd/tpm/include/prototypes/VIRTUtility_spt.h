@@ -43,6 +43,7 @@
 #include "tss2/tss2_tcti_mssim.h"
 #include "tss2/tss2-tcti-tabrmd.h"
 #include "tss2/tss2_esys.h"
+#include "tss2/tss2_mu.h"
 
 void Init_Tcti_Esys_Context();
 
@@ -51,5 +52,9 @@ void Finalize_Tcti_Esys_Context();
 void CreateSWK(ESYS_TR hierarchy);
 
 void CreateLoadPrimarySeed(ESYS_TR hierarchy);
+
+void CreateVSPK();
+
+void StoreRestoreState();
 
 #endif  // _VIRTUTILITY_SPT_FP_H_

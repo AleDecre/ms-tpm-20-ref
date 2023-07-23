@@ -563,7 +563,295 @@ void CreateLoadPrimarySeed(ESYS_TR hierarchy)
 
 }
 
+void CreateVSPK()
+{
+
+    TSS2_RC rc;
+
+    ESYS_TR vspkHandle = ESYS_TR_NONE;
+    
+    TPM2B_AUTH authValuevPPS = {
+        .size = 5,
+        .buffer = {1,2,3,4,5}
+    };
+
+    TPM2B_SENSITIVE_CREATE inSensitivevPPS = {
+        .size = 0,
+        .sensitive = {
+            .userAuth = authValuevPPS,
+            .data = {
+                .size = 0,
+                .buffer = {0}
+            },
+        },
+    };
+
+    TPM2B_PUBLIC inPublicvPPS = {
+        .size = 0,
+        .publicArea = {
+            .type = TPM2_ALG_SYMCIPHER,
+            .nameAlg = TPM2_ALG_SHA256,
+            .objectAttributes = (
+                TPMA_OBJECT_USERWITHAUTH | 
+                TPMA_OBJECT_RESTRICTED |
+                TPMA_OBJECT_SIGN_ENCRYPT |
+                TPMA_OBJECT_DECRYPT |
+                TPMA_OBJECT_FIXEDTPM |
+                TPMA_OBJECT_FIXEDPARENT |
+                TPMA_OBJECT_SENSITIVEDATAORIGIN
+            ),
+            .authPolicy = {
+                .size = 0,
+                .buffer = {},
+            },
+            .parameters = {
+                .symDetail = {
+                    .sym = {
+                        .algorithm = TPM2_ALG_AES,
+                        .keyBits = {
+                            .aes = 128
+                        },
+                        .mode = {
+                            .aes = TPM2_ALG_CFB,
+                        },
+                    },
+                },
+            },
+            .unique = {
+                .sym = {
+                    .size = 0,
+                    .buffer = {},
+                },
+            },
+        },
+    };
+
+    TPM2B_DATA outInfoVSPK = {.size = 0, .buffer = {}};
+    TPML_PCR_SELECTION pcrSelectionVSPK = {.count = 0};
+
+    TPM2B_PUBLIC *outPublicVSPK;
+    TPM2B_CREATION_DATA *creationDataVSPK;
+    TPM2B_DIGEST *creationHashVSPK;
+    TPMT_TK_CREATION *creationTicketVSPK;
+
+    printf("\n-------------Esys_VIRT_CreatePrimary------------\n");
+    rc = Esys_VIRT_CreatePrimary(
+        s_params.esys_context,          // [in] esysContext
+        s_HandleMap.vPPSHandle,         // [in] primaryHandle : hierarchy
+        ESYS_TR_PASSWORD,               // [in] Session handle for authorization of primaryHandle
+        ESYS_TR_NONE,                   // Session handle 2
+        ESYS_TR_NONE,                   // Session handle 3
+        &inSensitivevPPS,               // [in] inSensitive => sensitive data
+        &inPublicvPPS,                  // [in] public Template
+        &outInfoVSPK,                   // [in] data that will be included in the creation data this object to provide permanent
+        &pcrSelectionVSPK,              // [in] PCR that will be used in the creation process
+        &vspkHandle,                    // [in] object handle
+        &outPublicVSPK,                 // [out] Public portion of the created object 
+        &creationDataVSPK,              // [out] contains the creation data
+        &creationHashVSPK,              // [out] Digest of creation data
+        &creationTicketVSPK             // [out] ticket used to validate the creation of the object
+    );
+
+    if(rc != TSS2_RC_SUCCESS)
+    {
+        fprintf(stdout,"Error during the creation of the VSPK\n");
+        exit(EXIT_FAILURE);
+    } else
+    {
+        fprintf(stdout,"Creation of the VPSK successfull\n");
+    }
+        
+    s_HandleMap.pVSPKHandle = vspkHandle;
+
+}
+
+void StoreRestoreState(){
+    TSS2_RC rc;
+
+// STORE STATE PARAMETERS
+    // TPM2B_PUBLIC *outPublic = NULL;
+    // TPM2B_CREATION_DATA *creationData = NULL;
+    // TPM2B_DIGEST *creationHash = NULL;
+    // TPMT_TK_CREATION *creationTicket = NULL;
+    TPM2B_MAX_BUFFER *outData = NULL;
+    TPM2B_IV *ivOut = NULL;
+
+// RESTORE STATE PARAMETERS
+    // TPM2B_PUBLIC *outPublic2 = NULL;
+    // TPM2B_PRIVATE *outPrivate2 = NULL;
+    // TPM2B_CREATION_DATA *creationData2 = NULL;
+    // TPM2B_DIGEST *creationHash2 = NULL;
+    // TPMT_TK_CREATION *creationTicket2 = NULL;
+    TPM2B_MAX_BUFFER *outData2 = NULL;
+    TPM2B_IV *ivOut2 = NULL;
+
+    TPMI_ALG_CIPHER_MODE mode = TPM2_ALG_NULL;
+
+    UINT32 maxCmdSize = 1024;
+    BYTE cmdBuffer[maxCmdSize];
+    size_t nextData = 0;
+
+    rc = Tss2_MU_UINT32_Marshal(s_SWK.eSWK.handle, cmdBuffer,
+                                maxCmdSize,
+                                &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
+    
+    rc = Tss2_MU_UINT32_Marshal(s_SWK.sSWK.handle, cmdBuffer,
+                                maxCmdSize,
+                                &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
+
+    rc = Tss2_MU_UINT32_Marshal(s_SWK.pSWK.handle, cmdBuffer,
+                                maxCmdSize,
+                                &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
+
+    rc = Tss2_MU_UINT32_Marshal(s_HandleMap.vEPSHandle, cmdBuffer,
+                                maxCmdSize,
+                                &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
+    
+    rc = Tss2_MU_UINT32_Marshal(s_HandleMap.vSPSHandle, cmdBuffer,
+                                maxCmdSize,
+                                &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
+
+    rc = Tss2_MU_UINT32_Marshal(s_HandleMap.vPPSHandle, cmdBuffer,
+                                maxCmdSize,
+                                &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
 
 
+    rc = Tss2_MU_TPM2B_PRIVATE_Marshal(&s_VPS.vEPS.vpsPrivate, cmdBuffer,
+                                maxCmdSize,
+                                &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
+
+    rc = Tss2_MU_TPM2B_PUBLIC_Marshal(&s_VPS.vEPS.vpsPublic, cmdBuffer,
+                                maxCmdSize,
+                                &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
+
+    
+    rc = Tss2_MU_TPM2B_PRIVATE_Marshal(&s_VPS.vSPS.vpsPrivate, cmdBuffer,
+                                maxCmdSize,
+                                &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
+
+    rc = Tss2_MU_TPM2B_PUBLIC_Marshal(&s_VPS.vSPS.vpsPublic, cmdBuffer,
+                                maxCmdSize,
+                                &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
 
 
+    rc = Tss2_MU_TPM2B_PRIVATE_Marshal(&s_VPS.vPPS.vpsPrivate, cmdBuffer,
+                                maxCmdSize,
+                                &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
+
+    rc = Tss2_MU_TPM2B_PUBLIC_Marshal(&s_VPS.vPPS.vpsPublic, cmdBuffer,
+                                maxCmdSize,
+                                &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
+
+    TPM2B_IV ivIn = {
+        .size = 16,
+        .buffer = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16}
+    };
+    TPM2B_MAX_BUFFER inData = {
+        .size = (UINT16)nextData,
+        .buffer = {}
+    };
+
+    memcpy(inData.buffer, cmdBuffer, nextData);
+
+
+    printf("\nMarshalled data in cmdBuffer copied in inData %ld:\n", nextData);
+
+    for (size_t i = 0; i < inData.size; i++)
+    {
+        printf("%d ", inData.buffer[i]);
+    }
+    printf("\n");
+
+    printf("\n-------------Esys_VIRT_StoreState------------\n");
+    rc = Esys_VIRT_StoreState(
+        s_params.esys_context,
+        s_HandleMap.pVSPKHandle,
+        ESYS_TR_PASSWORD,
+        ESYS_TR_NONE,
+        ESYS_TR_NONE,
+        &inData,
+        mode,
+        &ivIn,
+        &outData,
+        &ivOut);
+
+    if(rc != TSS2_RC_SUCCESS)
+    {
+        fprintf(stdout,"Error during state storing\n");
+        exit(EXIT_FAILURE);
+    } else
+    {
+        fprintf(stdout,"State storing successfull\n");
+    }
+
+    printf("Encrypted inData (outData):\n");
+
+    for (size_t i = 0; i < outData->size; i++)
+    {
+        printf("%d ", outData->buffer[i]);
+    }
+    
+    printf("\n");
+
+    printf("\n-------------Esys_VIRT_RestoreState------------\n");
+    rc = Esys_VIRT_RestoreState(
+        s_params.esys_context,
+        s_HandleMap.pVSPKHandle,
+        ESYS_TR_PASSWORD,
+        ESYS_TR_NONE,
+        ESYS_TR_NONE,
+        outData,
+        mode,
+        &ivIn,
+        &outData2,
+        &ivOut2);
+
+    if(rc != TSS2_RC_SUCCESS)
+    {
+        fprintf(stdout,"Error during state restoring\n");
+        exit(EXIT_FAILURE);
+    } else
+    {
+        fprintf(stdout,"State restoring successfull\n");
+    }
+
+    printf("Decrypted outData (outData2):\n");
+
+    for (size_t i = 0; i < outData2->size; i++)
+    {
+        printf("%d ", outData2->buffer[i]);
+    }
+
+    printf("\n");
+
+    if (outData2->size != inData.size ||
+        memcmp(&outData2->buffer, &inData.buffer[0], outData2->size) != 0) {
+        printf("Error: decrypted text not  equal to origin");
+        exit(EXIT_FAILURE);
+    }
+   
+}
