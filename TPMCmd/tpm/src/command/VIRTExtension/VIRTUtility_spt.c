@@ -689,7 +689,7 @@ void StoreRestoreState(){
 
     TPMI_ALG_CIPHER_MODE mode = TPM2_ALG_NULL;
 
-    UINT32 maxCmdSize = 4096;
+    UINT32 maxCmdSize = 1024;
     BYTE cmdBuffer[maxCmdSize];
     size_t nextData = 0;
 
@@ -774,26 +774,11 @@ void StoreRestoreState(){
     NvRead(cmdBuffer+nextData, NV_PERSISTENT_DATA, sizeof(PERSISTENT_DATA));
     nextData += sizeof(PERSISTENT_DATA);
 
-    UINT32 count = 0;
-    if((count = NvCapGetIndexNumber()) != 0){
-        for (size_t i = 0; i < count; i++)
-        {
-            NvRead(cmdBuffer+(count*sizeof(NV_ENTRY_HEADER)), NV_USER_DYNAMIC+sizeof(NV_ENTRY_HEADER), sizeof(NV_ENTRY_HEADER));
-        }
-    }
-
-    printf("\n\n\n\n\n\n-------------------------------------------------------------\n\n\n\n\n\n\n\n\n");
-
-    for (size_t i = 0; i < nextData; i++)
-    {
-        printf("%d ", cmdBuffer[i]);
-    }
-    printf("\n\n\n\n\n\n-------------------------------------------------------------\n\n\n\n\n\n\n\n\n");
-
     TPM2B_IV ivIn = {
         .size = 16,
         .buffer = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16}
     };
+
     TPM2B_MAX_BUFFER inData = {
         .size = (UINT16)1024,
         .buffer = {}
@@ -801,8 +786,7 @@ void StoreRestoreState(){
 
     memcpy(inData.buffer, cmdBuffer, 1024);
 
-
-    printf("\nMarshalled data in cmdBuffer copied in inData %ld:\n", nextData);
+    printf("\nMarshalled data in cmdBuffer copied in inData:\n");
 
     for (size_t i = 0; i < inData.size; i++)
     {

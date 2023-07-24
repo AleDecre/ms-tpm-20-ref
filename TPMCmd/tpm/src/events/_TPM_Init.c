@@ -97,31 +97,29 @@ LIB_EXPORT void _MSSIM_Init(bool binding)
 
         Init_Tcti_Esys_Context();
 
+        // printf("\neSWK--> %d", s_SWK.eSWK.handle);
+        // printf("\nsSWK--> %d", s_SWK.sSWK.handle);
+        // printf("\npSWK--> %d", s_SWK.pSWK.handle);
+        // printf("\nvEPS--> %d", s_HandleMap.vEPSHandle);
+        // printf("\nvSPS--> %d", s_HandleMap.vSPSHandle);
+        // printf("\nvPPS--> %d", s_HandleMap.vPPSHandle);
 
-        // printf("\nPrima eSWK--> %d", s_SWK.eSWK.handle);
-        // printf("\nPrima sSWK--> %d", s_SWK.sSWK.handle);
-        printf("\nPrima pSWK--> %d", s_SWK.pSWK.handle);
-        // printf("\nPrima vEPS--> %d", s_HandleMap.vEPSHandle);
-        // printf("\nPrima vSPS--> %d", s_HandleMap.vSPSHandle);
-        printf("\nPrima vPPS--> %d", s_HandleMap.vPPSHandle);
-
-
-        // CreateSWK(ESYS_TR_RH_ENDORSEMENT);
-        // CreateSWK(ESYS_TR_RH_OWNER);
+        CreateSWK(ESYS_TR_RH_ENDORSEMENT);
+        CreateSWK(ESYS_TR_RH_OWNER);
         CreateSWK(ESYS_TR_RH_PLATFORM);
 
 
-        // CreateLoadPrimarySeed(ESYS_TR_RH_ENDORSEMENT);
-        // CreateLoadPrimarySeed(ESYS_TR_RH_OWNER);
+        CreateLoadPrimarySeed(ESYS_TR_RH_ENDORSEMENT);
+        CreateLoadPrimarySeed(ESYS_TR_RH_OWNER);
         CreateLoadPrimarySeed(ESYS_TR_RH_PLATFORM);
 
 
-        printf("\nDopo eSWK--> %d", s_SWK.eSWK.handle);
-        printf("\nDopo sSWK--> %d", s_SWK.sSWK.handle);
-        printf("\nDopo pSWK--> %d", s_SWK.pSWK.handle);
-        printf("\nDopo vEPS--> %d", s_HandleMap.vEPSHandle);
-        printf("\nDopo vSPS--> %d", s_HandleMap.vSPSHandle);
-        printf("\nDopo vPPS--> %d", s_HandleMap.vPPSHandle);
+        printf("\neSWK--> %d", s_SWK.eSWK.handle);
+        printf("\nsSWK--> %d", s_SWK.sSWK.handle);
+        printf("\npSWK--> %d", s_SWK.pSWK.handle);
+        printf("\nvEPS--> %d", s_HandleMap.vEPSHandle);
+        printf("\nvSPS--> %d", s_HandleMap.vSPSHandle);
+        printf("\nvPPS--> %d", s_HandleMap.vPPSHandle);
         
 
         CreateVSPK();
