@@ -660,7 +660,7 @@ void CreateVSPK()
         exit(EXIT_FAILURE);
     } else
     {
-        fprintf(stdout,"Creation of the VPSK successfull\n");
+        fprintf(stdout,"Creation of the VSPK successfull\n");
     }
         
     s_HandleMap.pVSPKHandle = vspkHandle;
@@ -858,7 +858,7 @@ void StoreRestoreState(){
 
     if (outData2->size != inData.size ||
         memcmp(&outData2->buffer, &inData.buffer[0], outData2->size) != 0) {
-        printf("Error: decrypted text not  equal to origin");
+        printf("Error: decrypted text not equal to origin");
         exit(EXIT_FAILURE);
     }
    
