@@ -36,6 +36,7 @@
 #define TESTMIO
 #include "Tpm.h"
 #include "VIRTUtility_spt.h"
+#include "NvDynamic_fp.h"
 #include "Marshal.h"
 
 void Init_Tcti_Esys_Context()
@@ -688,100 +689,98 @@ void StoreRestoreState(){
 
     TPMI_ALG_CIPHER_MODE mode = TPM2_ALG_NULL;
 
-    UINT32 maxCmdSize = 102400;
+    UINT32 maxCmdSize = 4096;
     BYTE cmdBuffer[maxCmdSize];
     size_t nextData = 0;
 
-    // rc = Tss2_MU_TPM2B_PRIVATE_Marshal(&s_VPS.vEPS.vpsPrivate, cmdBuffer,
-    //                             maxCmdSize,
-    //                             &nextData);
-    // if (rc)
-    //     exit(EXIT_FAILURE);
+    rc = Tss2_MU_TPM2B_PRIVATE_Marshal(&s_VPS.vEPS.vpsPrivate, cmdBuffer,
+                                maxCmdSize,
+                                &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
 
-    // rc = Tss2_MU_TPM2B_PUBLIC_Marshal(&s_VPS.vEPS.vpsPublic, cmdBuffer,
-    //                             maxCmdSize,
-    //                             &nextData);
-    // if (rc)
-    //     exit(EXIT_FAILURE);
+    rc = Tss2_MU_TPM2B_PUBLIC_Marshal(&s_VPS.vEPS.vpsPublic, cmdBuffer,
+                                maxCmdSize,
+                                &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
 
+    rc = Tss2_MU_TPM2B_PRIVATE_Marshal(&s_VPS.vSPS.vpsPrivate, cmdBuffer,
+                                maxCmdSize,
+                                &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
+
+    rc = Tss2_MU_TPM2B_PUBLIC_Marshal(&s_VPS.vSPS.vpsPublic, cmdBuffer,
+                                maxCmdSize,
+                                &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
+
+    rc = Tss2_MU_TPM2B_PRIVATE_Marshal(&s_VPS.vPPS.vpsPrivate, cmdBuffer,
+                                maxCmdSize,
+                                &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
+
+    rc = Tss2_MU_TPM2B_PUBLIC_Marshal(&s_VPS.vPPS.vpsPublic, cmdBuffer,
+                                maxCmdSize,
+                                &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
+
+    rc = Tss2_MU_UINT32_Marshal(s_SWK.eSWK.handle, cmdBuffer,
+                                maxCmdSize,
+                                &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
     
-    // rc = Tss2_MU_TPM2B_PRIVATE_Marshal(&s_VPS.vSPS.vpsPrivate, cmdBuffer,
-    //                             maxCmdSize,
-    //                             &nextData);
-    // if (rc)
-    //     exit(EXIT_FAILURE);
+    rc = Tss2_MU_UINT32_Marshal(s_SWK.sSWK.handle, cmdBuffer,
+                                maxCmdSize,
+                                &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
 
-    // rc = Tss2_MU_TPM2B_PUBLIC_Marshal(&s_VPS.vSPS.vpsPublic, cmdBuffer,
-    //                             maxCmdSize,
-    //                             &nextData);
-    // if (rc)
-    //     exit(EXIT_FAILURE);
+    rc = Tss2_MU_UINT32_Marshal(s_SWK.pSWK.handle, cmdBuffer,
+                                maxCmdSize,
+                                &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
 
-
-    // rc = Tss2_MU_TPM2B_PRIVATE_Marshal(&s_VPS.vPPS.vpsPrivate, cmdBuffer,
-    //                             maxCmdSize,
-    //                             &nextData);
-    // if (rc)
-    //     exit(EXIT_FAILURE);
-
-    // rc = Tss2_MU_TPM2B_PUBLIC_Marshal(&s_VPS.vPPS.vpsPublic, cmdBuffer,
-    //                             maxCmdSize,
-    //                             &nextData);
-    // if (rc)
-    //     exit(EXIT_FAILURE);
-
-    // rc = Tss2_MU_UINT32_Marshal(s_SWK.eSWK.handle, cmdBuffer,
-    //                             maxCmdSize,
-    //                             &nextData);
-    // if (rc)
-    //     exit(EXIT_FAILURE);
+    rc = Tss2_MU_UINT32_Marshal(s_HandleMap.vEPSHandle, cmdBuffer,
+                                maxCmdSize,
+                                &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
     
-    // rc = Tss2_MU_UINT32_Marshal(s_SWK.sSWK.handle, cmdBuffer,
-    //                             maxCmdSize,
-    //                             &nextData);
-    // if (rc)
-    //     exit(EXIT_FAILURE);
+    rc = Tss2_MU_UINT32_Marshal(s_HandleMap.vSPSHandle, cmdBuffer,
+                                maxCmdSize,
+                                &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
 
-    // rc = Tss2_MU_UINT32_Marshal(s_SWK.pSWK.handle, cmdBuffer,
-    //                             maxCmdSize,
-    //                             &nextData);
-    // if (rc)
-    //     exit(EXIT_FAILURE);
+    rc = Tss2_MU_UINT32_Marshal(s_HandleMap.vPPSHandle, cmdBuffer,
+                                maxCmdSize,
+                                &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
 
-    // rc = Tss2_MU_UINT32_Marshal(s_HandleMap.vEPSHandle, cmdBuffer,
-    //                             maxCmdSize,
-    //                             &nextData);
-    // if (rc)
-    //     exit(EXIT_FAILURE);
-    
-    // rc = Tss2_MU_UINT32_Marshal(s_HandleMap.vSPSHandle, cmdBuffer,
-    //                             maxCmdSize,
-    //                             &nextData);
-    // if (rc)
-    //     exit(EXIT_FAILURE);
+    rc = Tss2_MU_UINT32_Marshal(sizeof(PERSISTENT_DATA), cmdBuffer,
+                                maxCmdSize,
+                                &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
 
-    // rc = Tss2_MU_UINT32_Marshal(s_HandleMap.vPPSHandle, cmdBuffer,
-    //                             maxCmdSize,
-    //                             &nextData);
-    // if (rc)
-    //     exit(EXIT_FAILURE);
+    NvRead(cmdBuffer+nextData, NV_PERSISTENT_DATA, sizeof(PERSISTENT_DATA));
+    nextData += sizeof(PERSISTENT_DATA);
 
-    // rc = Tss2_MU_UINT32_Marshal(sizeof(PERSISTENT_DATA), cmdBuffer,
-    //                             maxCmdSize,
-    //                             &nextData);
-    // if (rc)
-    //     exit(EXIT_FAILURE);
-
-    // NvRead(cmdBuffer+nextData, NV_PERSISTENT_DATA, sizeof(PERSISTENT_DATA));
-    // nextData += sizeof(PERSISTENT_DATA);
-    // printf("\n\n TEST %ld \n\n", nextData);
-    NvRead(cmdBuffer+nextData, NV_USER_DYNAMIC, NV_USER_DYNAMIC_END - NV_USER_DYNAMIC - 1);
-    nextData += NV_USER_DYNAMIC_END - NV_USER_DYNAMIC - 1;
-    printf("\n\n TEST %ld \n\n", nextData);
-
-
-
-
+    UINT32 count = 0;
+    if((count = NvCapGetIndexNumber()) != 0){
+        for (size_t i = 0; i < count; i++)
+        {
+            NvRead(cmdBuffer+(count*sizeof(NV_ENTRY_HEADER)), NV_USER_DYNAMIC+sizeof(NV_ENTRY_HEADER), sizeof(NV_ENTRY_HEADER));
+        }
+    }
 
     printf("\n\n\n\n\n\n-------------------------------------------------------------\n\n\n\n\n\n\n\n\n");
 
