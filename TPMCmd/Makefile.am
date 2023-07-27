@@ -38,6 +38,7 @@ SIMULATOR_INC =  -I $(srcdir)/Simulator/include \
     -I $(srcdir)/Simulator/include/prototypes
 TPM_INC = -I $(srcdir)/tpm/include \
     -I $(srcdir)/tpm/include/prototypes
+tsslib = -ltss2-tcti-tabrmd -ltss2-tcti-mssim -ltss2-tcti-device -ltss2-esys -ltss2-mu
 
 libplatform = Platform/src/libplatform.a
 libtpm = tpm/src/libtpm.a
@@ -54,7 +55,7 @@ Simulator_src_tpm2_simulator_CFLAGS = $(EXTRA_CFLAGS) $(PLATFORM_INC) \
 # the weird / duplicate static library is necessary for dealing with the
 # circular dependency beetween libplatform and libtpm
 Simulator_src_tpm2_simulator_LDADD = $(libplatform) $(libtpm) \
-    $(libplatform) $(LIBCRYPTO_LIBS) $(PTHREAD_LIBS) @ADDITIONAL_LIBS@
+    $(libplatform) $(LIBCRYPTO_LIBS) $(PTHREAD_LIBS) $(tsslib) @ADDITIONAL_LIBS@
 Simulator_src_tpm2_simulator_SOURCES = $(SIMULATOR_C) $(SIMULATOR_H)
 
 tpm_src_libtpm_a_CFLAGS = $(EXTRA_CFLAGS) $(PLATFORM_INC) $(TPM_INC) \
