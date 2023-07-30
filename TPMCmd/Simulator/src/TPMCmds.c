@@ -39,6 +39,7 @@
 #include "TpmBuildSwitches.h"
 
 #include "_TPM_Init_fp.h"
+// #include "Global.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -68,6 +69,7 @@ typedef int SOCKET;
   "Copyright (c) Microsoft Corporation. All rights reserved."
 
 #define DEFAULT_MSSIM_PORT 2321
+#define MAX_LEN 255
 
 // Information about command line arguments (does not include program name)
 static uint32_t     s_ArgsMask = 0;  // Bit mask of unmatched command line args
@@ -99,15 +101,16 @@ static void Usage(const char* programName)
     fprintf(stderr, "%s\n\n", PURPOSE);
     fprintf(stderr,
             "Usage:  %s [PortNum] [opts]\n\n"
-            "Starts the MSSIM server listening on TCP port PortNum (by default %d).\n\n"
+            "Starts the TPM server listening on TCP port PortNum (by default %d).\n\n"
             "An option can be in the short form (one letter preceded with '-' or "
             "'/')\n"
             "or in the full form (preceded with '--' or no option marker at all).\n"
             "Possible options are:\n"
             "   -h (--help) or ? - print this message\n"
-            "   -m (--manufacture) - forces NV state of the MSSIM simulator to be "
+            "   -m (--manufacture) - forces NV state of the TPM simulator to be "
             "(re)manufactured\n"
-            "   -b (--hwbind) - perform hardware binding with pMSSIM\n",
+            "   -b (--hwbind) - perform hardware binding with pTPM\n"
+            "   -r (--restore) - perform state restore pTPM\n",
             programName,
             DEFAULT_MSSIM_PORT);
     exit(1);
@@ -222,11 +225,14 @@ int main(int argc, char* argv[])
 {
     bool manufacture = false;
     bool hwbind      = false;
+    bool restore     = false;
     int  PortNum     = DEFAULT_MSSIM_PORT;
+    char *swkPath = NULL;
+    char *statePath = NULL;
 
     // Parse command line options
 
-    if(CmdLineParser_Init(argc, argv, 3))
+    if(CmdLineParser_Init(argc, argv, 7))
     {
         if(CmdLineParser_IsOptPresent("?", "?")
            || CmdLineParser_IsOptPresent("help", "h"))
@@ -241,6 +247,15 @@ int main(int argc, char* argv[])
         {
             hwbind = true;
         }
+        if(CmdLineParser_IsOptPresent("restore", "r"))
+        {
+            restore = true;
+        }
+        if(restore && !hwbind){
+            fprintf(stderr,"Provided restore parameter without hardware binding.\n");
+            exit(1);
+        }
+
         if(CmdLineParser_More())
         {
             int i;
@@ -255,6 +270,26 @@ int main(int argc, char* argv[])
                     {
                         PortNum = portNum;
                         s_ArgsMask ^= 1 << i;
+                        if(hwbind){
+                            if(i+1 < s_Argc){
+                                swkPath = (char*)s_Argv[i+1];
+                                s_ArgsMask ^= 1 << (i+1);
+                                if(restore){
+                                    if(i+2 < s_Argc){
+                                        statePath = (char*)s_Argv[i+2];
+                                        s_ArgsMask ^= 1 << (i+2);
+                                    }
+                                    else{
+                                        fprintf(stderr,"Not enough/right parameters to perform state restoring.\n");
+                                        exit(1);
+                                    }
+                                }
+                            }
+                            else{
+                                fprintf(stderr,"Not enough/right parameters to perform hardware binding.\n");
+                                exit(1);
+                            }
+                        }
                         break;
                     }
                     fprintf(stderr, "Invalid numeric option %s\n\n", s_Argv[i]);
@@ -298,7 +333,7 @@ int main(int argc, char* argv[])
     if(hwbind)
     {
         printf("\nPerforming hardware binding...\n");
-        _MSSIM_Init(1);
+        _MSSIM_Init(1, swkPath, statePath);
     }
 
     StartTcpServer(PortNum);

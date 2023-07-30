@@ -41,7 +41,7 @@
 #include "VIRTUtility_spt.h"
 
 // This function is used to process a _MSSIM_Init indication.
-LIB_EXPORT void _MSSIM_Init(bool binding)
+LIB_EXPORT void _MSSIM_Init(bool binding, char* swkPath, char* statePath)
 {
 
     g_powerWasLost = g_powerWasLost | _plat__WasPowerLost();
@@ -104,9 +104,11 @@ LIB_EXPORT void _MSSIM_Init(bool binding)
         // printf("\nvSPS--> %d", s_HandleMap.vSPSHandle);
         // printf("\nvPPS--> %d", s_HandleMap.vPPSHandle);
 
-        CreateSWK(ESYS_TR_RH_ENDORSEMENT);
-        CreateSWK(ESYS_TR_RH_OWNER);
-        CreateSWK(ESYS_TR_RH_PLATFORM);
+        // CreateSWK(ESYS_TR_RH_ENDORSEMENT);
+        // CreateSWK(ESYS_TR_RH_OWNER);
+        // CreateSWK(ESYS_TR_RH_PLATFORM);
+
+        // READ FROM FILE THE THREE ESYS_TR_RH!!! swkPath
 
 
         CreateLoadPrimarySeed(ESYS_TR_RH_ENDORSEMENT);

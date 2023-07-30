@@ -42,6 +42,6 @@
 #include <stdbool.h>
 
 // This function is used to process a _MSSIM_Init indication.
-LIB_EXPORT void _MSSIM_Init(bool binding);
+LIB_EXPORT void _MSSIM_Init(bool binding, char* swkPath, char* statePath);
 
 #endif  // __MSSIM_INIT_FP_H_
