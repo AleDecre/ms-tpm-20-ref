@@ -39,7 +39,6 @@
 #include "TpmBuildSwitches.h"
 
 #include "_TPM_Init_fp.h"
-// #include "Global.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -228,6 +227,7 @@ int main(int argc, char* argv[])
     bool restore     = false;
     int  PortNum     = DEFAULT_MSSIM_PORT;
     char *swkPath = NULL;
+    char *vspkTemplatePath = NULL;
     char *statePath = NULL;
 
     // Parse command line options
@@ -269,15 +269,18 @@ int main(int argc, char* argv[])
                     if(!*nptr && portNum > 0 && portNum < 65535)
                     {
                         PortNum = portNum;
-                        s_ArgsMask ^= 1 << i;
+                        s_ArgsMask ^= 1 << i++;
                         if(hwbind){
-                            if(i+1 < s_Argc){
-                                swkPath = (char*)s_Argv[i+1];
-                                s_ArgsMask ^= 1 << (i+1);
+                            if(i < s_Argc){
+                                swkPath = (char*)s_Argv[i];
+                                s_ArgsMask ^= 1 << i++;
+                                vspkTemplatePath = (char*)s_Argv[i];
+                                s_ArgsMask ^= 1 << i++;
+
                                 if(restore){
-                                    if(i+2 < s_Argc){
-                                        statePath = (char*)s_Argv[i+2];
-                                        s_ArgsMask ^= 1 << (i+2);
+                                    if(i < s_Argc){
+                                        statePath = (char*)s_Argv[i];
+                                        s_ArgsMask ^= 1 << i++;
                                     }
                                     else{
                                         fprintf(stderr,"Not enough/right parameters to perform state restoring.\n");
@@ -333,7 +336,7 @@ int main(int argc, char* argv[])
     if(hwbind)
     {
         printf("\nPerforming hardware binding...\n");
-        _MSSIM_Init(1, swkPath, statePath);
+        _MSSIM_Init(1, swkPath, vspkTemplatePath, statePath);
     }
 
     StartTcpServer(PortNum);
