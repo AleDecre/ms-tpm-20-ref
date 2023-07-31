@@ -2740,7 +2740,7 @@ typedef struct {
 
 typedef struct{
     MSSIMI_RH_HIERARCHY handle;
-    TPMS_CONTEXT *context;
+    TPMS_CONTEXT context;
 } SWKEntry;
 
 typedef union{
