@@ -35,9 +35,6 @@
 #include "Tpm.h"
 #include "_TPM_Init_fp.h"
 #include <stdio.h>
-#include "tss2/tss2_tcti_mssim.h"
-#include "tss2/tss2-tcti-tabrmd.h"
-#include "tss2/tss2_esys.h"
 #include "VIRTUtility_spt.h"
 
 // This function is used to process a _MSSIM_Init indication.
@@ -97,82 +94,30 @@ LIB_EXPORT void _MSSIM_Init(bool binding, char* swkPath, char* vspkTemplatePath,
 
         Init_Tcti_Esys_Context();
 
-        // printf("\neSWK--> %d", s_SWK.eSWK.handle);
-        // printf("\nsSWK--> %d", s_SWK.sSWK.handle);
-        // printf("\npSWK--> %d", s_SWK.pSWK.handle);
-        // printf("\nvEPS--> %d", s_HandleMap.vEPSHandle);
-        // printf("\nvSPS--> %d", s_HandleMap.vSPSHandle);
-        // printf("\nvPPS--> %d", s_HandleMap.vPPSHandle);
+        printf("\neSWK--> %d", s_SWK.eSWK.handle);
+        printf("\nsSWK--> %d", s_SWK.sSWK.handle);
+        printf("\npSWK--> %d", s_SWK.pSWK.handle);
+        printf("\nvEPS--> %d", s_HandleMap.vEPSHandle);
+        printf("\nvSPS--> %d", s_HandleMap.vSPSHandle);
+        printf("\nvPPS--> %d\n", s_HandleMap.vPPSHandle);
 
-        // CreateSWK(ESYS_TR_RH_ENDORSEMENT);
-        // CreateSWK(ESYS_TR_RH_OWNER);
-        // CreateSWK(ESYS_TR_RH_PLATFORM);
-
-        // READ FROM FILE THE THREE ESYS_TR_RH!!! swkPath
-
-
-        char buffer[sizeof(TPMS_CONTEXT)];
-        memset(buffer,0,sizeof(TPMS_CONTEXT));
-
-
-        FILE *swkFile;
-
-        swkFile = fopen("/home/adc/tesi/thesisProject/TPM/swk.dat", "rb");
-
-        if(swkFile == NULL) {
-            perror("Error opening file");
-            exit(1);
-        }
-
-        fread(buffer, sizeof(TPMS_CONTEXT), 1, swkFile);
-
-        Tss2_MU_TPMS_CONTEXT_Unmarshal((uint8_t *)buffer,  sizeof(TPMS_CONTEXT), 0,  &s_SWK.eSWK.context);
-        printf("\n-------------Esys_ContextLoad PRIMARY KEY------------\n");
-        Esys_ContextLoad(s_params.esys_context, &s_SWK.eSWK.context, &s_SWK.eSWK.handle); 
-
-
-
-        TPM2B_AUTH authValueSWK = {
-            .size = 5,
-            .buffer = {1,2,3,4,5}
-        };
-
-
-        Esys_TR_SetAuth(s_params.esys_context,s_SWK.eSWK.handle,&authValueSWK);
-
-
-
-        // if(!ErrorHandling(rc))
-        // {
-        //     fprintf(stdout,"Error during context loading PRIMARY KEY\n");
-        //     exit(EXIT_FAILURE);
-        // } else
-        // {
-        //     fprintf(stdout,"Context loading successfull PRIMARY KEY\n");
-        // }
-    
-
-
-        // printf("\neSWK--> %d", s_SWK.eSWK.context->hierarchy);
-        // printf("\nsSWK--> %d", s_SWK.sSWK.handle);
-        // printf("\npSWK--> %d", s_SWK.pSWK.handle);
-
+        LoadSWK(swkPath);
 
         CreateLoadPrimarySeed(ESYS_TR_RH_ENDORSEMENT);
-        // CreateLoadPrimarySeed(ESYS_TR_RH_OWNER);
-        // CreateLoadPrimarySeed(ESYS_TR_RH_PLATFORM);
-
-
-        // printf("\neSWK--> %d", s_SWK.eSWK.handle);
-        // printf("\nsSWK--> %d", s_SWK.sSWK.handle);
-        // printf("\npSWK--> %d", s_SWK.pSWK.handle);
-        // printf("\nvEPS--> %d", s_HandleMap.vEPSHandle);
-        // printf("\nvSPS--> %d", s_HandleMap.vSPSHandle);
-        // printf("\nvPPS--> %d", s_HandleMap.vPPSHandle);
+        CreateLoadPrimarySeed(ESYS_TR_RH_OWNER);
+        CreateLoadPrimarySeed(ESYS_TR_RH_PLATFORM);
         
 
-        // CreateVSPK();
+        CreateVSPK();
         // StoreRestoreState();
+        
+
+        printf("\neSWK--> %d", s_SWK.eSWK.handle);
+        printf("\nsSWK--> %d", s_SWK.sSWK.handle);
+        printf("\npSWK--> %d", s_SWK.pSWK.handle);
+        printf("\nvEPS--> %d", s_HandleMap.vEPSHandle);
+        printf("\nvSPS--> %d", s_HandleMap.vSPSHandle);
+        printf("\nvPPS--> %d\n", s_HandleMap.vPPSHandle);
         
         
         Finalize_Tcti_Esys_Context();

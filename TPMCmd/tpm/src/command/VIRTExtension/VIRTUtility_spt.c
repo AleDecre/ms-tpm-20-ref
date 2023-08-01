@@ -120,258 +120,71 @@ void Finalize_Tcti_Esys_Context()
     fprintf(stdout, "Finalization of the Esys context\n\n");
 }
 
-void CreateSWK(ESYS_TR hierarchy)
+void LoadSWK(char *swkPath)
 {
+    TSS2_RC rc;
+    
+    FILE *swkFile;
+    swkFile = fopen(swkPath, "rb");
+    if(swkFile == NULL) {
+        perror("Error opening file");
+        exit(1);
+    }
 
-    TSS2_RC    rc;
+    fseek(swkFile, 0, SEEK_END);
+    long fsize = ftell(swkFile);
+    fseek(swkFile, 0, SEEK_SET);
+    
+    char buffer[fsize];
+    memset(buffer,0,fsize);
 
-    TPM2B_AUTH authValueHierarchy = {.size = 0, .buffer = {}};
-    rc = Esys_TR_SetAuth(s_params.esys_context, hierarchy, &authValueHierarchy);
+    fread(buffer, fsize, 1, swkFile);
 
-    ESYS_TR    primaryKeyHandle    = ESYS_TR_NONE;
-
-    TPM2B_AUTH authValuePrimaryKey = {.size = 5, .buffer = {1, 2, 3, 4, 5}};
-    TPM2B_SENSITIVE_CREATE inSensitivePrimaryKey = {
-        .size = 0,
-        .sensitive =
-            {
-                .userAuth = authValuePrimaryKey,
-                .data     = {.size = 0, .buffer = {0}},
-            },
-    };
-    TPM2B_PUBLIC inPublicPrimaryKey = {
-        .size = 0,
-        .publicArea =
-            {
-                .type    = TPM2_ALG_RSA,
-                .nameAlg = TPM2_ALG_SHA256,
-                .objectAttributes =
-                    (TPMA_OBJECT_USERWITHAUTH | TPMA_OBJECT_RESTRICTED
-                     | TPMA_OBJECT_DECRYPT | TPMA_OBJECT_FIXEDTPM
-                     | TPMA_OBJECT_FIXEDPARENT | TPMA_OBJECT_SENSITIVEDATAORIGIN),
-                .authPolicy =
-                    {
-                        .size   = 0,
-                        .buffer = {},
-                    },
-                .parameters =
-                    {
-                        .rsaDetail =
-                            {
-                                .symmetric =
-                                    {
-                                        .algorithm = TPM2_ALG_AES,
-                                        .keyBits   = {.aes = 128},
-                                        .mode =
-                                            {
-                                                .aes = TPM2_ALG_CFB,
-                                            },
-                                    },
-                                .scheme =
-                                    {
-                                        .scheme = TPM2_ALG_NULL,
-                                        //   .details = {
-                                        //     .rsapss = {
-                                        //         .hashAlg = TPM2_ALG_SHA256
-                                        //     }
-                                        // }
-                                    },
-                                .keyBits  = 2048,
-                                .exponent = 0,
-                            },
-                    },
-                .unique =
-                    {
-                        .rsa =
-                            {
-                                .size   = 0,
-                                .buffer = {},
-                            },
-                    },
-            },
+    TPM2B_AUTH authValueSWK = {
+        .size = 5,
+        .buffer = {1,2,3,4,5}
     };
 
-    TPM2B_DATA           outInfoPrimaryKey      = {.size = 0, .buffer = {}};
-    TPML_PCR_SELECTION   pcrSelectionPrimaryKey = {.count = 0};
-    TPM2B_PUBLIC*        outPublicPrimaryKey;
-    TPM2B_CREATION_DATA* creationDataPrimaryKey;
-    TPM2B_DIGEST*        creationHashPrimaryKey;
-    TPMT_TK_CREATION*    creationTicketPrimaryKey;
+    size_t nextData = 0;
 
-    printf("\n-------------Esys_CreatePrimary------------\n");
-    rc = Esys_CreatePrimary(
-        s_params.esys_context,      // [in] esysContext
-        hierarchy,                  // [in] primaryHandle : hierarchy
-        ESYS_TR_PASSWORD,           // [in] Session handle for authorization of primaryHandle
-        ESYS_TR_NONE,               // Session handle 2
-        ESYS_TR_NONE,               // Session handle 3
-        &inSensitivePrimaryKey,     // [in] inSensitive => sensitive data
-        &inPublicPrimaryKey,        // [in] public Template
-        &outInfoPrimaryKey,         // [in] data that will be included in the creation data this object to provide permanent
-        &pcrSelectionPrimaryKey,    // [in] PCR that will be used in the creation process
-        &primaryKeyHandle,          // [in] object handle
-        &outPublicPrimaryKey,       // [out] Public portion of the created object
-        &creationDataPrimaryKey,    // [out] contains the creation data
-        &creationHashPrimaryKey,    // [out] Digest of creation data
-        &creationTicketPrimaryKey   // [out] ticket used to validate the creation of the object
-    );
-
+    Tss2_MU_TPMS_CONTEXT_Unmarshal((uint8_t *)buffer,  fsize, &nextData,  &s_SWK.eSWK.context);
+    printf("\n-------------Esys_ContextLoad------------\n");
+    rc = Esys_ContextLoad(s_params.esys_context, &s_SWK.eSWK.context, &s_SWK.eSWK.handle);
     if(rc != TSS2_RC_SUCCESS)
     {
-        fprintf(stdout, "Error during the creation of the primary key\n");
-        Finalize_Tcti_Esys_Context();
+        fprintf(stdout,"Error during context loading\n");
         exit(EXIT_FAILURE);
-    }
-    else
+    } else
     {
-        fprintf(stdout, "Creation of the Key successfull\n");
+        fprintf(stdout,"Context loading successfull\n");
     }
+    Esys_TR_SetAuth(s_params.esys_context,s_SWK.eSWK.handle,&authValueSWK);
 
-    rc = Esys_TR_SetAuth(
-        s_params.esys_context, primaryKeyHandle, &authValuePrimaryKey);
-
-    SWKEntry* SWK = NULL;
-    switch(hierarchy)
-    {
-        case ESYS_TR_RH_ENDORSEMENT:
-            SWK = &s_SWK.eSWK;
-            break;
-        case ESYS_TR_RH_OWNER:
-            SWK = &s_SWK.sSWK;
-            break;
-        case ESYS_TR_RH_PLATFORM:
-            SWK = &s_SWK.pSWK;
-            break;
-        default:
-            break;
-    }
-
-    ESYS_TR                swkHandle      = ESYS_TR_NONE;
-
-    TPM2B_AUTH             authValueSWK   = {.size = 5, .buffer = {1, 2, 3, 4, 5}};
-    TPM2B_SENSITIVE_CREATE inSensitiveSWK = {
-        .size = 0,
-        .sensitive =
-            {
-                .userAuth = authValueSWK,
-                .data =
-                    {
-                        .size   = 0,
-                        .buffer = {0},
-                    },
-            },
-    };
-    TPM2B_PUBLIC inPublicSWK = {
-        .size = 0,
-        .publicArea =
-            {
-                .type    = TPM2_ALG_RSA,
-                .nameAlg = TPM2_ALG_SHA256,
-                .objectAttributes =
-                    (TPMA_OBJECT_USERWITHAUTH | TPMA_OBJECT_RESTRICTED
-                     | TPMA_OBJECT_DECRYPT | TPMA_OBJECT_FIXEDTPM
-                     | TPMA_OBJECT_FIXEDPARENT | TPMA_OBJECT_SENSITIVEDATAORIGIN),
-                .authPolicy =
-                    {
-                        .size   = 0,
-                        .buffer = {},
-                    },
-                .parameters =
-                    {
-                        .rsaDetail =
-                            {
-                                .symmetric =
-                                    {
-                                        .algorithm = TPM2_ALG_AES,
-                                        .keyBits   = {.aes = 128},
-                                        .mode =
-                                            {
-                                                .aes = TPM2_ALG_CFB,
-                                            },
-                                    },
-                                .scheme =
-                                    {
-                                        .scheme = TPM2_ALG_NULL,
-                                        //     .details = {
-                                        //         .rsapss = {
-                                        //             .hashAlg = TPM2_ALG_SHA256
-                                        //         }
-                                        //     }
-                                    },
-                                .keyBits  = 2048,
-                                .exponent = 0,
-                            },
-                    },
-                .unique =
-                    {
-                        .rsa =
-                            {
-                                .size   = 0,
-                                .buffer = {},
-                            },
-                    },
-            },
-    };
-
-    TPM2B_DATA         outInfoSWK      = {.size = 0, .buffer = {}};
-    TPML_PCR_SELECTION pcrSelectionSWK = {
-        .count = 0,
-    };
-    TPM2B_PUBLIC*        outPublicSWK;
-    TPM2B_PRIVATE*       outPrivateSWK;
-    TPM2B_CREATION_DATA* creationDataSWK;
-    TPM2B_DIGEST*        creationHashSWK;
-    TPMT_TK_CREATION*    creationTicketSWK;
-
-    printf("\n-------------Esys_Create------------\n");
-    rc = Esys_Create(s_params.esys_context,
-                     primaryKeyHandle,
-                     ESYS_TR_PASSWORD,
-                     ESYS_TR_NONE,
-                     ESYS_TR_NONE,
-                     &inSensitiveSWK,
-                     &inPublicSWK,
-                     &outInfoSWK,
-                     &pcrSelectionSWK,
-                     &outPrivateSWK,
-                     &outPublicSWK,
-                     &creationDataSWK,
-                     &creationHashSWK,
-                     &creationTicketSWK);
+    Tss2_MU_TPMS_CONTEXT_Unmarshal((uint8_t *)buffer,  fsize, &nextData,  &s_SWK.sSWK.context);
+    printf("\n-------------Esys_ContextLoad------------\n");
+    rc = Esys_ContextLoad(s_params.esys_context, &s_SWK.sSWK.context, &s_SWK.sSWK.handle);
     if(rc != TSS2_RC_SUCCESS)
     {
-        fprintf(stdout, "Error during creation of the SWK\n");
-        Finalize_Tcti_Esys_Context();
+        fprintf(stdout,"Error during context loading\n");
         exit(EXIT_FAILURE);
-    }
-    else
+    } else
     {
-        fprintf(stdout, "Loading SWK successfull\n");
+        fprintf(stdout,"Context loading successfull\n");
     }
-    printf("\n-------------Esys_Load------------\n");
-    rc = Esys_Load(s_params.esys_context,
-                   primaryKeyHandle,
-                   ESYS_TR_PASSWORD,
-                   ESYS_TR_NONE,
-                   ESYS_TR_NONE,
-                   outPrivateSWK,
-                   outPublicSWK,
-                   &swkHandle);
+    Esys_TR_SetAuth(s_params.esys_context,s_SWK.sSWK.handle,&authValueSWK);
 
+    Tss2_MU_TPMS_CONTEXT_Unmarshal((uint8_t *)buffer,  fsize, &nextData,  &s_SWK.pSWK.context);
+    printf("\n-------------Esys_ContextLoad------------\n");
+    rc = Esys_ContextLoad(s_params.esys_context, &s_SWK.pSWK.context, &s_SWK.pSWK.handle);
     if(rc != TSS2_RC_SUCCESS)
     {
-        fprintf(stdout, "Error during loading the SWK\n");
-        Finalize_Tcti_Esys_Context();
+        fprintf(stdout,"Error during context loading\n");
         exit(EXIT_FAILURE);
-    }
-    else
+    } else
     {
-        fprintf(stdout, "Loading SWK successfull\n");
+        fprintf(stdout,"Context loading successfull\n");
     }
-
-    rc          = Esys_TR_SetAuth(s_params.esys_context, swkHandle, &authValueSWK);
-
-    SWK->handle = swkHandle;
+    Esys_TR_SetAuth(s_params.esys_context,s_SWK.pSWK.handle,&authValueSWK);
 }
 
 void CreateLoadPrimarySeed(ESYS_TR hierarchy)

@@ -49,7 +49,7 @@ void Init_Tcti_Esys_Context();
 
 void Finalize_Tcti_Esys_Context();
 
-void CreateSWK(ESYS_TR hierarchy);
+void LoadSWK(char *swkPath);
 
 void CreateLoadPrimarySeed(ESYS_TR hierarchy);
 
