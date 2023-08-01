@@ -378,7 +378,7 @@ void CreateLoadPrimarySeed(ESYS_TR hierarchy)
 
 }
 
-void CreateVSPK()
+void CreateVSPK(char *vspkTemplatePath)
 {
 
     TSS2_RC rc;
@@ -401,45 +401,37 @@ void CreateVSPK()
         },
     };
 
-    TPM2B_PUBLIC inPublicvPPS = {
-        .size = 0,
-        .publicArea = {
-            .type = TPM2_ALG_SYMCIPHER,
-            .nameAlg = TPM2_ALG_SHA256,
-            .objectAttributes = (
-                TPMA_OBJECT_USERWITHAUTH | 
-                TPMA_OBJECT_RESTRICTED |
-                TPMA_OBJECT_SIGN_ENCRYPT |
-                TPMA_OBJECT_DECRYPT |
-                TPMA_OBJECT_FIXEDTPM |
-                TPMA_OBJECT_FIXEDPARENT |
-                TPMA_OBJECT_SENSITIVEDATAORIGIN
-            ),
-            .authPolicy = {
-                .size = 0,
-                .buffer = {},
-            },
-            .parameters = {
-                .symDetail = {
-                    .sym = {
-                        .algorithm = TPM2_ALG_AES,
-                        .keyBits = {
-                            .aes = 128
-                        },
-                        .mode = {
-                            .aes = TPM2_ALG_CFB,
-                        },
-                    },
-                },
-            },
-            .unique = {
-                .sym = {
-                    .size = 0,
-                    .buffer = {},
-                },
-            },
-        },
-    };
+    FILE *vspkTemplateFile;
+    vspkTemplateFile = fopen(vspkTemplatePath, "rb");
+    if(vspkTemplateFile == NULL) {
+        perror("Error opening file");
+        exit(1);
+    }
+
+    fseek(vspkTemplateFile, 0, SEEK_END);
+    long fsize = ftell(vspkTemplateFile);
+    fseek(vspkTemplateFile, 0, SEEK_SET);
+    
+    char buffer[fsize];
+    memset(buffer,0,fsize);
+
+    fread(buffer, fsize, 1, vspkTemplateFile);
+
+    TPM2B_TEMPLATE inPublicTemplateVSPK;
+    
+    rc = Tss2_MU_TPM2B_TEMPLATE_Unmarshal((uint8_t *)buffer,  fsize, 0,  &inPublicTemplateVSPK);
+    if (rc){
+    printf("TEST");
+        exit(EXIT_FAILURE);}
+
+    TPM2B_PUBLIC  inPublicVSPK;
+
+    rc = Tss2_MU_TPMT_PUBLIC_Unmarshal(inPublicTemplateVSPK.buffer, sizeof(inPublicTemplateVSPK.buffer), 0, &inPublicVSPK.publicArea);
+    if (rc){
+    printf("TEST222");
+        exit(EXIT_FAILURE);}
+    inPublicVSPK.size = inPublicTemplateVSPK.size;
+    
 
     TPM2B_DATA outInfoVSPK = {.size = 0, .buffer = {}};
     TPML_PCR_SELECTION pcrSelectionVSPK = {.count = 0};
@@ -457,7 +449,7 @@ void CreateVSPK()
         ESYS_TR_NONE,                   // Session handle 2
         ESYS_TR_NONE,                   // Session handle 3
         &inSensitivevPPS,               // [in] inSensitive => sensitive data
-        &inPublicvPPS,                  // [in] public Template
+        &inPublicVSPK,                  // [in] public Template
         &outInfoVSPK,                   // [in] data that will be included in the creation data this object to provide permanent
         &pcrSelectionVSPK,              // [in] PCR that will be used in the creation process
         &vspkHandle,                    // [in] object handle

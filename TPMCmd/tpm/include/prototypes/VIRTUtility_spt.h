@@ -53,7 +53,7 @@ void LoadSWK(char *swkPath);
 
 void CreateLoadPrimarySeed(ESYS_TR hierarchy);
 
-void CreateVSPK();
+void CreateVSPK(char *vspkTemplatePath);
 
 void StoreRestoreState();
 
