@@ -55,6 +55,8 @@ void CreateLoadPrimarySeed(ESYS_TR hierarchy);
 
 void CreateVSPK(char *vspkTemplatePath);
 
-void StoreRestoreState();
+void StoreState(char *statePath);
+
+void RestoreState(char *statePath);
 
 #endif  // _VIRTUTILITY_SPT_FP_H_
