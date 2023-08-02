@@ -33,11 +33,11 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 //** Includes
-#define TESTMIO
 #include "Tpm.h"
 #include "VIRTUtility_spt.h"
 #include "NvDynamic_fp.h"
 #include "Marshal.h"
+#include <math.h>
 
 void Init_Tcti_Esys_Context()
 {
@@ -475,393 +475,255 @@ void CreateVSPK(char *vspkTemplatePath)
 void StoreState(char *statePath){
     TSS2_RC rc;
 
-// STORE STATE PARAMETERS
-    // TPM2B_PUBLIC *outPublic = NULL;
-    // TPM2B_CREATION_DATA *creationData = NULL;
-    // TPM2B_DIGEST *creationHash = NULL;
-    // TPMT_TK_CREATION *creationTicket = NULL;
-    TPM2B_MAX_BUFFER *outData = NULL;
-    TPM2B_IV *ivOut = NULL;
-
-// RESTORE STATE PARAMETERS
-    // TPM2B_PUBLIC *outPublic2 = NULL;
-    // TPM2B_PRIVATE *outPrivate2 = NULL;
-    // TPM2B_CREATION_DATA *creationData2 = NULL;
-    // TPM2B_DIGEST *creationHash2 = NULL;
-    // TPMT_TK_CREATION *creationTicket2 = NULL;
-    TPM2B_MAX_BUFFER *outData2 = NULL;
-    TPM2B_IV *ivOut2 = NULL;
+    TPM2B_MAX_BUFFER *storedStateBuffer = NULL;
+    TPM2B_IV *storedStateIV = NULL;
 
     TPMI_ALG_CIPHER_MODE mode = TPM2_ALG_NULL;
 
-    UINT32 maxCmdSize = 1024;
-    BYTE cmdBuffer[maxCmdSize];
+    UINT32 maxCmdSize = 4*1024;
+    BYTE stateBuffer[maxCmdSize];
+    memset(stateBuffer,0,maxCmdSize);
     size_t nextData = 0;
 
-    rc = Tss2_MU_TPM2B_PRIVATE_Marshal(&s_VPS.vEPS.vpsPrivate, cmdBuffer,
+    rc = Tss2_MU_TPM2B_PRIVATE_Marshal(&s_VPS.vEPS.vpsPrivate, stateBuffer,
                                 maxCmdSize,
                                 &nextData);
     if (rc)
         exit(EXIT_FAILURE);
 
-    rc = Tss2_MU_TPM2B_PUBLIC_Marshal(&s_VPS.vEPS.vpsPublic, cmdBuffer,
+    rc = Tss2_MU_TPM2B_PUBLIC_Marshal(&s_VPS.vEPS.vpsPublic, stateBuffer,
                                 maxCmdSize,
                                 &nextData);
     if (rc)
         exit(EXIT_FAILURE);
 
-    rc = Tss2_MU_TPM2B_PRIVATE_Marshal(&s_VPS.vSPS.vpsPrivate, cmdBuffer,
+    rc = Tss2_MU_TPM2B_PRIVATE_Marshal(&s_VPS.vSPS.vpsPrivate, stateBuffer,
                                 maxCmdSize,
                                 &nextData);
     if (rc)
         exit(EXIT_FAILURE);
 
-    rc = Tss2_MU_TPM2B_PUBLIC_Marshal(&s_VPS.vSPS.vpsPublic, cmdBuffer,
+    rc = Tss2_MU_TPM2B_PUBLIC_Marshal(&s_VPS.vSPS.vpsPublic, stateBuffer,
                                 maxCmdSize,
                                 &nextData);
     if (rc)
         exit(EXIT_FAILURE);
 
-    rc = Tss2_MU_TPM2B_PRIVATE_Marshal(&s_VPS.vPPS.vpsPrivate, cmdBuffer,
+    rc = Tss2_MU_TPM2B_PRIVATE_Marshal(&s_VPS.vPPS.vpsPrivate, stateBuffer,
                                 maxCmdSize,
                                 &nextData);
     if (rc)
         exit(EXIT_FAILURE);
 
-    rc = Tss2_MU_TPM2B_PUBLIC_Marshal(&s_VPS.vPPS.vpsPublic, cmdBuffer,
+    rc = Tss2_MU_TPM2B_PUBLIC_Marshal(&s_VPS.vPPS.vpsPublic, stateBuffer,
                                 maxCmdSize,
                                 &nextData);
     if (rc)
         exit(EXIT_FAILURE);
 
-    rc = Tss2_MU_UINT32_Marshal(s_SWK.eSWK.handle, cmdBuffer,
+    rc = Tss2_MU_UINT32_Marshal(s_SWK.eSWK.handle, stateBuffer,
                                 maxCmdSize,
                                 &nextData);
     if (rc)
         exit(EXIT_FAILURE);
     
-    rc = Tss2_MU_UINT32_Marshal(s_SWK.sSWK.handle, cmdBuffer,
+    rc = Tss2_MU_UINT32_Marshal(s_SWK.sSWK.handle, stateBuffer,
                                 maxCmdSize,
                                 &nextData);
     if (rc)
         exit(EXIT_FAILURE);
 
-    rc = Tss2_MU_UINT32_Marshal(s_SWK.pSWK.handle, cmdBuffer,
+    rc = Tss2_MU_UINT32_Marshal(s_SWK.pSWK.handle, stateBuffer,
                                 maxCmdSize,
                                 &nextData);
     if (rc)
         exit(EXIT_FAILURE);
 
-    rc = Tss2_MU_UINT32_Marshal(s_HandleMap.vEPSHandle, cmdBuffer,
+    rc = Tss2_MU_UINT32_Marshal(s_HandleMap.vEPSHandle, stateBuffer,
                                 maxCmdSize,
                                 &nextData);
     if (rc)
         exit(EXIT_FAILURE);
     
-    rc = Tss2_MU_UINT32_Marshal(s_HandleMap.vSPSHandle, cmdBuffer,
+    rc = Tss2_MU_UINT32_Marshal(s_HandleMap.vSPSHandle, stateBuffer,
                                 maxCmdSize,
                                 &nextData);
     if (rc)
         exit(EXIT_FAILURE);
 
-    rc = Tss2_MU_UINT32_Marshal(s_HandleMap.vPPSHandle, cmdBuffer,
+    rc = Tss2_MU_UINT32_Marshal(s_HandleMap.vPPSHandle, stateBuffer,
                                 maxCmdSize,
                                 &nextData);
     if (rc)
         exit(EXIT_FAILURE);
 
-    rc = Tss2_MU_UINT32_Marshal(sizeof(PERSISTENT_DATA), cmdBuffer,
+    rc = Tss2_MU_UINT32_Marshal(sizeof(PERSISTENT_DATA), stateBuffer,
                                 maxCmdSize,
                                 &nextData);
     if (rc)
         exit(EXIT_FAILURE);
 
-    NvRead(cmdBuffer+nextData, NV_PERSISTENT_DATA, sizeof(PERSISTENT_DATA));
-    nextData += sizeof(PERSISTENT_DATA);
+    uint8_t nvBuffer[sizeof(PERSISTENT_DATA)];
+    NvRead(nvBuffer, NV_PERSISTENT_DATA, sizeof(PERSISTENT_DATA));
+
+    memcpy(&stateBuffer[nextData], nvBuffer, sizeof(nvBuffer));
+    nextData += (size_t)sizeof(PERSISTENT_DATA);
 
     TPM2B_IV ivIn = {
         .size = 16,
         .buffer = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16}
     };
 
-    TPM2B_MAX_BUFFER inData = {
+    double nchunks = ceil((double)nextData/1024);
+
+    TPM2B_MAX_BUFFER state = {
         .size = (UINT16)1024,
         .buffer = {}
     };
+    uint8_t buffer[sizeof(TPM2B_MAX_BUFFER)];
 
-    memcpy(inData.buffer, cmdBuffer, 1024);
+    FILE *stateFile;
 
-    printf("\nMarshalled data in cmdBuffer copied in inData:\n");
+    stateFile = fopen(statePath, "wb");
 
-    for (size_t i = 0; i < inData.size; i++)
+    for (size_t i = 0; i < nchunks; i++)
     {
-        printf("%d ", inData.buffer[i]);
-    }
-    printf("\n");
+        memset(state.buffer,0,TPM2_MAX_DIGEST_BUFFER);
+        memset(buffer,0,sizeof(TPM2B_MAX_BUFFER));
+        
+        if(i==nchunks-1)
+            state.size = nextData-i*TPM2_MAX_DIGEST_BUFFER;
+        
+        printf("\n\n%d\n\n", state.size);
 
-    printf("\n-------------Esys_VIRT_StoreState------------\n");
-    rc = Esys_VIRT_StoreState(
-        s_params.esys_context,
-        s_HandleMap.pVSPKHandle,
-        ESYS_TR_PASSWORD,
-        ESYS_TR_NONE,
-        ESYS_TR_NONE,
-        &inData,
-        mode,
-        &ivIn,
-        &outData,
-        &ivOut);
+        memcpy(state.buffer, stateBuffer+i*TPM2_MAX_DIGEST_BUFFER, state.size);
 
-    if(rc != TSS2_RC_SUCCESS)
-    {
-        fprintf(stdout,"Error during state storing\n");
-        exit(EXIT_FAILURE);
-    } else
-    {
-        fprintf(stdout,"State storing successfull\n");
-    }
+        printf("\n-------------Esys_VIRT_StoreState------------\n");
+        rc = Esys_VIRT_StoreState(
+            s_params.esys_context,
+            s_HandleMap.pVSPKHandle,
+            ESYS_TR_PASSWORD,
+            ESYS_TR_NONE,
+            ESYS_TR_NONE,
+            &state,
+            mode,
+            &ivIn,
+            &storedStateBuffer,
+            &storedStateIV);
 
-    printf("Encrypted inData (outData):\n");
+        if(rc != TSS2_RC_SUCCESS)
+        {
+            fprintf(stdout,"Error during state storing\n");
+            exit(EXIT_FAILURE);
+        } else
+        {
+            fprintf(stdout,"State storing successfull\n");
+        }
 
-    for (size_t i = 0; i < outData->size; i++)
-    {
-        printf("%d ", outData->buffer[i]);
+        
+        size_t size = 0;
+
+        rc = Tss2_MU_TPM2B_MAX_BUFFER_Marshal(storedStateBuffer, buffer, sizeof(TPM2B_MAX_BUFFER), &size);
+        if (rc)
+            exit(EXIT_FAILURE);
+
+
+
+        if(stateFile == NULL) {
+            perror("Error opening file");
+            exit(1);
+        }
+
+        fwrite(buffer, size, 1, stateFile);
     }
     
-    printf("\n");
-
-    printf("\n-------------Esys_VIRT_RestoreState------------\n");
-    rc = Esys_VIRT_RestoreState(
-        s_params.esys_context,
-        s_HandleMap.pVSPKHandle,
-        ESYS_TR_PASSWORD,
-        ESYS_TR_NONE,
-        ESYS_TR_NONE,
-        outData,
-        mode,
-        &ivIn,
-        &outData2,
-        &ivOut2);
-
-    if(rc != TSS2_RC_SUCCESS)
-    {
-        fprintf(stdout,"Error during state restoring\n");
-        exit(EXIT_FAILURE);
-    } else
-    {
-        fprintf(stdout,"State restoring successfull\n");
-    }
-
-    printf("Decrypted outData (outData2):\n");
-
-    for (size_t i = 0; i < outData2->size; i++)
-    {
-        printf("%d ", outData2->buffer[i]);
-    }
-
-    printf("\n");
-
-    if (outData2->size != inData.size ||
-        memcmp(&outData2->buffer, &inData.buffer[0], outData2->size) != 0) {
-        printf("Error: decrypted text not equal to origin");
-        exit(EXIT_FAILURE);
-    }
-   
+    fclose(stateFile);
 }
 
 void RestoreState(char *statePath){
     TSS2_RC rc;
 
-// STORE STATE PARAMETERS
-    // TPM2B_PUBLIC *outPublic = NULL;
-    // TPM2B_CREATION_DATA *creationData = NULL;
-    // TPM2B_DIGEST *creationHash = NULL;
-    // TPMT_TK_CREATION *creationTicket = NULL;
-    TPM2B_MAX_BUFFER *outData = NULL;
-    TPM2B_IV *ivOut = NULL;
+    UINT32 maxCmdSize = 4*1024;
+    BYTE restoredStateBuffer[maxCmdSize];
+    memset(restoredStateBuffer,0,maxCmdSize);
 
-// RESTORE STATE PARAMETERS
-    // TPM2B_PUBLIC *outPublic2 = NULL;
-    // TPM2B_PRIVATE *outPrivate2 = NULL;
-    // TPM2B_CREATION_DATA *creationData2 = NULL;
-    // TPM2B_DIGEST *creationHash2 = NULL;
-    // TPMT_TK_CREATION *creationTicket2 = NULL;
-    TPM2B_MAX_BUFFER *outData2 = NULL;
-    TPM2B_IV *ivOut2 = NULL;
+    TPM2B_IV *restoredStateIV = NULL;
 
     TPMI_ALG_CIPHER_MODE mode = TPM2_ALG_NULL;
 
-    UINT32 maxCmdSize = 1024;
-    BYTE cmdBuffer[maxCmdSize];
+
+    FILE *stateFile;
+    stateFile = fopen(statePath, "rb");
+    if(stateFile == NULL) {
+        perror("Error opening file");
+        exit(1);
+    }
+
+    fseek(stateFile, 0, SEEK_END);
+    long fsize = ftell(stateFile);
+    fseek(stateFile, 0, SEEK_SET);
+    
+    char buffer[fsize];
+    memset(buffer,0,fsize);
+
+    fread(buffer, fsize, 1, stateFile);
+
+    fclose(stateFile);
+
+    double nchunks = ceil((double)fsize/1024);
+
+
+    TPM2B_MAX_BUFFER *storedStateBuffer;
     size_t nextData = 0;
+    // int offset;
 
-    rc = Tss2_MU_TPM2B_PRIVATE_Marshal(&s_VPS.vEPS.vpsPrivate, cmdBuffer,
-                                maxCmdSize,
-                                &nextData);
-    if (rc)
-        exit(EXIT_FAILURE);
+    TPM2B_MAX_BUFFER *state;
 
-    rc = Tss2_MU_TPM2B_PUBLIC_Marshal(&s_VPS.vEPS.vpsPublic, cmdBuffer,
-                                maxCmdSize,
-                                &nextData);
-    if (rc)
-        exit(EXIT_FAILURE);
 
-    rc = Tss2_MU_TPM2B_PRIVATE_Marshal(&s_VPS.vSPS.vpsPrivate, cmdBuffer,
-                                maxCmdSize,
-                                &nextData);
-    if (rc)
-        exit(EXIT_FAILURE);
 
-    rc = Tss2_MU_TPM2B_PUBLIC_Marshal(&s_VPS.vSPS.vpsPublic, cmdBuffer,
-                                maxCmdSize,
-                                &nextData);
-    if (rc)
-        exit(EXIT_FAILURE);
-
-    rc = Tss2_MU_TPM2B_PRIVATE_Marshal(&s_VPS.vPPS.vpsPrivate, cmdBuffer,
-                                maxCmdSize,
-                                &nextData);
-    if (rc)
-        exit(EXIT_FAILURE);
-
-    rc = Tss2_MU_TPM2B_PUBLIC_Marshal(&s_VPS.vPPS.vpsPublic, cmdBuffer,
-                                maxCmdSize,
-                                &nextData);
-    if (rc)
-        exit(EXIT_FAILURE);
-
-    rc = Tss2_MU_UINT32_Marshal(s_SWK.eSWK.handle, cmdBuffer,
-                                maxCmdSize,
-                                &nextData);
-    if (rc)
-        exit(EXIT_FAILURE);
-    
-    rc = Tss2_MU_UINT32_Marshal(s_SWK.sSWK.handle, cmdBuffer,
-                                maxCmdSize,
-                                &nextData);
-    if (rc)
-        exit(EXIT_FAILURE);
-
-    rc = Tss2_MU_UINT32_Marshal(s_SWK.pSWK.handle, cmdBuffer,
-                                maxCmdSize,
-                                &nextData);
-    if (rc)
-        exit(EXIT_FAILURE);
-
-    rc = Tss2_MU_UINT32_Marshal(s_HandleMap.vEPSHandle, cmdBuffer,
-                                maxCmdSize,
-                                &nextData);
-    if (rc)
-        exit(EXIT_FAILURE);
-    
-    rc = Tss2_MU_UINT32_Marshal(s_HandleMap.vSPSHandle, cmdBuffer,
-                                maxCmdSize,
-                                &nextData);
-    if (rc)
-        exit(EXIT_FAILURE);
-
-    rc = Tss2_MU_UINT32_Marshal(s_HandleMap.vPPSHandle, cmdBuffer,
-                                maxCmdSize,
-                                &nextData);
-    if (rc)
-        exit(EXIT_FAILURE);
-
-    rc = Tss2_MU_UINT32_Marshal(sizeof(PERSISTENT_DATA), cmdBuffer,
-                                maxCmdSize,
-                                &nextData);
-    if (rc)
-        exit(EXIT_FAILURE);
-
-    NvRead(cmdBuffer+nextData, NV_PERSISTENT_DATA, sizeof(PERSISTENT_DATA));
-    nextData += sizeof(PERSISTENT_DATA);
-
-    TPM2B_IV ivIn = {
-        .size = 16,
-        .buffer = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16}
-    };
-
-    TPM2B_MAX_BUFFER inData = {
-        .size = (UINT16)1024,
-        .buffer = {}
-    };
-
-    memcpy(inData.buffer, cmdBuffer, 1024);
-
-    printf("\nMarshalled data in cmdBuffer copied in inData:\n");
-
-    for (size_t i = 0; i < inData.size; i++)
+    for (size_t i = 0; i < nchunks; i++)
     {
-        printf("%d ", inData.buffer[i]);
-    }
-    printf("\n");
 
-    printf("\n-------------Esys_VIRT_StoreState------------\n");
-    rc = Esys_VIRT_StoreState(
-        s_params.esys_context,
-        s_HandleMap.pVSPKHandle,
-        ESYS_TR_PASSWORD,
-        ESYS_TR_NONE,
-        ESYS_TR_NONE,
-        &inData,
-        mode,
-        &ivIn,
-        &outData,
-        &ivOut);
+        // offset = nextData;
 
-    if(rc != TSS2_RC_SUCCESS)
-    {
-        fprintf(stdout,"Error during state storing\n");
-        exit(EXIT_FAILURE);
-    } else
-    {
-        fprintf(stdout,"State storing successfull\n");
-    }
+        storedStateBuffer = NULL;
 
-    printf("Encrypted inData (outData):\n");
+        rc = Tss2_MU_TPM2B_MAX_BUFFER_Unmarshal((uint8_t *)buffer, fsize, &nextData, storedStateBuffer);
+        if (rc)
+            exit(EXIT_FAILURE);
 
-    for (size_t i = 0; i < outData->size; i++)
-    {
-        printf("%d ", outData->buffer[i]);
-    }
-    
-    printf("\n");
+        TPM2B_IV ivIn = {
+            .size = 16,
+            .buffer = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16}
+        };
 
-    printf("\n-------------Esys_VIRT_RestoreState------------\n");
-    rc = Esys_VIRT_RestoreState(
-        s_params.esys_context,
-        s_HandleMap.pVSPKHandle,
-        ESYS_TR_PASSWORD,
-        ESYS_TR_NONE,
-        ESYS_TR_NONE,
-        outData,
-        mode,
-        &ivIn,
-        &outData2,
-        &ivOut2);
 
-    if(rc != TSS2_RC_SUCCESS)
-    {
-        fprintf(stdout,"Error during state restoring\n");
-        exit(EXIT_FAILURE);
-    } else
-    {
-        fprintf(stdout,"State restoring successfull\n");
-    }
+        printf("\n-------------Esys_VIRT_RestoreState------------\n");
+        rc = Esys_VIRT_RestoreState(
+            s_params.esys_context,
+            s_HandleMap.pVSPKHandle,
+            ESYS_TR_PASSWORD,
+            ESYS_TR_NONE,
+            ESYS_TR_NONE,
+            storedStateBuffer,
+            mode,
+            &ivIn,
+            &state,
+            &restoredStateIV);
 
-    printf("Decrypted outData (outData2):\n");
+        if(rc != TSS2_RC_SUCCESS)
+        {
+            fprintf(stdout,"Error during state restoring\n");
+            exit(EXIT_FAILURE);
+        } else
+        {
+            fprintf(stdout,"State restoring successfull\n");
+        }
 
-    for (size_t i = 0; i < outData2->size; i++)
-    {
-        printf("%d ", outData2->buffer[i]);
-    }
-
-    printf("\n");
-
-    if (outData2->size != inData.size ||
-        memcmp(&outData2->buffer, &inData.buffer[0], outData2->size) != 0) {
-        printf("Error: decrypted text not equal to origin");
-        exit(EXIT_FAILURE);
-    }
+        // memcpy(restoredStateBuffer+offset, &state->buffer, (size_t)&state->size);
    
+    }
+    
+
+
 }

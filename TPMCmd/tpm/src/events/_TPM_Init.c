@@ -110,7 +110,8 @@ LIB_EXPORT void _MSSIM_Init(bool binding, char* swkPath, char* vspkTemplatePath,
         
 
         CreateVSPK(vspkTemplatePath);
-        // StoreRestoreState();
+        // StoreState(statePath);
+        RestoreState(statePath);
         
 
         printf("\neSWK--> %d", s_SWK.eSWK.handle);
