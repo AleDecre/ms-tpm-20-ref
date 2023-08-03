@@ -271,22 +271,13 @@ int main(int argc, char* argv[])
                         PortNum = portNum;
                         s_ArgsMask ^= 1 << i++;
                         if(hwbind){
-                            if(i < s_Argc){
+                            if(i + 2 < s_Argc){
                                 swkPath = (char*)s_Argv[i];
                                 s_ArgsMask ^= 1 << i++;
                                 vspkTemplatePath = (char*)s_Argv[i];
                                 s_ArgsMask ^= 1 << i++;
-
-                                if(restore){
-                                    if(i < s_Argc){
-                                        statePath = (char*)s_Argv[i];
-                                        s_ArgsMask ^= 1 << i++;
-                                    }
-                                    else{
-                                        fprintf(stderr,"Not enough/right parameters to perform state restoring.\n");
-                                        exit(1);
-                                    }
-                                }
+                                statePath = (char*)s_Argv[i];
+                                s_ArgsMask ^= 1 << i++;
                             }
                             else{
                                 fprintf(stderr,"Not enough/right parameters to perform hardware binding.\n");
@@ -336,7 +327,7 @@ int main(int argc, char* argv[])
     if(hwbind)
     {
         printf("\nPerforming hardware binding...\n");
-        _MSSIM_Init(1, swkPath, vspkTemplatePath, statePath);
+        _MSSIM_Init(hwbind, restore, swkPath, vspkTemplatePath, statePath);
     }
 
     StartTcpServer(PortNum);
