@@ -34,6 +34,7 @@
  */
 #include "Tpm.h"
 #include "Shutdown_fp.h"
+#include "VIRTUtility_spt.h"
 
 #if CC_Shutdown  // Conditional expansion of this file
 
