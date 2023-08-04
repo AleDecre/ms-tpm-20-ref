@@ -222,6 +222,8 @@ typedef struct {
 typedef struct {
     ESYS_CONTEXT *esys_context;
     TSS2_TCTI_CONTEXT *tcti_context;
+    char statePath[255];
+    char vspkTemplatePath[255];
 } pTPMConnectionParameters;
 
 //*** HASH_OBJECT Structure

@@ -92,7 +92,10 @@ LIB_EXPORT void _MSSIM_Init(bool binding, bool restore, char* swkPath, char* vsp
 
     if(binding){
 
-        Init_Tcti_Esys_Context();
+        strcpy(s_params.statePath, statePath);
+        strcpy(s_params.vspkTemplatePath, vspkTemplatePath);
+
+        Init_Tcti_Esys_Context(1);
 
         printf("\neSWK--> %d", s_SWK.eSWK.handle);
         printf("\nsSWK--> %d", s_SWK.sSWK.handle);
@@ -105,17 +108,15 @@ LIB_EXPORT void _MSSIM_Init(bool binding, bool restore, char* swkPath, char* vsp
         LoadSWK(swkPath);
 
         if(restore){
-            RestoreState(statePath, vspkTemplatePath);
+            RestoreState(statePath, vspkTemplatePath, 1);
         }else{
             CreateLoadPrimarySeed(ESYS_TR_RH_ENDORSEMENT);
             CreateLoadPrimarySeed(ESYS_TR_RH_OWNER);
             CreateLoadPrimarySeed(ESYS_TR_RH_PLATFORM);
             CreateVSPK(vspkTemplatePath);
+            StoreState(s_params.statePath);
         }
-
-        StoreState(statePath);
         
-
         printf("\neSWK--> %d", s_SWK.eSWK.handle);
         printf("\nsSWK--> %d", s_SWK.sSWK.handle);
         printf("\npSWK--> %d", s_SWK.pSWK.handle);
@@ -123,8 +124,6 @@ LIB_EXPORT void _MSSIM_Init(bool binding, bool restore, char* swkPath, char* vsp
         printf("\nvSPS--> %d", s_HandleMap.vSPSHandle);
         printf("\nvPPS--> %d", s_HandleMap.vPPSHandle);
         printf("\nVSPK--> %d\n", s_HandleMap.pVSPKHandle);
-
-        
         
         Finalize_Tcti_Esys_Context();
 

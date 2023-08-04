@@ -75,7 +75,6 @@ void Init_Tcti_Esys_Context()
     }
 
     fprintf(stdout, "Initialization of the TCTI context successfull\n");
-
     TSS2_ABI_VERSION abi_version = TSS2_ABI_VERSION_CURRENT;
 
     //Initialization of the ESYS context
@@ -109,14 +108,12 @@ void Init_Tcti_Esys_Context()
 void Finalize_Tcti_Esys_Context()
 {
     Tss2_Tcti_Finalize(s_params.tcti_context);
+    free(s_params.tcti_context);
+    s_params.tcti_context = NULL;
 
     fprintf(stdout, "\nFinalization of the TCTI context\n");
 
     Esys_Finalize(&s_params.esys_context);
-
-    free(s_params.tcti_context);
-    s_params.tcti_context = NULL;
-
     fprintf(stdout, "Finalization of the Esys context\n\n");
 }
 
@@ -483,6 +480,7 @@ void StoreState(char *statePath){
 
     TPMS_CONTEXT *context;
     TPMS_CONTEXT VPScontext;
+
     rc = Esys_ContextSave(s_params.esys_context, s_HandleMap.vEPSHandle, &context);
     if (rc)
         exit(EXIT_FAILURE);
@@ -526,11 +524,49 @@ void StoreState(char *statePath){
     fwrite(stateBuffer, nextData, 1, stateFile);
 
 
+
     memset(stateBuffer,0,maxCmdSize);
     nextData = 0;
 
+    int8_t count = 0;
 
-    //TODO do other marshal...
+    for (size_t i = 0; i < MAX_LOADED_OBJECTS; i++){
+        if(s_HandleMap.objectHandles[i].defined){
+            count++;
+        }
+    }
+
+    rc = Tss2_MU_INT8_Marshal(count, stateBuffer, maxCmdSize, &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
+
+    TPMS_CONTEXT createdObjectContext;
+    ESYS_TR handle;
+
+    for (size_t i = 0; i < MAX_LOADED_OBJECTS; i++){
+        if(s_HandleMap.objectHandles[i].defined){
+            if(s_HandleMap.objectHandles[i].fullSoftware)
+                handle = s_HandleMap.objectHandles[i].handle.virtual;
+            else
+                handle = s_HandleMap.objectHandles[i].handle.physical;
+
+
+            rc = Esys_ContextSave(s_params.esys_context, handle, &context);
+            if (rc)
+                exit(EXIT_FAILURE);
+            
+            createdObjectContext = *context;
+
+            rc = Tss2_MU_INT8_Marshal((uint8_t)s_HandleMap.objectHandles[i].fullSoftware, stateBuffer, maxCmdSize, &nextData);
+            if (rc)
+                exit(EXIT_FAILURE);
+
+            rc = Tss2_MU_TPMS_CONTEXT_Marshal(&createdObjectContext, stateBuffer, maxCmdSize, &nextData);
+            if (rc)
+                exit(EXIT_FAILURE);
+        }
+    }
+
     
     uint8_t toEncryptBuffer[sizeof(PERSISTENT_DATA)];
     NvRead(toEncryptBuffer, NV_PERSISTENT_DATA, sizeof(PERSISTENT_DATA));
@@ -604,7 +640,7 @@ void StoreState(char *statePath){
     fclose(stateFile);
 }
 
-void RestoreState(char *statePath, char *vspkTemplatePath){
+void RestoreState(char *statePath, char *vspkTemplatePath, BOOL restoreAtInit){
     TSS2_RC rc;
 
     UINT32 maxCmdSize = 4*1024;
@@ -678,57 +714,96 @@ void RestoreState(char *statePath, char *vspkTemplatePath){
     Esys_TR_SetAuth(s_params.esys_context,s_HandleMap.vPPSHandle,NULL);
 
 
-    CreateVSPK("/home/adc/tesi/thesisProject/vTPM1/vspk.dat");
+    CreateVSPK(vspkTemplatePath);
 
+    if(restoreAtInit){
+        double nchunks = ceil((double)(fsize-nextData)/sizeof(TPM2B_MAX_BUFFER));
+        TPM2B_MAX_BUFFER encryptedState;
+        size_t encryptedStateBufferSize = 0;
+
+        TPM2B_MAX_BUFFER *decryptedState;
+        TPM2B_IV *decryptedStateIV = NULL;
+
+        for (size_t i = 0; i < nchunks; i++)
+        {
+
+            rc = Tss2_MU_TPM2B_MAX_BUFFER_Unmarshal((uint8_t *)storedStateBuffer, fsize, &nextData, &encryptedState);
+            if (rc)
+                exit(EXIT_FAILURE);
+
+            TPM2B_IV ivIn = {
+                .size = 16,
+                .buffer = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16}
+            };
+
+
+            printf("\n-------------Esys_VIRT_RestoreState------------\n");
+            rc = Esys_VIRT_RestoreState(
+                s_params.esys_context,
+                s_HandleMap.pVSPKHandle,
+                ESYS_TR_PASSWORD,
+                ESYS_TR_NONE,
+                ESYS_TR_NONE,
+                &encryptedState,
+                mode,
+                &ivIn,
+                &decryptedState,
+                &decryptedStateIV);
+
+            if(rc != TSS2_RC_SUCCESS)
+            {
+                fprintf(stdout,"Error during state restoring\n");
+                exit(EXIT_FAILURE);
+            } else
+            {
+                fprintf(stdout,"State restoring successfull\n");
+            }
+            
+
+            memcpy(restoredStateBuffer+encryptedStateBufferSize, decryptedState->buffer, (size_t)decryptedState->size);
+            encryptedStateBufferSize += decryptedState->size;
     
-    double nchunks = ceil((double)(fsize-nextData)/sizeof(TPM2B_MAX_BUFFER));
+        }
 
+        int8_t count = 0;
+        int8_t fullSoftware = 0;
+        ESYS_TR *handle;
+        nextData = 0;
 
-    TPM2B_MAX_BUFFER encryptedState;
-    size_t encryptedStateBufferSize = 0;
-
-    TPM2B_MAX_BUFFER *decryptedState;
-    TPM2B_IV *decryptedStateIV = NULL;
-
-    for (size_t i = 0; i < nchunks; i++)
-    {
-
-        rc = Tss2_MU_TPM2B_MAX_BUFFER_Unmarshal((uint8_t *)storedStateBuffer, fsize, &nextData, &encryptedState);
+        rc = Tss2_MU_INT8_Unmarshal(restoredStateBuffer, encryptedStateBufferSize, &nextData, &count);
         if (rc)
             exit(EXIT_FAILURE);
 
-        TPM2B_IV ivIn = {
-            .size = 16,
-            .buffer = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16}
-        };
-
-
-        printf("\n-------------Esys_VIRT_RestoreState------------\n");
-        rc = Esys_VIRT_RestoreState(
-            s_params.esys_context,
-            s_HandleMap.pVSPKHandle,
-            ESYS_TR_PASSWORD,
-            ESYS_TR_NONE,
-            ESYS_TR_NONE,
-            &encryptedState,
-            mode,
-            &ivIn,
-            &decryptedState,
-            &decryptedStateIV);
-
-        if(rc != TSS2_RC_SUCCESS)
-        {
-            fprintf(stdout,"Error during state restoring\n");
-            exit(EXIT_FAILURE);
-        } else
-        {
-            fprintf(stdout,"State restoring successfull\n");
-        }
         
+        for (size_t i = 0; i < count; i++){
+            rc = Tss2_MU_INT8_Unmarshal(restoredStateBuffer, encryptedStateBufferSize, &nextData, &fullSoftware);
+                if (rc)
+                exit(EXIT_FAILURE);
+            Tss2_MU_TPMS_CONTEXT_Unmarshal((uint8_t *)restoredStateBuffer,  encryptedStateBufferSize, &nextData,  &context);
+            printf("\n-------------Esys_ContextLoad------------\n");
+            if(fullSoftware){
+                s_HandleMap.objectHandles[i].fullSoftware = 1;
+                handle = &s_HandleMap.objectHandles[i].handle.virtual;
+                }
+            else{
+                s_HandleMap.objectHandles[i].fullSoftware = 0;
+                handle = &s_HandleMap.objectHandles[i].handle.physical;
+            }
 
-        memcpy(restoredStateBuffer+encryptedStateBufferSize, decryptedState->buffer, (size_t)decryptedState->size);
-        encryptedStateBufferSize += decryptedState->size;
-   
+            rc = Esys_ContextLoad(s_params.esys_context, &context, handle);
+            if(rc != TSS2_RC_SUCCESS)
+            {
+                fprintf(stdout,"Error during context loading\n");
+                exit(EXIT_FAILURE);
+            } else
+            {
+                fprintf(stdout,"Context loading successfull\n");
+            }
+            Esys_TR_SetAuth(s_params.esys_context,*handle,NULL);
+            s_HandleMap.objectHandles[i].defined = 1;
+        }
+
+        NvWrite(NV_PERSISTENT_DATA, sizeof(PERSISTENT_DATA), restoredStateBuffer);
     }
 
 }

@@ -39,6 +39,8 @@
 //
 //** Includes, Locals, Defines and Function Prototypes
 #include "TpmBuildSwitches.h"
+#include "Tpm.h"
+#include "VIRTUtility_spt.h"
 #include <stdio.h>
 #include <stdbool.h>
 
@@ -352,6 +354,10 @@ int RegularCommandService(int PortNumber)
         // to connect
         continueServing = TpmServer(serverSocket);
         closesocket(serverSocket);
+        Init_Tcti_Esys_Context();
+        RestoreState(s_params.statePath, s_params.vspkTemplatePath, 0);
+        StoreState(s_params.statePath);
+        Finalize_Tcti_Esys_Context();
     } while(continueServing);
     return 0;
 }

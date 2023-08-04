@@ -104,6 +104,11 @@ MSSIM2_Shutdown(Shutdown_In* in  // IN: input parameter list
 
     NV_SYNC_PERSISTENT(orderlyState);
 
+    Init_Tcti_Esys_Context();
+    RestoreState(s_params.statePath, s_params.vspkTemplatePath, 0);
+    StoreState(s_params.statePath);
+    Finalize_Tcti_Esys_Context();
+
     return MSSIM_RC_SUCCESS;
 }
 #endif  // CC_Shutdown

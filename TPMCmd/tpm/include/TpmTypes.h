@@ -2744,8 +2744,14 @@ typedef struct{
 } SWKEntry;
 
 typedef union{
-    MSSIM_HANDLE vObjectHandle;
-    MSSIM_HANDLE pObjectHandle;
+    MSSIM_HANDLE virtual;
+    MSSIM_HANDLE physical;
+} CREATED_OBJECT_HANDLE;
+
+typedef struct{
+    BOOL defined;
+    BOOL fullSoftware;
+    CREATED_OBJECT_HANDLE handle;
 } CREATED_OBJECT;
 
 typedef struct {
@@ -2753,7 +2759,7 @@ typedef struct {
     MSSIMI_RH_HIERARCHY vPPSHandle;
     MSSIMI_RH_HIERARCHY vSPSHandle;
     VSPK_STRUCTURE pVSPKHandle;
-    CREATED_OBJECT objectHandle[MAX_LOADED_OBJECTS];
+    CREATED_OBJECT objectHandles[MAX_LOADED_OBJECTS];
 } HandleMap;
 
 #endif  // _MSSIM_TYPES_H_

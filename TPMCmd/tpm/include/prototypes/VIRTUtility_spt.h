@@ -57,6 +57,6 @@ void CreateVSPK(char *vspkTemplatePath);
 
 void StoreState(char *statePath);
 
-void RestoreState(char *statePath, char *vspkTemplatePath);
+void RestoreState(char *statePath, char *vspkTemplatePath, BOOL restoreAtInit);
 
 #endif  // _VIRTUTILITY_SPT_FP_H_
