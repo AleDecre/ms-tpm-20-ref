@@ -38,7 +38,7 @@ SIMULATOR_INC =  -I $(srcdir)/Simulator/include \
     -I $(srcdir)/Simulator/include/prototypes
 TPM_INC = -I $(srcdir)/tpm/include \
     -I $(srcdir)/tpm/include/prototypes
-tsslib = -ltss2-tcti-tabrmd -ltss2-tcti-mssim -ltss2-tcti-device -ltss2-esys -ltss2-mu
+tsslib = -ltss2-tcti-mssim -ltss2-tcti-device -ltss2-esys -ltss2-mu
 
 libplatform = Platform/src/libplatform.a
 libtpm = tpm/src/libtpm.a

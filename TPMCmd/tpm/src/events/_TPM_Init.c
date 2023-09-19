@@ -90,13 +90,15 @@ LIB_EXPORT void _MSSIM_Init(bool binding, bool restore, char* swkPath, char* vsp
         TimePowerOn();
     }
 
+    s_vTPM = binding;
+
     if(binding){
 
         strcpy(s_params.statePath, statePath);
         strcpy(s_params.vspkTemplatePath, vspkTemplatePath);
 
-        Init_Tcti_Esys_Context(1);
-
+        Init_Tcti_Esys_Context();
+        
         printf("\neSWK--> %d", s_SWK.eSWK.handle);
         printf("\nsSWK--> %d", s_SWK.sSWK.handle);
         printf("\npSWK--> %d", s_SWK.pSWK.handle);

@@ -41,7 +41,7 @@
 #define _VIRTUTILITY_SPT_FP_H_
 
 #include "tss2/tss2_tcti_mssim.h"
-#include "tss2/tss2-tcti-tabrmd.h"
+// #include "tss2/tss2-tcti-tabrmd.h"
 #include "tss2/tss2_esys.h"
 #include "tss2/tss2_mu.h"
 

@@ -318,7 +318,7 @@ int PlatformSignalService(int PortNumber)
 
 //*** RegularCommandService()
 // This function services regular commands.
-int RegularCommandService(int PortNumber)
+int RegularCommandService(int PortNumber, bool hwbind)
 {
     SOCKET             listenSocket;
     SOCKET             serverSocket;
@@ -354,10 +354,12 @@ int RegularCommandService(int PortNumber)
         // to connect
         continueServing = TpmServer(serverSocket);
         closesocket(serverSocket);
-        Init_Tcti_Esys_Context();
-        RestoreState(s_params.statePath, s_params.vspkTemplatePath, 0);
-        StoreState(s_params.statePath);
-        Finalize_Tcti_Esys_Context();
+        if(hwbind){
+            Init_Tcti_Esys_Context();
+            RestoreState(s_params.statePath, s_params.vspkTemplatePath, 0);
+            StoreState(s_params.statePath);
+            Finalize_Tcti_Esys_Context();
+        }
     } while(continueServing);
     return 0;
 }
@@ -460,7 +462,7 @@ static int ActTimeService(void)
 // specified.
 //
 // Note that there is no way to specify the network interface in this implementation.
-int StartTcpServer(int PortNumber)
+int StartTcpServer(int PortNumber, bool hwbind)
 {
     int res;
 //
@@ -482,7 +484,7 @@ int StartTcpServer(int PortNumber)
         return res;
     }
     // Start Regular/DRTM MSSIM command service
-    res = RegularCommandService(PortNumber);
+    res = RegularCommandService(PortNumber, hwbind);
     if(res != 0)
     {
         printf("RegularCommandService failed\n");

@@ -125,6 +125,7 @@ void LoadSWK(char *swkPath)
     swkFile = fopen(swkPath, "rb");
     if(swkFile == NULL) {
         perror("Error opening file");
+        Finalize_Tcti_Esys_Context();
         exit(1);
     }
 
@@ -528,40 +529,47 @@ void StoreState(char *statePath){
     memset(stateBuffer,0,maxCmdSize);
     nextData = 0;
 
-    int8_t count = 0;
+    int8_t fullSoftware = 0;
+    int8_t hwBound = 0;
 
     for (size_t i = 0; i < MAX_LOADED_OBJECTS; i++){
         if(s_HandleMap.objectHandles[i].defined){
-            count++;
+        if(s_HandleMap.objectHandles[i].fullSoftware){
+            fullSoftware++;
+        }
+        else{
+            hwBound++;
+        }
         }
     }
 
-    rc = Tss2_MU_INT8_Marshal(count, stateBuffer, maxCmdSize, &nextData);
+    rc = Tss2_MU_INT8_Marshal(fullSoftware, stateBuffer, maxCmdSize, &nextData);
+    if (rc)
+        exit(EXIT_FAILURE);
+
+    rc = Tss2_MU_INT8_Marshal(hwBound, stateBuffer, maxCmdSize, &nextData);
     if (rc)
         exit(EXIT_FAILURE);
 
     TPMS_CONTEXT createdObjectContext;
-    ESYS_TR handle;
 
     for (size_t i = 0; i < MAX_LOADED_OBJECTS; i++){
-        if(s_HandleMap.objectHandles[i].defined){
-            if(s_HandleMap.objectHandles[i].fullSoftware)
-                handle = s_HandleMap.objectHandles[i].handle.virtual;
-            else
-                handle = s_HandleMap.objectHandles[i].handle.physical;
-
-
-            rc = Esys_ContextSave(s_params.esys_context, handle, &context);
+        if(s_HandleMap.objectHandles[i].defined && s_HandleMap.objectHandles[i].fullSoftware){
+            rc = Esys_ContextSave(s_params.esys_context, s_HandleMap.objectHandles[i].handle.virtual, &context);
             if (rc)
                 exit(EXIT_FAILURE);
             
             createdObjectContext = *context;
 
-            rc = Tss2_MU_INT8_Marshal((uint8_t)s_HandleMap.objectHandles[i].fullSoftware, stateBuffer, maxCmdSize, &nextData);
+            rc = Tss2_MU_TPMS_CONTEXT_Marshal(&createdObjectContext, stateBuffer, maxCmdSize, &nextData);
             if (rc)
                 exit(EXIT_FAILURE);
+        }
+    }
 
-            rc = Tss2_MU_TPMS_CONTEXT_Marshal(&createdObjectContext, stateBuffer, maxCmdSize, &nextData);
+    for (size_t i = 0; i < MAX_LOADED_OBJECTS; i++){
+        if(s_HandleMap.objectHandles[i].defined && !s_HandleMap.objectHandles[i].fullSoftware){
+            rc = Tss2_MU_INT32_Marshal(s_HandleMap.objectHandles[i].handle.physical, stateBuffer, maxCmdSize, &nextData);
             if (rc)
                 exit(EXIT_FAILURE);
         }
@@ -765,32 +773,26 @@ void RestoreState(char *statePath, char *vspkTemplatePath, BOOL restoreAtInit){
     
         }
 
-        int8_t count = 0;
         int8_t fullSoftware = 0;
-        ESYS_TR *handle;
+        int8_t hwBound = 0;
         nextData = 0;
 
-        rc = Tss2_MU_INT8_Unmarshal(restoredStateBuffer, encryptedStateBufferSize, &nextData, &count);
+        rc = Tss2_MU_INT8_Unmarshal(restoredStateBuffer, encryptedStateBufferSize, &nextData, &fullSoftware);
+        if (rc)
+            exit(EXIT_FAILURE);
+        rc = Tss2_MU_INT8_Unmarshal(restoredStateBuffer, encryptedStateBufferSize, &nextData, &hwBound);
         if (rc)
             exit(EXIT_FAILURE);
 
         
-        for (size_t i = 0; i < count; i++){
-            rc = Tss2_MU_INT8_Unmarshal(restoredStateBuffer, encryptedStateBufferSize, &nextData, &fullSoftware);
-                if (rc)
-                exit(EXIT_FAILURE);
+        for (size_t i = 0; i < fullSoftware; i++){
+
             Tss2_MU_TPMS_CONTEXT_Unmarshal((uint8_t *)restoredStateBuffer,  encryptedStateBufferSize, &nextData,  &context);
             printf("\n-------------Esys_ContextLoad------------\n");
-            if(fullSoftware){
-                s_HandleMap.objectHandles[i].fullSoftware = 1;
-                handle = &s_HandleMap.objectHandles[i].handle.virtual;
-                }
-            else{
-                s_HandleMap.objectHandles[i].fullSoftware = 0;
-                handle = &s_HandleMap.objectHandles[i].handle.physical;
-            }
+            
+            s_HandleMap.objectHandles[i].fullSoftware = 1;
 
-            rc = Esys_ContextLoad(s_params.esys_context, &context, handle);
+            rc = Esys_ContextLoad(s_params.esys_context, &context, &s_HandleMap.objectHandles[i].handle.virtual);
             if(rc != TSS2_RC_SUCCESS)
             {
                 fprintf(stdout,"Error during context loading\n");
@@ -799,7 +801,18 @@ void RestoreState(char *statePath, char *vspkTemplatePath, BOOL restoreAtInit){
             {
                 fprintf(stdout,"Context loading successfull\n");
             }
-            Esys_TR_SetAuth(s_params.esys_context,*handle,NULL);
+            Esys_TR_SetAuth(s_params.esys_context,s_HandleMap.objectHandles[i].handle.virtual,NULL);
+            s_HandleMap.objectHandles[i].defined = 1;
+        }
+
+        for (size_t i = 0; i < hwBound; i++){
+
+            INT32 handle;
+            Tss2_MU_INT32_Unmarshal((uint8_t *)restoredStateBuffer, encryptedStateBufferSize, &nextData, &handle);
+            
+            s_HandleMap.objectHandles[i].fullSoftware = 0;
+            s_HandleMap.objectHandles[i].handle.physical = handle;
+
             s_HandleMap.objectHandles[i].defined = 1;
         }
 

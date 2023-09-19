@@ -63,14 +63,14 @@ int PlatformSignalService(int PortNumber);
 
 //*** RegularCommandService()
 // This function services regular commands.
-int RegularCommandService(int PortNumber);
+int RegularCommandService(int PortNumber, bool hwbind);
 
 //*** StartTcpServer()
 // This is the main entry-point to the TCP server.  The server listens on port
 // specified.
 //
 // Note that there is no way to specify the network interface in this implementation.
-int StartTcpServer(int PortNumber);
+int StartTcpServer(int PortNumber, bool hwbind);
 
 //*** ReadBytes()
 // This function reads the indicated number of bytes ('NumBytes') into buffer

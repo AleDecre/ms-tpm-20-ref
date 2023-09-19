@@ -330,6 +330,6 @@ int main(int argc, char* argv[])
         _MSSIM_Init(hwbind, restore, swkPath, vspkTemplatePath, statePath);
     }
 
-    StartTcpServer(PortNum);
+    StartTcpServer(PortNum, hwbind);
     return EXIT_SUCCESS;
 }

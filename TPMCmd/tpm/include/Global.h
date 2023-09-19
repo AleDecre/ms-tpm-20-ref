@@ -1324,6 +1324,7 @@ EXTERN OBJECT s_objects[MAX_LOADED_OBJECTS];
 
 #  endif  // OBJECT_C
 
+EXTERN BOOL s_vTPM;
 EXTERN VPSMap s_VPS;
 EXTERN SWK s_SWK;
 EXTERN HandleMap s_HandleMap;

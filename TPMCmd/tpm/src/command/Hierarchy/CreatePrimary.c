@@ -75,6 +75,10 @@ MSSIM2_CreatePrimary(CreatePrimary_In*  in,  // IN: input parameter list
     OBJECT*      newObject;
     MSSIM2B_NAME   name;
 
+    if(in->inPublic.publicArea.objectAttributes & MSSIMA_OBJECT_pMSSIMCreated){
+        printf("\nPTPMCREATED CREATE PRIMARY\n");
+    }
+
     // Input Validation
     // Will need a place to put the result
     newObject = FindEmptyObjectSlot(&out->objectHandle);
@@ -101,12 +105,68 @@ MSSIM2_CreatePrimary(CreatePrimary_In*  in,  // IN: input parameter list
     // used as a random number generator during the object creation.
     // The caller does not know the seed values so the actual name does not have
     // to be over the input, it can be over the unmarshaled structure.
+    
+    /*
+    if(s_vTPM){
+
+        MSSIM2B seed;
+
+        OBJECT *object;
+
+        BOOL nullHierarchy = 0;
+
+        switch(in->primaryHandle)
+        {
+            case MSSIM_RH_PLATFORM:
+                object = HandleToObject(s_HandleMap.vPPSHandle);
+                break;
+            case MSSIM_RH_OWNER:
+                object = HandleToObject(s_HandleMap.vSPSHandle);
+                break;
+            case MSSIM_RH_ENDORSEMENT:
+                object = HandleToObject(s_HandleMap.vEPSHandle);
+                break;
+            default:
+                nullHierarchy = 1;
+                break;
+        }
+
+        if(object == NULL){
+            if(nullHierarchy){
+                seed = gr.nullSeed.b;
+            }
+            else{
+                return MSSIM_RCS_HANDLE;
+            }
+            
+        }
+            
+        seed = object->sensitive.sensitive.bits.b;
+        
+        result =
+            DRBG_InstantiateSeeded(&rand,
+                                &seed,
+                                PRIMARY_OBJECT_CREATION,
+                                (MSSIM2B*)PublicMarshalAndComputeName(publicArea, &name),
+                                &in->inSensitive.sensitive.data.b);
+    }
+    else{
+        result =
+            DRBG_InstantiateSeeded(&rand,
+                                &HierarchyGetPrimarySeed(in->primaryHandle)->b,
+                                PRIMARY_OBJECT_CREATION,
+                                (MSSIM2B*)PublicMarshalAndComputeName(publicArea, &name),
+                                &in->inSensitive.sensitive.data.b);
+    }
+    */
+
     result =
-        DRBG_InstantiateSeeded(&rand,
-                               &HierarchyGetPrimarySeed(in->primaryHandle)->b,
-                               PRIMARY_OBJECT_CREATION,
-                               (MSSIM2B*)PublicMarshalAndComputeName(publicArea, &name),
-                               &in->inSensitive.sensitive.data.b);
+    DRBG_InstantiateSeeded(&rand,
+                        &HierarchyGetPrimarySeed(in->primaryHandle)->b,
+                        PRIMARY_OBJECT_CREATION,
+                        (MSSIM2B*)PublicMarshalAndComputeName(publicArea, &name),
+                        &in->inSensitive.sensitive.data.b);
+
     if(result == MSSIM_RC_SUCCESS)
     {
         newObject->attributes.primary = SET;
