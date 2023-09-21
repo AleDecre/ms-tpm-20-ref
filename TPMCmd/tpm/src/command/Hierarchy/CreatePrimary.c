@@ -75,7 +75,7 @@ MSSIM2_CreatePrimary(CreatePrimary_In*  in,  // IN: input parameter list
     OBJECT*      newObject;
     MSSIM2B_NAME   name;
 
-    if(in->inPublic.publicArea.objectAttributes & MSSIMA_OBJECT_pMSSIMCreated){
+    if(s_vTPM && in->inPublic.publicArea.objectAttributes & MSSIMA_OBJECT_pMSSIMCreated){
         printf("\nPTPMCREATED CREATE PRIMARY\n");
     }
 

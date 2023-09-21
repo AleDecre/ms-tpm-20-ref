@@ -94,7 +94,7 @@ MSSIM2_Create(Create_In*  in,  // IN: input parameter list
     OBJECT*      newObject;
     MSSIMT_PUBLIC* publicArea;
 
-    if(in->inPublic.publicArea.objectAttributes & MSSIMA_OBJECT_pMSSIMCreated){
+    if(s_vTPM && in->inPublic.publicArea.objectAttributes & MSSIMA_OBJECT_pMSSIMCreated){
         printf("\nPTPMCREATED CREATED\n");
     }
 
