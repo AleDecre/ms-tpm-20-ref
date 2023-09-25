@@ -372,6 +372,282 @@ MSSIM2_Create(Create_In*  in,  // IN: input parameter list
         memcpy(out->outPrivate.t.buffer, outPrivate->buffer, outPrivate->size);
         Finalize_Tcti_Esys_Context();
     }
+    else if(s_vTPM && (in->inPublic.publicArea.objectAttributes & !MSSIMA_OBJECT_pMSSIMCreated)){
+               TSS2_RC rc;
+
+        TPM2B_SENSITIVE_CREATE inSensitive = {
+            .size = in->inSensitive.size,
+            .sensitive = {
+                .userAuth = {
+                    .size = in->inSensitive.sensitive.userAuth.t.size,
+                    .buffer = {*in->inSensitive.sensitive.userAuth.t.buffer},
+                },
+                .data = {
+                    .size = in->inSensitive.sensitive.data.t.size,
+                    .buffer = {*in->inSensitive.sensitive.data.t.buffer},
+                },
+            },
+        };
+        TPM2B_PUBLIC inPublic = {
+            .size = in->inSensitive.size,
+            .publicArea = {
+                .authPolicy = {
+                    .size = in->inPublic.publicArea.authPolicy.t.size,
+                    .buffer = {*in->inPublic.publicArea.authPolicy.t.buffer},
+                },
+                .nameAlg = in->inPublic.publicArea.nameAlg,
+                .objectAttributes = in->inPublic.publicArea.objectAttributes,
+                .type = in->inPublic.publicArea.type,
+            }
+        };
+
+        switch(in->inPublic.publicArea.type)
+            {
+                case MSSIM_ALG_KEYEDHASH:
+                    inPublic.publicArea.parameters.keyedHashDetail.scheme.details.exclusiveOr.hashAlg = in->inPublic.publicArea.parameters.keyedHashDetail.scheme.details.xor.hashAlg;
+                    inPublic.publicArea.parameters.keyedHashDetail.scheme.details.exclusiveOr.kdf = in->inPublic.publicArea.parameters.keyedHashDetail.scheme.details.xor.kdf;
+                    inPublic.publicArea.parameters.keyedHashDetail.scheme.details.hmac.hashAlg = in->inPublic.publicArea.parameters.keyedHashDetail.scheme.details.hmac.hashAlg;
+                    inPublic.publicArea.parameters.keyedHashDetail.scheme.details.null.empty[0] = 0;
+                    inPublic.publicArea.parameters.keyedHashDetail.scheme.scheme = in->inPublic.publicArea.parameters.keyedHashDetail.scheme.scheme;
+                    inPublic.publicArea.unique.keyedHash.size = in->inPublic.publicArea.unique.keyedHash.t.size;
+                    memcpy(inPublic.publicArea.unique.keyedHash.buffer, in->inPublic.publicArea.unique.keyedHash.t.buffer, in->inPublic.publicArea.unique.keyedHash.t.size);
+                case MSSIM_ALG_SYMCIPHER:
+                    inPublic.publicArea.parameters.symDetail.sym.algorithm = in->inPublic.publicArea.parameters.symDetail.sym.algorithm;
+                    switch(in->inPublic.publicArea.parameters.symDetail.sym.algorithm)
+                    {
+                        case MSSIM_ALG_AES:
+                            inPublic.publicArea.parameters.symDetail.sym.keyBits.aes = in->inPublic.publicArea.parameters.symDetail.sym.keyBits.aes;
+                            inPublic.publicArea.parameters.symDetail.sym.mode.aes = in->inPublic.publicArea.parameters.symDetail.sym.mode.aes;
+                        case MSSIM_ALG_CAMELLIA:
+                            inPublic.publicArea.parameters.symDetail.sym.keyBits.camellia = in->inPublic.publicArea.parameters.symDetail.sym.keyBits.camellia;
+                            inPublic.publicArea.parameters.symDetail.sym.mode.camellia = in->inPublic.publicArea.parameters.symDetail.sym.mode.camellia;
+                        case MSSIM_ALG_XOR:
+                            inPublic.publicArea.parameters.symDetail.sym.keyBits.exclusiveOr = in->inPublic.publicArea.parameters.symDetail.sym.keyBits.xor;
+                        case MSSIM_ALG_SYMCIPHER:
+                            inPublic.publicArea.parameters.symDetail.sym.keyBits.sym = in->inPublic.publicArea.parameters.symDetail.sym.keyBits.sym;
+                            inPublic.publicArea.parameters.symDetail.sym.mode.sym = in->inPublic.publicArea.parameters.symDetail.sym.mode.sym;
+                    }
+                case MSSIM_ALG_RSA:
+                    inPublic.publicArea.parameters.rsaDetail.exponent = in->inPublic.publicArea.parameters.rsaDetail.exponent;
+                    inPublic.publicArea.parameters.rsaDetail.keyBits = in->inPublic.publicArea.parameters.rsaDetail.keyBits;
+                    inPublic.publicArea.parameters.rsaDetail.scheme.scheme = in->inPublic.publicArea.parameters.rsaDetail.scheme.scheme;
+                    switch(in->inPublic.publicArea.parameters.rsaDetail.scheme.scheme)
+                    {
+                        case MSSIM_ALG_ECDAA:
+                            inPublic.publicArea.parameters.rsaDetail.scheme.details.ecdaa.hashAlg = in->inPublic.publicArea.parameters.rsaDetail.scheme.details.ecdaa.hashAlg;
+                            inPublic.publicArea.parameters.rsaDetail.scheme.details.ecdaa.count = in->inPublic.publicArea.parameters.rsaDetail.scheme.details.ecdaa.count;
+                        case MSSIM_ALG_ECDH:
+                            inPublic.publicArea.parameters.rsaDetail.scheme.details.ecdh.hashAlg = in->inPublic.publicArea.parameters.rsaDetail.scheme.details.ecdh.hashAlg;
+                        case MSSIM_ALG_ECDSA:
+                            inPublic.publicArea.parameters.rsaDetail.scheme.details.ecdsa.hashAlg = in->inPublic.publicArea.parameters.rsaDetail.scheme.details.ecdsa.hashAlg;
+                        case MSSIM_ALG_ECSCHNORR:
+                            inPublic.publicArea.parameters.rsaDetail.scheme.details.ecschnorr.hashAlg = in->inPublic.publicArea.parameters.rsaDetail.scheme.details.ecschnorr.hashAlg;
+                        case MSSIM_ALG_OAEP:
+                            inPublic.publicArea.parameters.rsaDetail.scheme.details.oaep.hashAlg = in->inPublic.publicArea.parameters.rsaDetail.scheme.details.oaep.hashAlg;
+                        case MSSIM_ALG_RSASSA:
+                            inPublic.publicArea.parameters.rsaDetail.scheme.details.rsassa.hashAlg = in->inPublic.publicArea.parameters.rsaDetail.scheme.details.rsassa.hashAlg;
+                    }
+                    inPublic.publicArea.parameters.rsaDetail.symmetric.algorithm = in->inPublic.publicArea.parameters.rsaDetail.symmetric.algorithm;
+                    switch(in->inPublic.publicArea.parameters.rsaDetail.symmetric.algorithm)
+                    {
+                        case MSSIM_ALG_AES:
+                            inPublic.publicArea.parameters.rsaDetail.symmetric.keyBits.aes = in->inPublic.publicArea.parameters.rsaDetail.symmetric.keyBits.aes;
+                            inPublic.publicArea.parameters.rsaDetail.symmetric.mode.aes = in->inPublic.publicArea.parameters.rsaDetail.symmetric.mode.aes;
+                        case MSSIM_ALG_CAMELLIA:
+                            inPublic.publicArea.parameters.rsaDetail.symmetric.keyBits.camellia = in->inPublic.publicArea.parameters.rsaDetail.symmetric.keyBits.camellia;
+                            inPublic.publicArea.parameters.rsaDetail.symmetric.mode.camellia = in->inPublic.publicArea.parameters.rsaDetail.symmetric.mode.camellia;
+                        case MSSIM_ALG_XOR:
+                            inPublic.publicArea.parameters.rsaDetail.symmetric.keyBits.exclusiveOr = in->inPublic.publicArea.parameters.rsaDetail.symmetric.keyBits.xor;
+                        case MSSIM_ALG_SYMCIPHER:
+                            inPublic.publicArea.parameters.rsaDetail.symmetric.keyBits.sym = in->inPublic.publicArea.parameters.rsaDetail.symmetric.keyBits.sym;
+                            inPublic.publicArea.parameters.rsaDetail.symmetric.mode.sym = in->inPublic.publicArea.parameters.rsaDetail.symmetric.mode.sym;
+                    }
+                case MSSIM_ALG_ECC:
+                    inPublic.publicArea.parameters.eccDetail.curveID = in->inPublic.publicArea.parameters.eccDetail.curveID;
+                    inPublic.publicArea.parameters.eccDetail.scheme.scheme = in->inPublic.publicArea.parameters.eccDetail.scheme.scheme;
+                    switch(in->inPublic.publicArea.parameters.eccDetail.scheme.scheme)
+                    {
+                        case MSSIM_ALG_ECDAA:
+                            inPublic.publicArea.parameters.eccDetail.scheme.details.ecdaa.hashAlg = in->inPublic.publicArea.parameters.eccDetail.scheme.details.ecdaa.hashAlg;
+                            inPublic.publicArea.parameters.eccDetail.scheme.details.ecdaa.count = in->inPublic.publicArea.parameters.eccDetail.scheme.details.ecdaa.count;
+                        case MSSIM_ALG_ECDH:
+                            inPublic.publicArea.parameters.eccDetail.scheme.details.ecdh.hashAlg = in->inPublic.publicArea.parameters.eccDetail.scheme.details.ecdh.hashAlg;
+                        case MSSIM_ALG_ECDSA:
+                            inPublic.publicArea.parameters.eccDetail.scheme.details.ecdsa.hashAlg = in->inPublic.publicArea.parameters.eccDetail.scheme.details.ecdsa.hashAlg;
+                        case MSSIM_ALG_ECSCHNORR:
+                            inPublic.publicArea.parameters.eccDetail.scheme.details.ecschnorr.hashAlg = in->inPublic.publicArea.parameters.eccDetail.scheme.details.ecschnorr.hashAlg;
+                        case MSSIM_ALG_OAEP:
+                            inPublic.publicArea.parameters.eccDetail.scheme.details.oaep.hashAlg = in->inPublic.publicArea.parameters.eccDetail.scheme.details.oaep.hashAlg;
+                        case MSSIM_ALG_RSASSA:
+                            inPublic.publicArea.parameters.eccDetail.scheme.details.rsassa.hashAlg = in->inPublic.publicArea.parameters.eccDetail.scheme.details.rsassa.hashAlg;
+                    }
+
+                    inPublic.publicArea.parameters.eccDetail.kdf.scheme = in->inPublic.publicArea.parameters.eccDetail.kdf.scheme;
+                    switch(in->inPublic.publicArea.parameters.eccDetail.symmetric.algorithm)
+                    {
+                        case MSSIM_ALG_KDF1_SP800_108:
+                            inPublic.publicArea.parameters.eccDetail.kdf.details.kdf1_sp800_108.hashAlg = in->inPublic.publicArea.parameters.eccDetail.kdf.details.kdf1_sp800_108.hashAlg;
+                        case MSSIM_ALG_KDF1_SP800_56A:
+                            inPublic.publicArea.parameters.eccDetail.kdf.details.kdf1_sp800_56a.hashAlg = in->inPublic.publicArea.parameters.eccDetail.kdf.details.kdf1_sp800_56a.hashAlg;
+                        case MSSIM_ALG_KDF2:
+                            inPublic.publicArea.parameters.eccDetail.kdf.details.kdf2.hashAlg = in->inPublic.publicArea.parameters.eccDetail.kdf.details.kdf2.hashAlg;
+                        case MSSIM_ALG_MGF1:
+                            inPublic.publicArea.parameters.eccDetail.kdf.details.mgf1.hashAlg = in->inPublic.publicArea.parameters.eccDetail.kdf.details.mgf1.hashAlg;
+                    }
+
+                    inPublic.publicArea.parameters.eccDetail.symmetric.algorithm = in->inPublic.publicArea.parameters.eccDetail.symmetric.algorithm;
+                    switch(in->inPublic.publicArea.parameters.eccDetail.symmetric.algorithm)
+                    {
+                        case MSSIM_ALG_AES:
+                            inPublic.publicArea.parameters.eccDetail.symmetric.keyBits.aes = in->inPublic.publicArea.parameters.eccDetail.symmetric.keyBits.aes;
+                            inPublic.publicArea.parameters.eccDetail.symmetric.mode.aes = in->inPublic.publicArea.parameters.eccDetail.symmetric.mode.aes;
+                        case MSSIM_ALG_CAMELLIA:
+                            inPublic.publicArea.parameters.eccDetail.symmetric.keyBits.camellia = in->inPublic.publicArea.parameters.eccDetail.symmetric.keyBits.camellia;
+                            inPublic.publicArea.parameters.eccDetail.symmetric.mode.camellia = in->inPublic.publicArea.parameters.eccDetail.symmetric.mode.camellia;
+                        case MSSIM_ALG_XOR:
+                            inPublic.publicArea.parameters.eccDetail.symmetric.keyBits.exclusiveOr = in->inPublic.publicArea.parameters.eccDetail.symmetric.keyBits.xor;
+                        case MSSIM_ALG_SYMCIPHER:
+                            inPublic.publicArea.parameters.eccDetail.symmetric.keyBits.sym = in->inPublic.publicArea.parameters.eccDetail.symmetric.keyBits.sym;
+                            inPublic.publicArea.parameters.eccDetail.symmetric.mode.sym = in->inPublic.publicArea.parameters.eccDetail.symmetric.mode.sym;
+                    }
+            }
+
+        TPM2B_DATA outInfo = {.size = in->outsideInfo.t.size, .buffer = {*in->outsideInfo.t.buffer}};
+        TPML_PCR_SELECTION pcrSelection = { .count = 0,};
+        TPM2B_PUBLIC *outPublic;
+        TPM2B_PRIVATE *outPrivate;
+        TPM2B_CREATION_DATA *creationData;
+        TPM2B_DIGEST *creationHash;
+        TPMT_TK_CREATION *creationTicket;
+        
+        Init_Tcti_Esys_Context();
+
+        TPM2B_AUTH authValueHierarchy = {.size = 0, .buffer = {}};
+        rc = Esys_TR_SetAuth(s_params.esys_context, ESYS_TR_RH_OWNER, &authValueHierarchy); 
+
+        ESYS_TR primaryKeyHandle = ESYS_TR_NONE;
+
+        TPM2B_AUTH authValuePrimaryKey = {
+            .size = 5,
+            .buffer = {1,2,3,4,5}
+        };
+        TPM2B_SENSITIVE_CREATE inSensitivePrimaryKey = {
+            .size = 0,
+            .sensitive = {
+                .userAuth = authValuePrimaryKey,
+                .data = {
+                    .size = 0,
+                    .buffer = {0}
+                },
+            },
+        };
+        TPM2B_PUBLIC inPublicPrimaryKey = {
+            .size = 0,
+            .publicArea = {
+                .type = TPM2_ALG_RSA,
+                .nameAlg = TPM2_ALG_SHA256,
+                .objectAttributes = (
+                    TPMA_OBJECT_USERWITHAUTH | 
+                    TPMA_OBJECT_RESTRICTED |
+                    TPMA_OBJECT_DECRYPT |
+                    TPMA_OBJECT_FIXEDTPM |
+                    TPMA_OBJECT_FIXEDPARENT |
+                    TPMA_OBJECT_SENSITIVEDATAORIGIN |
+                    TPMA_OBJECT_PTPMCREATED
+                ),
+                .authPolicy = {
+                    .size = 0,
+                    .buffer = {},
+                },
+                .parameters = {
+                    .rsaDetail = {
+                        .symmetric = {
+                            .algorithm = TPM2_ALG_AES,
+                            .keyBits = {
+                                .aes = 128
+                            },
+                            .mode = {
+                                .aes = TPM2_ALG_CFB,
+                            },
+                        },
+                        .scheme = {
+                            .scheme = TPM2_ALG_NULL,
+                        /*    .details = {
+                                .rsapss = {
+                                    .hashAlg = TPM2_ALG_SHA256
+                                }
+                            }*/
+                        },
+                        .keyBits = 2048,
+                        .exponent = 0,
+                    },
+                },
+                .unique = {
+                    .rsa = {
+                        .size = 0,
+                        .buffer = {},
+                    },
+                },
+            },
+        };
+
+        TPM2B_DATA outInfoPrimaryKey = {.size = 0, .buffer = {}};
+        TPML_PCR_SELECTION pcrSelectionPrimaryKey = {.count = 0};
+        TPM2B_PUBLIC *outPublicPrimaryKey;
+        TPM2B_CREATION_DATA *creationDataPrimaryKey;
+        TPM2B_DIGEST *creationHashPrimaryKey;
+        TPMT_TK_CREATION *creationTicketPrimaryKey;
+
+        rc = Esys_CreatePrimary(
+            s_params.esys_context,                       // [in] esysContext
+            ESYS_TR_RH_OWNER,                          // [in] primaryHandle : hierarchy
+            ESYS_TR_PASSWORD,                   // [in] Session handle for authorization of primaryHandle
+            ESYS_TR_NONE,                       // Session handle 2
+            ESYS_TR_NONE,                       // Session handle 3
+            &inSensitivePrimaryKey,             // [in] inSensitive => sensitive data
+            &inPublicPrimaryKey,                // [in] public Template
+            &outInfoPrimaryKey,                 // [in] data that will be included in the creation data this object to provide permanent
+            &pcrSelectionPrimaryKey,            // [in] PCR that will be used in the creation process
+            &primaryKeyHandle,                  // [in] object handle
+            &outPublicPrimaryKey,               // [out] Public portion of the created object 
+            &creationDataPrimaryKey,            // [out] contains the creation data
+            &creationHashPrimaryKey,            // [out] Digest of creation data
+            &creationTicketPrimaryKey           // [out] ticket used to validate the creation of the object
+        );
+
+        if(rc)
+        {
+            Finalize_Tcti_Esys_Context();
+            return rc;
+        }
+
+        rc = Esys_TR_SetAuth(s_params.esys_context,primaryKeyHandle,&authValuePrimaryKey);
+
+        rc = Esys_Create(
+            s_params.esys_context,
+            primaryKeyHandle,
+            ESYS_TR_PASSWORD,
+            ESYS_TR_NONE,
+            ESYS_TR_NONE,
+            &inSensitive,
+            &inPublic,
+            &outInfo,
+            &pcrSelection,
+            &outPrivate,
+            &outPublic,
+            &creationData,
+            &creationHash,
+            &creationTicket
+            );
+        if (rc){
+            Finalize_Tcti_Esys_Context();
+            return rc;
+        }
+
+        out->outPrivate.t.size = outPrivate->size;
+        memcpy(out->outPrivate.t.buffer, outPrivate->buffer, outPrivate->size);
+        Finalize_Tcti_Esys_Context();
+    }
     else{
         // Input Validation
         parentObject = HandleToObject(in->parentHandle);
