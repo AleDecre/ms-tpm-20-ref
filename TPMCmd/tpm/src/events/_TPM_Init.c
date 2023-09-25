@@ -90,8 +90,6 @@ LIB_EXPORT void _MSSIM_Init(bool binding, bool restore, char* swkPath, char* vsp
         TimePowerOn();
     }
 
-    s_vTPM = binding;
-
     if(binding){
 
         strcpy(s_params.statePath, statePath);

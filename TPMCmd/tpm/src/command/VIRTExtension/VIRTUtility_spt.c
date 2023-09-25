@@ -41,6 +41,7 @@
 
 void Init_Tcti_Esys_Context()
 {
+    s_vTPM = 1;
     TSS2_RC rc;
     size_t  context_size;
 

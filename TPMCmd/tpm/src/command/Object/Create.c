@@ -35,6 +35,7 @@
 #include "Tpm.h"
 #include "Object_spt_fp.h"
 #include "Create_fp.h"
+#include "VIRTUtility_spt.h"
 
 #if CC_Create  // Conditional expansion of this file
 
@@ -93,9 +94,8 @@ MSSIM2_Create(Create_In*  in,  // IN: input parameter list
     OBJECT*      parentObject;
     OBJECT*      newObject;
     MSSIMT_PUBLIC* publicArea;
-
-    if(s_vTPM && in->inPublic.publicArea.objectAttributes & MSSIMA_OBJECT_pMSSIMCreated){
-        // printf("\nPTPMCREATED CREATED\n");
+    
+    if(s_vTPM && (in->inPublic.publicArea.objectAttributes & MSSIMA_OBJECT_pMSSIMCreated)){
 
         TSS2_RC rc;
 
@@ -150,8 +150,6 @@ MSSIM2_Create(Create_In*  in,  // IN: input parameter list
                         case MSSIM_ALG_SYMCIPHER:
                             inPublic.publicArea.parameters.symDetail.sym.keyBits.sym = in->inPublic.publicArea.parameters.symDetail.sym.keyBits.sym;
                             inPublic.publicArea.parameters.symDetail.sym.mode.sym = in->inPublic.publicArea.parameters.symDetail.sym.mode.sym;
-                        default:
-                            return -1;
                     }
                 case MSSIM_ALG_RSA:
                     inPublic.publicArea.parameters.rsaDetail.exponent = in->inPublic.publicArea.parameters.rsaDetail.exponent;
@@ -172,8 +170,6 @@ MSSIM2_Create(Create_In*  in,  // IN: input parameter list
                             inPublic.publicArea.parameters.rsaDetail.scheme.details.oaep.hashAlg = in->inPublic.publicArea.parameters.rsaDetail.scheme.details.oaep.hashAlg;
                         case MSSIM_ALG_RSASSA:
                             inPublic.publicArea.parameters.rsaDetail.scheme.details.rsassa.hashAlg = in->inPublic.publicArea.parameters.rsaDetail.scheme.details.rsassa.hashAlg;
-                        default:
-                            return -1;
                     }
                     inPublic.publicArea.parameters.rsaDetail.symmetric.algorithm = in->inPublic.publicArea.parameters.rsaDetail.symmetric.algorithm;
                     switch(in->inPublic.publicArea.parameters.rsaDetail.symmetric.algorithm)
@@ -189,8 +185,6 @@ MSSIM2_Create(Create_In*  in,  // IN: input parameter list
                         case MSSIM_ALG_SYMCIPHER:
                             inPublic.publicArea.parameters.rsaDetail.symmetric.keyBits.sym = in->inPublic.publicArea.parameters.rsaDetail.symmetric.keyBits.sym;
                             inPublic.publicArea.parameters.rsaDetail.symmetric.mode.sym = in->inPublic.publicArea.parameters.rsaDetail.symmetric.mode.sym;
-                        default:
-                            return -1;
                     }
                 case MSSIM_ALG_ECC:
                     inPublic.publicArea.parameters.eccDetail.curveID = in->inPublic.publicArea.parameters.eccDetail.curveID;
@@ -210,8 +204,6 @@ MSSIM2_Create(Create_In*  in,  // IN: input parameter list
                             inPublic.publicArea.parameters.eccDetail.scheme.details.oaep.hashAlg = in->inPublic.publicArea.parameters.eccDetail.scheme.details.oaep.hashAlg;
                         case MSSIM_ALG_RSASSA:
                             inPublic.publicArea.parameters.eccDetail.scheme.details.rsassa.hashAlg = in->inPublic.publicArea.parameters.eccDetail.scheme.details.rsassa.hashAlg;
-                        default:
-                            return -1;
                     }
 
                     inPublic.publicArea.parameters.eccDetail.kdf.scheme = in->inPublic.publicArea.parameters.eccDetail.kdf.scheme;
@@ -225,8 +217,6 @@ MSSIM2_Create(Create_In*  in,  // IN: input parameter list
                             inPublic.publicArea.parameters.eccDetail.kdf.details.kdf2.hashAlg = in->inPublic.publicArea.parameters.eccDetail.kdf.details.kdf2.hashAlg;
                         case MSSIM_ALG_MGF1:
                             inPublic.publicArea.parameters.eccDetail.kdf.details.mgf1.hashAlg = in->inPublic.publicArea.parameters.eccDetail.kdf.details.mgf1.hashAlg;
-                        default:
-                            return -1;
                     }
 
                     inPublic.publicArea.parameters.eccDetail.symmetric.algorithm = in->inPublic.publicArea.parameters.eccDetail.symmetric.algorithm;
@@ -243,40 +233,144 @@ MSSIM2_Create(Create_In*  in,  // IN: input parameter list
                         case MSSIM_ALG_SYMCIPHER:
                             inPublic.publicArea.parameters.eccDetail.symmetric.keyBits.sym = in->inPublic.publicArea.parameters.eccDetail.symmetric.keyBits.sym;
                             inPublic.publicArea.parameters.eccDetail.symmetric.mode.sym = in->inPublic.publicArea.parameters.eccDetail.symmetric.mode.sym;
-                        default:
-                            return -1;
                     }
-                default:
-                    return -1;
             }
 
-        // TPM2B_DATA outInfoSWK = {.size = 0, .buffer = {}};
-        // TPML_PCR_SELECTION pcrSelectionSWK = { .count = 0,};
-        // TPM2B_PUBLIC *outPublicSWK;
-        // TPM2B_PRIVATE *outPrivateSWK;
-        // TPM2B_CREATION_DATA *creationDataSWK;
-        // TPM2B_DIGEST *creationHashSWK;
-        // TPMT_TK_CREATION *creationTicketSWK;
+        TPM2B_DATA outInfo = {.size = in->outsideInfo.t.size, .buffer = {*in->outsideInfo.t.buffer}};
+        TPML_PCR_SELECTION pcrSelection = { .count = 0,};
+        TPM2B_PUBLIC *outPublic;
+        TPM2B_PRIVATE *outPrivate;
+        TPM2B_CREATION_DATA *creationData;
+        TPM2B_DIGEST *creationHash;
+        TPMT_TK_CREATION *creationTicket;
+        
+        Init_Tcti_Esys_Context();
 
-        // printf("\n-------------Esys_Create------------\n");
+        TPM2B_AUTH authValueHierarchy = {.size = 0, .buffer = {}};
+        rc = Esys_TR_SetAuth(s_params.esys_context, ESYS_TR_RH_OWNER, &authValueHierarchy); 
+
+        ESYS_TR primaryKeyHandle = ESYS_TR_NONE;
+
+        TPM2B_AUTH authValuePrimaryKey = {
+            .size = 5,
+            .buffer = {1,2,3,4,5}
+        };
+        TPM2B_SENSITIVE_CREATE inSensitivePrimaryKey = {
+            .size = 0,
+            .sensitive = {
+                .userAuth = authValuePrimaryKey,
+                .data = {
+                    .size = 0,
+                    .buffer = {0}
+                },
+            },
+        };
+        TPM2B_PUBLIC inPublicPrimaryKey = {
+            .size = 0,
+            .publicArea = {
+                .type = TPM2_ALG_RSA,
+                .nameAlg = TPM2_ALG_SHA256,
+                .objectAttributes = (
+                    TPMA_OBJECT_USERWITHAUTH | 
+                    TPMA_OBJECT_RESTRICTED |
+                    TPMA_OBJECT_DECRYPT |
+                    TPMA_OBJECT_FIXEDTPM |
+                    TPMA_OBJECT_FIXEDPARENT |
+                    TPMA_OBJECT_SENSITIVEDATAORIGIN |
+                    TPMA_OBJECT_PTPMCREATED
+                ),
+                .authPolicy = {
+                    .size = 0,
+                    .buffer = {},
+                },
+                .parameters = {
+                    .rsaDetail = {
+                        .symmetric = {
+                            .algorithm = TPM2_ALG_AES,
+                            .keyBits = {
+                                .aes = 128
+                            },
+                            .mode = {
+                                .aes = TPM2_ALG_CFB,
+                            },
+                        },
+                        .scheme = {
+                            .scheme = TPM2_ALG_NULL,
+                        /*    .details = {
+                                .rsapss = {
+                                    .hashAlg = TPM2_ALG_SHA256
+                                }
+                            }*/
+                        },
+                        .keyBits = 2048,
+                        .exponent = 0,
+                    },
+                },
+                .unique = {
+                    .rsa = {
+                        .size = 0,
+                        .buffer = {},
+                    },
+                },
+            },
+        };
+
+        TPM2B_DATA outInfoPrimaryKey = {.size = 0, .buffer = {}};
+        TPML_PCR_SELECTION pcrSelectionPrimaryKey = {.count = 0};
+        TPM2B_PUBLIC *outPublicPrimaryKey;
+        TPM2B_CREATION_DATA *creationDataPrimaryKey;
+        TPM2B_DIGEST *creationHashPrimaryKey;
+        TPMT_TK_CREATION *creationTicketPrimaryKey;
+
+        rc = Esys_CreatePrimary(
+            s_params.esys_context,                       // [in] esysContext
+            ESYS_TR_RH_OWNER,                          // [in] primaryHandle : hierarchy
+            ESYS_TR_PASSWORD,                   // [in] Session handle for authorization of primaryHandle
+            ESYS_TR_NONE,                       // Session handle 2
+            ESYS_TR_NONE,                       // Session handle 3
+            &inSensitivePrimaryKey,             // [in] inSensitive => sensitive data
+            &inPublicPrimaryKey,                // [in] public Template
+            &outInfoPrimaryKey,                 // [in] data that will be included in the creation data this object to provide permanent
+            &pcrSelectionPrimaryKey,            // [in] PCR that will be used in the creation process
+            &primaryKeyHandle,                  // [in] object handle
+            &outPublicPrimaryKey,               // [out] Public portion of the created object 
+            &creationDataPrimaryKey,            // [out] contains the creation data
+            &creationHashPrimaryKey,            // [out] Digest of creation data
+            &creationTicketPrimaryKey           // [out] ticket used to validate the creation of the object
+        );
+
+        if(rc)
+        {
+            Finalize_Tcti_Esys_Context();
+            return rc;
+        }
+
+        rc = Esys_TR_SetAuth(s_params.esys_context,primaryKeyHandle,&authValuePrimaryKey);
+
         rc = Esys_Create(
             s_params.esys_context,
-            in->parentHandle,
+            primaryKeyHandle,
             ESYS_TR_PASSWORD,
             ESYS_TR_NONE,
             ESYS_TR_NONE,
             &inSensitive,
             &inPublic,
-            &in->outsideInfo,
-            &in->creationPCR,
-            &out->outPrivate,
-            &out->outPublic,
-            &out->creationData,
-            &out->creationHash,
-            &out->creationTicket
+            &outInfo,
+            &pcrSelection,
+            &outPrivate,
+            &outPublic,
+            &creationData,
+            &creationHash,
+            &creationTicket
             );
-        if (rc)
+        if (rc){
+            Finalize_Tcti_Esys_Context();
             return rc;
+        }
+
+        out->outPrivate.t.size = outPrivate->size;
+        memcpy(out->outPrivate.t.buffer, outPrivate->buffer, outPrivate->size);
+        Finalize_Tcti_Esys_Context();
     }
     else{
         // Input Validation
