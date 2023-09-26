@@ -39,6 +39,19 @@
 #include "Marshal.h"
 #include <math.h>
 
+void myTrace(char const *msg, BOOL err){
+    #ifdef MYDEBUG
+        if (err)
+        {
+            printf(RED "%s" RESET, msg);
+        }
+        else
+        {
+            printf(GREEN "%s" RESET, msg);
+        }
+    #endif
+}
+
 void Init_Tcti_Esys_Context()
 {
     s_vTPM = 1;
@@ -54,14 +67,14 @@ void Init_Tcti_Esys_Context()
     rc = Tss2_Tcti_Mssim_Init(0, &context_size, NULL);
     if(rc != TSS2_RC_SUCCESS)
     {
-        fprintf(stdout, "Failed to get allocation size for mssim TCTI \n");
+        myTrace("Failed to get allocation size for mssim TCTI \n", TRUE);
         exit(EXIT_FAILURE);
     }
 
     s_params.tcti_context = (TSS2_TCTI_CONTEXT*)calloc(1, context_size);
     if(rc != TSS2_RC_SUCCESS)
     {
-        fprintf(stdout, "Allocation for TCTI context failed: %d0 \n", rc);
+        myTrace("Allocation for TCTI context failed\n", TRUE);
         exit(EXIT_FAILURE);
     }
 
@@ -69,38 +82,30 @@ void Init_Tcti_Esys_Context()
         s_params.tcti_context, &context_size, "host=localhost,port=2321");
     if(rc != TSS2_RC_SUCCESS)
     {
-        fprintf(
-            stdout, "Failed to initialize tabrmd TCTI context: 0x%" PRIx32 "0\n", rc);
+        myTrace("Failed to initialize tabrmd TCTI context", TRUE);
         free(s_params.tcti_context);
         exit(EXIT_FAILURE);
     }
 
-    fprintf(stdout, "Initialization of the TCTI context successfull\n");
+    myTrace("Initialization of the TCTI context successfull\n", FALSE);
     TSS2_ABI_VERSION abi_version = TSS2_ABI_VERSION_CURRENT;
 
     //Initialization of the ESYS context
-    /*
-        TSS2_RC Esys_Initialize( ESYS_CONTEXT **esysContext, TSS2_TCTI_CONTEXT *tcti, TSS2_ABI_VERSION *abiVersion);
-        esysContext => reference to a pointer to the opaque ESYS_CONTEXT blob. It must be not NULL
-        tcti => pointer to the TCTI context
-        abiVersion => pointer to the ABI version that the application requests
-    */
     rc = Esys_Initialize(&s_params.esys_context, s_params.tcti_context, &abi_version);
     if(rc != TSS2_RC_SUCCESS)
     {
-        fprintf(
-            stderr, "Failed to initialize the ESYS context: 0x%" PRIx32 "0 \n", rc);
+        myTrace("Failed to initialize the ESYS context\n", TRUE);
         free(s_params.tcti_context);
         s_params.tcti_context = NULL;
         exit(EXIT_FAILURE);
     }
 
-    fprintf(stdout, "Initialization of the ESYS context successfull\n");
+    myTrace("Initialization of the ESYS context successfull\n", FALSE);
 
     rc = Esys_Startup(s_params.esys_context, TPM2_SU_CLEAR);
     if(rc != TSS2_RC_SUCCESS)
     {
-        fprintf(stderr, "Failed to Startup TPM: 0x%" PRIx32 "0 \n", rc);
+        myTrace("Failed to Startup TPM\n", TRUE);
         Finalize_Tcti_Esys_Context();
         exit(EXIT_FAILURE);
     }
@@ -112,10 +117,10 @@ void Finalize_Tcti_Esys_Context()
     free(s_params.tcti_context);
     s_params.tcti_context = NULL;
 
-    fprintf(stdout, "\nFinalization of the TCTI context\n");
+    myTrace("\nFinalization of the TCTI context\n", FALSE);
 
     Esys_Finalize(&s_params.esys_context);
-    fprintf(stdout, "Finalization of the Esys context\n\n");
+    myTrace("Finalization of the Esys context\n\n", FALSE);
 }
 
 void LoadSWK(char *swkPath)
@@ -125,7 +130,7 @@ void LoadSWK(char *swkPath)
     FILE *swkFile;
     swkFile = fopen(swkPath, "rb");
     if(swkFile == NULL) {
-        perror("Error opening file");
+        myTrace("Error opening file", TRUE);
         Finalize_Tcti_Esys_Context();
         exit(1);
     }
@@ -147,41 +152,41 @@ void LoadSWK(char *swkPath)
     size_t nextData = 0;
 
     Tss2_MU_TPMS_CONTEXT_Unmarshal((uint8_t *)buffer,  fsize, &nextData,  &s_SWK.eSWK.context);
-    printf("\n-------------Esys_ContextLoad------------\n");
+    myTrace("\n-------------Esys_ContextLoad------------\n", FALSE);
     rc = Esys_ContextLoad(s_params.esys_context, &s_SWK.eSWK.context, &s_SWK.eSWK.handle);
     if(rc != TSS2_RC_SUCCESS)
     {
-        fprintf(stdout,"Error during context loading\n");
+        myTrace("Error during context loading\n", TRUE);
         exit(EXIT_FAILURE);
     } else
     {
-        fprintf(stdout,"Context loading successfull\n");
+        myTrace("Context loading successfull\n", FALSE);
     }
     Esys_TR_SetAuth(s_params.esys_context,s_SWK.eSWK.handle,&authValueSWK);
 
     Tss2_MU_TPMS_CONTEXT_Unmarshal((uint8_t *)buffer,  fsize, &nextData,  &s_SWK.sSWK.context);
-    printf("\n-------------Esys_ContextLoad------------\n");
+    myTrace("\n-------------Esys_ContextLoad------------\n", FALSE);
     rc = Esys_ContextLoad(s_params.esys_context, &s_SWK.sSWK.context, &s_SWK.sSWK.handle);
     if(rc != TSS2_RC_SUCCESS)
     {
-        fprintf(stdout,"Error during context loading\n");
+        myTrace("Error during context loading\n", TRUE);
         exit(EXIT_FAILURE);
     } else
     {
-        fprintf(stdout,"Context loading successfull\n");
+        myTrace("Context loading successfull\n", FALSE);
     }
     Esys_TR_SetAuth(s_params.esys_context,s_SWK.sSWK.handle,&authValueSWK);
 
     Tss2_MU_TPMS_CONTEXT_Unmarshal((uint8_t *)buffer,  fsize, &nextData,  &s_SWK.pSWK.context);
-    printf("\n-------------Esys_ContextLoad------------\n");
+    myTrace("\n-------------Esys_ContextLoad------------\n", FALSE);
     rc = Esys_ContextLoad(s_params.esys_context, &s_SWK.pSWK.context, &s_SWK.pSWK.handle);
     if(rc != TSS2_RC_SUCCESS)
     {
-        fprintf(stdout,"Error during context loading\n");
+        myTrace("Error during context loading\n", TRUE);
         exit(EXIT_FAILURE);
     } else
     {
-        fprintf(stdout,"Context loading successfull\n");
+        myTrace("Context loading successfull\n", FALSE);
     }
     Esys_TR_SetAuth(s_params.esys_context,s_SWK.pSWK.handle,&authValueSWK);
 }
@@ -303,7 +308,7 @@ void CreateLoadPrimarySeed(ESYS_TR hierarchy)
     TPM2B_DIGEST *creationHashVPS;
     TPMT_TK_CREATION *creationTicketVPS;
 
-    printf("\n-------------Esys_VIRT_CreateSeed------------\n");
+    myTrace("\n-------------Esys_VIRT_CreateSeed------------\n", FALSE);
     rc = Esys_VIRT_CreateSeed(
         s_params.esys_context,
         SWK->handle,
@@ -324,11 +329,11 @@ void CreateLoadPrimarySeed(ESYS_TR hierarchy)
     
     if(rc != TSS2_RC_SUCCESS)
     {
-        fprintf(stdout,"Error during the creation of the VPS\n");
+        myTrace("Error during the creation of the VPS\n", TRUE);
         exit(EXIT_FAILURE);
     } else
     {
-        fprintf(stdout,"Creation of VPS successfull\n");
+        myTrace("Creation of VPS successfull\n", FALSE);
     }
 
     VPS->vpsPrivate = *outPrivateVPS;
@@ -336,7 +341,7 @@ void CreateLoadPrimarySeed(ESYS_TR hierarchy)
 
     ESYS_TR vpsHandle = ESYS_TR_NONE;
 
-    printf("\n-------------Esys_VIRT_LoadSeed------------\n");
+    myTrace("\n-------------Esys_VIRT_LoadSeed------------\n", FALSE);
     rc = Esys_VIRT_LoadSeed(
         s_params.esys_context,
         SWK->handle,
@@ -350,29 +355,29 @@ void CreateLoadPrimarySeed(ESYS_TR hierarchy)
     
     if(rc != TSS2_RC_SUCCESS)
     {
-        fprintf(stdout,"Error during loading VPS\n");
+        myTrace("Error during loading VPS\n", TRUE);
         exit(EXIT_FAILURE);
     } else
     {
-        fprintf(stdout,"Loading VPS successfull\n");
+        myTrace("Loading VPS successfull\n", FALSE);
     }
 
     rc = Esys_TR_SetAuth(s_params.esys_context,vpsHandle,NULL);
     
     *VPSHandle = (MSSIMI_RH_HIERARCHY)vpsHandle;
 
-    printf("\n-------------Esys_FlushContext------------\n");
+    myTrace("\n-------------Esys_FlushContext------------\n", FALSE);
     rc = Esys_FlushContext(
         s_params.esys_context,
         session
     );
     if(rc != TSS2_RC_SUCCESS)
     {
-        fprintf(stdout,"Error during context flushing\n");
+        myTrace("Error during context flushing\n", TRUE);
         exit(EXIT_FAILURE);
     } else
     {
-        fprintf(stdout,"Context flushing successfull\n");
+        myTrace("Context flushing successfull\n", FALSE);
     }
 
 }
@@ -403,7 +408,7 @@ void CreateVSPK(char *vspkTemplatePath)
     FILE *vspkTemplateFile;
     vspkTemplateFile = fopen(vspkTemplatePath, "rb");
     if(vspkTemplateFile == NULL) {
-        perror("Error opening file");
+        myTrace("Error opening file", TRUE);
         exit(1);
     }
 
@@ -438,7 +443,7 @@ void CreateVSPK(char *vspkTemplatePath)
     TPM2B_DIGEST *creationHashVSPK;
     TPMT_TK_CREATION *creationTicketVSPK;
 
-    printf("\n-------------Esys_VIRT_CreatePrimary------------\n");
+    myTrace("\n-------------Esys_VIRT_CreatePrimary------------\n", FALSE);
     rc = Esys_VIRT_CreatePrimary(
         s_params.esys_context,          // [in] esysContext
         s_HandleMap.vPPSHandle,         // [in] primaryHandle : hierarchy
@@ -458,11 +463,11 @@ void CreateVSPK(char *vspkTemplatePath)
 
     if(rc != TSS2_RC_SUCCESS)
     {
-        fprintf(stdout,"Error during the creation of the VSPK\n");
+        myTrace("Error during the creation of the VSPK\n", TRUE);
         exit(EXIT_FAILURE);
     } else
     {
-        fprintf(stdout,"Creation of the VSPK successfull\n");
+        myTrace("Creation of the VSPK successfull\n", FALSE);
     }
         
     s_HandleMap.pVSPKHandle = vspkHandle;
@@ -519,7 +524,7 @@ void StoreState(char *statePath){
     stateFile = fopen(statePath, "wb");
 
     if(stateFile == NULL) {
-        perror("Error opening file");
+        myTrace("Error opening file", TRUE);
         exit(1);
     }
 
@@ -607,14 +612,8 @@ void StoreState(char *statePath){
         
         memcpy(state.buffer, toEncryptBuffer+i*TPM2_MAX_DIGEST_BUFFER, state.size);
 
-        // printf("\n\nbuffer numero %ld-----%d\n\n", i+1, state.size);
 
-        // for (size_t i = 0; i < state.size; i++)
-        // {
-        //     printf("%d", state.buffer[i]);
-        // }
-
-        printf("\n-------------Esys_VIRT_StoreState------------\n");
+        myTrace("\n-------------Esys_VIRT_StoreState------------\n", FALSE);
         rc = Esys_VIRT_StoreState(
             s_params.esys_context,
             s_HandleMap.pVSPKHandle,
@@ -629,11 +628,11 @@ void StoreState(char *statePath){
 
         if(rc != TSS2_RC_SUCCESS)
         {
-            fprintf(stdout,"Error during state storing\n");
+            myTrace("Error during state storing\n", TRUE);
             exit(EXIT_FAILURE);
         } else
         {
-            fprintf(stdout,"State storing successfull\n");
+            myTrace("State storing successfull\n", FALSE);
         }
 
         
@@ -662,7 +661,7 @@ void RestoreState(char *statePath, char *vspkTemplatePath, BOOL restoreAtInit){
     FILE *stateFile;
     stateFile = fopen(statePath, "rb");
     if(stateFile == NULL) {
-        perror("Error opening file");
+        myTrace("Error opening file", TRUE);
         exit(1);
     }
 
@@ -682,43 +681,43 @@ void RestoreState(char *statePath, char *vspkTemplatePath, BOOL restoreAtInit){
 
     TPMS_CONTEXT context;
     Tss2_MU_TPMS_CONTEXT_Unmarshal((uint8_t *)storedStateBuffer,  fsize, &nextData,  &context);
-    printf("\n-------------Esys_ContextLoad------------\n");
+    myTrace("\n-------------Esys_ContextLoad------------\n", FALSE);
     rc = Esys_ContextLoad(s_params.esys_context, &context, &s_HandleMap.vEPSHandle);
     if(rc != TSS2_RC_SUCCESS)
     {
-        fprintf(stdout,"Error during context loading\n");
+        myTrace("Error during context loading\n", TRUE);
         exit(EXIT_FAILURE);
     } else
     {
-        fprintf(stdout,"Context loading successfull\n");
+        myTrace("Context loading successfull\n", FALSE);
     }
     Esys_TR_SetAuth(s_params.esys_context,s_HandleMap.vEPSHandle,NULL);
 
     
     Tss2_MU_TPMS_CONTEXT_Unmarshal((uint8_t *)storedStateBuffer,  fsize, &nextData,  &context);
-    printf("\n-------------Esys_ContextLoad------------\n");
+    myTrace("\n-------------Esys_ContextLoad------------\n", FALSE);
     rc = Esys_ContextLoad(s_params.esys_context, &context, &s_HandleMap.vSPSHandle);
     if(rc != TSS2_RC_SUCCESS)
     {
-        fprintf(stdout,"Error during context loading\n");
+        myTrace("Error during context loading\n", TRUE);
         exit(EXIT_FAILURE);
     } else
     {
-        fprintf(stdout,"Context loading successfull\n");
+        myTrace("Context loading successfull\n", FALSE);
     }
     Esys_TR_SetAuth(s_params.esys_context,s_HandleMap.vSPSHandle,NULL);
 
     
     Tss2_MU_TPMS_CONTEXT_Unmarshal((uint8_t *)storedStateBuffer,  fsize, &nextData,  &context);
-    printf("\n-------------Esys_ContextLoad------------\n");
+    myTrace("\n-------------Esys_ContextLoad------------\n", FALSE);
     rc = Esys_ContextLoad(s_params.esys_context, &context, &s_HandleMap.vPPSHandle);
     if(rc != TSS2_RC_SUCCESS)
     {
-        fprintf(stdout,"Error during context loading\n");
+        myTrace("Error during context loading\n", TRUE);
         exit(EXIT_FAILURE);
     } else
     {
-        fprintf(stdout,"Context loading successfull\n");
+        myTrace("Context loading successfull\n", FALSE);
     }
     Esys_TR_SetAuth(s_params.esys_context,s_HandleMap.vPPSHandle,NULL);
 
@@ -746,7 +745,7 @@ void RestoreState(char *statePath, char *vspkTemplatePath, BOOL restoreAtInit){
             };
 
 
-            printf("\n-------------Esys_VIRT_RestoreState------------\n");
+            myTrace("\n-------------Esys_VIRT_RestoreState------------\n", FALSE);
             rc = Esys_VIRT_RestoreState(
                 s_params.esys_context,
                 s_HandleMap.pVSPKHandle,
@@ -761,11 +760,11 @@ void RestoreState(char *statePath, char *vspkTemplatePath, BOOL restoreAtInit){
 
             if(rc != TSS2_RC_SUCCESS)
             {
-                fprintf(stdout,"Error during state restoring\n");
+                myTrace("Error during state restoring\n", TRUE);
                 exit(EXIT_FAILURE);
             } else
             {
-                fprintf(stdout,"State restoring successfull\n");
+                myTrace("State restoring successfull\n", FALSE);
             }
             
 
@@ -789,18 +788,18 @@ void RestoreState(char *statePath, char *vspkTemplatePath, BOOL restoreAtInit){
         for (size_t i = 0; i < fullSoftware; i++){
 
             Tss2_MU_TPMS_CONTEXT_Unmarshal((uint8_t *)restoredStateBuffer,  encryptedStateBufferSize, &nextData,  &context);
-            printf("\n-------------Esys_ContextLoad------------\n");
+            myTrace("\n-------------Esys_ContextLoad------------\n", FALSE);
             
             s_HandleMap.objectHandles[i].fullSoftware = 1;
 
             rc = Esys_ContextLoad(s_params.esys_context, &context, &s_HandleMap.objectHandles[i].handle.virtual);
             if(rc != TSS2_RC_SUCCESS)
             {
-                fprintf(stdout,"Error during context loading\n");
+                myTrace("Error during context loading\n", TRUE);
                 exit(EXIT_FAILURE);
             } else
             {
-                fprintf(stdout,"Context loading successfull\n");
+                myTrace("Context loading successfull\n", FALSE);
             }
             Esys_TR_SetAuth(s_params.esys_context,s_HandleMap.objectHandles[i].handle.virtual,NULL);
             s_HandleMap.objectHandles[i].defined = 1;

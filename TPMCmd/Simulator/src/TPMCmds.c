@@ -232,7 +232,7 @@ int main(int argc, char* argv[])
 
     // Parse command line options
 
-    if(CmdLineParser_Init(argc, argv, 7))
+    if(CmdLineParser_Init(argc, argv, 8))
     {
         if(CmdLineParser_IsOptPresent("?", "?")
            || CmdLineParser_IsOptPresent("help", "h"))
@@ -326,7 +326,6 @@ int main(int argc, char* argv[])
 
     if(hwbind)
     {
-        printf("\nPerforming hardware binding...\n");
         _MSSIM_Init(hwbind, restore, swkPath, vspkTemplatePath, statePath);
     }
 

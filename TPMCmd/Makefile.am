@@ -47,17 +47,17 @@ tpm2_simulator = Simulator/src/tpm2-simulator
 bin_PROGRAMS = $(tpm2_simulator)
 noinst_LIBRARIES = $(libplatform) $(libtpm)
 
-Platform_src_libplatform_a_CFLAGS = $(EXTRA_CFLAGS) $(PLATFORM_INC) $(TPM_INC)
+Platform_src_libplatform_a_CFLAGS = $(EXTRA_CFLAGS) $(PLATFORM_INC) $(TPM_INC) $(VARS)
 Platform_src_libplatform_a_SOURCES = $(PLATFORM_C) $(PLATFORM_H)
 
 Simulator_src_tpm2_simulator_CFLAGS = $(EXTRA_CFLAGS) $(PLATFORM_INC) \
-    $(TPM_INC) $(SIMULATOR_INC) $(LIBCRYPTO_CFLAGS) $(PTHREAD_CFLAGS)
+    $(TPM_INC) $(SIMULATOR_INC) $(LIBCRYPTO_CFLAGS) $(PTHREAD_CFLAGS) $(VARS)
 # the weird / duplicate static library is necessary for dealing with the
 # circular dependency beetween libplatform and libtpm
 Simulator_src_tpm2_simulator_LDADD = $(libplatform) $(libtpm) \
     $(libplatform) $(LIBCRYPTO_LIBS) $(PTHREAD_LIBS) $(tsslib) @ADDITIONAL_LIBS@
-Simulator_src_tpm2_simulator_SOURCES = $(SIMULATOR_C) $(SIMULATOR_H)
+Simulator_src_tpm2_simulator_SOURCES = $(SIMULATOR_C) $(SIMULATOR_H) 
 
 tpm_src_libtpm_a_CFLAGS = $(EXTRA_CFLAGS) $(PLATFORM_INC) $(TPM_INC) \
-    $(LIBCRYPTO_CFLAGS)
+    $(LIBCRYPTO_CFLAGS) $(VARS)
 tpm_src_libtpm_a_SOURCES = $(TPM_C) $(TPM_H) $(PLATFORM_H)
