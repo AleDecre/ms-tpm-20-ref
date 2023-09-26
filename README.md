@@ -1,4 +1,4 @@
-# Official TPM 2.0 Reference Implementation (by Microsoft) #
+# Official TPM 2.0 Reference Implementation (by Microsoft) # 
 
 [![Build Status](https://travis-ci.org/Microsoft/ms-tpm-20-ref.svg?branch=master)](https://travis-ci.org/Microsoft/ms-tpm-20-ref)
 
